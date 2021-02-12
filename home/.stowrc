@@ -1,0 +1,6 @@
+--dir=$HOME/stow
+--target=$HOME
+--ignore=^yay$
+--ignore=^post-install.sh$
+--ignore=^bootstrap.sh$
+--no-folding

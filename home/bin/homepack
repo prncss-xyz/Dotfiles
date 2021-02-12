@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+if [ -f "$HOME/stow/$1/yay" ]; then
+  cat "$HOME/stow/$1/yay"|xargs yay -Syu
+fi
+
+stow "$1"
+
+if [ -e "$HOME/stow/$1/post-install.sh" ]; then
+  sh "$HOME/stow/$1/post-install.sh"
+fi

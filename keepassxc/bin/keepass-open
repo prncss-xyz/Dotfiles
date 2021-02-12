@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+secret-tool lookup keepass prncss|keepassxc --keyfile=$HOME/.local/share/keepassxc/passwords --pw-stdin $HOME/Documents/Data/KeePass/passwords.kdbx&

@@ -1,0 +1,37 @@
+[general]
+status_path = "~/.vdirsyncer/status/"
+
+[pair b7_contacts]
+a = "b7_contacts_local"
+b = "b7_contacts_remote"
+collections = ["from a", "from b"]
+
+[storage b7_contacts_local]
+type = "filesystem"
+path = "~/.contacts/b7/"
+fileext = ".vcf"
+
+[storage b7_contacts_remote]
+type = "carddav"
+
+url = "https://cloud.batiment7.org/remote.php/dav/"
+username = "princesse@batiment7.org"
+password.fetch = ["command", "pass", "cloud.batiment7.org/princesse@batiment7.org"]
+
+[pair b7_calendars]
+a = "b7_calendars_local"
+b = "b7_calendars_remote"
+collections = ["from a", "from b"]
+metadata = ["color"]
+
+[storage b7_calendars_local]
+type = "filesystem"
+path = "~/.calendars/b7/"
+fileext = ".ics"
+
+[storage b7_calendars_remote]
+type = "caldav"
+
+url = "https://cloud.batiment7.org/remote.php/dav"
+username = "princesse@batiment7.org"
+password.fetch = ["command", "pass", "cloud.batiment7.org/princesse@batiment7.org"]

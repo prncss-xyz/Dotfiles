@@ -3,5 +3,5 @@ rm /lib/firmware/ath10k/QCA6174/hw2.1/board.bin
 rm /lib/firmware/ath10k/QCA6174/hw2.1/board-2.bin
 rm /lib/firmware/ath10k/QCA6174/hw3.0/board.bin
 rm /lib/firmware/ath10k/QCA6174/hw3.0/board-2.bin
-cp /root/board.bin /lib/firmware/ath10k/QCA6174/hw2.1
-cp /root/board.bin /lib/firmware/ath10k/QCA6174/hw3.0
+cp /home/prncss/Media/Assets/board.bin /lib/firmware/ath10k/QCA6174/hw2.1
+cp /home/prncss/Media/Assets/board.bin /lib/firmware/ath10k/QCA6174/hw3.0

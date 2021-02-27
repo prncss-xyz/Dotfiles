@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+export BROWSER1="$BROWSER"
+BROWSER=browser-manh.sh
+man -H $@

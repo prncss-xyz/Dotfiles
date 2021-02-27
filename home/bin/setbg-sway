@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+while :
+do
+  FILE=$(fd -e jpg -e png . ~/Media/Pictures/Wallpapers/|shuf -n1)
+  swaymsg "output \"*\" bg \"$FILE\" fill"
+  sleep 90
+done

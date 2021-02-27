@@ -1,0 +1,2 @@
+data.location=~\/.tasks
+alias.open=execute bash -l -x -c "q=($BASH_COMMAND); taskopen \\"\\\\${q[-1]}\\""

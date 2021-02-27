@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-# dotroot /etc/NetworkManager NetworkManager.conf home
-
-mkdir -p "$HOME/stow/$3/$1"
-cp "$1/$2" "$HOME/stow/$3/$1"

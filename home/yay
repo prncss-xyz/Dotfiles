@@ -5,4 +5,17 @@ joplin-appimage
 libreoffice-extension-languagetool
 mpv-mpris
 vimiv-qt
+curl
+fzf
+fish
+fisher
+starship-bin
+lsd
+zoxide
+ymuse
+mpdris2
+curl
+syncthing
+syncthing-gtk
+
 kitty

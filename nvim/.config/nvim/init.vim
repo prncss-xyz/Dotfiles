@@ -85,11 +85,14 @@ set completeopt=menuone,noinsert,noselect
 " Avoid showing message extra message when using completion
 set shortmess+=c
 
-nnoremap <c-j> :edit ~/.config/nvim/init.vim<CR>
-
 set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
 set colorcolumn=80
 set smartcase
-set clipboard+=unnamedplus
 
 "let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+
+
+
+
+

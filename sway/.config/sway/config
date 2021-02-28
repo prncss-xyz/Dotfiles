@@ -95,6 +95,7 @@ for_window [app_id="^launcher$"] floating enable, sticky enable, resize set 30 p
 
 # TODO: toogle focus
 # bindsym $mod+o [app_id="org.keepassxc.KeePassXC"] focus
+bindsym $mod+m exec makoctl dismiss
 bindsym $mod+o [app_id="org.keepassxc.KeePassXC"] scratchpad show
 for_window [app_id="org.keepassxc.KeePassXC"] {
   move scratchpad
@@ -312,6 +313,7 @@ bar {
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
     status_command while date +'%Y-%m-%d %H:%M'; do sleep 1; done
+    font pango:DejaVu Sans 10
 
     colors {
         statusline #ffffff

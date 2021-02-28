@@ -1,0 +1,25 @@
+eval %sh{kak-lsp --kakoune -s $kak_session}
+# lsp-enable
+lsp-auto-hover-insert-mode-enable
+#  set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log":w
+
+
+hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
+  lsp-enable-window
+}
+
+map global user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
+
+hook global WinSetOption filetype=(javascript|typescript|css|scss|json|markdown|yaml|html) %{
+  set-option buffer formatcmd "prettier --stdin-filepath=%val{buffile}"
+  hook buffer -group format BufWritePre .* format
+}
+
+hook global WinSetOption filetype=sh %{
+  set-option buffer formatcmd 'shfmt -i 2 -ci -sr'
+  hook buffer -group format BufWritePre .* format
+
+  # set-option buffer lintcmd 'shellcheck -x -fgcc'
+  # lint
+}
+

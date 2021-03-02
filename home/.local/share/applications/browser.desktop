@@ -1,6 +1,6 @@
 [Desktop Entry]
 Exec=browser %U
 GenericName=Browser selector
-Name=browser
+Name=~/.local/bin/browser
 Terminal=false
 Type=Application

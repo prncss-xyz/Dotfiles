@@ -12,7 +12,7 @@ map global user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
 
 hook global WinSetOption filetype=(javascript|typescript|css|scss|json|markdown|yaml|html) %{
   set-option buffer formatcmd "prettier --stdin-filepath=%val{buffile}"
-  hook buffer -group format BufWritePre .* format
+#  hook buffer -group format BufWritePre .* format
 }
 
 hook global WinSetOption filetype=sh %{
@@ -23,3 +23,8 @@ hook global WinSetOption filetype=sh %{
   # lint
 }
 
+hook global FocusOut .* w
+
+hook global InsertChar \t %{ exec -draft -itersel h@ }
+set global tabstop 2
+set global indentwidth 2

@@ -1,0 +1,12 @@
+---
+name: "Are we Wayland yet?"
+url: "https://arewewaylandyet.com/"
+max_tries: 3
+---
+name: "taskwarrior"
+url: "https://github.com/GothenburgBitFactory/taskwarrior"
+filter:
+  - css: ".release-header>div>div>a"
+  - html2text
+---
+

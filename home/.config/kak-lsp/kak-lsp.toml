@@ -124,10 +124,10 @@ command = "typescript-language-server"
 [language.json]
 filetypes = ["json"]
 roots = ["package.json"]
-command = "json-languageserver"
+command = "vscode-json-languageserver"
 args = ["--stdio"]
 
-[language.latex]
+[language.latex ]
 filetypes = ["latex"]
 roots = [".git"]
 command = "texlab"

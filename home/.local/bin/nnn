@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+export NNN_TRASH=1  
+export NNN_FIFO=/tmp/nnn.fifo
+export NNN_OPENER=/usr/share/nnn/plugins/nuke
+export NNN_BMS=\
+"w:$(xdg-user-dir DOWNLOAD);"\
+"p:$(xdg-user-dir PICTURES);"\
+"d:$(xdg-user-dir DOCUMENTS);"\
+"m:$(xdg-user-dir MUSIC_DIR);"\
+"v:$(xdg-user-dir VIDEOS_DIR);"\
+"u:/run/media/$USER;"
+export NNN_PLUG='d:diffs;o:fzopen;O:fzopend;a:preview-tui;k:kdeconnect;c:fzcd;z:autojump;t:-_|kitty;'
+
+/usr/bin/nnn

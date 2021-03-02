@@ -1,6 +1,7 @@
 [user]
 	email = juliette.lamarche@princesse.xyz
 	name = Juliette Lamarche
+	signingkey = DB6F754B59A68BC3AE6CF695004A3B1CB2774189
 [diff]
     tool = kitty
     guitool = kitty.gui

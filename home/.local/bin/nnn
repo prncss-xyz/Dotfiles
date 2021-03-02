@@ -2,7 +2,6 @@
 
 export NNN_TRASH=1  
 export NNN_FIFO=/tmp/nnn.fifo
-export NNN_OPENER=/usr/share/nnn/plugins/nuke
 export NNN_BMS=\
 "w:$(xdg-user-dir DOWNLOAD);"\
 "p:$(xdg-user-dir PICTURES);"\

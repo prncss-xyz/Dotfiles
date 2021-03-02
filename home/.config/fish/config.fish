@@ -2,7 +2,6 @@ starship init fish | source
 zoxide init fish | source
 kitty + complete setup fish | source
 set -U fish_user_paths ~/.local/bin:(pnpm get location):(yarn global bin)
-set -U fish_greeting
 alias ls lsd
 alias wttr 'curl "fr.wttr.in/montreal?n"'
 alias get_tree 'swaymsg -t get_tree > /tmp/tree.json && browser /tmp/tree.json'

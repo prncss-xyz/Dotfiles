@@ -13,14 +13,11 @@ set $right l
 # Start a terminal
 bindsym $mod+t exec $term
 
-# Kill focused window
-bindsym $mod+Shift+q kill
 
-bindsym $mod+Ctrl+l exec "swaylock -f -c 000000"
 # Start your launcher
 for_window [app_id="^launcher$"] floating enable, sticky enable, resize set 30 ppt 60 ppt, border pixel 10
 
-bindsym $mod+y exec bin/browser --new-window
+bindsym $mod+y exec .local/bin/browser --new-window
 # TODO: toogle focus
 bindsym $mod+m exec makoctl dismiss
 bindsym $mod+Return [title="scratchpad"] scratchpad show
@@ -29,19 +26,21 @@ bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p 
 # set $menu exec $term --class=launcher -e sway-launcher-desktop
 # set $menu exec /usr/bin/sway-launcher-desktop
 
-    # Drag floating windows by holding down $mod and left mouse button.
-    # Resize them with right mouse button + $mod.
-    # Despite the name, also works for non-floating windows.
-    # Change normal to inverse to use left mouse button for resizing and right
-    # mouse button for dragging.
-    floating_modifier $mod normal
+# Drag floating windows by holding down $mod and left mouse button.
+# Resize them with right mouse button + $mod.
+# Despite the name, also works for non-floating windows.
+# Change normal to inverse to use left mouse button for resizing and right
+# mouse button for dragging.
+floating_modifier $mod normal
 
-    # Reload the configuration file
-    bindsym $mod+Shift+c reload
-
-    # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exit
-    # bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+# Kill focused window
+bindsym $mod+Ctrl+q kill
+bindsym $mod+Ctrl+c reload
+bindsym $mod+Ctrl+e exit
+bindsym $mod+Ctrl+l exec "swaylock -f -c 000000"
+bindsym $mod+Ctrl+r exec "reboot"
+bindsym $mod+Ctrl+p exec "poweroff"
+# bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
 #
 # Moving around:
 #

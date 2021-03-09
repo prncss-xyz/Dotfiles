@@ -22,14 +22,20 @@ set $term kitty
 
 output DP-1 scale 2
 
+mouse_warping none
+focus_follows_mouse no
+
 ### Autoexec
 exec kitty --title=scratchpad
 exec ~/.local/bin/browser
-# exec gnome-keyring-daemon --start
+exec gnome-keyring-daemon --start
 exec ~/.local/bin/setbg-sway
+# exec oguri
+# mpvpaper -o "no-audio --loop-file=inf" DP-1 FalseEminentFlickertailsquirrel-mobile.mp4
 exec mako
 exec kdeconnect-app
 exec kdeconnect-sms
+exec kak -d -s default
 # exec ulauncher
 # exec albert
 # exec ~/bin/keepassxc-unlock
@@ -40,7 +46,11 @@ exec kdeconnect-sms
 ### Idle
 
 seat * hide_cursor 10000
-exec swayidle -w timeout 300 'swaylock -f -c 000000'
+exec swayidle -w \
+ timeout 300 'swaylock -f -c 000000' \
+ timeout 400 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+ before-sleep 'swaylock -f -c 000000'
+
 
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -65,6 +75,12 @@ for_window [app_id="org\.kde\.kdeconnect\.app"] {
 for_window [app_id="org\.kde\.kdeconnect\.sms"] {
   move scratchpad
 }
+
+
+for_window [window_role="pop-up"] floating enable
+for_window [app_id="dmenu.*"] floating enable, resize set width 60ppt height 80ppt
+for_window [title="mv_pictures"] floating enable, resize set width 60ppt height 80ppt
+
 
 include /etc/sway/config.d/*
 include ~/.config/sway/config.d/*

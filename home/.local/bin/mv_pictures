@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+cd "$(xdg-user-dir PICTURES)"
+res="$(fd -t d . .|fzf)"
+if [ -n "$res" ]; then
+  mv "$1" "$res"
+fi

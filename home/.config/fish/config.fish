@@ -6,6 +6,7 @@ alias ls lsd
 alias wttr 'curl "fr.wttr.in/montreal?n"'
 alias get_tree 'swaymsg -t get_tree > /tmp/tree.json && browser /tmp/tree.json'
 alias cp-last 'history|head -1|wl-copy'
+alias imgs 'swaymsg -t get_tree | jq \'recurse(.nodes[])|.name\' | sed -n \'s/imv - .* \(\/.*\) \[.*\] /\1/p\''
 alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
 function pnpm
   command pnpm $argv|lolcat

@@ -1,4 +1,7 @@
 {
     "saved": "",
-    "history": ""
+    "history": {
+        "none": "deleted",
+        "none": "tag:deleted"
+    }
 }

@@ -19,8 +19,8 @@ hook global WinSetOption filetype=sh %{
   set-option buffer formatcmd 'shfmt -i 2 -ci -sr'
   hook buffer -group format BufWritePre .* format
 
-  # set-option buffer lintcmd 'shellcheck -x -fgcc'
-  # lint
+  set-option buffer lintcmd 'shellcheck -x -fgcc'
+  lint
 }
 
 hook global FocusOut .* w
@@ -28,3 +28,5 @@ hook global FocusOut .* w
 hook global InsertChar \t %{ exec -draft -itersel h@ }
 set global tabstop 2
 set global indentwidth 2
+
+map global user i ':format-buffer<ret>'

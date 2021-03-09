@@ -1,0 +1,6 @@
+[submodule "home/src/syncthing-resolve-conflicts"]
+	path = home/src/syncthing-resolve-conflicts
+	url = https://github.com/dschrempf/syncthing-resolve-conflicts
+[submodule "home/src/yay"]
+	path = home/src/yay
+	url = https://aur.archlinux.org/yay.git

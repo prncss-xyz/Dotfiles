@@ -1,11 +1,11 @@
-SSH_AUTH_SOCK DEFAULT="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"
+SSH_AUTH_SOCK DEFAULT=${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh
 MOZ_ENABLE_WAYLAND DEFAULT=1
-QT_QPA_PLATFORM=wayland
+QT_QPA_PLATFORM=wayland-egl
 CLUTTER_BACKEND=wayland
 SDL_VIDEODRIVER=wayland
 BROWSER DEFAULT=${HOME}/.local/bin/browser
 EDITOR DEFAULT=kak
-VISUAL DEFAULT=~/.local/bin/visual
+VISUAL DEFAULT=kak
 DIFFPROG DEFAULT="nvim -d"
 LC_COLLATE DEFAULT=C
 YTDL DEFAULT=${HOME}/Music/ytdl
@@ -13,3 +13,12 @@ PASSWORD_STORE_DIR DEFAULT=${HOME}/Personal/pass
 GRIM_DEFAULT_DIR DEFAULT=${HOME}/Media/Pictures/Captures
 vscode_path DEFAULT=${HOME}/.config/VSCodium
 STARDICT_DATA_DIR=${HOME}/Media/stardict
+PATH OVERRIDE=${HOME}/.yarn/bin:${HOME}/.pnpm-packages:${PATH}
+NNN_TRASH DEFAULT=1
+NNN_FIFO DEFAULT=/tmp/nnn.fifo
+NNN_BMS DEFAULT=w:${HOME}/Downloads;p:${HOME}/Media/Pictures;d:${HOME}/Documents;u:/run/medi/${USER};
+NNN_PLUG DEFAULT=d:diffs;o:fzopen;O:fzopend;a:preview-tui;k:kdeconnect;c:fzcd;z:autojump;t:-_|kitty
+PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?
+PASSWORD_STORE_GENERATED_LENGTH=40
+MBSYNC_CONFIG DEFAULT=${HOME}/mbsync/config
+NOTMUCH_CONFIG DEFUALT=${HOME}/notmuch/config

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+pw="$(secret-tool lookup keepass prncss)"
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+echo "$pw"|keepassxc --keyfile=$HOME/.config/keepassxc/passwords --pw-stdin $HOME/Personal/passwords.kdbx

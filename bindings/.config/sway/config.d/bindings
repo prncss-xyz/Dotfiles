@@ -23,7 +23,7 @@ bindsym $mod+m exec makoctl dismiss
 bindsym $mod+Return [title="scratchpad"] scratchpad show
 bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
 bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p pass; wl-clipboard-manager unlock"
-bindsym $mod+d exec sirula
+bindsym $mod+d exec $menu
 # set $menu exec $term --class=launcher -e sway-launcher-desktop
 # set $menu exec /usr/bin/sway-launcher-desktop
 
@@ -52,7 +52,7 @@ bindsym $mod+Ctrl+p exec "poweroff"
     bindsym $mod+$right focus right
     # Or use $mod+[up|down|left|right]
     bindsym $mod+Left focus left
-    bindsym $mod+Down focus down
+    bindsym $mod+Down fous down
     bindsym $mod+Up focus up
     bindsym $mod+Right focus right
 

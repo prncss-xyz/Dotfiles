@@ -6,7 +6,7 @@ tmpfile=$(mktemp /tmp/ffhist.XXXXX)
 cp -f ~/.mozilla/firefox/*/places.sqlite $tmpfile
 sqlite3 -separator $sep $tmpfile \
 "select substr(title, 1, $cols), url from moz_places
-where url not like '%google%search%'
+where url not like '%google%search%'Q
 order by
 visit_count desc,
 last_visit_date desc;" |

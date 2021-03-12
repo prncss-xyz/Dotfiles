@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-history > /tmp/history && kitty -e /usr/bin/kak -c default /tmp/history

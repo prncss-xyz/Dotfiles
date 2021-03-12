@@ -11,14 +11,13 @@ then
   echo user should be defined in seeds/vars.sh
   exit 1
 fi
-git clone /.dotfiles-root /mnt
 
 clone_file () {
   cp -a --parents "$1" /mnt/"$1"
 }
 clone_file /root/board.bin
 
-pacstrap /mnt base linux linux-firmware networkmanager sudo vi intel-ucode
+pacstrap /mnt base linux linux-firmware intel-ucode base base-devel git rsync networkmanager avahi openssh stow greetd
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 timedatectl set-ntp true
@@ -26,13 +25,6 @@ hwclock --systohc
 locale-gen
 useradd $USER1
 passwd $USER1
-echo $USER1 ALL=(ALL) ALL >> /etc/sudoers
-echo $HOSTNAME > /etc/hostname
-echo << EOF > /etc/hosts
-127.0.0.1   localhost
-::1         localhost
-127.0.1.1   $HOSTNAME.localdomain	$HOSTNAME
-EOF
 mkinitcpio -P
 bootctl install
 ROOT_IDING=$(grep '\s/\s' /etc/fstab|cut -f 1)
@@ -62,3 +54,4 @@ fi
 
 #reboot
 
+# sudo -u $USER sh /home/"$USER"/scripts/post-install.sh

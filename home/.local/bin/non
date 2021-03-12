@@ -1,9 +1,0 @@
-#!/usr/bin/env sh
-
-if [ -z "$1" ]; then
-  echo "identifier expected"
-  exit 1
-fi
-cd ~/Personal/notes
-echo "# " > "$1.md"
-exec $EDITOR "$1.md"

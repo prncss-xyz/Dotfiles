@@ -1,5 +1,0 @@
-[binds]
-<Shift+H> = n
-<Shift+L> = p
-<Ctrl+x> = exec trash-put $imv_current_file
-<Ctrl+m> = exec kitty -e mv_pictures $imv_current_file

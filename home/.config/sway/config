@@ -15,42 +15,26 @@ set $menu exec $term --class=launcher -e sway-launcher-desktop
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
 # set $menu dmenu_path | dmenu | xargs swaymsg exec --
-### Output configuration
-#
-# Example configuration:
-#
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
-#
-# You can get the names of your outputs by running: swaymsg -t get_outputs
-
-output DP-1 scale 2
 
 mouse_warping none
 focus_follows_mouse no
 
 ### Autoexec
+exec wlsunset -l 45.5 -L -73.6
 exec kitty --title=scratchpad
 exec ~/.local/bin/browser
-#exec gnome-keyring-daemon --start
 exec ~/.local/bin/setbg-sway
-#exec autotiling
 exec mako
 exec kdeconnect-app
 exec kdeconnect-sms
 exec kak -d -s default
-# exec ulauncher
-# exec albert
-# exec ~/bin/keepassxc-unlock
-# chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --remote-debugging-port=9222
-# bindsym $mod+n [class="Joplin"] scratchpad show
-# assign [class="Joplin"] scratchpad
 
 ### Idle
 
 seat * hide_cursor 10000
 exec swayidle -w \
- timeout 300 'swaylock -f -c 000000' \
- timeout 400 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+ timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+ timeout 400 'swaylock -f -c 000000' \
  before-sleep 'swaylock -f -c 000000'
 
 
@@ -78,12 +62,10 @@ for_window [app_id="org\.kde\.kdeconnect\.sms"] {
   move scratchpad
 }
 
-
 for_window [window_role="pop-up"] floating enable
 for_window [app_id="dmenu.*"] floating enable, resize set width 60ppt height 80ppt
 for_window [title="mv_pictures"] floating enable, resize set width 60ppt height 80ppt
 for_window [app_id="^launcher$"] floating enable, sticky enable, resize set 30 ppt 60 ppt, border pixel 10
-
 
 include /etc/sway/config.d/*
 include ~/.config/sway/config.d/*

@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-# this is needed for qutebrower, as commands do not spawn shells by themselves
-
-echo "$1" > ~/log.txt
-echo "$2" > ~/log.txt
-~/.yarn/bin/inliner "$1" > "$2".html

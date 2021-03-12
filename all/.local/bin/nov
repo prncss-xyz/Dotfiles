@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+cd ~/Personal/notes
+result=$(fd -e md|fzf --history=$HOME/histories/no)
+if [ -n "$result" ]; then
+  mdopen "$result"
+fi

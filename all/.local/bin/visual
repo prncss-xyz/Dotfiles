@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+kitty -e /usr/bin/kak -c default $@

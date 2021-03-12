@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Visual - history
+Comment=Open command-line history in terminal
+Exec=.local/bin/visual_history
+Terminal=false
+Icon=terminal
+MimeType=inode/directory
+Categories=System;FileTools;FileManager;ConsoleOnly
+Keywords=File;Manager;Management;Explorer;Launcher

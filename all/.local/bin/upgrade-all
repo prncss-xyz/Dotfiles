@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+yay --needed -Syu
+nvim --headless +PlugInstall +qall
+yarn global upgrade
+fisher update

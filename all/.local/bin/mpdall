@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+mpc add /
+mpc random on
+mpc single off
+mpc play
+

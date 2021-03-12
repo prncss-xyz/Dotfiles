@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Browser
+GenericName=Browser selector
+Exec=~/.local/bin/browser %U
+Icon=web
+Terminal=false
+Type=Application

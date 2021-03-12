@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+FILE=$(fd -e jpg -e png . ~/Media/Pictures/Wallpapers/|shuf -n1) 
+echo "output * bg \"$FILE\" fill" > ~/.config/sway/config.d/bg

@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+BROWSER=browser-manh.sh
+man -k .|sed -r 's/([^ ]+).*/\1/'|fzf|xargs man -H

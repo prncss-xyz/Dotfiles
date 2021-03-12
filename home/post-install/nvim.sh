@@ -1,2 +1,0 @@
-
-nvim --headless +PlugInstall +qall

@@ -51,7 +51,9 @@ initrd  /initramfs-linux-fallback.img
 options root=$ROOT_IDING rw
 EOF
 systemctl enable NetworkManager
-
+systemctl enable avahi
+systemctl enable sshd
+systemctl enable greetd
 # test if surface go
 if [[ 1==1 ]] 
 then
@@ -59,3 +61,4 @@ then
 fi
 
 #reboot
+

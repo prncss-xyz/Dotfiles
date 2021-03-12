@@ -1,6 +1,0 @@
-# network manager
-systemctl enable avahi
-systemctl enable sshd
-systemctl enable greetd
-# user services
-

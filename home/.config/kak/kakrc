@@ -1,7 +1,20 @@
+evaluate-commands %sh{
+    plugins="$HOME/.config/kak/plugins"
+    mkdir -p $plugins
+    [ ! -e "$plugins/plug.kak" ] && \
+        git clone -q https://github.com/andreyorst/plug.kak "$plugins/plug.kak"
+    printf "%s\n" "source '$plugins/plug.kak/rc/plug.kak'"
+}
+plug "andreyorst/plug.kak" noload
+plug "lePerdu/kakboard" %{
+  hook global WinCreate .* %{ kakboard-enable }
+}
+plug "alexherbo2/auto-pairs"
+
 eval %sh{kak-lsp --kakoune -s $kak_session}
-# lsp-enable
+lsp-enable
 lsp-auto-hover-insert-mode-enable
-#  set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log":w
+#set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log":w
 
 
 hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
@@ -28,5 +41,10 @@ hook global FocusOut .* w
 hook global InsertChar \t %{ exec -draft -itersel h@ }
 set global tabstop 2
 set global indentwidth 2
+
+addhl global/ regex \h+$ 0:Error
+addhl global/ wrap -word -indent
+
+set-option global scrolloff 1,3
 
 map global user i ':format-buffer<ret>'

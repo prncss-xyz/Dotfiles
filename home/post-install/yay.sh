@@ -1,0 +1,1 @@
+yay --needed --noconfirm -S

@@ -14,3 +14,5 @@
     cmd = kitty kitty +kitten diff $LOCAL $REMOTE
 [init]
 	defaultBranch = main
+[alias]
+	nccommit = commit -a --allow-empty-message -m \"\"

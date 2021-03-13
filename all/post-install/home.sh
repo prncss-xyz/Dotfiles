@@ -9,6 +9,7 @@ cat yay | xargs yay --needed --noconfirm -S
 fisher update
 
 git config --global init.defaultBranch main
+git config --global alias.nccommit 'commit -a --allow-empty-message -m ""'
 
 nvim --headless +PlugInstall +qall
 

@@ -4,5 +4,6 @@
 #
 
 auth include login
-auth optional pam_gnupg.so
+# auth optional pam_gnupg.so
+# session optional pam_gnupg.so no-autostart
 

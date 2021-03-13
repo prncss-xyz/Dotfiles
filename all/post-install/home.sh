@@ -42,3 +42,14 @@ systemctl --user enable syncthing.service
 systemctl --user enable udiskie.service
 pacman -S --needed base-devel git stow
 
+## pnpm
+# none seem to work :-(, will retry on fresh install
+
+pnpm config set global-dir ~/.pnpm-packages
+pnpm config set set pnpm-prefix ~/.pnpm-packages
+pnpm config set set npm-prefix ~/.pnpm-packages
+
+#set NPM_PACKAGES "$HOME/.npm-packages"
+#set PATH $PATH $NPM_PACKAGES/bin
+#set MANPATH $NPM_PACKAGES/share/man $MANPATH
+

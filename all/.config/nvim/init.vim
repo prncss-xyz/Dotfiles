@@ -6,13 +6,13 @@ endif
 
 call plug#begin('~/.local/share/nvim/plugged')
   Plug 'neovim/nvim-lsp'
-  Plug 'nvim-lua/completion-nvim'
+"  Plug 'nvim-lua/completion-nvim'
   Plug 'leafgarland/typescript-vim'
   Plug 'peitalin/vim-jsx-typescript'
   Plug 'prettier/vim-prettier'
 "  Plug 'ctrlpvim/ctrlp.vim'
-  Plug 'vim-airline/vim-airline'
-  Plug 'vim-airline/vim-airline-themes'
+"  Plug 'vim-airline/vim-airline'
+"  Plug 'vim-airline/vim-airline-themes'
   Plug 'jeffkreeftmeijer/vim-dim'
   Plug 'noahfrederick/vim-noctu'
   Plug 'matze/vim-move'
@@ -30,7 +30,7 @@ require'nvim_lsp'.yamlls.setup{}
 EOF
 
 "if has_key(plugs, 'completion-nvim')
-  autocmd BufEnter * lua require'completion'.on_attach()
+"  autocmd BufEnter * lua require'completion'.on_attach()
 "endif
 
 syntax on

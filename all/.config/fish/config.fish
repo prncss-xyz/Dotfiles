@@ -1,4 +1,4 @@
-starship init fish | source
+# starship init fish | source
 zoxide init fish | source
 kitty + complete setup fish | source
 alias ls lsd

@@ -38,7 +38,7 @@ floating_modifier $mod normal
 bindsym $mod+Ctrl+q kill
 bindsym $mod+Ctrl+c reload
 bindsym $mod+Ctrl+e exit
-bindsym $mod+Ctrl+l exec "swaylock -f -c 000000"
+bindsym $mod+Ctrl+l exec "lock"
 bindsym $mod+Ctrl+r exec "reboot"
 bindsym $mod+Ctrl+p exec "poweroff"
 # bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'

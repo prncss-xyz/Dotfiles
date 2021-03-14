@@ -54,3 +54,4 @@ pnpm config set set npm-prefix ~/.pnpm-packages
 #set PATH $PATH $NPM_PACKAGES/bin
 #set MANPATH $NPM_PACKAGES/share/man $MANPATH
 
+broot --install

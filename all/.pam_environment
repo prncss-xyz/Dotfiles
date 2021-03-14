@@ -22,3 +22,4 @@ PASSWORD_STORE_GENERATED_LENGTH=40
 MBSYNC_CONFIG OVERRIDE=${HOME}/.config/mbsync/config
 NOTMUCH_CONFIG OVERRIDE=${HOME}/.config/notmuch/config
 NV_DIR OVERRIDE=${HOME}/Personal/notes
+GUI OVERRIDE=${HOME}/.local/bin/newterm

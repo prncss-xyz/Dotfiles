@@ -8,6 +8,7 @@ else
   notes=~/Notes
 fi
 mkdir -p "$notes"
+cd "$notes"
 result=$(fd -e md -x echo '{.}'|fzf --history=$HOME/.histories/nv --print-query|tail -1)
 if [ -n "$result" ]; then
   if [ ! -f "$result.md" ]; then
@@ -16,6 +17,10 @@ if [ -n "$result" ]; then
     mkdir -p "$dir"
     echo "# $file" > "$result.md"
   fi
-  exec $EDITOR "$result.md"
+  if [ -n "$1" ] && [ "$1" = "gui" ]; then
+    exec "$GUI" "$EDITOR" "$notes/$result.md"
+  else
+    exec "$EDITOR" "$result.md"
+  fi
 fi
 

@@ -1,6 +1,11 @@
 starship init fish | source
 zoxide init fish | source
 kitty + complete setup fish | source
+
+abbr -g ytdl 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s"'
+abbr -g gncc 'commit -a --allow-empty-message -m ""'
+abbr -g kdiff kitty +kitten diff
+
 alias ls lsd
 alias wttr 'curl "fr.wttr.in/montreal?n"'
 alias get_tree 'swaymsg -t get_tree > /tmp/tree.json && browser /tmp/tree.json'

@@ -1,5 +1,7 @@
 # youtube-dl configuration
 
+--metadata-from-title "%(artist)s - %(title)s"
+
 # srsly no other options to change color output?!
 --no-color
 

@@ -1,5 +1,0 @@
-#!/usr/bin/sh
-
-playerctl -a pause
-# gpg-connect-agent --no-autostart reloadagent /bye
-swaylock

@@ -21,8 +21,8 @@ exec kak -d -s default
 
 seat * hide_cursor 10000
 exec swayidle -w \
- timeout 400 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
- timeout 300 'swaylock' \
+ timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+ timeout 400 'swaylock' \
  before-sleep 'swaylock'
 
 

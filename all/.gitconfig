@@ -3,14 +3,18 @@
 	name = Juliette Lamarche
 	signingkey = DB6F754B59A68BC3AE6CF695004A3B1CB2774189
 [diff]
-    tool = kitty
-    guitool = kitty.gui
-[difftool]
-    prompt = false
-    trustExitCode = true
+	tool = nvr
+[difftool "nvr"]
+  cmd = nvr -s -d $LOCAL $REMOTE
 [difftool "kitty"]
-    cmd = kitty +kitten diff $LOCAL $REMOTE
+  cmd = kitty +kitten diff $LOCAL $REMOTE
 [difftool "kitty.gui"]
-    cmd = kitty kitty +kitten diff $LOCAL $REMOTE
+  cmd = kitty kitty +kitten diff $LOCAL $REMOTE
 [init]
 	defaultBranch = main
+[core]
+	editor = nvr --remote-wait-silent
+[merge]
+  tool = nvr
+[mergetool "nvr"]
+	cmd = nvr -s -d $LOCAL $BASE $REMOTE $MERGED -c 'wincmd J | wincmd ='

@@ -12,20 +12,16 @@ set $right l
 #
 # Start a terminal
 bindsym $mod+t exec $term
-
-# Start your launcher
-for_window [app_id="^launcher$"] floating enable, sticky enable, resize set 30 ppt 60 ppt, border pixel 10
-
 bindsym $mod+y exec .local/bin/browser --new-window
 # TODO: toogle focus
 bindsym $mod+m exec makoctl dismiss
-bindsym $mod+Return [title="scratchpad"] scratchpad show
+bindsym $mod+Return [title="^scratchpad$"] scratchpad show
 bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
 bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p pass; wl-clipboard-manager unlock"
+bindsym $mod+comma exec 'kitty -e ~/.local/bin/edit_dotfiles'
+bindsym $mod+period exec 'kitty -e ~/.local/bin/edit_notes'
+bindsym $mod+equal exec 'kitty -e ~/.local/bin/edit_mathjs'
 bindsym $mod+n fullscreen disable, exec kitty --class=launcher -e ".local/bin/nv" gui | swaymsg exec -- 
-bindsym $mod+d exec $menu
-# set $menu exec $term --class=launcher -e sway-launcher-desktop
-# set $menu exec /usr/bin/sway-launcher-desktop
 
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
@@ -38,7 +34,7 @@ floating_modifier $mod normal
 bindsym $mod+Ctrl+q kill
 bindsym $mod+Ctrl+c reload
 bindsym $mod+Ctrl+e exit
-bindsym $mod+Ctrl+l exec "lock"
+bindsym $mod+Ctrl+l exec "swaylock"
 bindsym $mod+Ctrl+r exec "reboot"
 bindsym $mod+Ctrl+p exec "poweroff"
 # bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'

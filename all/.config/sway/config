@@ -10,12 +10,12 @@ focus_follows_mouse no
 
 ### Autoexec
 exec kitty --title=scratchpad
-exec ~/.local/bin/browser
+#exec ~/.local/bin/browser
 exec ~/.local/bin/setbg-sway
 exec mako
 exec kdeconnect-app
 exec kdeconnect-sms
-exec kak -d -s default
+#exec kak -d -s default
 
 ### Idle
 
@@ -39,7 +39,7 @@ input "type:keyboard" {
 
 ### Placement
 
-for_window [title="scratchpad"] {
+for_window [title="^scratchpad$"] {
   move scratchpad
 }
 for_window [app_id="org\.kde\.kdeconnect\.app"] {

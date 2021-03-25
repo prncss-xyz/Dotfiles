@@ -8,10 +8,29 @@ cat yay | xargs yay --needed --noconfirm -S
 
 fisher update
 
-git config --global init.defaultBranch main
-git config --global alias.nccommit 'commit -a --allow-empty-message -m ""'
+cat > $HOME/.config/user-dirs.dirs << EOF
+XDG_DOWNLOAD_DIR="$HOME/Downloads"
+XDG_PICTURES_DIR="$HOME/Media/Pictures"
+XDG_TEMPLATES_DIR="$HOME/Templates"
+XDG_DESKTOP_DIR="$HOME/Desktop"
+XDG_PUBLICSHARE_DIR="$HOME/Public"
+XDG_DOCUMENTS_DIR="$HOME/Media/Documents"
+XDG_MUSIC_DIR="$HOME/Music"
+XDG_VIDEOS_DIR="$HOME/Videos"
+EOF
 
-nvim --headless +PlugInstall +qall
+git config --global init.defaultBranch main
+git config --global core.editor "nvr --remote-wait-silet"
+git config --global diff.tool nvr
+git config --global difftool.nvr.cmd "nvr -s -d \$LOCAL \$REMOTE"
+git config --global merge.tool nvr
+git config --global mergetool.nvr.cmd "nvr -s -d \$LOCAL \$BASE \$REMOTE \$MERGED -c 'wincmd J| wincmd ='"
+
+"git clone ~/.local/share/nvim/site/pack/paqs/opt/paq-nvim/
+"nvim --headless +PaqInstall +qall
+
+mkdir -p ~/.log/nvim
+touch ~/.log/nvim/verbose.log
 
 /usr/share/qutebrowser/scripts/dictcli.py install en-US
 /usr/share/qutebrowser/scripts/dictcli.py install fr-CA
@@ -29,14 +48,14 @@ for extension in \
   sumneko.lua \
   streetsidesoftware.code-spell-checker \
   whatwedo.twig
+  # gregoire.dance
+  # ms-vscode.vscode-typescript-tslint-plugin
+  # whtouche.vscode-js-console-utils
+  # wmaurer.change-case
 do
   echo codium --install-extension $extension
 done
 
-# gregoire.dance
-# ms-vscode.vscode-typescript-tslint-plugin
-# whtouche.vscode-js-console-utils
-# wmaurer.change-case
 
 systemctl --user enable ssh-agent.service
 systemctl --user enable syncthing.service

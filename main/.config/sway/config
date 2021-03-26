@@ -9,6 +9,7 @@ mouse_warping none
 focus_follows_mouse no
 
 ### Autoexec
+exec pactl set-sink-volume @DEFAULT_SINK@ 50%
 exec kitty --title=scratchpad
 #exec ~/.local/bin/browser
 exec ~/.local/bin/setbg-sway

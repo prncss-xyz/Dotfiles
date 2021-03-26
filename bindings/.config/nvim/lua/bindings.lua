@@ -1,4 +1,10 @@
-local map = require "utils".map
+local function map(mode, lhs, rhs, opts)
+  local options = {noremap = true}
+  if opts then
+    options = vim.tbl_extend("force", options, opts)
+  end
+  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+end
 
 local function setup()
   vim.g.mapleader = " "
@@ -11,8 +17,8 @@ local function setup()
   map("", "<C-n>", "<cmd>tabe<CR>")
   map("i", "<C-n>", "<cmd>tabe<CR>")
   map("t", "<C-w>", "<C-\\><C-n>")
-  map("", "<C-x>", "<cmd>:q<CR>")
-  map("", "<C-w>d", "<cmd>:bd<CR>")
+  map("", "<C-x>", "<cmd>up|bd!<CR>")
+  map("i", "<C-x>", "<cmd>up|bd!<CR>")
   map("", "<C-w>L", "<cmd>vsplit<CR>")
   map("", "<C-w>J", "<cmd>hsplit<CR>")
   -- bufferline
@@ -37,7 +43,7 @@ local function setup()
   map("n", "<leader>fa", "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>")
   map("n", "<leader>fA", "<cmd>lua require('telescope.builtin').lsp_range_code_actions()<CR>")
   map("n", "<leader>ft", "<cmd>lua require('telescope.builtin').treesitter()<CR>")
-  map("n", "<leader>fp", "<cmd>lua require('telescope').extensions.project.project{}<CR>")
+  --  map("n", "<leader>fp", "<cmd>lua require('telescope').extensions.project.project{}<CR>")
 
   -- LSP
   map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
@@ -137,19 +143,3 @@ xmap        S   <Plug>(vsnip-cut-text)
 -- elseif client.resolved_capabilities.document_range_formatting then
 --  buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
 --end
-
---[[
-
-projects
-
-d: delete currently selected project
-c: create a project (defaults to your git root if used inside a git project, otherwise will use your current working directory)
-s: search inside files within your project
-w: change to the selected project's directory without opening it
-f: find a file within your project (this works the same as <CR>)
-
-# cheat
-- cheat.sh-cim
-
-Once installed then you can just type the query and press <Leader>KB, <Leader>KK, <Leader>KP, <Leader>KR, <Leader>KC etc to search for code snippets based on the current file type. It also integrates with code linters to search for explanations for any errors or warnings.
---]]

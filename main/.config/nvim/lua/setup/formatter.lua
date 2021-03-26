@@ -1,5 +1,3 @@
-map = require "utils".map
-
 local indent = 2
 
 vim.api.nvim_exec(

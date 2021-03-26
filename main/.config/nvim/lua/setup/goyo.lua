@@ -1,6 +1,5 @@
 local g = vim.g
 local fn = vim.fn
-local map = require "utils".map
 local hidden_line
 local old_signcolumn
 local old_scrolloff

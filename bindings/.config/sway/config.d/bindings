@@ -13,6 +13,7 @@ set $right l
 # Start a terminal
 bindsym $mod+t exec $term
 bindsym $mod+y exec .local/bin/browser --new-window
+bindsym $mod+u exec kitty -e edit_project
 # TODO: toogle focus
 bindsym $mod+m exec makoctl dismiss
 bindsym $mod+Return [title="^scratchpad$"] scratchpad show
@@ -162,20 +163,13 @@ bindsym $mod+r mode "resize"
 bindsym $mod+q exec GRIM_DEFAULT_DIR="$(xdg-user-dir PICTURES)/Captures" grim
 
 # Media control
-bindsym XF86AudioPlay exec playerctl --player playerctld play-pause
-bindsym XF86AudioNext exec playerctl --player playerctld next
-bindsym XF86AudioPrev exec playerctl --player playerctld previous
-bindsym XF86AudioMute        exec pamixer -t
-bindsym XF86AudioRaiseVolume exec pamixer -i 5
-bindsym XF86AudioLowerVolume exec pamixer -d 5
-
 mode "audio" {
   bindsym space exec playerctl --player playerctld play-pause
   bindsym $left exec playerctl --player playerctld next
   bindsym $right exec playerctl --player playerctld previous
-  bindsym m   exec pamixer -t
-  bindsym $up exec pamixer -i 5
-  bindsym $down exec pamixer -d 5
+  bindsym m exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+  bindsym $up exec pactl set-sink-volume @DEFAULT_SINK@ +4%
+  bindsym $down exec pactl set-sink-volume @DEFAULT_SINK@ -4%
   bindsym Escape mode "default"
 }
 bindsym $mod+o mode "audio"

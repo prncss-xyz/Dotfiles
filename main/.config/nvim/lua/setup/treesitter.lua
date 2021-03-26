@@ -26,8 +26,3 @@ require "nvim-treesitter.configs".setup {
     }
   }
 }
-
-local opt = require("utils").opt
-
-vim.o["foldmethod"] = "expr"
-vim.o["foldexpr"] = '[[<Cmd>lua require("nvim_treesitter").foldexpr()<CR>]]'

@@ -6,6 +6,7 @@ abbr -g ytdl 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
 abbr -g kdiff kitty +kitten diff
 
+alias tig 'GIT_EDITOR="nvim -u ~/.config/nvim/prompter.vim --noplugin" command tig'
 alias o opener
 alias bat 'bat --style=changes,header,rule,snip'
 alias ls lsd

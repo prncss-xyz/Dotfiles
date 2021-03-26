@@ -1,11 +1,11 @@
-autocmd TermOpen * startinsert
+autocmd TermOpen * startinsert|setlocal nonumber
 
 augroup focus
   au!
   au TabLeave * silent! :wa
   au FocusLost * silent! :wa
   au BufLeave * silent! :wa
-augroup END
+augroup end
 
 autocmd FileType gitcommit,gitrebase,gitconfig set bufhidden=delete
 

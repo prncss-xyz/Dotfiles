@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+cd /tmp
+id=$(date "+%Y-%m-%d %H:%M:%S")
+sleep 0.1
+nvim "CODI $id" "+Codi mathjs" +startinsert

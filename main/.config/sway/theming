@@ -1,0 +1,45 @@
+### Styling
+
+smart_gaps on
+default_border pixel 3
+smart_borders on
+gaps inner 8
+gaps outer 8
+
+# exec oguri
+# mpvpaper -o "no-audio --loop-file=inf" DP-1 FalseEminentFlickertailsquirrel-mobile.mp4
+
+
+include ~/.config/sway/colors.conf
+# 
+# class                 border      background  text        indicator child_border
+client.focused         	"$background"	$background	$foreground	$color2		$color4	
+client.unfocused       	"$background"	$background	$foreground	$color4		$background
+client.focused_inactive	"$background"	$background	$foreground	$color4		"$background"
+client.urgent       		"$background"	$background	$foreground	$color4		$background
+client.placeholder	    "$background"	$background	$foreground	$color4	  "$background"
+
+client.background       $background
+
+#
+# Status Bar:
+#
+# Read `man 5 sway-bar` for more information about this section.
+bar {
+  position bottom
+
+  # When the status_command prints a new line to stdout, swaybar updates.
+  # The default just shows the current date and time.
+  status_command while date +'%Y-%m-%d %H:%M'; do sleep 1; done
+  font pango:DejaVu Sans 10
+
+  colors {
+    statusline $foreground
+    background "$background"E6
+    # 0.9 -> E6
+    inactive_workspace $background $background $color2
+  }
+  mode hide
+  hidden_state hide
+  modifier $mod
+}

@@ -35,3 +35,12 @@ let g:vista#renderer#icons = {
 " not wrorking...
 " let g:indent_blankline_use_treesitter = v:true
 let g:indent_blankline_show_trailing_blankline_indent = v:false
+
+command! Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
+command! Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
+
+" function! NewFilePrecmd()
+"   let cwd = getcwd()
+"   let s = substitute(expand("%"), l:cwd . "/" , "", "")
+"   return ":tabe " . s . "/"
+" endfunction

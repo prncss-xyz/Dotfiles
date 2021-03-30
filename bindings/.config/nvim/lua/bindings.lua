@@ -10,26 +10,45 @@ local function setup()
   vim.g.mapleader = " "
   vim.g.user_emmet_leader_key = "<C-y>"
 
-  map("", "<C-l>", "<cmd>noh<CR>") -- Clear highlights
-  map("i", "<C-l>", "<cmd>noh<CR>") -- Clear highlights
+  map("", "<C-l>", "<cmd>:nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l><CR>") -- Clear highlights
+  map("i", "<C-l>", "<cmd>:nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l><CR>") -- Clear highlights
   map("", "<C-s>", "<Esc>:w<CR>")
   map("i", "<C-s>", "<Esc>:w<CR>")
-  map("", "<C-n>", "<cmd>tabe<CR>")
+  map("", "<C-n>", ":tabe")
   map("i", "<C-n>", "<cmd>tabe<CR>")
   map("t", "<C-w>", "<C-\\><C-n>")
-  map("", "<C-x>", "<cmd>up|bd!<CR>")
-  map("i", "<C-x>", "<cmd>up|bd!<CR>")
+  map("", "<C-x>", "<cmd>Sayonara!<CR>")
+  map("", "<C-S-x>", "<cmd>Sayonara<CR>")
+  map("i", "<C-x>", "<cmd>Sayonara!<CR>")
+  map("i", "<C-S-x>", "<cmd>Sayonara<CR>")
   map("", "<C-w>L", "<cmd>vsplit<CR>")
   map("", "<C-w>J", "<cmd>hsplit<CR>")
-  -- bufferline
+  map("c", "<C-n>", "<down>")
+  map("c", "<C-p>", "<up>")
 
+  -- from https://github.com/mhinz/vim-galore
+  -- The mapping takes a register (or * by default) and opens it in the cmdline-window. Hit <cr> when you're done editing for setting the register.
+  -- Use it like this <leader>m or "q<leader>m.
+  -- Notice the use of <c-r><c-r> to make sure that the <c-r> is inserted literally. See :h c_^R^R.
+  map("n", "<leader>m", ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>")
+
+  -- bufferline
   map("", "<S-j>", "<cmd>BufferLineCycleNext<CR>")
   map("", "<S-k>", "<cmd>BufferLineCyclePrev<CR>")
+  map("", "<C-S-j>", "<cmd>BufferLineMoveNext<CR>")
+  map("", "<C-S-k>", "<cmd>BufferLineMovePrev<CR>")
   map("", "<leader>be", "<cmd>BufferLineSortByExtension<CR>")
   map("", "<leader>bd", "<cmd>BufferLineSortByDirectory<CR>")
   map("", "<leader>gb", "<cmd>BufferLinePick<CR>")
-  -- <cmd>BufferLineMoveNext<CR>
-  -- <cmd>BufferLineMovePrev<CR>
+  map("", "<A-1>", "<cmd>lua require'bufferline'.go_to_buffer(1)<cr>")
+  map("", "<A-2>", "<cmd>lua require'bufferline'.go_to_buffer(2)<cr>")
+  map("", "<A-3>", "<cmd>lua require'bufferline'.go_to_buffer(3)<cr>")
+  map("", "<A-4>", "<cmd>lua require'bufferline'.go_to_buffer(4)<cr>")
+  map("", "<A-5>", "<cmd>lua require'bufferline'.go_to_buffer(5)<cr>")
+  map("", "<A-6>", "<cmd>lua require'bufferline'.go_to_buffer(6)<cr>")
+  map("", "<A-7>", "<cmd>lua require'bufferline'.go_to_buffer(7)<cr>")
+  map("", "<A-8>", "<cmd>lua require'bufferline'.go_to_buffer(8)<cr>")
+  map("", "<A-9>", "<cmd>lua require'bufferline'.go_to_buffer(9)<cr>")
   -- <cmd>lua require'bufferline'.sort_buffers_by(function (buf_a, buf_b) return buf_a.id < buf_b.id end)<CR>
   -- telescope
   map("n", "<C-p>", "<cmd>Goyo!|lua require('telescope.builtin').find_files({hidden = true})<CR>")
@@ -43,7 +62,7 @@ local function setup()
   map("n", "<leader>fa", "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>")
   map("n", "<leader>fA", "<cmd>lua require('telescope.builtin').lsp_range_code_actions()<CR>")
   map("n", "<leader>ft", "<cmd>lua require('telescope.builtin').treesitter()<CR>")
-  --  map("n", "<leader>fp", "<cmd>lua require('telescope').extensions.project.project{}<CR>")
+  map("n", "<leader>fp", "<cmd>lua require('telescope').extensions.project.project{}<CR>")
 
   -- LSP
   map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
@@ -61,6 +80,7 @@ local function setup()
   map("n", "mk", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
   map("n", "mj", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
   map("n", "<leader>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>")
+  map("n", "<leader><C-k>", "<cmd>:lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>")
 
   -- goyo
   map("n", "<leader>zg", "<cmd>Goyo<CR>")

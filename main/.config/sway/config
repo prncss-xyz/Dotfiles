@@ -9,9 +9,9 @@ mouse_warping none
 focus_follows_mouse no
 
 ### Autoexec
-exec pactl set-sink-volume @DEFAULT_SINK@ 50%
+exec pactl set-sink-volume @DEFAULT_SINK@ 40%
 exec kitty --title=scratchpad
-#exec ~/.local/bin/browser
+exec ~/.local/bin/browser
 exec ~/.local/bin/setbg-sway
 exec mako
 exec kdeconnect-app
@@ -49,12 +49,60 @@ for_window [app_id="org\.kde\.kdeconnect\.app"] {
 for_window [app_id="org\.kde\.kdeconnect\.sms"] {
   move scratchpad
 }
+workspace_auto_back_and_forth yes
+focus_on_window_activation smart
 
 for_window [window_role="pop-up"] floating enable
-for_window [app_id="dmenu.*"] floating enable, resize set width 60ppt height 80ppt
-for_window [title="mv_pictures"] floating enable, resize set width 60ppt height 80ppt
+for_window [app_id="dmenu.*"] floating enable, sticky enable, resize set width 60ppt height 80ppt
+for_window [title="mv_pictures"] floating enable, sticky enable, resize set width 60ppt height 80ppt
 for_window [app_id="^launcher$"] floating enable, sticky enable, resize set 30 ppt 60 ppt, border pixel 10
 
-include /etc/sway/config.d/*
+### Styling
+
+smart_gaps on
+default_border pixel 3
+smart_borders on
+gaps inner 8
+gaps outer 8
+
+# exec oguri
+# mpvpaper -o "no-audio --loop-file=inf" DP-1 FalseEminentFlickertailsquirrel-mobile.mp4
+
+
+include ~/.config/sway/colors.conf
+# 
+# class                 border      background  text        indicator child_border
+client.focused         	"$background"	$background	$foreground	$color2		$color4	
+client.unfocused       	"$background"	$background	$foreground	$color4		$background
+client.focused_inactive	"$background"	$background	$foreground	$color4		"$background"
+client.urgent       		"$background"	$background	$foreground	$color4		$background
+client.placeholder	    "$background"	$background	$foreground	$color4	  "$background"
+
+client.background       $background
+
 include ~/.config/sway/config.d/*
+#
+# Status Bar:
+#
+# Read `man 5 sway-bar` for more information about this section.
+bar {
+  position bottom
+
+  # When the status_command prints a new line to stdout, swaybar updates.
+  # The default just shows the current date and time.
+  status_command blocks
+  # status_command while date +'%Y-%m-%d %H:%M'; do sleep 1; done
+  font pango:DejaVu Sans 10
+
+  colors {
+    statusline $foreground
+    background "$background"E6
+    # 0.9 -> E6
+    inactive_workspace $background $background $color2
+  }
+  mode hide
+  hidden_state hide
+  modifier $mod
+}
+include /etc/sway/config.d/*
 exec_always "systemctl --user import-environment; systemctl --user start sway-session.target"

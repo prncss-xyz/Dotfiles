@@ -19,11 +19,7 @@ bindsym $mod+m exec makoctl dismiss
 bindsym $mod+Return [title="^scratchpad$"] scratchpad show
 bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
 bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p pass; wl-clipboard-manager unlock"
-bindsym $mod+comma exec 'kitty -e ~/.local/bin/edit_dotfiles'
-bindsym $mod+period exec 'kitty -e ~/.local/bin/edit_notes'
 bindsym $mod+equal exec 'kitty -e ~/.local/bin/edit_mathjs'
-bindsym $mod+n fullscreen disable, exec kitty --class=launcher -e ".local/bin/nv" gui | swaymsg exec -- 
-
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
 # Despite the name, also works for non-floating windows.
@@ -33,10 +29,10 @@ floating_modifier $mod normal
 
 # Kill focused window
 bindsym $mod+Ctrl+q kill
-bindsym $mod+Ctrl+c reload
+bindsym $mod+Ctrl+r reload
 bindsym $mod+Ctrl+e exit
 bindsym $mod+Ctrl+l exec "swaylock"
-bindsym $mod+Ctrl+r exec "reboot"
+bindsym $mod+Ctrl+delete exec "reboot"
 bindsym $mod+Ctrl+p exec "poweroff"
 # bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
 #
@@ -162,17 +158,56 @@ bindsym $mod+r mode "resize"
 # Print screen
 bindsym $mod+q exec GRIM_DEFAULT_DIR="$(xdg-user-dir PICTURES)/Captures" grim
 
+# Gaps tweaking
+# Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: k|j|0 (local), Shift + k|j|0 (global)
+set $mode_gaps_inner Inner Gaps: k|j|0 (local), Shift + k|j|0 (global)
+bindsym $mod+ctrl+g mode "$mode_gaps"
+
+mode "$mode_gaps" {
+        bindsym o      mode "$mode_gaps_outer"
+        bindsym i      mode "$mode_gaps_inner"
+        bindsym Return mode default
+        bindsym Escape mode default
+}
+mode "$mode_gaps_inner" {
+        bindsym $up   gaps inner current plus 5
+        bindsym $down gaps inner current minus 5
+        bindsym 0     gaps inner current set 0; mode default
+
+        bindsym shift+$up   gaps inner all plus 5
+        bindsym shift+$down gaps inner all minus 5
+        bindsym shift+0     gaps inner all set 0; mode default
+
+        bindsym return mode default
+        bindsym escape mode default
+}
+mode "$mode_gaps_outer" {
+        bindsym $up   gaps outer current plus 5
+        bindsym $down gaps outer current minus 5
+        bindsym 0     gaps outer current set 0; mode default
+
+        bindsym shift+$up   gaps outer all plus 5
+        bindsym shift+$down gaps outer all minus 5
+        bindsym shift+0     gaps outer all set 0; mode default
+
+        bindsym return mode default
+        bindsym escape mode default
+}
+
 # Media control
-mode "audio" {
-  bindsym space exec playerctl --player playerctld play-pause
-  bindsym $left exec playerctl --player playerctld next
-  bindsym $right exec playerctl --player playerctld previous
-  bindsym m exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym $mod+o mode audio
+mode audio {
+  bindsym space exec playerctl --player playerctld play-pause; mode default
+  bindsym $left exec playerctl --player playerctld next; mode default
+  bindsym $right exec playerctl --player playerctld previous; mode default
+  bindsym m exec pactl set-sink-mute @DEFAULT_SINK@ toggle; mode default
   bindsym $up exec pactl set-sink-volume @DEFAULT_SINK@ +4%
   bindsym $down exec pactl set-sink-volume @DEFAULT_SINK@ -4%
-  bindsym Escape mode "default"
+  bindsym Escape mode default
+  bindsym return mode default
 }
-bindsym $mod+o mode "audio"
 
 #mode "mouse"
 #  bindsym $right seat $seat cursor move +10 0
@@ -182,10 +217,8 @@ bindsym $mod+o mode "audio"
 #  bindsym Escape mode "default"
 #}
 #bindsym $mod+m mode "mouse"
-
-# switching source
-# $win+Shift+Left      exec pamixer -d 5 --source alsa_input.pci-0000_00_1f.3.analog-stereo
-
-# 0	alsa_output.usb-MICROMEGA_MICROMEGA_MYDAC_0000-00.iec958-stereo	module-alsa-card.c	s32le 2ch 48000Hz	RUNNING
-# 2	alsa_output.pci-0000_00_1f.3.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz	SUSPENDED
-
+#
+bindsym $mod+n [title=^nvim] focus
+bindsym $mod+ctrl+period mark __mark
+bindsym $mod+period [con_mark=__mark] move to workspace current; [con_mark=__mark] focus
+bindsym $mod+shift+period [con_mark=__mark] move to workspace next

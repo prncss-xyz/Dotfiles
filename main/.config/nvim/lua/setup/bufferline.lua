@@ -6,6 +6,7 @@ require "bufferline".setup {
     always_show_bufferline = false,
     show_tab_indicators = false,
     mappings = true,
+    number_style = "superscript"
   }
 }
 

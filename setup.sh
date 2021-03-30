@@ -10,3 +10,4 @@ cd "$HOME/Stow"
 base/.local/bin/stow-all
 base/.local/bin/update-root
 base/.local/bin/post-install
+

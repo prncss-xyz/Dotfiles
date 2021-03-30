@@ -29,23 +29,17 @@ return require "packer".startup(
     -- Text Edition
     use "farmergreg/vim-lastplace"
     use "matze/vim-move"
-    -- use {
-    --   "b3nj5m1n/kommentary",
-    --   config = function()
-    --     require("kommentary.config").configure_language(
-    --       "default",
-    --       {
-    --         prefer_single_line_comments = true
-    --       }
-    --     )
-    --     require("kommentary.config").configure_language(
-    --       "lua",
-    --       {
-    --         single_line_comment_string = "--"
-    --       }
-    --     )
-    --   end
-    -- }
+    use {
+      "b3nj5m1n/kommentary",
+      config = function()
+        require("kommentary.config").configure_language(
+          "default",
+          {
+            prefer_single_line_comments = true
+          }
+        )
+      end
+    }
     use "JoosepAlviste/nvim-ts-context-commentstring"
     use {
       "windwp/nvim-autopairs",
@@ -62,6 +56,7 @@ return require "packer".startup(
     use {
       "windwp/nvim-ts-autotag"
     }
+    -- use "sickill/vim-pasta"
     -- use "tpope/vim-surround"
     use "machakann/vim-sandwich"
     use {
@@ -71,7 +66,6 @@ return require "packer".startup(
         vim.g.emmet_complete_tag = true
       end
     }
-    use "chaoren/vim-wordmotion"
     -- Language support
     use {
       "nvim-treesitter/nvim-treesitter",
@@ -98,6 +92,7 @@ return require "packer".startup(
     --  wget https://raw.githubusercontent.com/microsoft/vscode/main/extensions/javascript/snippets/javascript.code-snippets -O javacript.json
     --
     -- Environement
+    use "mhinz/vim-sayonarmhinz/vim-sayonara"
     use {
       "hrsh7th/nvim-compe",
       config = function()
@@ -161,7 +156,7 @@ return require "packer".startup(
     use {
       "nvim-telescope/telescope.nvim",
       config = function()
-        require "setup/telescope"
+        --        require "setup/telescope"
       end
     }
     use "nvim-telescope/telescope-frecency.nvim"
@@ -192,5 +187,10 @@ return require "packer".startup(
     use "rakr/vim-one"
     use "cseelus/vim-colors-lucid"
     use "atelierbram/Base2Tone-vim"
+    -- more poly
+    use "pineapplegiant/spaceduck"
+    use "sainnhe/sonokai"
+    use "sainnhe/gruvbox-material"
+    use "glepnir/oceanic-material"
   end
 )

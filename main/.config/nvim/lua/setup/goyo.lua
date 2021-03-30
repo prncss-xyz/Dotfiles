@@ -3,20 +3,9 @@ local fn = vim.fn
 local hidden_line
 local old_signcolumn
 local old_scrolloff
-
-local colors = {
-  bg = "#282c34",
-  yellow = "#fabd2f",
-  cyan = "#008080",
-  darkblue = "#081633",
-  green = "#afd700",
-  orange = "#FF8800",
-  purple = "#5d4d7a",
-  magenta = "#d16d9e",
-  grey = "#c0c0c0",
-  blue = "#0087d7",
-  red = "#ec5f67"
-}
+local old_left
+local old_mid
+local old_right
 
 local buffer_not_empty = function()
   if vim.fn.empty(vim.fn.expand("%:t")) ~= 1 then
@@ -26,28 +15,10 @@ local buffer_not_empty = function()
 end
 
 function _G.__goyo_enter()
-  hidden_line = require "galaxyline".section
-  require "galaxyline".section = {
-    left = {
-      {
-        FirstElement = {
-          provider = function()
-            return " "
-          end,
-          highlight = {colors.magenta, colors.darkblue}
-        }
-      },
-      {
-        FileName = {
-          provider = {"FileName"},
-          condition = buffer_not_empty,
-          highlight = {colors.magenta, colors.darkblue}
-        }
-      }
-    },
-    right = {},
-    mid = {}
-  }
+  old_left = require "galaxyline".section.left
+  old_right = require "galaxyline".section.right
+  require "galaxyline".section.left = require "setup/galaxyline".left
+  require "galaxyline".section.right = require "setup/galaxyline".right
   old_signcolumn = vim.wo.signcolumn
   vim.wo.signcolumn = "no"
   vim.cmd "set showtabline=0"
@@ -67,7 +38,8 @@ function _G.__goyo_leave()
   vim.cmd "set showcmd"
   vim.wo.scrolloff = old_scrolloff
   vim.cmd "Limelight!"
-  require "galaxyline".section = hidden_line
+  require "galaxyline".section.left = old_left
+  require "galaxyline".section.right = old_right
 end
 
 function _G.__auto_goyo()

@@ -20,7 +20,7 @@ XDG_VIDEOS_DIR="$HOME/Videos"
 EOF
 
 git config --global init.defaultBranch main
-git config --global core.editor "nvr --remote-wait-silet"
+git config --global core.editor "nvim -u ~/.config/nvim/prompter.vim --noplugin"
 git config --global diff.tool nvr
 git config --global difftool.nvr.cmd "nvr -s -d \$LOCAL \$REMOTE"
 git config --global merge.tool nvr

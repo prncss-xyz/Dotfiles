@@ -1,6 +1,6 @@
 seeds=seeds
 set -e
-source "$seeds"/vars.sh
+ource "$seeds"/vars.sh
 if [ -z $HOSTNAME ]
 then
   echo hostname expected as argument

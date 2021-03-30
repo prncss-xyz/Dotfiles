@@ -1,20 +1,85 @@
 local gl = require("galaxyline")
 local gls = gl.section
-gl.short_line_list = {"LuaTree", "vista", "dbui"}
+gl.short_line_list = {"LuaTree", "vista", "dbui", "goyo"}
 
-local colors = {
-  bg = "#282c34",
-  yellow = "#fabd2f",
-  cyan = "#008080",
-  darkblue = "#081633",
-  green = "#afd700",
-  orange = "#FF8800",
-  purple = "#5d4d7a",
-  magenta = "#d16d9e",
-  grey = "#c0c0c0",
-  blue = "#0087d7",
-  red = "#ec5f67"
-}
+local vim, lsp, api = vim, vim.lsp, vim.api
+
+-- get current file name
+local function modified()
+  local file = vim.fn.expand("%:t")
+  if vim.fn.empty(file) == 1 then
+    return ""
+  end
+  if vim.bo.modifiable then
+    if vim.bo.modified then
+      return " "
+    end
+  end
+  return ""
+end
+--border color 8
+local warn = vim.g.terminal_color_3
+local error = vim.g.terminal_color_1
+local background = vim.g.terminal_color_4
+local background2 = vim.g.terminal_color_6
+local backgroundGoyo = vim.g.terminal_color_10
+local text = vim.g.terminal_color_7
+
+local separator = ""
+
+local function get_nvim_lsp_diagnostic(diag_type)
+  if next(lsp.buf_get_clients(0)) == nil then
+    return false
+  end
+  local active_clients = lsp.get_active_clients()
+
+  if active_clients then
+    for _, client in ipairs(active_clients) do
+      if lsp.diagnostic.get_count(api.nvim_get_current_buf(), diag_type, client.id) > 0 then
+        return true
+      end
+    end
+  end
+  return false
+end
+
+local function diagnostic_errors()
+  if get_nvim_lsp_diagnostic("Error") then
+    return " "
+  end
+  return ""
+end
+
+local function diagnostic_warnings()
+  if get_nvim_lsp_diagnostic("Warning") then
+    return " "
+  end
+  return ""
+end
+
+local function readonly()
+  if vim.bo.filetype == "help" then
+    return ""
+  end
+  if vim.bo.readonly == true then
+    return " "
+  end
+  return ""
+end
+
+local function get_current_file_name()
+  local file = vim.fn.expand("%:t")
+  if vim.fn.empty(file) == 1 then
+    return " "
+  end
+  return file .. " "
+end
+
+local function lift(val)
+  return function()
+    return val
+  end
+end
 
 local buffer_not_empty = function()
   if vim.fn.empty(vim.fn.expand("%:t")) ~= 1 then
@@ -23,155 +88,222 @@ local buffer_not_empty = function()
   return false
 end
 
-gls.left[1] = {
-  FirstElement = {
-    provider = function()
-      return " "
-    end,
-    highlight = {colors.magenta, colors.darkblue}
-  }
-}
-
-gls.left[4] = {
-  FileName = {
-    provider = {"FileName"},
-    condition = buffer_not_empty,
-    separator = "",
-    separator_highlight = {colors.darkblue, colors.purple},
-    highlight = {colors.magenta, colors.darkblue}
-  }
-}
-
-gls.left[5] = {
-  GitIcon = {
-    provider = function()
-      return "  "
-    end,
-    condition = buffer_not_empty,
-    highlight = {colors.orange, colors.purple}
-  }
-}
-gls.left[6] = {
-  GitBranch = {
-    provider = "GitBranch",
-    condition = buffer_not_empty,
-    highlight = {colors.grey, colors.purple}
-  }
-}
-
-local checkwidth = function()
-  local squeeze_width = vim.fn.winwidth(0) / 2
-  if squeeze_width > 40 then
-    return true
+local function current_line_tenth()
+  local current_line = vim.fn.line(".")
+  local total_line = vim.fn.line("$")
+  if current_line == 1 then
+    return "⊤ "
+  elseif current_line == vim.fn.line("$") then
+    return "⊥ "
   end
-  return false
+  local result = math.floor((current_line / total_line) * 10)
+  return result .. " "
 end
 
-gls.left[7] = {
-  DiffAdd = {
-    provider = "DiffAdd",
-    condition = checkwidth,
-    icon = " ",
-    highlight = {colors.green, colors.purple}
-  }
-}
-gls.left[8] = {
-  DiffModified = {
-    provider = "DiffModified",
-    condition = checkwidth,
-    icon = " ",
-    highlight = {colors.orange, colors.purple}
-  }
-}
-gls.left[9] = {
-  DiffRemove = {
-    provider = "DiffRemove",
-    condition = checkwidth,
-    icon = " ",
-    highlight = {colors.red, colors.purple}
-  }
-}
-gls.left[10] = {
-  LeftEnd = {
-    provider = function()
-      return ""
-    end,
-    separator = "",
-    separator_highlight = {colors.darkblue, colors.purple},
-    highlight = {colors.purple, colors.purple}
-  }
-}
-gls.left[11] = {
-  DiagnosticError = {
-    provider = "DiagnosticError",
-    icon = "  ",
-    highlight = {colors.red, colors.bg}
-  }
-}
--- gls.left[12] = {
---   Space = {
---     provider = function()
---       return " "
---     end
---   }
--- }
-gls.left[13] = {
-  DiagnosticWarn = {
-    provider = "DiagnosticWarn",
-    icon = "  ",
-    highlight = {colors.blue, colors.bg}
-  }
-}
--- gls.right[1] = {
---   FileFormat = {
---     provider = "FileFormat",
---     separator = "",
---     separator_highlight = {colors.bg, colors.purple},
---     highlight = {colors.grey, colors.purple}
---   }
--- }
-gls.right[1] = {
-  NearestMethodOrFunction = {
-    provider = function()
-      -- return " "
-      return vim.fn["nvim_treesitter#statusline"](90)
-      --return vim.fn.NearestMethodOrFunction()
-      --return vim.bo.vista_nearest_method_or_function
-    end,
-    highlight = {colors.magenta, colors.darkblue}
-  }
-}
-gls.right[2] = {
-  LineInfo = {
-    provider = "LineColumn",
-    separator = "",
-    separator_highlight = {colors.darkblue, colors.purple},
-    highlight = {colors.grey, colors.purple}
-  }
-}
-gls.right[3] = {
-  PerCent = {
-    provider = "LinePercent",
-    separator = "",
-    separator_highlight = {colors.purple, colors.bg},
-    highlight = {colors.grey, colors.darkblue}
+local function pwd()
+  return vim.api.nvim_eval("b:pwd") .. " "
+  --return vim.bo.pwd
+end
+
+gls.left = {
+  {
+    Spacer2 = {
+      provider = lift " ",
+      highlight = {text, background2}
+    }
+  },
+  {
+    BufferIcon = {
+      provider = "BufferIcon",
+      separarator_highlight = {text, background2},
+      highlight = {text, background2}
+    }
+  },
+  {
+    FileIcon = {
+      provider = "FileIcon",
+      separarator_highlight = {text, background2},
+      highlight = {text, background2}
+    }
+  },
+  {
+    FileName = {
+      provider = function()
+        return vim.api.nvim_eval("@%") .. " "
+      end,
+      separator = separator,
+      separator_highlight = {background, background2},
+      highlight = {text, background2}
+    }
+  },
+  {
+    Spacer3 = {
+      provider = lift " ",
+      highlight = {text, background}
+    }
+  },
+  {
+    Readonly = {
+      provider = readonly,
+      highlight = {text, background}
+    }
+  },
+  {
+    Modified = {
+      provider = modified,
+      highlight = {text, background}
+    }
+  },
+  {
+    DiagnosticError = {
+      provider = diagnostic_errors,
+      highlight = {error, background}
+    }
+  },
+  {
+    DiagnosticWarn = {
+      provider = diagnostic_warnings,
+      highlight = {warn, background}
+    }
   }
 }
 
-gls.short_line_left[1] = {
-  BufferType = {
-    provider = "FileTypeName",
-    separator = "",
-    separator_highlight = {colors.bg, colors.purple},
-    highlight = {colors.grey, colors.purple}
+gls.right = {
+  --  {
+  --    Pwd = {
+  --      provider = pwd,
+  --      highlight = {text, background}
+  --    }
+  --  },
+  {
+    Spacer4 = {
+      separator = separator,
+      provider = lift "",
+      separator_highlight = {background2, background},
+      highlight = {text, background2}
+    }
+  },
+  {
+    LineInfo = {
+      provider = "LineColumn",
+      separator = " ",
+      separator_highlight = {background, background2},
+      highlight = {text, background2}
+    }
+  },
+  {
+    Teenth = {
+      provider = current_line_tenth,
+      separator = " ",
+      separator_highlight = {background, background2},
+      highlight = {text, background2}
+    }
   }
 }
 
-gls.short_line_right[1] = {
-  BufferIcon = {
-    provider = "BufferIcon",
-    separator = "",
-    separator_highlight = {colors.bg, colors.purple},
-    highlight = {colors.grey, colors.purple}
+gls.short_line_left = {
+  {
+    Spacer2B = {
+      provider = lift " ",
+      highlight = {text, background}
+    }
+  },
+  {
+    FileIconB = {
+      provider = lift "   ",
+      separarator_highlight = {text, background},
+      highlight = {text, background}
+    }
+  },
+  {
+    FileNameB = {
+      provider = function()
+        return vim.api.nvim_eval("@%") .. " "
+      end,
+      separator = " ",
+      separator_highlight = {background, background},
+      highlight = {text, background}
+    }
+  },
+  {
+    Spacer3B = {
+      provider = lift " ",
+      highlight = {text, background}
+    }
+  },
+  {
+    ReadonlyB = {
+      provider = readonly,
+      highlight = {text, background}
+    }
+  },
+  {
+    ModifiedB = {
+      provider = modified,
+      highlight = {text, background}
+    }
+  },
+  {
+    DiagnosticErrorB = {
+      provider = diagnostic_errors,
+      highlight = {error, background}
+    }
+  },
+  {
+    DiagnosticWarnB = {
+      provider = diagnostic_warnings,
+      highlight = {warn, background}
+    }
   }
 }
+
+gls.short_line_right = {
+  {
+    TeenthB = {
+      provider = current_line_tenth,
+      separator = " ",
+      separator_highlight = {background, background},
+      highlight = {text, background}
+    }
+  }
+}
+local zen = {}
+
+zen.left = {
+  {
+    Spacer2C = {
+      provider = lift " ",
+      highlight = {text, backgroundGoyo}
+    }
+  },
+  {
+    FileNameC = {
+      provider = function()
+        return vim.fn.expand("%:t") .. " "
+      end,
+      highlight = {text, backgroundGoyo}
+    }
+  },
+  {
+    DiagnosticErrorC = {
+      provider = diagnostic_errors,
+      highlight = {text, backgroundGoyo}
+    }
+  },
+  {
+    DiagnosticWarnC = {
+      provider = diagnostic_warnings,
+      highlight = {text, backgroundGoyo}
+    }
+  }
+}
+zen.right = {
+  {
+    TeenthC = {
+      provider = current_line_tenth,
+      highlight = {text, backgroundGoyo}
+    }
+  }
+}
+
+return zen

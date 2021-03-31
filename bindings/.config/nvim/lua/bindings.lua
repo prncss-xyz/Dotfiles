@@ -10,8 +10,7 @@ local function setup()
   vim.g.mapleader = " "
   vim.g.user_emmet_leader_key = "<C-y>"
 
-  map("", "<C-l>", "<cmd>:nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l><CR>") -- Clear highlights
-  map("i", "<C-l>", "<cmd>:nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l><CR>") -- Clear highlights
+  map("", "<C-l>", "<cmd>nohlsearch<cr><cmd>diffupdate<cr><cmd>syntax sync fromstart<cr><c-l><CR>") -- Clear highlights
   map("", "<C-s>", "<Esc>:w<CR>")
   map("i", "<C-s>", "<Esc>:w<CR>")
   map("", "<C-n>", ":tabe")
@@ -35,8 +34,8 @@ local function setup()
   -- bufferline
   map("", "<S-j>", "<cmd>BufferLineCycleNext<CR>")
   map("", "<S-k>", "<cmd>BufferLineCyclePrev<CR>")
-  map("", "<C-S-j>", "<cmd>BufferLineMoveNext<CR>")
-  map("", "<C-S-k>", "<cmd>BufferLineMovePrev<CR>")
+  map("", "<A-S-j>", "<cmd>BufferLineMoveNext<CR>")
+  map("", "<A-S-k>", "<cmd>BufferLineMovePrev<CR>")
   map("", "<leader>be", "<cmd>BufferLineSortByExtension<CR>")
   map("", "<leader>bd", "<cmd>BufferLineSortByDirectory<CR>")
   map("", "<leader>gb", "<cmd>BufferLinePick<CR>")

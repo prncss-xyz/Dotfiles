@@ -68,8 +68,7 @@ gaps outer 8
 # exec oguri
 # mpvpaper -o "no-audio --loop-file=inf" DP-1 FalseEminentFlickertailsquirrel-mobile.mp4
 
-
-include ~/.config/sway/colors.conf
+include ~/.config/sway/theme.conf
 # 
 # class                 border      background  text        indicator child_border
 client.focused         	"$background"	$background	$foreground	$color2		$color4	
@@ -90,7 +89,7 @@ bar {
 
   # When the status_command prints a new line to stdout, swaybar updates.
   # The default just shows the current date and time.
-  status_command blocks
+  status_command i3blocks
   # status_command while date +'%Y-%m-%d %H:%M'; do sleep 1; done
   font pango:DejaVu Sans 10
 
@@ -100,9 +99,9 @@ bar {
     # 0.9 -> E6
     inactive_workspace $background $background $color2
   }
-  mode hide
-  hidden_state hide
-  modifier $mod
+  #mode hide
+  #hidden_state hide
+  #modifier $mod
 }
 include /etc/sway/config.d/*
 exec_always "systemctl --user import-environment; systemctl --user start sway-session.target"

@@ -2,10 +2,10 @@
 
 local cmd = vim.cmd
 local g = vim.g
+local theme = require"theme"
 
 return {
   setup = function()
-    local theme
     --Broken
     --theme = "one"
     --theme = "lucid"

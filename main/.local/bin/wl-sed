@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+wl-paste|sed "$1"|wl-copy

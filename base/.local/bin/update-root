@@ -1,6 +1,2 @@
 #!/usr/bin/env sh
-in(3)diffupdate
-
-
-
 sudo rsync -Lr ~/sysfiles/* /

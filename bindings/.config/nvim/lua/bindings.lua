@@ -16,14 +16,13 @@ local function setup()
   map("", "<C-n>", ":tabe")
   map("i", "<C-n>", "<cmd>tabe<CR>")
   map("t", "<C-w>", "<C-\\><C-n>")
-  map("", "<C-x>", "<cmd>Sayonara!<CR>")
-  map("", "<C-S-x>", "<cmd>Sayonara<CR>")
-  map("i", "<C-x>", "<cmd>Sayonara!<CR>")
-  map("i", "<C-S-x>", "<cmd>Sayonara<CR>")
+  map("", "<C-W>x", "<cmd>Sayonara<CR>")
+  map("i", "<C-W>x", "<cmd>Sayonara<CR>")
   map("", "<C-w>L", "<cmd>vsplit<CR>")
   map("", "<C-w>J", "<cmd>hsplit<CR>")
   map("c", "<C-n>", "<down>")
   map("c", "<C-p>", "<up>")
+  map("", "gx", '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<CR>')
 
   -- from https://github.com/mhinz/vim-galore
   -- The mapping takes a register (or * by default) and opens it in the cmdline-window. Hit <cr> when you're done editing for setting the register.

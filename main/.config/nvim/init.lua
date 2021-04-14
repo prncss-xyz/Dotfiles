@@ -1,8 +1,7 @@
 local cmd = vim.cmd
---vim.cmd "syntax enable"
 local indent = 2
-cmd "filetype indent on"
-cmd "syntax enable"
+--cmd "filetype indent on"
+--cmd "syntax enable"
 vim.o.compatible = false
 vim.o.syntax = "on"
 vim.o.undofile = true
@@ -41,7 +40,7 @@ vim.o.clipboard = "unnamedplus"
 vim.o.wildmode = "longest:list"
 vim.o.wildignorecase = true
 vim.wo.number = true
-vim.wo.signcolumn = "yes" -- number' -- 'no' 'yes'
+vim.wo.signcolumn = "yes"
 vim.wo.scrolloff = 5
 vim.wo.sidescrolloff = 5
 vim.o.wrap = true

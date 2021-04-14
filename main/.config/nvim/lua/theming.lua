@@ -55,7 +55,7 @@ return {
     g.terminal_color_15 = "#eeeeec"
     --]]
     cmd("colorscheme " .. theme)
-
+    cmd("highlight Comment cterm=italic gui=italic")
     --cm "color Base2Tone_LavenderLight"
     --cmd"color flattened_dark"
     --cmd'color flattened_light'

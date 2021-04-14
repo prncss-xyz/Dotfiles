@@ -141,7 +141,16 @@ gls.left = {
       provider = lift " ",
       highlight = {text, background}
     }
-  },
+  }
+}
+
+gls.right = {
+  --  {
+  --    Pwd = {
+  --      provider = pwd,
+  --      highlight = {text, background}
+  --    }
+  --  },
   {
     Readonly = {
       provider = readonly,
@@ -165,38 +174,12 @@ gls.left = {
       provider = diagnostic_warnings,
       highlight = {warn, background}
     }
-  }
-}
-
-gls.right = {
-  --  {
-  --    Pwd = {
-  --      provider = pwd,
-  --      highlight = {text, background}
-  --    }
-  --  },
-  {
-    Spacer4 = {
-      separator = separator,
-      provider = lift "",
-      separator_highlight = {background2, background},
-      highlight = {text, background2}
-    }
-  },
-  {
-    LineInfo = {
-      provider = "LineColumn",
-      separator = " ",
-      separator_highlight = {background, background2},
-      highlight = {text, background2}
-    }
   },
   {
     Teenth = {
       provider = current_line_tenth,
-      separator = " ",
-      separator_highlight = {background, background2},
-      highlight = {text, background2}
+      separator_highlight = {background, background},
+      highlight = {text, background}
     }
   }
 }
@@ -230,7 +213,10 @@ gls.short_line_left = {
       provider = lift " ",
       highlight = {text, background}
     }
-  },
+  }
+}
+
+gls.short_line_right = {
   {
     ReadonlyB = {
       provider = readonly,
@@ -254,14 +240,10 @@ gls.short_line_left = {
       provider = diagnostic_warnings,
       highlight = {warn, background}
     }
-  }
-}
-
-gls.short_line_right = {
+  },
   {
     TeenthB = {
       provider = current_line_tenth,
-      separator = " ",
       separator_highlight = {background, background},
       highlight = {text, background}
     }

@@ -21,11 +21,6 @@ exec kdeconnect-sms
 ### Idle
 
 seat * hide_cursor 10000
-exec swayidle -w \
- timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
- timeout 330 'swaylock' \
- before-sleep 'swaylock'
-
 
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -63,7 +58,6 @@ smart_gaps on
 default_border pixel 3
 smart_borders on
 gaps inner 8
-gaps outer 8
 
 # exec oguri
 # mpvpaper -o "no-audio --loop-file=inf" DP-1 FalseEminentFlickertailsquirrel-mobile.mp4
@@ -84,24 +78,26 @@ include ~/.config/sway/config.d/*
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
-bar {
-  position bottom
+# bar {
+#   position bottom
 
-  # When the status_command prints a new line to stdout, swaybar updates.
-  # The default just shows the current date and time.
-  status_command i3blocks
-  # status_command while date +'%Y-%m-%d %H:%M'; do sleep 1; done
-  font pango:DejaVu Sans 10
+#   # When the status_command prints a new line to stdout, swaybar updates.
+#   # The default just shows the current date and time.
+#   status_command waybar
+#   # status_command i3status-rs
+#   # status_command while date +'%Y-%m-%d %H:%M'; do sleep 1; done
+#   font pango:DejaVu Sans 10
 
-  colors {
-    statusline $foreground
-    background "$background"E6
-    # 0.9 -> E6
-    inactive_workspace $background $background $color2
-  }
-  #mode hide
-  #hidden_state hide
-  #modifier $mod
-}
+#   colors {
+#     statusline $foreground
+#     background "$background"E6
+#     # 0.9 -> E6
+#     inactive_workspace $background $background $color2
+#   }
+#   #mode hide
+#   #hidden_state hide
+#   #modifier $mod
+# }
+exec waybar
 include /etc/sway/config.d/*
 exec_always "systemctl --user import-environment; systemctl --user start sway-session.target"

@@ -22,7 +22,7 @@ autocmd BufWritePost ~/Dotfiles/all/.config/nvim/lua/plugins.lua PackerCompile
 " you can add the following line to your vimrc
 autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
-" Ensure you have installed some decent font to show these pretty symbols, then you can enable icon for the kind.
+" Ensure you have installed somee dcent font to show these pretty symbols, then you can enable icon for the kind.
 let g:vista#renderer#enable_icon = 1
 
 " The default icons can't be suitable for all the filetypes, you can extend it as you wish.
@@ -31,6 +31,7 @@ let g:vista#renderer#icons = {
 \   "variable": "\uf71b",
 \  }
 
+au BufRead,BufNewFile **/.config/sway/* setfiletype i3
 
 " not wrorking...
 " let g:indent_blankline_use_treesitter = v:true
@@ -44,3 +45,5 @@ command! Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1'
 "   let s = substitute(expand("%"), l:cwd . "/" , "", "")
 "   return ":tabe " . s . "/"
 " endfunction
+"
+" 

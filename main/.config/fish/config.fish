@@ -23,3 +23,16 @@ kitty + complete setup fish | source
 [ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true
 
 printf "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+
+function fish_title
+  set pat (realpath --relative-base=$HOME $PWD)
+  if [ "$pat" = "." ]
+    set pat "~"
+  end
+  set branch (git branch --show-current 2>/dev/null)
+  if [ -n "$branch" ]
+    echo  " $branch — $pat"
+  else
+    echo $pat
+  end
+end

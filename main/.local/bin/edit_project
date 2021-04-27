@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-sleep 0.1
-cd ~/Personal/notes
-nvim "+lua require('telescope').extensions.project.project{}"

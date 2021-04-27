@@ -55,3 +55,4 @@ require("formatter").setup(
     }
   }
 )
+

@@ -11,21 +11,35 @@ Attempt to run the language server, and open the log with:
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
+vim.lsp.handlers["textDocument/formatting"] = function(err, _, result, _, bufnr)
+   if err ~= nil or result == nil then
+      return
+   end
+   if not vim.api.nvim_buf_get_option(bufnr, "modified") then
+      local view = vim.fn.winsaveview()
+      vim.lsp.util.apply_text_edits(result, bufnr)
+      vim.fn.winrestview(view)
+      if bufnr == vim.api.nvim_get_current_buf() then
+         vim.api.nvim_command("noautocmd :update")
+      end
+   end
+end
+
 local nvim_lsp = require "lspconfig"
 local on_attach = function(client, bufnr)
-  local function buf_set_keymap(...)
-    vim.api.nvim_buf_set_keymap(bufnr, ...)
-  end
-  local function buf_set_option(...)
-    vim.api.nvim_buf_set_option(bufnr, ...)
-  end
+   local function buf_set_keymap(...)
+      vim.api.nvim_buf_set_keymap(bufnr, ...)
+   end
+   local function buf_set_option(...)
+      vim.api.nvim_buf_set_option(bufnr, ...)
+   end
 
-  buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
+   buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
-  -- Set autocommands conditional on server_capabilities
-  if client.resolved_capabilities.document_highlight then
-    vim.api.nvim_exec(
-      [[
+   -- Set autocommands conditional on server_capabilities
+   if client.resolved_capabilities.document_highlight then
+      vim.api.nvim_exec(
+         [[
       hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
       hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
       hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
@@ -35,158 +49,153 @@ local on_attach = function(client, bufnr)
         autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
       augroup END
     ]],
-      false
-    )
-  end
+         false
+      )
+   end
+
+   if client.resolved_capabilities.document_formatting then
+      vim.api.nvim_command [[augroup Format]]
+      vim.api.nvim_command [[autocmd! * <buffer>]]
+      vim.api.nvim_command [[autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()]]
+      vim.api.nvim_command [[augroup END]]
+   end
 end
 
 local servers = {
-  "bashls",
-  "cssls",
-  "tsserver",
-  "html",
-  "jsonls",
-  "vimls",
-  "yamlls",
-  "pyls"
-  --"sumneko_lua"
+   "bashls",
+   "cssls",
+   "html",
+   "jsonls",
+   "vimls",
+   "yamlls",
+   "pyls"
+   --"sumneko_lua"
 }
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup {
-    on_attach = on_attach,
-    capabilities = capabilities
-  }
+   nvim_lsp[lsp].setup {
+      on_attach = on_attach,
+      capabilities = capabilities
+   }
 end
 
-nvim_lsp.sumneko_lua.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  cmd = {"/usr/bin/lua-language-server"},
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = "LuaJIT",
-        -- Setup your lua path
-        path = vim.split(package.path, ";")
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = {
-          "vim", -- nvim
-          "use" -- packer
-        }
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        library = {[vim.fn.expand("$VIMRUNTIME/lua")] = true, [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true}
+nvim_lsp.tsserver.setup {
+   on_attach = function(client, buffnr)
+      on_attach(client, buffnr)
+      local ts_utils = require("nvim-lsp-ts-utils")
+      vim.lsp.handlers["textDocument/codeAction"] = ts_utils.code_action_handler
+      require("nvim-lsp-ts-utils").setup {
+         -- defaults
+         disable_commands = false,
+         enable_import_on_completion = true,
+         import_on_completion_timeout = 5000,
+         eslint_bin = "eslint_d",
+         eslint_fix_current = false,
+         eslint_enable_disable_comments = true
       }
-    }
-  }
+   end,
+   capabilities = capabilities
 }
---[[
+
+nvim_lsp.sumneko_lua.setup {
+   on_attach = on_attach,
+   capabilities = capabilities,
+   cmd = {"/usr/bin/lua-language-server"},
+   settings = {
+      Lua = {
+         runtime = {
+            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+            version = "LuaJIT",
+            -- Setup your lua path
+            path = vim.split(package.path, ";")
+         },
+         diagnostics = {
+            -- Get the language server to recognize the `vim` global
+            globals = {
+               "vim", -- nvim
+               "use" -- packer
+            }
+         },
+         workspace = {
+            -- Make the server aware of Neovim runtime files
+            library = {
+               [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+               [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true
+            }
+         }
+      }
+   }
+}
+
+local prettier = {
+   formatcommand = ([[
+      prettier
+      ${--config-precedence:configprecedence}
+      ${--tab-width:tabwidth}
+      ${--single-quote:singlequote}
+      ${--trailing-comma:trailingcomma}
+  ]]):gsub(
+      "\n",
+      ""
+   )
+}
+
 local eslint = {
-  lintCommand = "eslint_d -f unix --stdin --stdin-filename ${INPUT}",
-  lintStdin = true,
-  lintFormats = {"%f:%l:%c: %m"},
-  lintIgnoreExitCode = true,
-  formatCommand = "eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}",
-  formatStdin = true
+   lintCommand = "eslint_d -f unix --stdin --stdin-filename ${INPUT}",
+   lintStdin = true,
+   lintFormats = {"%f:%l:%c: %m"},
+   lintIgnoreExitCode = true,
+   formatCommand = "eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}",
+   formatStdin = true
 }
 
-nvim.efm.setup {
-  init_options = {documentFormatting = true},
-  settings = {
-    rootMarkers = {".eslintrc.js", ".git/"},
-    languages = {
-      lua = {
-        {formatCommand = "lua-format -i", formatStdin = true}
-      },
-      javascript = {eslint},
-      typescript = {eslint}
-    }
-  }
+local luafmt = {
+   formatCommand = "luafmt --indent-count=2 --stdin",
+   formatStdin = true
 }
-]]--
+-- option "quotemark", "single" exists but is not implemented
+-- https://github.com/trixnz/lua-fmt/blob/master/test/quotes/quotes.test.ts
 
+local vint = {
+   lintCommand = "vint -",
+   lintStdin = true,
+   lintFormats = {"%f:%l:%c: %m"}
+}
 
---[[
---
+local rustfmt = {
+   formatCommand = "rustfmt --emit=stdout",
+   formatStdin = true
+}
 
-JavaScript · TypeScript · Flow · JSX · JSON
-CSS · SCSS · Less
-HTML · Vue · Angular
-GraphQL · Markdown · YAML 
+local shellcheck = {
+   lintCommand = "shellcheck -f gcc -x -",
+   lintStdin = true,
+   lintFormats = {"%f=%l:%c: %trror: %m", "%f=%l:%c: %tarning: %m", "%f=%l:%c: %tote: %m"}
+}
 
-https://prettier.io/docs/en/plugins.html
+local shfmt = {
+   formatCommand = "shfmt -ci -s -bn",
+   formatStdin = true
+}
 
-https://phelipetls.github.io/posts/configuring-eslint-to-work-with-neovim-lsp/
-https://github.com/mattn/efm-langserver/blob/master/README.md
-
-  vim-vint: &vim-vint
-    lint-command: 'vint -'
-    lint-stdin: true
-    lint-formats:
-      - '%f:%l:%c: %m'
-
-  markdown-markdownlint: &markdown-markdownlint
-    lint-command: 'markdownlint -s -c %USERPROFILE%\.markdownlintrc'
-    lint-stdin: true
-    lint-formats:
-      - '%f:%l %m'
-      - '%f:%l:%c %m'
-      - '%f: %l: %m'
-
-  markdown-pandoc: &markdown-pandoc
-    format-command: 'pandoc -f markdown -t gfm -sp --tab-stop=2'
-
-      sh-shellcheck: &sh-shellcheck
-    lint-command: 'shellcheck -f gcc -x'
-    lint-source: 'shellcheck'
-    lint-formats:
-      - '%f:%l:%c: %trror: %m'
-      - '%f:%l:%c: %tarning: %m'
-      - '%f:%l:%c: %tote: %m'
-
-  sh-shfmt: &sh-shfmt
-    format-command: 'shfmt -ci -s -bn'
-    format-stdin: true
-
-     html-prettier: &html-prettier
-    format-command: './node_modules/.bin/prettier ${--tab-width:tabWidth} ${--single-quote:singleQuote} --parser html'
-
-  css-prettier: &css-prettier
-    format-command: './node_modules/.bin/prettier ${--tab-width:tabWidth} ${--single-quote:singleQuote} --parser css'
-
-  json-prettier: &json-prettier
-    format-command: './node_modules/.bin/prettier ${--tab-width:tabWidth} --parser json'
-
-
-  lua-lua-format: &lua-lua-format
-    format-command: 'lua-format -i'
-    format-stdin: true
-
-
-  markdown:
-    - <<: *markdown-markdownlint
-    - <<: *markdown-pandoc
-
-  rst:
-    - <<: *rst-lint
-    - <<: *rst-pandoc
-
-  yaml:
-    - <<: *yaml-yamllint
-
-
-  json:
-    - <<: *json-jq
-    - <<: *json-fixjson
-    # - <<: *json-prettier
-
-  csv:
-    - <<: *csv-csvlint
-
-https://dev.to/robertcoopercode/using-eslint-and-prettier-in-a-typescript-project-53jb
-
---]]
+nvim_lsp.efm.setup {
+   on_attach = on_attach,
+   init_options = {documentFormatting = true},
+   settings = {
+      languages = {
+         vim = {vint},
+--         lua = {luafmt},
+         -- typescript = {prettier, eslint}, -- calling prettier through eslint; else use {prettier, eslint}
+         -- javascript = {prettier, eslint},
+         -- typescriptreact = {prettier, eslint},
+         -- javascriptreact = {prettier, eslint},
+         yaml = {prettier},
+         json = {prettier},
+         html = {prettier},
+         scss = {prettier},
+         css = {prettier},
+         markdown = {prettier},
+         sh = {shellcheck},
+         toml = {prettier}
+      }
+   }
+}

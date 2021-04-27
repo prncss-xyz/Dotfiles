@@ -1,1 +1,0 @@
-return "flattened_dark"

@@ -24,5 +24,37 @@ require "nvim-treesitter.configs".setup {
         style_element = "// %s"
       }
     }
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      keymaps = {
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ia"] = "@parameter.inner",
+        ["a,"] = {
+          javascript = "(pair) @object" -- not working
+        }
+      }
+    },
+    swap = {
+      enable = true,
+      swap_next = {
+        ["<leader>a"] = "@parameter.inner"
+      },
+      swap_previous = {
+        ["<leader>A"] = "@parameter.inner"
+      }
+    },
+    move = {
+      enable = true,
+      set_jumps = true,
+      goto_next_start = {
+        [",f"] = "@function.outer"
+      },
+      goto_previous_end = {
+        [",F"] = "@function.outer"
+      }
+    }
   }
-}
+ }

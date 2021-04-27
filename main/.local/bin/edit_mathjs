@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
+echo -ne "\e]0;"
+echo -n "mathjs"
+echo -ne "\a"
 cd /tmp
 id=$(date "+%Y-%m-%d %H:%M:%S")
 sleep 0.1

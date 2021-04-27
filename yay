@@ -40,7 +40,6 @@ jmtpfs
 joplin-appimage
 jp2a
 kak-lsp
-kakoune
 kde-cli-tools
 kdeconnect
 khal
@@ -68,7 +67,6 @@ nmap
 nnn-icons
 nodejs
 notmuch
-oguri-git
 openbsd-netcat
 pam-gnupg
 pamixer
@@ -82,7 +80,6 @@ qutebrowser
 rclone
 sshfs
 starship-bin
-sway-hidpi-git
 swayidle
 swaylock
 swaynagmode
@@ -95,7 +92,6 @@ tesseract-data-eng
 tesseract-data-fra
 tig
 torbrowser-launcher
-transmission-gtk
 trash-cli
 udiskie
 urlwatch
@@ -104,10 +100,8 @@ w3m
 wget
 wl-clipboard
 wl-clipboard-manager
-wlroots-hidpi-git
 wlsunset
 wtype
-xorg-xwayland-hidpi-git
 youtube-dl
 zoxide-bin
 

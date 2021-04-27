@@ -27,8 +27,18 @@ return require "packer".startup(
     use "kyazdani42/nvim-web-devicons"
 
     -- Text Edition
+    use {"jremmen/vim-ripgrep", command = {"Rg"}}
     use "farmergreg/vim-lastplace"
     use "matze/vim-move"
+    use "bkad/CamelCaseMotion" -- ,w
+    use {
+      "phaazon/hop.nvim",
+      as = "hop",
+      config = function()
+        require "hop".setup {keys = "fjdksla;gh"}
+      end
+    }
+    use "nvim-treesitter/nvim-treesitter-textobjects"
     use {
       "b3nj5m1n/kommentary",
       config = function()
@@ -48,17 +58,16 @@ return require "packer".startup(
       end
     }
     use {
-      "mhartington/formatter.nvim",
-      config = function()
-        require "setup/formatter"
-      end
-    }
-    use {
       "windwp/nvim-ts-autotag"
     }
-    -- use "sickill/vim-pasta"
-    -- use "tpope/vim-surround"
     use "machakann/vim-sandwich"
+    -- NOT WORKING
+    -- use {
+    --   "blackCauldron7/surround.nvim",
+    --   config = function()
+    --     require "surround".setup {}
+    --   end
+    -- }
     use {
       "mattn/emmet-vim",
       config = function()
@@ -75,24 +84,30 @@ return require "packer".startup(
       end
     }
     use {
-      "neovim/nvim-lspconfig",
+      "nvim-treesitter/playground",
+      command = {"TSPlaygroundToggle"}
+     }
+    use {
+      "mhartington/formatter.nvim",
       config = function()
-        require "setup/lsp"
+        require "setup/formatter"
       end
     }
+    use {
+      "neovim/nvim-lspconfig",
+      config = function()
+      end
+    }
+    -- use "norcalli/snippets.nvim"
     use "hrsh7th/vim-vsnip"
     use "hrsh7th/vim-vsnip-integ"
+    use "~/Media/Projects/snippets"
 
     -- Language specific
+    use "jose-elias-alvarez/nvim-lsp-ts-utils"
     use "dag/vim-fish"
     use "potatoesmaster/i3-vim-syntax"
-
-    -- Snippets
-    --  wget https://raw.githubusercontent.com/microsoft/vscode/main/extensions/typescript-basics/snippets/typescript.code-snippets -O typescript.json
-    --  wget https://raw.githubusercontent.com/microsoft/vscode/main/extensions/javascript/snippets/javascript.code-snippets -O javacript.json
-    --
     -- Environement
-    use "mhinz/vim-sayonarmhinz/vim-sayonara"
     use {
       "hrsh7th/nvim-compe",
       config = function()
@@ -101,9 +116,9 @@ return require "packer".startup(
     }
     use {
       "lewis6991/gitsigns.nvim",
-      config = function()
-        require "setup/gitsigns"
-      end
+      -- config = function()
+      --   require "setup/gitsigns"
+      -- end
     }
     use {
       "glepnir/galaxyline.nvim",
@@ -121,14 +136,17 @@ return require "packer".startup(
       "lukas-reineke/indent-blankline.nvim",
       branch = "lua"
     }
-    use "liuchengxu/vista.vim"
+    use {
+      "liuchengxu/vista.vim"
+    }
     use "p00f/nvim-ts-rainbow"
     -- use {"tzachar/compe-tabnine", run = "sh install.sh"} -- is that ok?
     use {
       "junegunn/goyo.vim",
       config = function()
         require "setup/goyo"
-      end
+      end,
+      command = {"Goyo", "Goyo!", "Goyo!!"}
     }
     use {
       "junegunn/limelight.vim",
@@ -146,33 +164,44 @@ return require "packer".startup(
         -- Highlighting priority (default: 10)
         -- Set it to -1 not to overrule hlsearch
         vim.g.limelight_priority = -1
-      end
+      end,
+      command = {"Goyo", "Goyo!", "Goyo!!"}
     }
-    use "RishabhRD/nvim-cheat.sh"
-    use "RishabhRD/popfix"
-    use "lifepillar/vim-cheat40"
+    use {
+      "RishabhRD/nvim-cheat.sh",
+      requires = "RishabhRD/popfix",
+      command = {"Cheat", "CheatWithoutComments", "CheatList", "CheatListWithoutComments"}
+    }
+    use {
+      "lifepillar/vim-cheat40",
+      command = {"Cheat40"}
+    }
+    -- use "edluffy/specs.nvim"
     use "psliwka/vim-smoothie"
-
+    use "nvim-telescope/telescope-fzy-native.nvim"
     use {
       "nvim-telescope/telescope.nvim",
       config = function()
         --        require "setup/telescope"
       end
     }
-    use "nvim-telescope/telescope-frecency.nvim"
-    use "nvim-telescope/telescope-project.nvim"
-    use "metakirby5/codi.vim"
+    use {
+      "metakirby5/codi.vim",
+      command = {"Codi", "Codi!", "Codi!!"}
+    }
 
     -- Integration
     use "tpope/vim-eunuch"
 
-    -- Utilities
+    -- Natural languages
     use {
-      "oberblastmeister/neuron.nvim",
-      config = function()
-        require "setup/neuron"
-      end
+      "vigoux/LanguageTool.nvim",
+      command = { "LanguageToolSetup", "LanguageToolCheck" }
     }
+
+    -- Utilities
+    -- use "oberblastmeister/neuron.nvim",
+    use "~/Media/Projects/notagain-nvim"
     -- Color schemes
     -- classics
     use "romainl/flattened"
@@ -181,7 +210,6 @@ return require "packer".startup(
     use "fcpg/vim-orbital"
     use "arcticicestudio/nord-vim"
     use "wadackel/vim-dogrun"
-    use "co1ncidence/mountaineer.vim"
     -- poly
     use "whatyouhide/vim-gotham"
     use "rakr/vim-one"

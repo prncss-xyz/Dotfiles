@@ -23,7 +23,7 @@ return {
     --theme = "oceanic_material":
     --theme = "dogrun"
     --theme = "gotham"
-    theme = "flattened_dark"
+    --theme = "flattened_dark"
     --theme = "nord"
     --theme = "sonokai"
 

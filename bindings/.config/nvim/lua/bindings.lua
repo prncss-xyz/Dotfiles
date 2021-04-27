@@ -10,26 +10,43 @@ local function setup()
   vim.g.mapleader = " "
   vim.g.user_emmet_leader_key = "<C-y>"
 
-  map("", "<C-l>", "<cmd>nohlsearch<cr><cmd>diffupdate<cr><cmd>syntax sync fromstart<cr><c-l><CR>") -- Clear highlights
+  map("", "<C-z>", "u")
+  map("i", "<C-z>", "<esc>ui")
+  map("", "<C-S-z>", "<C-R>")
+  map("i", "<C-S-z>", "<C-R>")
+  map("v", "<C-c>", '"+y')
+  map("v", "<C-x>", '"+d')
+  map("", "<M-v>", "<C-v>")
+  map("", "<C-v>", '"+p')
+  map("i", "<C-v>", '<Esc>"+Pa')
+  map("", "<C-l>", "<cmd>nohlsearch<cr><cmd>diffupdate<cr><cmd>syntax sync fromstart<cr><c-l>") -- Clear highlights
   map("", "<C-s>", "<Esc>:w<CR>")
   map("i", "<C-s>", "<Esc>:w<CR>")
-  map("", "<C-n>", ":tabe")
-  map("i", "<C-n>", "<cmd>tabe<CR>")
   map("t", "<C-w>", "<C-\\><C-n>")
-  map("", "<C-W>x", "<cmd>Sayonara<CR>")
-  map("i", "<C-W>x", "<cmd>Sayonara<CR>")
   map("", "<C-w>L", "<cmd>vsplit<CR>")
   map("", "<C-w>J", "<cmd>hsplit<CR>")
   map("c", "<C-n>", "<down>")
   map("c", "<C-p>", "<up>")
   map("", "gx", '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<CR>')
-
+  map("", "<C-w>w", ":q!")
+  map("i", "<C-w>w", "<esc>:q!")
+  map("", "<C-w>x", ":bd!<cr>")
+  map("i", "<C-w>x", "<esc>:bd!<cr>")
   -- from https://github.com/mhinz/vim-galore
   -- The mapping takes a register (or * by default) and opens it in the cmdline-window. Hit <cr> when you're done editing for setting the register.
   -- Use it like this <leader>m or "q<leader>m.
   -- Notice the use of <c-r><c-r> to make sure that the <c-r> is inserted literally. See :h c_^R^R.
+
+  map("", "<C-a>", "<cmd>HopLine<cr>")
+  map("", "<C-h>w", "<cmd>HopWord<cr>")
+  map("", "<C-h>1", "<cmd>HopChar1<cr>")
+  map("", "<C-h>2", "<cmd>HopChar2<cr>")
+  map("", "<C-h>/", "<cmd>HopPattern<cr>")
+
   map("n", "<leader>m", ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>")
 
+  map("", "<c-n>", ":edit %:h/")
+  map("i", "<c-n>", "<esc>:edit %:h/")
   -- bufferline
   map("", "<S-j>", "<cmd>BufferLineCycleNext<CR>")
   map("", "<S-k>", "<cmd>BufferLineCyclePrev<CR>")
@@ -65,7 +82,7 @@ local function setup()
   -- LSP
   map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
   map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
-  map("n", "<C-i>", "<cmd>lua vim.lsp.buf.hover()<CR>")
+  map("n", "<M-k>", "<cmd>lua vim.lsp.buf.hover()<CR>")
   map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
   map("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>")
   map("n", "<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>")
@@ -78,13 +95,12 @@ local function setup()
   map("n", "mk", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>")
   map("n", "mj", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>")
   map("n", "<leader>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>")
-  map("n", "<leader><C-k>", "<cmd>:lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>")
+  map("n", "<leader><C-k>", "<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>")
+
+  map("n", "<leader>rg", "<cmd>Rg <cword><cr>")
 
   -- goyo
   map("n", "<leader>zg", "<cmd>Goyo<CR>")
-
-  -- format
-  map("n", "<leader>=", "<cmd>Format<CR>")
 
   -- compe
   map("i", "<C-space>", "compe#complete()", {expr = true})
@@ -94,32 +110,37 @@ local function setup()
   map("i", "<C-d>", "compe#scroll({ 'delta': -4 })", {expr = true})
   -- compe-autopairs
   map("i", "<CR>", "v:lua.completions()", {expr = true})
-  -- neuron
-  -- mapping generation doesn't seen to work propersly
-  --[[
 
-    - <CR>: follow link
-    - n: new note
-    - z: open note
-    - Z: insert note i
-    - b: open note form backlinks
-    - B: insert note from backlinks
-    - t: insert tag
-    - s: start server (port 8200)
-    - : next extmark
-    - : previous extmark
-
+  vim.cmd [[
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
   ]]
-  map("n", "<CR>", "<cmd>lua require'neuron'.enter_link()<CR>")
-  map("n", "gzn", "<cmd>lua require'neuron/cmd'.new_edit(require'neuron'.config.neuron_dir)<CR>")
-  map("n", "<C-g>", "<cmd>lua require'neuron/telescope'.find_zettels()<CR>")
-  map("n", "gzi", "<cmd>lua require'neuron/telescope'.find_zettels {insert = true}<CR>")
-  map("n", "gzb", "<cmd>lua require'neuron/telescope'.find_backlinks()<CR>")
-  map("n", "gzB", "<cmd>lua require'neuron/telescope'.find_backlinks {insert = true}<CR>")
-  map("n", "gzt", "<cmd>lua require'neuron/telescope'.find_tags()<CR>")
-  map("n", "gzs", "<cmd>lua require'neuron'.rib {address = '127.0.0.1:8200', verbose = true}<CR>")
-  -- <cmd>lua require"neuron".goto_next_extmark()<CR>
-  -- <cmd>lua require"neuron".goto_prev_extmark()<CR>
+  -- language
+  map("", "<leader>le", "<cmd>setlocal spell spelllang=en_us,cjk<cr>")
+  map("", "<leader>lf", "<cmd>setlocal spell spelllang=fr,cjk<cr>")
+  map("", "<leader>lb", "<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>")
+  map("", "<leader>lx", "<cmd>setlocal nospell<cr>")
+
+  --notagain
+  map("", "<C-g>", "<cmd>lua require'notagain'.prompt('edit', false, 'all')<CR>")
+  map("i", "<C-g>", "<cmd>lua require'notagain'.prompt('edit', false, 'all')<CR>")
+  map("", "gzi", "<cmd>lua require'notagain'.prompt('insert', false, 'all')<CR>")
+  map("", "gzn", "<cmd>lua require'notagain'.new_note()<CR>")
+  require "notagain".setup(
+    {
+      on_ready = function(dir)
+        vim.cmd(
+          "autocmd BufRead,BufNewFile " .. "*.md nnoremap <buffer> <CR> <cmd>lua require'notagain'.enter_link()<CR>"
+        )
+        vim.cmd(
+          "autocmd BufRead,BufNewFile " ..
+            "/*.md nnoremap <buffer> <C-k> <cmd>lua require'notagain'.print_hover_title()<CR>"
+        )
+      end
+    }
+  )
 end
 
 return {
@@ -138,6 +159,7 @@ imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j
 smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
 
 " Expand or jump
+
 imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
 smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
 

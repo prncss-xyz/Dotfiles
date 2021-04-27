@@ -1,1 +1,0 @@
-set GIT_EDITOR = nvim -u ~/.local/share/prompter.vim --noplugin

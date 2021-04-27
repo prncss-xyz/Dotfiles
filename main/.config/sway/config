@@ -1,5 +1,4 @@
 set $term kitty
-set $menu exec $term --class=launcher -e sway-launcher-desktop
 
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -9,11 +8,12 @@ mouse_warping none
 focus_follows_mouse no
 
 ### Autoexec
-exec pactl set-sink-volume @DEFAULT_SINK@ 40%
-exec kitty --title=scratchpad
+exec pactl set-sink-volume @DEFAULT_SINK@ 30%
+exec $term --title=scratchpad
 exec ~/.local/bin/browser
 exec ~/.local/bin/setbg-sway
 exec mako
+exec languagetool --http
 exec kdeconnect-app
 exec kdeconnect-sms
 #exec kak -d -s default
@@ -62,16 +62,16 @@ gaps inner 8
 # exec oguri
 # mpvpaper -o "no-audio --loop-file=inf" DP-1 FalseEminentFlickertailsquirrel-mobile.mp4
 
-include ~/.config/sway/theme.conf
+# include ~/.config/sway/theme.conf
 # 
 # class                 border      background  text        indicator child_border
-client.focused         	"$background"	$background	$foreground	$color2		$color4	
-client.unfocused       	"$background"	$background	$foreground	$color4		$background
-client.focused_inactive	"$background"	$background	$foreground	$color4		"$background"
-client.urgent       		"$background"	$background	$foreground	$color4		$background
-client.placeholder	    "$background"	$background	$foreground	$color4	  "$background"
+# client.focused         	"$background"	$background	$foreground	$color2		$color4	
+# client.unfocused       	"$background"	$background	$foreground	$color4		$background
+# client.focused_inactive	"$background"	$background	$foreground	$color4		"$background"
+# client.urgent       		"$background"	$background	$foreground	$color4		$background
+# client.placeholder	    "$background"	$background	$foreground	$color4	  "$background"
 
-client.background       $background
+# client.background       $background
 
 include ~/.config/sway/config.d/*
 #

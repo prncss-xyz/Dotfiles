@@ -1,4 +1,4 @@
-# Logo key. Use Mod1 for Alt.
+# Logo key. Use Mod0 for Alt.
 set $mod Mod4
 # Home row direction keys, like vim
 set $left h
@@ -11,9 +11,9 @@ set $right l
 # Basics:
 #
 # Start a terminal
-bindsym $mod+t exec $term
+bindsym $mod+t exec new_term
 bindsym $mod+y exec .local/bin/browser --new-window
-bindsym $mod+u exec kitty -e edit_project
+bindsym $mod+u exec $term -e edit_project
 # TODO: toogle focus
 bindsym $mod+m exec makoctl dismiss
 bindsym $mod+Return [title="^scratchpad$"] scratchpad show

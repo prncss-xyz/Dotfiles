@@ -1,18 +1,17 @@
 #!/usr/bin/env sh
 
+# TODO http://
+
 FPATH="$1"
 
-#TODO: epub, office
-
-## URL
-
-case $FPATH in 
-  *"://"*)
-    browser $FPATH&
-    exit 0
-    ;;
+case "${FPATH}" in
+  http://*|https://*)
+    browser "${FPATH}" &
+    exit 0;;
 esac
 
+
+#TODO: epub, office
 
 FNAME=$(basename "$1")
 DNAME=$(dirname "$1")
@@ -26,8 +25,11 @@ fi
 case "${ext}" in
   htm|html)
     browser "${FPATH}" &
-    exit 0
-    ;;
+    exit 0;;
+    ## text
+    txt)
+    nvr --remote-silent "${FPATH}"
+    exit 0;;
 esac
 
 MIMETYPE="$( file -bL --mime-type -- "${FPATH}" )"
@@ -36,40 +38,45 @@ case "${MIMETYPE}" in
   ## Image
   image/*)
   imv -n "${FPATH}" "${DNAME}" &
-  exit 0
-  ;;
+  exit 0;;
 
   ## Manpages
   text/troff)
   hman -l "${FPATH}"
-  exit 0
-  ;;
+  exit 0;;
+
+  ## Text/html
+  text/html)
+  browser "${FPATH}" &
+  exit 0;;
 
   ## PDF
   application/pdf)
   evince "${FPATH}" &
-  exit 0
-  ;;
+  exit 0;;
 
   ## Audio
   audio/*)
   celluloid "${FPATH}" &
-  exit 0
-  ;;
+  exit 0;;
 
   ## Video
   video/*)
   celluloid "${FPATH}" &
-  exit 0
-  ;;
+  exit 0;;
 
   ## Ebook
   application/vnd.openxmlformats-officedocument.wordprocessingml.document| \
     application/x-mobipocket-ebook| \
     application/epub+zip)
       ebook-viewer "${FPATH}" &
-      exit 0
-      ;;
+      exit 0;;
+
+  ## Text
+  ## TODO new kitty if no remote
+  text/* | */xml)
+  nvr --remote-silent "${FPATH}"
+  exit 0;;
 
   ## DjVu
   image/vnd.djvu)
@@ -81,9 +88,6 @@ case "${MIMETYPE}" in
     exiftool "${FPATH}" | eval "$PAGER"
     exit 0
   fi
-  exit 1
-  ;;
+  exit 1;;
 esac
-
-# nvim is sane default!
-nvr --remote-silent "${FPATH}"
+echo unknown mimetype $MIMETYPE

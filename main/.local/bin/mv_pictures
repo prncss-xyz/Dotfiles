@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
-od="$PWD"
+
 cd "$(xdg-user-dir PICTURES)"
-res="$(fd -t d . .|dmenu)"
+res="$(fd -t d . .|fzf)"
 if [ -n "$res" ]; then
-  mv "$od/$1" "$res"
+  mv "$1" "$res"
 fi

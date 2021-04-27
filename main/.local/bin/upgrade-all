@@ -1,9 +1,7 @@
 #!/usr/bin/env sh
 
 yay --needed -Syu
-nvim --headless +PaqInstall +qall
-nvim --headless +PaqUpdate +qall
-nvim --headless +PaqClean +qall
+nvim --headless +PackerUpdate +qall
 yarn global upgrade
 
 fisher update

@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-cd ~/Dotfiles
-sleep 0.1
-nvim +"Telescope find_files hidden=true"
-

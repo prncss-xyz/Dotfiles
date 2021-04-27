@@ -1,6 +1,7 @@
 local gl = require("galaxyline")
 local gls = gl.section
 gl.short_line_list = {"LuaTree", "vista", "dbui", "goyo"}
+local skipLock = {"LuaTree", "vista", "dbui", "help"}
 
 local vim, lsp, api = vim, vim.lsp, vim.api
 
@@ -58,7 +59,7 @@ local function diagnostic_warnings()
 end
 
 local function readonly()
-  if vim.bo.filetype == "help" then
+  if vim.fn.index(skipLock,vim.bo.filetype) ~= -1 then
     return ""
   end
   if vim.bo.readonly == true then
@@ -141,16 +142,7 @@ gls.left = {
       provider = lift " ",
       highlight = {text, background}
     }
-  }
-}
-
-gls.right = {
-  --  {
-  --    Pwd = {
-  --      provider = pwd,
-  --      highlight = {text, background}
-  --    }
-  --  },
+  },
   {
     Readonly = {
       provider = readonly,
@@ -174,6 +166,24 @@ gls.right = {
       provider = diagnostic_warnings,
       highlight = {warn, background}
     }
+  }
+}
+
+gls.right = {
+  --  {
+  --    Pwd = {
+  --      provider = pwd,
+  --      highlight = {text, background}
+  --    }
+  --  },
+  {
+    LineColumn = {
+
+    provider = 'LineColumn',
+    separator = ' ',
+      separator_highlight = {background, background},
+      highlight = {text, background}
+  }
   },
   {
     Teenth = {
@@ -213,10 +223,7 @@ gls.short_line_left = {
       provider = lift " ",
       highlight = {text, background}
     }
-  }
-}
-
-gls.short_line_right = {
+  },
   {
     ReadonlyB = {
       provider = readonly,
@@ -240,6 +247,17 @@ gls.short_line_right = {
       provider = diagnostic_warnings,
       highlight = {warn, background}
     }
+  }
+}
+
+gls.short_line_right = {
+  {
+    LineColumnB = {
+    provider = 'LineColumn',
+    separator = ' ',
+      separator_highlight = {background, background},
+      highlight = {text, background}
+  }
   },
   {
     TeenthB = {
@@ -281,6 +299,12 @@ zen.left = {
 }
 zen.right = {
   {
+    LineColumnC = {
+    provider = 'LineColumn',
+    separator = ' ',
+      separator_highlight = {background, backgroundGoyo},
+      highlight = {text, backgroundGoyo}
+  },
     TeenthC = {
       provider = current_line_tenth,
       highlight = {text, backgroundGoyo}

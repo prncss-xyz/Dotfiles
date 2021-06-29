@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+cd $HOME/Dotfiles
+
+~/Media/Projects/nononotes/cli/index serve
+sleep 1
+swaymsg '[title="^ .* — Dotfiles$"] move workspace 8'
+nvim ~/Personal/neuron/ac585295.md

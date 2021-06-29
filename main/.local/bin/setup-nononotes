@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+export NVIM_LISTEN_ADDRESS=/tmp/nvim-$$
+exec $TERMINAL -e $HOME/Media/Projects/nononotes/setup &
+sleep 1; firefox --new-window localhost:3000&

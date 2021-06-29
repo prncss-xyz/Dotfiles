@@ -1,21 +1,35 @@
 set $term kitty
 
+output * scale 2
+
+# output DP-1 scale 2
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
 # set $menu dmenu_path | dmenu | xargs swaymsg exec --
 
+exec swayidle -w \
+ timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+ timeout 330 'swaylock' \
+ before-sleep 'swaylock'
+
 mouse_warping none
 focus_follows_mouse no
+for_window [workspace=1] layout stacking
 
 ### Autoexec
 exec pactl set-sink-volume @DEFAULT_SINK@ 30%
-exec $term --title=scratchpad
+exec pactl set-sink-mute @DEFAULT_SINK@ 0
 exec ~/.local/bin/browser
 exec ~/.local/bin/setbg-sway
 exec mako
 exec languagetool --http
-exec kdeconnect-app
+assign [app_id="org\.kde\.kdeconnect\.sms"] workspace 9
 exec kdeconnect-sms
+assign [app_id="org\.kde\.kdeconnect\.app"] workspace 9
+exec kdeconnect-app
+exec $term -e ~/.local/bin/setup-dotfiles
+exec wlsunset -l 45.5 -L -73.6
+exec ~/Media/Projects/sway-cycling-hotkeys/cli.js
 #exec kak -d -s default
 
 ### Idle
@@ -38,12 +52,8 @@ input "type:keyboard" {
 for_window [title="^scratchpad$"] {
   move scratchpad
 }
-for_window [app_id="org\.kde\.kdeconnect\.app"] {
-  move scratchpad
-}
-for_window [app_id="org\.kde\.kdeconnect\.sms"] {
-  move scratchpad
-}
+exec $term --title=scratchpad
+
 workspace_auto_back_and_forth yes
 focus_on_window_activation smart
 
@@ -57,7 +67,6 @@ for_window [app_id="^launcher$"] floating enable, sticky enable, resize set 30 p
 smart_gaps on
 default_border pixel 3
 smart_borders on
-gaps inner 8
 
 # exec oguri
 # mpvpaper -o "no-audio --loop-file=inf" DP-1 FalseEminentFlickertailsquirrel-mobile.mp4

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+tmpfile=$(mktemp /tmp/mdopen.XXXXXX)
+lowdown -o $tmpfile "$1"
+browser $tmpfile

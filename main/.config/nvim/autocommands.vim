@@ -1,4 +1,5 @@
-autocmd TermOpen * startinsert|setlocal nonumber|setlocal norelativenumber
+autocmd TermOpen * setlocal nonumber|setlocal norelativenumber|startinsert
+autocmd BufEnter * if &bt == 'terminal' | startinsert | endif
 
 augroup focus
   au!
@@ -19,3 +20,21 @@ autocmd BufRead,BufNewFile .eslintrc,.stylelintrc,.htmlhintrc set filetype=json
 autocmd FileType markdown LanguageToolSetUp
 autocmd FileType markdown setlocal spell
 autocmd BufWritePost * if &ft ==# 'markdown' | LanguageToolCheck | endif
+
+" share data between nvim instances (registers etc)
+" CursorHold,
+augroup SHADA
+    autocmd!
+    autocmd TextYankPost,FocusGained,FocusLost *
+                \ if exists(':rshada') | rshada | wshada | endif
+augroup END
+
+function! ToggleQuickFix()
+    if empty(filter(getwininfo(), 'v:val.quickfix'))
+        copen
+    else
+        cclose
+    endif
+endfunction
+
+nnoremap <silent> <F2> :call ToggleQuickFix()<cr>

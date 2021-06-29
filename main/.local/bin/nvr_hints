@@ -1,0 +1,20 @@
+#!/usr/bin/luajit
+
+local s = arg[1]
+if not s then
+  os.exit(1)
+end
+
+local n1, n2, n3 = s:match("(.+):(%d+):(%d+)")
+if n1 then
+  os.execute(string.format('nvr "+call cursor(%s,%s)" %s', n2, n3, n1))
+  os.exit(0)
+end
+
+local m1, m2 = s:match("(.+):(%d+)")
+if m1 then
+  os.execute(string.format("nvr +%s %s", m2, m1))
+  os.exit(0)
+end
+
+os.exit(1)

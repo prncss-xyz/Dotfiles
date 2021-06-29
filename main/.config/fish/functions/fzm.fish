@@ -1,6 +1,6 @@
 function fzm
-  set selected (fd -e md -I --type=file|fzf)
+  set selected (fd -L -e md -I --type=file|fzf)
   if test -n "$selected"
-    mdopen "$selected"
+    opener "$selected"
   end
 end

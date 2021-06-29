@@ -1,4 +1,8 @@
-printf "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+printf "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+printf "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+printf "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+printf "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+
 #abbr -g ytdl 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
 abbr -g kdiff kitty +kitten diff
@@ -7,8 +11,8 @@ alias o opener
 alias bat 'bat --style=changes,header,rule,snip'
 alias ls lsd
 alias wttr 'curl "fr.wttr.in/montreal?n"'
-alias get_tree 'swaymsg -t get_tree > /tmp/tree.json; nvimpager /tmp/tree.json'
-alias cp-last 'history|head -1|wl-copy'
+alias get-tree 'swaymsg -t get_tree > /tmp/tree.json; nvr /tmp/tree.json'
+alias clip-last 'history|head -1|wl-copy'
 alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
 alias goldendict 'QT_QPA_PLATFORM=xcb goldendict'
 
@@ -22,14 +26,18 @@ kitty + complete setup fish | source
 
 
 function fish_title
-  set pat (realpath --relative-base=$HOME $PWD)
-  if [ "$pat" = "." ]
-    set pat "~"
-  end
-  set branch (git branch --show-current 2>/dev/null)
-  if [ -n "$branch" ]
-    echo  " $branch — $pat"
+  if  set -q VIMRUNTIME
+    echo (basename $PWD)"/"
   else
-    echo $pat
+    set pat (realpath --relative-base=$HOME $PWD)
+    if [ "$pat" = "." ]
+      set pat "~"
+    end
+    set branch (git branch --show-current 2>/dev/null)
+    if [ -n "$branch" ]
+      echo  " $branch — $pat"
+    else
+      echo $pat
+    end
   end
 end

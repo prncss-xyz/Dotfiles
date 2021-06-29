@@ -6,20 +6,25 @@ set $down j
 set $up k
 set $right l
 
+## temporary
+bindsym $mod+shift+q exec swaymsg -t get_tree > /tmp/tree.json
 ### Key bindings
 #
 # Basics:
 #
+bindsym $mod+t exec echo next terminal > /tmp/sway-cycling-hotkeys
 # Start a terminal
-bindsym $mod+t exec new_term
-bindsym $mod+y exec .local/bin/browser --new-window
-bindsym $mod+u exec $term -e edit_project
-# TODO: toogle focus
+bindsym $mod+shift+t exec echo previous terminal > /tmp/sway-cycling-hotkeys
+bindsym $mod+y exec echo next browser > /tmp/sway-cycling-hotkeys
+bindsym $mod+shift+y exec echo previous browser > /tmp/sway-cycling-hotkeys
+bindsym $mod+u exec echo next default > /tmp/sway-cycling-hotkeys
+bindsym $mod+shift+u exec echo previous default > /tmp/sway-cycling-hotkeys
 bindsym $mod+m exec makoctl dismiss
 bindsym $mod+Return [title="^scratchpad$"] scratchpad show
 bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
 bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p pass; wl-clipboard-manager unlock"
 bindsym $mod+equal exec 'kitty -e ~/.local/bin/edit_mathjs'
+bindsym $mod+d exec 'wofi '
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
 # Despite the name, also works for non-floating windows.
@@ -32,7 +37,7 @@ bindsym $mod+Ctrl+q kill
 bindsym $mod+Ctrl+r reload
 bindsym $mod+Ctrl+e exit
 bindsym $mod+Ctrl+l exec "swaylock"
-bindsym $mod+Ctrl+delete exec "reboot"
+bindsym Alt+Ctrl+delete exec "reboot"
 bindsym $mod+Ctrl+p exec "poweroff"
 # bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
 #
@@ -218,7 +223,6 @@ mode audio {
 #}
 #bindsym $mod+m mode "mouse"
 #
-bindsym $mod+n [title=^nvim] focus
 bindsym $mod+ctrl+period mark __mark
 bindsym $mod+period [con_mark=__mark] move to workspace current; [con_mark=__mark] focus
 bindsym $mod+shift+period [con_mark=__mark] move to workspace next

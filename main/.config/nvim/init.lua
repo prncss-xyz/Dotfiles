@@ -38,7 +38,7 @@ vim.o.hidden = true
 --vim.o.clipboard = "unnamedplus"
 vim.o.wildmode = "full:list"
 vim.o.wildignorecase = true
-vim.wo.number = false
+vim.wo.number = true
 vim.wo.relativenumber = false
 vim.wo.signcolumn = "yes"
 vim.wo.scrolloff = 5
@@ -83,7 +83,7 @@ cmd("source " .. vim.fn.stdpath("config") .. "/autocommands.vim")
 require "setup/telescope"
 require "theme-exporter"
 require "setup/lsp"
---require "setup/specs" -- not working
+require "setup/specs" -- not working
 
 vim.g.vista_icon_indent = {"╰─▸ ", "├─▸ "}
 vim.g["vista#renderer#enable_icon"] = 1
@@ -92,4 +92,37 @@ vim.g["vista#renderer#icons"] = {
   ["variable"] = ""
 }
 
-vim.g.indent_blankline_char_highlight_list = {"SpecialKey", "DevIconIni"}
+-- vim.g.indent_blankline_char_highlight_list = {"SpecialKey", "DevIconIni"}
+vim.g.indent_blankline_show_current_context = true
+vim.g.indent_blankline_buftype_exclude = {'terminal'}
+
+require('specs').setup{
+  show_jumps  = true,
+  min_jump = 30,
+  popup = {
+    delay_ms = 0, -- delay before popup displays
+    inc_ms = 10, -- time increments used for fade/resize effects
+    blend = 10, -- starting blend, between 0-100 (fully transparent), see :h winblend
+    width = 10,
+    winhl = "PMenu",
+    fader = require('specs').linear_fader,
+    resizer = require('specs').shrink_resizer
+  },
+  ignore_filetypes = {},
+  ignore_buftypes = {
+    nofile = true,
+  },
+}
+
+require'treesitter-context.config'.setup{
+  enable = true,
+}
+vim.g.bufferline = {
+  closable = false,
+  icon_close_tab_modified = '',
+  icon_separator_active = '',
+  icon_separator_inactive = '',
+  auto_hide = true,
+}
+
+vim.cmd('set title')

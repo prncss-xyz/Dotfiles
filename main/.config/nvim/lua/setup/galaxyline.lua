@@ -1,9 +1,33 @@
 local gl = require("galaxyline")
+local vcs = require('galaxyline.provider_vcs')
 local gls = gl.section
 gl.short_line_list = {"LuaTree", "vista", "dbui", "goyo"}
 local skipLock = {"LuaTree", "vista", "dbui", "help"}
 
 local vim, lsp, api = vim, vim.lsp, vim.api
+
+local function set_title()
+  local branch = vcs.get_git_branch()
+  local titlestring = ''
+  if branch then
+    titlestring = titlestring .. ' '.. branch .. ' — '
+  else
+    titlestring = titlestring .. ' '
+  end
+  local home = vim.loop.os_homedir()
+  local dir = vim.fn.getcwd()
+  if dir == home then
+    dir = '~'
+  else
+    local i
+      ,i = dir:find(home.."/", 1, true)
+    if i then
+      dir = dir:sub(i+1)
+    end
+  end
+  titlestring = titlestring .. dir
+  vim.cmd(string.format('let &titlestring=%q', titlestring))
+end
 
 -- get current file name
 local function modified()
@@ -130,6 +154,7 @@ gls.left = {
   {
     FileName = {
       provider = function()
+        set_title()
         return vim.api.nvim_eval("@%") .. " "
       end,
       separator = separator,

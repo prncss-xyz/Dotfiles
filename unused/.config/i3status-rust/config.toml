@@ -1,0 +1,10 @@
+[theme]
+name = "solarized-dark"
+[[block]]
+block = "focused_window"
+max_width = 50
+show_marks = "visible"
+[[block]]
+block = "time"
+format = "%Y-%m-%d %H:%M"
+interval = 10

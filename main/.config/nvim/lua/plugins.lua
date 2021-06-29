@@ -27,18 +27,21 @@ return require "packer".startup(
     use "kyazdani42/nvim-web-devicons"
 
     -- Text Edition
+    use {"kevinhwang91/nvim-bqf"}
     use {"jremmen/vim-ripgrep", command = {"Rg"}}
+    use "matze/vim-move" -- Move current line/selection
     use "farmergreg/vim-lastplace"
-    use "matze/vim-move"
     use "bkad/CamelCaseMotion" -- ,w
-    use {
-      "phaazon/hop.nvim",
-      as = "hop",
-      config = function()
-        require "hop".setup {keys = "fjdksla;gh"}
-      end
-    }
+    use 'ggandor/lightspeed.nvim'
+    -- use {
+    --   "phaazon/hop.nvim",
+    --   as = "hop",
+    --   config = function()
+    --     require "hop".setup {keys = "fjdksla;gh"}
+    --   end
+    -- }
     use "nvim-treesitter/nvim-treesitter-textobjects"
+    use "RRethy/nvim-treesitter-textsubjects"
     use {
       "b3nj5m1n/kommentary",
       config = function()
@@ -52,12 +55,15 @@ return require "packer".startup(
     }
     use "JoosepAlviste/nvim-ts-context-commentstring"
     use {
+      -- insert or delete brackets, parens, quotes in pair
       "windwp/nvim-autopairs",
       config = function()
         require "nvim-autopairs".setup()
       end
     }
+    use 'andymass/vim-matchup'
     use {
+      -- Use treesitter to autoclose and autorename html tag
       "windwp/nvim-ts-autotag"
     }
     use "machakann/vim-sandwich"
@@ -75,6 +81,7 @@ return require "packer".startup(
         vim.g.emmet_complete_tag = true
       end
     }
+
     -- Language support
     use {
       "nvim-treesitter/nvim-treesitter",
@@ -86,12 +93,6 @@ return require "packer".startup(
     use {
       "nvim-treesitter/playground",
       command = {"TSPlaygroundToggle"}
-     }
-    use {
-      "mhartington/formatter.nvim",
-      config = function()
-        require "setup/formatter"
-      end
     }
     use {
       "neovim/nvim-lspconfig",
@@ -107,7 +108,9 @@ return require "packer".startup(
     use "jose-elias-alvarez/nvim-lsp-ts-utils"
     use "dag/vim-fish"
     use "potatoesmaster/i3-vim-syntax"
-    -- Environement
+
+    -- UX
+    use 'wellle/visual-split.vim'
     use {
       "hrsh7th/nvim-compe",
       config = function()
@@ -116,31 +119,38 @@ return require "packer".startup(
     }
     use {
       "lewis6991/gitsigns.nvim",
-      -- config = function()
-      --   require "setup/gitsigns"
-      -- end
+      config = function()
+        require "setup/gitsigns"
+      end
     }
+    use 'iberianpig/tig-explorer.vim'
     use {
       "glepnir/galaxyline.nvim",
       config = function()
         require "setup/galaxyline"
       end
     }
+    use 'brettanomyces/nvim-terminus'
     use {
-      "akinsho/nvim-bufferline.lua",
-      config = function()
-        require "setup/bufferline"
-      end
+      'romgrk/barbar.nvim'
+    }
+    -- use {
+    --   "akinsho/nvim-bufferline.lua",
+    --   config = function()
+    --     require "setup/bufferline"
+    --   end
+    -- }
+    use {
+      'romgrk/nvim-treesitter-context'
     }
     use {
       "lukas-reineke/indent-blankline.nvim",
       branch = "lua"
     }
-    use {
-      "liuchengxu/vista.vim"
-    }
+    -- use {
+    --   "liuchengxu/vista.vim"
+    -- }
     use "p00f/nvim-ts-rainbow"
-    -- use {"tzachar/compe-tabnine", run = "sh install.sh"} -- is that ok?
     use {
       "junegunn/goyo.vim",
       config = function()
@@ -167,22 +177,11 @@ return require "packer".startup(
       end,
       command = {"Goyo", "Goyo!", "Goyo!!"}
     }
-    use {
-      "RishabhRD/nvim-cheat.sh",
-      requires = "RishabhRD/popfix",
-      command = {"Cheat", "CheatWithoutComments", "CheatList", "CheatListWithoutComments"}
-    }
-    use {
-      "lifepillar/vim-cheat40",
-      command = {"Cheat40"}
-    }
-    -- use "edluffy/specs.nvim"
-    use "psliwka/vim-smoothie"
     use "nvim-telescope/telescope-fzy-native.nvim"
     use {
       "nvim-telescope/telescope.nvim",
       config = function()
-        --        require "setup/telescope"
+        require "setup/telescope"
       end
     }
     use {
@@ -196,12 +195,41 @@ return require "packer".startup(
     -- Natural languages
     use {
       "vigoux/LanguageTool.nvim",
-      command = { "LanguageToolSetup", "LanguageToolCheck" }
+      command = {"LanguageToolSetup", "LanguageToolCheck"}
+    }
+    -- Learning
+    -- use {"tzachar/compe-tabnine", run = "sh install.sh"} -- is that ok? crashes
+    use {
+      "folke/which-key.nvim",
+      config = function()
+        require("which-key").setup {}
+      end
+    }
+    use {
+      "RishabhRD/nvim-cheat.sh",
+      requires = "RishabhRD/popfix",
+      command = {"Cheat", "CheatWithoutComments", "CheatList", "CheatListWithoutComments"}
+    }
+    use {
+      "lifepillar/vim-cheat40",
+      command = {"Cheat40"}
+    }
+
+    -- FX
+    use {
+      "edluffy/specs.nvim" -- not working
+    }
+    use {
+      "karb94/neoscroll.nvim",
+      config = function()
+        require('neoscroll').setup{}
+      end
     }
 
     -- Utilities
     -- use "oberblastmeister/neuron.nvim",
-    use "~/Media/Projects/notagain-nvim"
+    use "~/Media/Projects/nononotes-nvim"
+
     -- Color schemes
     -- classics
     use "romainl/flattened"

@@ -10,7 +10,6 @@ case "${FPATH}" in
     exit 0;;
 esac
 
-
 #TODO: epub, office
 
 FNAME=$(basename "$1")
@@ -23,11 +22,14 @@ if [ -n "$ext" ]; then
 fi
 
 case "${ext}" in
+  md|markdown)
+    mdopen "${FPATH}" &
+    exit 0;;
   htm|html)
     browser "${FPATH}" &
     exit 0;;
     ## text
-    txt)
+  txt|jsx|tsx)
     nvr --remote-silent "${FPATH}"
     exit 0;;
 esac
@@ -74,7 +76,7 @@ case "${MIMETYPE}" in
 
   ## Text
   ## TODO new kitty if no remote
-  text/* | */xml)
+  text/* | */xml | */json)
   nvr --remote-silent "${FPATH}"
   exit 0;;
 

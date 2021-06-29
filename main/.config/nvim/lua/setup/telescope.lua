@@ -13,11 +13,11 @@ require "telescope".setup {
         override_file_sorter = true
       }
     },
-            mappings = {
-            i = {
-                ["<C-q>"] = actions.send_to_qflist,
-            },
-        },
+    mappings = {
+      i = {
+        ["<C-q>"] = actions.send_to_qflist,
+      },
+    },
     file_ignore_patterns = {
       ".git/*",
       "node_modules/*"

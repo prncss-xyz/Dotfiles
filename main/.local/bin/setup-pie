@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+source <(pass show session/oie-de-cravan)
+export NVIM_LISTEN_ADDRESS=/tmp/nvim-$$
+
+exec $TERMINAL -e "$HOME/Media/Projects/pie2/extra/setup" &
+sleep 1; firefox --new-window localhost:8000&

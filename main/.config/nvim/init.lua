@@ -126,3 +126,23 @@ vim.g.bufferline = {
 }
 
 vim.cmd('set title')
+
+require'nvim-projectconfig'.load_project_config({
+  project_dir = "~/Media/Projects/projects-config/",
+})
+
+function _G.Dump(...)
+    local objects = vim.tbl_map(vim.inspect, {...})
+    print(unpack(objects))
+end
+
+require'auto-session'.setup({
+  -- log_level = 'degug',
+  -- auto_session_root_dir = "~/Personal/auto-session/",
+  auto_save_enabled = true,
+  auto_restore_enabled = true
+})
+
+require('session-lens').setup {
+  shorten_path=false,
+}

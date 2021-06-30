@@ -6,19 +6,17 @@ set $down j
 set $up k
 set $right l
 
-## temporary
-bindsym $mod+shift+q exec swaymsg -t get_tree > /tmp/tree.json
 ### Key bindings
 #
 # Basics:
 #
-bindsym $mod+t exec echo next terminal > /tmp/sway-cycling-hotkeys
+bindsym $mod+t exec echo next terminal > /tmp/sway-mega-hotkeys
 # Start a terminal
-bindsym $mod+shift+t exec echo previous terminal > /tmp/sway-cycling-hotkeys
-bindsym $mod+y exec echo next browser > /tmp/sway-cycling-hotkeys
-bindsym $mod+shift+y exec echo previous browser > /tmp/sway-cycling-hotkeys
-bindsym $mod+u exec echo next default > /tmp/sway-cycling-hotkeys
-bindsym $mod+shift+u exec echo previous default > /tmp/sway-cycling-hotkeys
+bindsym $mod+shift+t exec echo previous terminal > /tmp/sway-mega-hotkeys
+bindsym $mod+y exec echo next browser > /tmp/sway-mega-hotkeys
+bindsym $mod+shift+y exec echo previous browser > /tmp/sway-mega-hotkeys
+bindsym $mod+u exec echo next default > /tmp/sway-mega-hotkeys
+bindsym $mod+shift+u exec echo previous default > /tmp/sway-mega-hotkeys
 bindsym $mod+m exec makoctl dismiss
 bindsym $mod+Return [title="^scratchpad$"] scratchpad show
 bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
@@ -31,6 +29,22 @@ bindsym $mod+d exec 'wofi '
 # Change normal to inverse to use left mouse button for resizing and right
 # mouse button for dragging.
 floating_modifier $mod normal
+
+bindsym $mod+semicolon mode jump
+mode jump {
+  bindsym a exec echo go 0 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym s exec echo go 1 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym d exec echo go 2 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym f exec echo go 3 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym j exec echo go 4 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym k exec echo go 5 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym l exec echo go 6 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym semicolon exec echo go 7 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym g exec echo back all > /tmp/sway-mega-hotkeys; mode default
+  bindsym h exec echo last all > /tmp/sway-mega-hotkeys; mode default
+  bindsym Escape mode default
+  bindsym return mode default
+}
 
 # Kill focused window
 bindsym $mod+Ctrl+q kill

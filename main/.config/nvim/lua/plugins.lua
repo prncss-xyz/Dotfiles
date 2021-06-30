@@ -26,20 +26,17 @@ return require "packer".startup(
     -- for lsp completion items
     use "kyazdani42/nvim-web-devicons"
 
+    -- Projects
+    use "windwp/nvim-projectconfig"
+    use 'rmagatti/auto-session'
+    use 'rmagatti/session-lens'
+
     -- Text Edition
     use {"kevinhwang91/nvim-bqf"}
     use {"jremmen/vim-ripgrep", command = {"Rg"}}
     use "matze/vim-move" -- Move current line/selection
-    use "farmergreg/vim-lastplace"
     use "bkad/CamelCaseMotion" -- ,w
     use 'ggandor/lightspeed.nvim'
-    -- use {
-    --   "phaazon/hop.nvim",
-    --   as = "hop",
-    --   config = function()
-    --     require "hop".setup {keys = "fjdksla;gh"}
-    --   end
-    -- }
     use "nvim-treesitter/nvim-treesitter-textobjects"
     use "RRethy/nvim-treesitter-textsubjects"
     use {

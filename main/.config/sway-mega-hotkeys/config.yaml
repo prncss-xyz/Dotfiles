@@ -1,0 +1,10 @@
+matcher:
+  - label: "terminal"
+    criteria: "app_id"
+    value: "kitty"
+  - label: "browser"
+    criteria: "app_id"
+    value: "firefox"
+runner:
+  terminal: "kitty"
+  browser: "firefox --new-window"

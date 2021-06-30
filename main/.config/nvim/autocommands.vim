@@ -38,3 +38,8 @@ function! ToggleQuickFix()
 endfunction
 
 nnoremap <silent> <F2> :call ToggleQuickFix()<cr>
+
+augroup NvimProjectConfig
+ autocmd!
+ autocmd DirChanged * lua require('nvim-projectconfig').load_project_config()
+augroup end

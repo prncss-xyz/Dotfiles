@@ -1,5 +1,5 @@
-local gl = require("galaxyline")
-local vcs = require('galaxyline.provider_vcs')
+local gl = require"galaxyline"
+local Job = require'plenary.job'
 local gls = gl.section
 gl.short_line_list = {"LuaTree", "vista", "dbui", "goyo"}
 local skipLock = {"LuaTree", "vista", "dbui", "help"}
@@ -7,7 +7,15 @@ local skipLock = {"LuaTree", "vista", "dbui", "help"}
 local vim, lsp, api = vim, vim.lsp, vim.api
 
 local function set_title()
-  local branch = vcs.get_git_branch()
+  -- git branch --show-current
+  local branch
+  Job:new({
+    command = 'git',
+    args = {'branch', '--show-current'},
+    on_exit = function(j)
+      branch = j:result()[1]
+    end,
+  }):sync()
   local titlestring = ''
   if branch then
     titlestring = titlestring .. ' '.. branch .. ' — '
@@ -19,8 +27,7 @@ local function set_title()
   if dir == home then
     dir = '~'
   else
-    local i
-      ,i = dir:find(home.."/", 1, true)
+    local _,i = dir:find(home.."/", 1, true)
     if i then
       dir = dir:sub(i+1)
     end

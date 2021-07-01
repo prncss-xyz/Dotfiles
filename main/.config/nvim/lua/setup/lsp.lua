@@ -1,15 +1,12 @@
---[[ Troubleshouting
-
-:LspInfo
-
-:checkhealth
-
-Attempt to run the language server, and open the log with:
-:lua vim.cmd('e'..vim.lsp.get_log_path())
-
---]]
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.completion.completionItem.resolveSupport = {
+  properties = {
+    'documentation',
+    'detail',
+    'additionalTextEdits',
+  },
+}
 
 vim.lsp.handlers['textDocument/formatting'] = function(err, _, result, _, bufnr)
   if err ~= nil or result == nil then
@@ -25,48 +22,62 @@ vim.lsp.handlers['textDocument/formatting'] = function(err, _, result, _, bufnr)
   end
 end
 
+
+
+local mode = ''
+do
+  local method = 'textDocument/publishDiagnostics'
+  local default_handler = vim.lsp.handlers[method]
+  vim.lsp.handlers[method] = function(err, method, result, client_id, bufnr, config)
+    default_handler(err, method, result, client_id, bufnr, config)
+    if mode == 'lsp_diagnostic' then
+      local diagnostics = vim.lsp.diagnostic.get_all()
+      local qflist = {}
+      for bufnr, diagnostic in pairs(diagnostics) do
+        for _, d in ipairs(diagnostic) do
+          d.bufnr = bufnr
+          d.lnum = d.range.start.line + 1
+          d.col = d.range.start.character + 1
+          d.text = d.message
+          table.insert(qflist, d)
+        end
+      end
+      vim.lsp.util.set_qflist(qflist)
+    end
+  end
+end
+
 local nvim_lsp = require 'lspconfig'
 
-local function on_attach(fmt)
-  return function(client, bufnr)
-    local function buf_set_keymap(...)
-      vim.api.nvim_buf_set_keymap(bufnr, ...)
-    end
-    local function buf_set_option(...)
-      vim.api.nvim_buf_set_option(bufnr, ...)
-    end
-    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+local function on_attach_efm(client, bufnr)
+  client.resolved_capabilities.document_formatting = true
+  client.resolved_capabilities.goto_definition = false
+  vim.api.nvim_command [[augroup Format]]
+  vim.api.nvim_command [[autocmd! * <buffer>]]
+  vim.api.nvim_command [[autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()]]
+  vim.api.nvim_command [[augroup END]]
+end
 
-    if fmt then
-      client.resolved_capabilities.document_formatting = true
-      client.resolved_capabilities.goto_definition = false
-      vim.api.nvim_command [[augroup Format]]
-      vim.api.nvim_command [[autocmd! * <buffer>]]
-      vim.api.nvim_command [[autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()]]
-      vim.api.nvim_command [[augroup END]]
-    else
-      if client.config.flags then
-        client.config.flags.allow_incremental_sync = true
-        client.resolved_capabilities.document_formatting = false
-      end
+local function on_attach(client, bufnr)
+  -- vim.api.nvim_buf_set_keymap(bufnr, ...)
+  -- vim.api.nvim_buf_set_option(bufnr, ...)
+  -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-      -- Set autocommands conditional on server_capabilities
-      if client.resolved_capabilities.document_highlight then
-        vim.api.nvim_exec(
-          [[
-          hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
-          hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
-          hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
-          augroup lsp_document_highlight
-            autocmd! * <buffer>
-            "autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-            autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-          augroup END
-          ]],
-          false
-        )
-      end
-    end
+  client.resolved_capabilities.document_formatting = false
+  if client.resolved_capabilities.document_highlight then
+    vim.api.nvim_exec(
+      [[
+        hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
+        hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
+        hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
+        augroup lsp_document_highlight
+          autocmd! * <buffer>
+          autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+          autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+        augroup END
+      ]],
+      false
+    )
   end
 end
 
@@ -79,35 +90,32 @@ local servers = {
   'yamlls',
   'pyls',
   'tsserver',
-  --"sumneko_lua"
 }
+
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
-    on_attach = on_attach(false),
+    on_attach = on_attach,
     capabilities = capabilities,
+    flags = {
+      debounce_text_changes = 500,
+      allow_incremental_sync = true,
+    },
   }
 end
 
 -- nvim_lsp.tsserver.setup {
 --   on_attach = function(client, buffnr)
---     on_attach(client, buffnr)
---     local ts_utils = require("nvim-lsp-ts-utils")
---     vim.lsp.handlers["textDocument/codeAction"] = ts_utils.code_action_handler
---     require("nvim-lsp-ts-utils").setup {
---       -- defaults
---       disable_commands = false,
---       enable_import_on_completion = true,
---       import_on_completion_timeout = 5000,
---       eslint_bin = "eslint_d",
---       eslint_fix_current = false,
---       eslint_enable_disable_comments = true
+--     client.resolved_capabilities.document_formatting = false
+--     require('nvim-lsp-ts-utils').setup {
+--       complete_parens = true,
+--       update_import_on_move = true,
 --     }
 --   end,
---   capabilities = capabilities
+--   capabilities = capabilities,
 -- }
 
 nvim_lsp.sumneko_lua.setup {
-  on_attach = on_attach(false),
+  on_attach = on_attach,
   capabilities = capabilities,
   cmd = { '/usr/bin/lua-language-server' },
   settings = {
@@ -160,11 +168,6 @@ local stylua = {
   formatStdin = true,
 }
 
-local luafmt = {
-  formatCommand = 'luafmt --indent-count=2 --stdin',
-  formatStdin = true,
-}
-
 local vint = {
   lintCommand = 'vint -',
   lintStdin = true,
@@ -188,7 +191,7 @@ local shfmt = {
 }
 
 nvim_lsp.efm.setup {
-  on_attach = on_attach(true),
+  on_attach = on_attach_efm,
   init_options = { documentFormatting = true },
   settings = {
     languages = {

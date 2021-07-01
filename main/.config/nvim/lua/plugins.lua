@@ -35,6 +35,7 @@ return require "packer".startup(
     use "kyazdani42/nvim-web-devicons"
 
     -- Projects
+    use "ethanholz/nvim-lastplace"
     use "windwp/nvim-projectconfig"
     use 'rmagatti/auto-session'
     use {
@@ -73,10 +74,8 @@ return require "packer".startup(
         require "nvim-autopairs".setup()
       end
     }
-    use {
+    use "windwp/nvim-ts-autotag"
       -- Use treesitter to autoclose and autorename html tag
-      "windwp/nvim-ts-autotag",
-    }
     use "machakann/vim-sandwich"
     -- NOT WORKING
     -- use {
@@ -106,10 +105,14 @@ return require "packer".startup(
       end
     }
     -- use "norcalli/snippets.nvim"
+
+    -- use "rafamadriz/friendly-snippets"
+    use "L3MON4D3/LuaSnip"
+
     use "hrsh7th/vim-vsnip"
     use "hrsh7th/vim-vsnip-integ"
     use "~/Media/Projects/snippets"
-    use "jose-elias-alvarez/nvim-lsp-ts-utils"
+    -- use "jose-elias-alvarez/nvim-lsp-ts-utils"
     use 'romgrk/nvim-treesitter-context'
 
     -- Language syntax
@@ -126,6 +129,7 @@ return require "packer".startup(
         require "setup/compe"
       end
     }
+    use 'folke/trouble.nvim'
     use {
       "lewis6991/gitsigns.nvim",
       config = function()

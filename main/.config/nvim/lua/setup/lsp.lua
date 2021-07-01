@@ -103,17 +103,6 @@ for _, lsp in ipairs(servers) do
   }
 end
 
--- nvim_lsp.tsserver.setup {
---   on_attach = function(client, buffnr)
---     client.resolved_capabilities.document_formatting = false
---     require('nvim-lsp-ts-utils').setup {
---       complete_parens = true,
---       update_import_on_move = true,
---     }
---   end,
---   capabilities = capabilities,
--- }
-
 nvim_lsp.sumneko_lua.setup {
   on_attach = on_attach,
   capabilities = capabilities,

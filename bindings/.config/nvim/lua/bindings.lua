@@ -192,6 +192,11 @@ smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-T
       end
     }
   )
+
+  map("i", "<Tab>", "<cmd>lua require'luasnip'.expand-or-jump(1)<Cr>")
+  map("s", "<Tab>", "<cmd>lua require'luasnip'.expand-or-jump(1)<Cr>")
+  map("i", "<S-Tab>", "<cmd>lua require'luasnip'.jump(-1)<Cr>")
+  map("s", "<S-Tab>", "<cmd>lua require'luasnip'.jump(-1)<Cr>")
 end
 
 return {

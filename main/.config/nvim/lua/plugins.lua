@@ -106,11 +106,9 @@ return require "packer".startup(
     }
     -- use "norcalli/snippets.nvim"
 
-    -- use "rafamadriz/friendly-snippets"
+    use "rafamadriz/friendly-snippets"
     use "L3MON4D3/LuaSnip"
 
-    use "hrsh7th/vim-vsnip"
-    use "hrsh7th/vim-vsnip-integ"
     use "~/Media/Projects/snippets"
     -- use "jose-elias-alvarez/nvim-lsp-ts-utils"
     use 'romgrk/nvim-treesitter-context'
@@ -259,3 +257,4 @@ return require "packer".startup(
     use "glepnir/oceanic-material"
   end
 )
+

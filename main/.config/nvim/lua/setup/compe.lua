@@ -1,9 +1,9 @@
 vim.o["completeopt"] = "menuone,noselect"
 -- If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
-vim.g.vsnip_filetypes = {
-  javascriptreact = {"javascript"},
-  typescriptreact = {"typescript"}
-}
+-- vim.g.vsnip_filetypes = {
+--   javascriptreact = {"javascript"},
+--   typescriptreact = {"typescript"}
+-- }
 
 require "compe".setup {
   enabled = true,
@@ -21,15 +21,12 @@ require "compe".setup {
   source = {
     path = true,
     buffer = true,
-    calc = true,
-    vsnip = true,
     nvim_lsp = true,
     nvim_lua = true,
     spell = true,
-    tags = true,
-    snippets_nvim = true,
-    treesitter = true,
-    tabnine = true
+    luasnip = true,
+    treesitter = false,
+    tabnine = false,
   }
 }
 
@@ -43,13 +40,6 @@ function _G.completions()
     return npairs.check_break_line_char()
 end
 
---[[
-
-Create your own snippet
-
-Snippet file will store to g:vsnip_snippet_dir per filetype.
-
-Format description here:
-https://github.com/Microsoft/language-server-protocol/blob/main/snippetSyntax.md
-
---]]
+require("luasnip/loaders/from_vscode").load{
+  path = 'friendly-snippets'
+}

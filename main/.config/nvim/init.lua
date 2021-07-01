@@ -28,7 +28,7 @@ vim.o.swapfile = false
 vim.o.backup = false
 vim.o.updatetime = 500
 vim.o.shortmess = vim.o.shortmess .. 'c'
-vim.o.completeopt = 'longest,menuone'
+vim.o.completeopt = 'longest,menuone' --  "menuone,noselect"
 vim.o.showmode = false
 vim.o.guifont = 'Fira Code NerdFont'
 vim.o.cursorline = true
@@ -50,7 +50,6 @@ vim.g.rg_command = 'rg --vimgrep -S'
 vim.o.termguicolors = true
 vim.o.scrolloff = 5
 vim.o.sidescrolloff = 5
-
 local format_options_prettier = {
   tabWidth = indent,
   singleQuote = true,

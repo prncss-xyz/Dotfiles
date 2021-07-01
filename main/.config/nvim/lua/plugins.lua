@@ -233,10 +233,6 @@ return require "packer".startup(
       end
     }
 
-    -- Utilities
-    -- use "oberblastmeister/neuron.nvim",
-    use "~/Media/Projects/nononotes-nvim"
-
     -- Color schemes
     -- classics
     use "romainl/flattened"

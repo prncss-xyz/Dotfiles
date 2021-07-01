@@ -17,8 +17,9 @@ command! Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1'
  
 autocmd BufRead,BufNewFile **/.config/sway/* setfiletype i3
 autocmd BufRead,BufNewFile .eslintrc,.stylelintrc,.htmlhintrc set filetype=json
+" avoids cluttering autocompletion when coding
+autocmd BufRead,BufNewFile * setlocal nospell | setlocal spelllang=
 autocmd FileType markdown LanguageToolSetUp
-autocmd FileType markdown setlocal spell
 autocmd BufWritePost * if &ft ==# 'markdown' | LanguageToolCheck | endif
 
 " share data between nvim instances (registers etc)
@@ -38,6 +39,7 @@ function! ToggleQuickFix()
 endfunction
 
 nnoremap <silent> <F2> :call ToggleQuickFix()<cr>
+
 noremap <silent> n <Cmd>execute('normal! ' . v:count1 . 'n')<CR>
             \<Cmd>lua require('hlslens').start()<CR>
 noremap <silent> N <Cmd>execute('normal! ' . v:count1 . 'N')<CR>
@@ -46,14 +48,14 @@ noremap * *<Cmd>lua require('hlslens').start()<CR>
 noremap # #<Cmd>lua require('hlslens').start()<CR>
 noremap g* g*<Cmd>lua require('hlslens').start()<CR>
 noremap g# g#<Cmd>lua require('hlslens').start()<CR>
+map *   <Plug>(asterisk-z*)
+map #   <Plug>(asterisk-z#)
+map g*  <Plug>(asterisk-gz*)
+map g#  <Plug>(asterisk-gz#)
 
 augroup NvimProjectConfig
  autocmd!
  autocmd DirChanged * lua require('nvim-projectconfig').load_project_config()
 augroup end
 
-map *   <Plug>(asterisk-z*)
-map #   <Plug>(asterisk-z#)
-map g*  <Plug>(asterisk-gz*)
-map g#  <Plug>(asterisk-gz#)
 let g:asterisk#keeppos = 1

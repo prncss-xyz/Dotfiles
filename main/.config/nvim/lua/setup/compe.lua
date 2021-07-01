@@ -1,10 +1,3 @@
-vim.o["completeopt"] = "menuone,noselect"
--- If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
--- vim.g.vsnip_filetypes = {
---   javascriptreact = {"javascript"},
---   typescriptreact = {"typescript"}
--- }
-
 require "compe".setup {
   enabled = true,
   autocomplete = true,

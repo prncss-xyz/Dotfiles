@@ -6,6 +6,44 @@ local function map(mode, lhs, rhs, opts)
   vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
+local t = function(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+local check_back_space = function()
+    local col = vim.fn.col('.') - 1
+    if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+        return true
+    else
+        return false
+    end
+end
+
+local ls = require'luasnip'
+
+_G.tab_complete = function()
+  if vim.fn.pumvisible() == 1 then
+    return t "<C-n>"
+  elseif ls.jumpable(1) == true then
+    return t "<cmd>lua require'luasnip'.expand_or_jump(1)<Cr>"
+  elseif check_back_space() then
+    return t "<Tab>"
+  else
+    return vim.fn['compe#complete']()
+  end
+end
+
+_G.s_tab_complete = function()
+  if vim.fn.pumvisible() == 1 then
+    return t "<C-p>"
+  elseif ls.jumpable() == true then
+    return t "<cmd>lua require'luasnip'.expand_or_jump(-1)<Cr>"
+  else
+    -- If <S-Tab> is not working in your terminal, change it to <C-h>
+    return t "<S-Tab>"
+  end
+end
+
 local function setup()
   vim.g.mapleader = " "
   vim.g.user_emmet_leader_key = "<C-y>"
@@ -169,7 +207,7 @@ smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-T
   map("", "<leader>le", "<cmd>setlocal spell spelllang=en_us,cjk<cr>")
   map("", "<leader>lf", "<cmd>setlocal spell spelllang=fr,cjk<cr>")
   map("", "<leader>lb", "<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>")
-  map("", "<leader>lx", "<cmd>setlocal nospell<cr>")
+  map("", "<leader>lx", "<cmd>setlocal nospell | spelllang=<cr>")
 
   --nonotes
   map("", "<C-g>", "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<CR>")
@@ -193,10 +231,10 @@ smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-T
     }
   )
 
-  map("i", "<Tab>", "<cmd>lua require'luasnip'.expand-or-jump(1)<Cr>")
-  map("s", "<Tab>", "<cmd>lua require'luasnip'.expand-or-jump(1)<Cr>")
-  map("i", "<S-Tab>", "<cmd>lua require'luasnip'.jump(-1)<Cr>")
-  map("s", "<S-Tab>", "<cmd>lua require'luasnip'.jump(-1)<Cr>")
+vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 end
 
 return {
@@ -208,34 +246,3 @@ return {
     node_decremental = "grm"
   }
 }
-
---[[
-" Expand
-imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-
-" Expand or jump
-
-imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-
-" Jump forward or backward
-imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-
-" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
-" See https://github.com/hrsh7th/vim-vsnip/pull/50
-nmap        s   <Plug>(vsnip-select-text)
-xmap        s   <Plug>(vsnip-select-text)
-nmap        S   <Plug>(vsnip-cut-text)
-xmap        S   <Plug>(vsnip-cut-text)
-
---]]
--- Set some keybinds conditional on server capabilities
---  if client.resolved_capabilities.document_formatting then
---    buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
--- elseif client.resolved_capabilities.document_range_formatting then
---  buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
---end

@@ -5,7 +5,9 @@ require "bufferline".setup {
     show_close_icon = false,
     always_show_bufferline = false,
     show_tab_indicators = false,
-    mappings = true,
-    separator_style = "slant"
+    mappings = false,
+    separator_style = {'',''},
+    indicator_icon = '',
+    sort_by = "directory",
   }
 }

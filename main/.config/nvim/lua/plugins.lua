@@ -13,6 +13,14 @@ return require "packer".startup(
     use {"wbthomason/packer.nvim", opt = true}
     -- Utils
     use "tami5/sql.nvim"
+    use {
+      "nvim-treesitter/nvim-treesitter",
+      run = ":TSUpdate",
+      config = function()
+        require "setup/treesitter"
+      end
+    }
+
     -- TUI
     use "nvim-lua/popup.nvim"
     use "nvim-lua/plenary.nvim"
@@ -29,14 +37,21 @@ return require "packer".startup(
     -- Projects
     use "windwp/nvim-projectconfig"
     use 'rmagatti/auto-session'
-    use 'rmagatti/session-lens'
+    use {
+      'rmagatti/session-lens',
+      requires = {'rmagatti/auto-session'}
+    }
 
-    -- Text Edition
-    use {"kevinhwang91/nvim-bqf"}
+    -- Navigation
+    use "kevinhwang91/nvim-hlslens"
+    use "haya14busa/vim-asterisk"
+    use 'andymass/vim-matchup'
     use {"jremmen/vim-ripgrep", command = {"Rg"}}
-    use "matze/vim-move" -- Move current line/selection
     use "bkad/CamelCaseMotion" -- ,w
     use 'ggandor/lightspeed.nvim'
+
+    -- Edition
+    use "matze/vim-move" -- Move current line/selection
     use "nvim-treesitter/nvim-treesitter-textobjects"
     use "RRethy/nvim-treesitter-textsubjects"
     use {
@@ -58,10 +73,9 @@ return require "packer".startup(
         require "nvim-autopairs".setup()
       end
     }
-    use 'andymass/vim-matchup'
     use {
       -- Use treesitter to autoclose and autorename html tag
-      "windwp/nvim-ts-autotag"
+      "windwp/nvim-ts-autotag",
     }
     use "machakann/vim-sandwich"
     -- NOT WORKING
@@ -78,18 +92,13 @@ return require "packer".startup(
         vim.g.emmet_complete_tag = true
       end
     }
-
+    
     -- Language support
     use {
-      "nvim-treesitter/nvim-treesitter",
-      run = ":TSUpdate",
+      'lewis6991/spellsitter.nvim',
       config = function()
-        require "setup/treesitter"
+        require('spellsitter').setup()
       end
-    }
-    use {
-      "nvim-treesitter/playground",
-      command = {"TSPlaygroundToggle"}
     }
     use {
       "neovim/nvim-lspconfig",
@@ -100,14 +109,17 @@ return require "packer".startup(
     use "hrsh7th/vim-vsnip"
     use "hrsh7th/vim-vsnip-integ"
     use "~/Media/Projects/snippets"
-
-    -- Language specific
     use "jose-elias-alvarez/nvim-lsp-ts-utils"
-    use "dag/vim-fish"
+    use 'romgrk/nvim-treesitter-context'
+
+    -- Language syntax
     use "potatoesmaster/i3-vim-syntax"
 
-    -- UX
+    -- UI
+    -- Bbye allows you to do delete buffers (close files) without closing your windows or messing up your layout.
+    use "moll/vim-bbye" 
     use 'wellle/visual-split.vim'
+    use {"kevinhwang91/nvim-bqf"}
     use {
       "hrsh7th/nvim-compe",
       config = function()
@@ -128,18 +140,10 @@ return require "packer".startup(
       end
     }
     use 'brettanomyces/nvim-terminus'
-    use {
-      'romgrk/barbar.nvim'
-    }
     -- use {
-    --   "akinsho/nvim-bufferline.lua",
-    --   config = function()
-    --     require "setup/bufferline"
-    --   end
+    --   'romgrk/barbar.nvim',
     -- }
-    use {
-      'romgrk/nvim-treesitter-context'
-    }
+    use "akinsho/nvim-bufferline.lua"
     use {
       "lukas-reineke/indent-blankline.nvim",
       branch = "lua"
@@ -185,6 +189,10 @@ return require "packer".startup(
       "metakirby5/codi.vim",
       command = {"Codi", "Codi!", "Codi!!"}
     }
+    use {
+      "nvim-treesitter/playground",
+      command = {"TSPlaygroundToggle"}
+    }
 
     -- Integration
     use "tpope/vim-eunuch"
@@ -214,7 +222,7 @@ return require "packer".startup(
 
     -- FX
     use {
-      "edluffy/specs.nvim" -- not working
+      -- "edluffy/specs.nvim" -- not working
     }
     use {
       "karb94/neoscroll.nvim",

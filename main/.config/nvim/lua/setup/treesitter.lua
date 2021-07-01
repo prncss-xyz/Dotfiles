@@ -5,7 +5,8 @@ require "nvim-treesitter.configs".setup {
   autotag = {
     enable = true
   },
-  ensure_installed = "maintained",
+  ensure_installed = {"bash", "c", "cpp", "css", "elm", "fish", "go", "graphql", "html", "javascript", "jsdoc", "json", "latex", "lua", "php", "python", "ql", "regex", "rust", "scss", "svelte", "toml", "tsx", "typescript", "vue", "yaml"},
+  -- ensure_installed = "maintained",
   highlight = {
     enable = true,
     use_languagetree = true
@@ -32,7 +33,7 @@ require "nvim-treesitter.configs".setup {
   matchup = {
     enable = true,
   },
-textsubjects = {
+  textsubjects = {
         enable = true,
         keymaps = {
             ['.'] = 'textsubjects-smart',

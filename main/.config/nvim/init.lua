@@ -49,6 +49,7 @@ vim.o.foldmethod = "expr"
 vim.o.foldexpr = '[[<Cmd>lua require("nvim_treesitter").foldexpr()<CR>]]'
 vim.g.indentLine_char = "│"
 vim.g.rg_command = "rg --vimgrep -S"
+vim.o.termguicolors = true
 
 local format_options_prettier = {
   tabWidth = indent,
@@ -83,7 +84,6 @@ cmd("source " .. vim.fn.stdpath("config") .. "/autocommands.vim")
 require "setup/telescope"
 require "theme-exporter"
 require "setup/lsp"
-require "setup/specs" -- not working
 
 vim.g.vista_icon_indent = {"╰─▸ ", "├─▸ "}
 vim.g["vista#renderer#enable_icon"] = 1
@@ -96,33 +96,10 @@ vim.g["vista#renderer#icons"] = {
 vim.g.indent_blankline_show_current_context = true
 vim.g.indent_blankline_buftype_exclude = {'terminal'}
 
-require('specs').setup{
-  show_jumps  = true,
-  min_jump = 30,
-  popup = {
-    delay_ms = 0, -- delay before popup displays
-    inc_ms = 10, -- time increments used for fade/resize effects
-    blend = 10, -- starting blend, between 0-100 (fully transparent), see :h winblend
-    width = 10,
-    winhl = "PMenu",
-    fader = require('specs').linear_fader,
-    resizer = require('specs').shrink_resizer
-  },
-  ignore_filetypes = {},
-  ignore_buftypes = {
-    nofile = true,
-  },
-}
+-- require "setup/specs" -- not working
 
 require'treesitter-context.config'.setup{
   enable = true,
-}
-vim.g.bufferline = {
-  closable = false,
-  icon_close_tab_modified = '',
-  icon_separator_active = '',
-  icon_separator_inactive = '',
-  auto_hide = true,
 }
 
 vim.cmd('set title')
@@ -137,12 +114,36 @@ function _G.Dump(...)
 end
 
 require'auto-session'.setup({
-  -- log_level = 'degug',
+  log_level = 'error',
   -- auto_session_root_dir = "~/Personal/auto-session/",
   auto_save_enabled = true,
-  auto_restore_enabled = true
+  auto_restore_enabled = true,
+  -- post_restore_cmds = {"BufferLineSortByDirectory"},
 })
 
 require('session-lens').setup {
   shorten_path=false,
 }
+
+require('hlslens').setup({
+  override_lens = function(render, plist, nearest, idx)
+    local lnum, col = unpack(plist[idx])
+    local cnt = #plist
+    local text = ('[%d/%d]'):format(idx, cnt)
+    local chunks = {{' ', 'Ignore'}, {text, 'HlSearchLensNear'}}
+    -- chunks = {{' ', 'Ignore'}, {text, 'HlSearchLens'}}
+    render.set_virt(0, lnum - 1, col - 1, chunks, nearest)
+  end
+})
+
+-- barbar
+-- vim.g.bufferline = {
+--   closable = false,
+--   icon_close_tab_modified = '',
+--   icon_separator_active = '',
+--   icon_separator_inactive = '',
+--   auto_hide = true,
+--   semantic_letters = false
+-- }
+
+require 'setup/bufferline'

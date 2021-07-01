@@ -5,6 +5,10 @@ local Job = require "plenary/job"
 local conf = require("telescope.config").values
 local previewers = require "telescope.previewers"
 
+local opts = {
+  name = "Open markdown"
+}
+
 local function entry_maker(entry)
   return {
     display = entry,
@@ -37,7 +41,7 @@ local function prompt(cwd)
   }):sync()
   print(#results)
   pickers.new({
-    name = 'Open markdown',
+    name = opts.name,
     finder = finders.new_table {
       results = results,
       entry_maker = entry_maker,

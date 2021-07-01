@@ -11,21 +11,21 @@ Attempt to run the language server, and open the log with:
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-vim.lsp.handlers["textDocument/formatting"] = function(err, _, result, _, bufnr)
+vim.lsp.handlers['textDocument/formatting'] = function(err, _, result, _, bufnr)
   if err ~= nil or result == nil then
     return
   end
-  if not vim.api.nvim_buf_get_option(bufnr, "modified") then
+  if not vim.api.nvim_buf_get_option(bufnr, 'modified') then
     local view = vim.fn.winsaveview()
     vim.lsp.util.apply_text_edits(result, bufnr)
     vim.fn.winrestview(view)
     if bufnr == vim.api.nvim_get_current_buf() then
-      vim.api.nvim_command("noautocmd :update")
+      vim.api.nvim_command 'noautocmd :update'
     end
   end
 end
 
-local nvim_lsp = require "lspconfig"
+local nvim_lsp = require 'lspconfig'
 
 local function on_attach(fmt)
   return function(client, bufnr)
@@ -35,7 +35,7 @@ local function on_attach(fmt)
     local function buf_set_option(...)
       vim.api.nvim_buf_set_option(bufnr, ...)
     end
-    buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
+    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     if fmt then
       client.resolved_capabilities.document_formatting = true
@@ -71,20 +71,20 @@ local function on_attach(fmt)
 end
 
 local servers = {
-  "bashls",
-  "cssls",
-  "html",
-  "jsonls",
-  "vimls",
-  "yamlls",
-  "pyls",
-  "tsserver"
+  'bashls',
+  'cssls',
+  'html',
+  'jsonls',
+  'vimls',
+  'yamlls',
+  'pyls',
+  'tsserver',
   --"sumneko_lua"
 }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     on_attach = on_attach(false),
-    capabilities = capabilities
+    capabilities = capabilities,
   }
 end
 
@@ -109,31 +109,31 @@ end
 nvim_lsp.sumneko_lua.setup {
   on_attach = on_attach(false),
   capabilities = capabilities,
-  cmd = {"/usr/bin/lua-language-server"},
+  cmd = { '/usr/bin/lua-language-server' },
   settings = {
     Lua = {
       runtime = {
         -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = "LuaJIT",
+        version = 'LuaJIT',
         -- Setup your lua path
-        path = vim.split(package.path, ";")
+        path = vim.split(package.path, ';'),
       },
       diagnostics = {
         -- Get the language server to recognize the `vim` global
         globals = {
-          "vim", -- nvim
-          "use" -- packer
-        }
+          'vim', -- nvim
+          'use', -- packer
+        },
       },
       workspace = {
         -- Make the server aware of Neovim runtime files
         library = {
-          [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-          [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true
-        }
-      }
-    }
-  }
+          [vim.fn.expand '$VIMRUNTIME/lua'] = true,
+          [vim.fn.expand '$VIMRUNTIME/lua/vim/lsp'] = true,
+        },
+      },
+    },
+  },
 }
 
 local prettier = {
@@ -143,69 +143,69 @@ local prettier = {
       ${--tab-width:tabwidth}
       ${--single-quote:singlequote}
       ${--trailing-comma:trailingcomma}
-  ]]):gsub(
-    "\n",
-    ""
-  )
+  ]]):gsub('\n', ''),
 }
 
 local eslint = {
-  lintCommand = "eslint_d -f unix --stdin --stdin-filename ${INPUT}",
+  lintCommand = 'eslint_d -f unix --stdin --stdin-filename ${INPUT}',
   lintStdin = true,
-  lintFormats = {"%f:%l:%c: %m"},
+  lintFormats = { '%f:%l:%c: %m' },
   lintIgnoreExitCode = true,
-  formatCommand = "eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}",
-  formatStdin = true
+  formatCommand = 'eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}',
+  formatStdin = true,
+}
+
+local stylua = {
+  formatcommand = 'stylua -',
+  formatStdin = true,
 }
 
 local luafmt = {
-  formatCommand = "luafmt --indent-count=2 --stdin",
-  formatStdin = true
+  formatCommand = 'luafmt --indent-count=2 --stdin',
+  formatStdin = true,
 }
--- option "quotemark", "single" exists but is not implemented
--- https://github.com/trixnz/lua-fmt/blob/master/test/quotes/quotes.test.ts
 
 local vint = {
-  lintCommand = "vint -",
+  lintCommand = 'vint -',
   lintStdin = true,
-  lintFormats = {"%f:%l:%c: %m"}
+  lintFormats = { '%f:%l:%c: %m' },
 }
 
 local rustfmt = {
-  formatCommand = "rustfmt --emit=stdout",
-  formatStdin = true
+  formatCommand = 'rustfmt --emit=stdout',
+  formatStdin = true,
 }
 
 local shellcheck = {
-  lintCommand = "shellcheck -f gcc -x -",
+  lintCommand = 'shellcheck -f gcc -x -',
   lintStdin = true,
-  lintFormats = {"%f=%l:%c: %trror: %m", "%f=%l:%c: %tarning: %m", "%f=%l:%c: %tote: %m"}
+  lintFormats = { '%f=%l:%c: %trror: %m', '%f=%l:%c: %tarning: %m', '%f=%l:%c: %tote: %m' },
 }
 
 local shfmt = {
-  formatCommand = "shfmt -ci -s -bn",
-  formatStdin = true
+  formatCommand = 'shfmt -ci -s -bn',
+  formatStdin = true,
 }
 
 nvim_lsp.efm.setup {
   on_attach = on_attach(true),
-  init_options = {documentFormatting = true},
+  init_options = { documentFormatting = true },
   settings = {
     languages = {
-      vim = {vint},
-      lua = {luafmt},
-      typescript = {prettier, eslint}, -- calling prettier through eslint; else use {prettier, eslint}
-      javascript = {prettier, eslint},
-      typescriptreact = {prettier, eslint},
-      javascriptreact = {prettier, eslint},
-      yaml = {prettier},
-      json = {prettier},
-      html = {prettier},
-      scss = {prettier},
-      css = {prettier},
-      markdown = {prettier},
-      sh = {shellcheck},
-      toml = {prettier}
-    }
-  }
+      vim = { vint },
+      lua = { stylua },
+      typescript = { prettier, eslint },
+      javascript = { prettier, eslint },
+      typescriptreact = { prettier, eslint },
+      javascriptreact = { prettier, eslint },
+      yaml = { prettier },
+      json = { prettier },
+      html = { prettier },
+      scss = { prettier },
+      css = { prettier },
+      markdown = { prettier },
+      sh = { shfmt, shellcheck },
+      toml = { prettier },
+    },
+  },
 }

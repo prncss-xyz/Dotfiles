@@ -136,14 +136,4 @@ require('hlslens').setup({
   end
 })
 
--- barbar
--- vim.g.bufferline = {
---   closable = false,
---   icon_close_tab_modified = '',
---   icon_separator_active = '',
---   icon_separator_inactive = '',
---   auto_hide = true,
---   semantic_letters = false
--- }
-
 require 'setup/bufferline'

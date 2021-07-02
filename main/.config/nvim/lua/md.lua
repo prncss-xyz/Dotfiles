@@ -29,7 +29,6 @@ local function prompt(cwd)
       args = {res},
     }):start()
   end
-
   local results
   Job:new({
     command = 'fd',
@@ -53,7 +52,6 @@ local function prompt(cwd)
     previewer = previewers.vim_buffer_cat.new({}),
     sorter = conf.generic_sorter()
   }):find()
-
 end
 
 -- prompt('/home/prncss/Media/Projects/pie2/node_modules')

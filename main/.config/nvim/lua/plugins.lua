@@ -104,14 +104,15 @@ return require "packer".startup(
       config = function()
       end
     }
-    -- use "norcalli/snippets.nvim"
+    
+    use "L3MON4D3/LuaSnip" -- snippet engine
+    use "rafamadriz/friendly-snippets" -- snippet collection
 
-    use "rafamadriz/friendly-snippets"
-    use "L3MON4D3/LuaSnip"
-
-    use "~/Media/Projects/snippets"
     -- use "jose-elias-alvarez/nvim-lsp-ts-utils"
     use 'romgrk/nvim-treesitter-context'
+
+    use 'mfussenegger/nvim-dap'
+    use 'jbyuki/one-small-step-for-vimkind'
 
     -- Language syntax
     use "potatoesmaster/i3-vim-syntax"
@@ -232,6 +233,9 @@ return require "packer".startup(
         require('neoscroll').setup{}
       end
     }
+
+    -- Notes
+    use "~/Media/Projects/nononotes-nvim"
 
     -- Color schemes
     -- classics

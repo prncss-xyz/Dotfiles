@@ -28,7 +28,7 @@ vim.o.swapfile = false
 vim.o.backup = false
 vim.o.updatetime = 500
 vim.o.shortmess = vim.o.shortmess .. 'c'
-vim.o.completeopt = 'longest,menuone' --  "menuone,noselect"
+vim.o.completeopt = "menuone,noselect"
 vim.o.showmode = false
 vim.o.guifont = 'Fira Code NerdFont'
 vim.o.cursorline = true
@@ -78,7 +78,6 @@ vim.g.camelcasemotion_key = ','
 
 require 'plugins'
 require('theming').setup()
-require('bindings').setup()
 cmd('source ' .. vim.fn.stdpath 'config' .. '/autocommands.vim')
 require 'setup/telescope'
 require 'theme-exporter'
@@ -132,3 +131,6 @@ require('nvim-lastplace').setup {
   lastplace_ignore_filetype = { 'gitcommit', 'gitrebase', 'svn', 'hgcommit' },
   lastplace_open_folds = true,
 }
+require'setup/dap'
+require('bindings').setup()
+

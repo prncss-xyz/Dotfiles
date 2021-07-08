@@ -1,5 +1,5 @@
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.completion.completionItem.snippetSupport = false
 capabilities.textDocument.completion.completionItem.resolveSupport = {
   properties = {
     'documentation',
@@ -21,8 +21,6 @@ vim.lsp.handlers['textDocument/formatting'] = function(err, _, result, _, bufnr)
     end
   end
 end
-
-
 
 local mode = ''
 do
@@ -103,35 +101,21 @@ for _, lsp in ipairs(servers) do
   }
 end
 
-nvim_lsp.sumneko_lua.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  cmd = { '/usr/bin/lua-language-server' },
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = 'LuaJIT',
-        -- Setup your lua path
-        path = vim.split(package.path, ';'),
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = {
-          'vim', -- nvim
-          'use', -- packer
-        },
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        library = {
-          [vim.fn.expand '$VIMRUNTIME/lua'] = true,
-          [vim.fn.expand '$VIMRUNTIME/lua/vim/lsp'] = true,
+nvim_lsp.sumneko_lua.setup(require('lua-dev').setup {
+  lspconfig = {
+    cmd = { 'lua-language-server' },
+    -- on_attach = on_attach,
+    settings = {
+      Lua = {
+        diagnostics = {
+          globals = {
+            'use', -- packer
+          },
         },
       },
     },
   },
-}
+})
 
 local prettier = {
   formatcommand = ([[

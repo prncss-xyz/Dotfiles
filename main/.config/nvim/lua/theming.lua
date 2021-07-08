@@ -1,82 +1,76 @@
 -- TODO: require theme plugins here
+local dm = require('utils').deep_merge
 
-local cmd = vim.cmd
-local g = vim.g
-local theme = require"theme"
+-- local theme = require 'theme'
+local theme
+
+theme = {
+  name = 'solarized-flat',
+  g = {
+    neon_style = 'default',
+    -- neon_style = 'doom',
+    -- dark = 'light',
+    -- neon_style = 'dark',
+    -- neon_style =  "light",
+    neon_italic_comment = true,
+    neon_italic_keyword = true,
+    neon_bold = true,
+  },
+}
+
+-- theme = {
+--   name = 'solarized',
+--   -- variant = 'solarized',
+--   -- variant = 'solarized_high',
+--   variant = 'solarized-flat',
+--   -- variant = 'solarized-low',
+--   -- dark = 'light',
+--   g = {
+--     -- solarized_visibility = 'normal',
+--     -- solarized_visibility = 'low',
+--     solarized_visibility = 'high',
+--   },
+-- }
+
+-- theme = {
+--   name = 'gruvbox-material',
+--   -- dark = 'light',
+--   g = {
+--     gruvbox_material_background = 'soft',
+--   },
+-- }
+
+-- theme = {
+--   name = 'nord',
+--   g = {
+--     -- nord_contrast = false,
+--     -- nord_bordders = true,
+--     -- nord_disable_background = true,
+--   }
+-- }
+
+-- NOT WORKING
+-- theme = {
+--   name = 'doom-one',
+--   g = {
+--     doom_one_cursor_coloring = true,
+--     doom_one_italic_comments = true,
+--     doom_one_transparent_background = true,
+--   },
+-- }
 
 return {
   setup = function()
-    --Broken
-    --theme = "one"
-    --theme = "lucid"
-    --theme = "orbital"
-    --theme = "Base2Tone_LavenderLight"
+    vim.g.limelight_conceal_ctermfg = 'gray'
+    vim.g.limelight_conceal_ctermfg = 240
+    vim.g.limelight_conceal_guifg = 'DarkGray'
+    vim.g.limelight_conceal_guifg = '#777777'
+    vim.o.background = theme.dark or 'dark' -- Color name (:help cterm-colors) or ANSI code
+    vim.cmd('colorscheme ' .. (theme.variant or theme.name))
+    if theme.g then
+      dm(vim.g, theme.g)
+    end
 
-    -- Light
-    -- vim.o.background = "light"
-    --theme = "gruvbox-material"
-    --theme = "flattened_light"
-
-    -- Dark
-    vim.o.background = "dark"
-    --theme = "spaceduck"
-    --theme = "oceanic_material":
-    --theme = "dogrun"
-    --theme = "gotham"
-    --theme = "flattened_dark"
-    --theme = "nord"
-    --theme = "sonokai"
-
-    -- Color name (:help cterm-colors) or ANSI code
-    g.limelight_conceal_ctermfg = "gray"
-    g.limelight_conceal_ctermfg = 240
-    -- Color name (:help gui-colors) or RGB color
-    g.limelight_conceal_guifg = "DarkGray"
-    g.limelight_conceal_guifg = "#777777"
-
-    --[[
-    --
-    -- https://github.com/neovim/neovim/issues/2897#issuecomment-115464516::
-    g.terminal_color_0 = "#2e3436"
-    g.terminal_color_1 = "#cc0000"
-    g.terminal_color_2 = "#4e9a06"
-    g.terminal_color_3 = "#c4a000"
-    g.terminal_color_4 = "#3465a4"
-    g.terminal_color_5 = "#75507b"
-    g.terminal_color_6 = "#0b939b"
-    g.terminal_color_7 = "#d3d7cf"
-    g.terminal_color_8 = "#555753"
-    g.terminal_color_9 = "#ef2929"
-    g.terminal_color_10 = "#8ae234"
-    g.terminal_color_11 = "#fce94f"
-    g.terminal_color_12 = "#729fcf"
-    g.terminal_color_13 = "#ad7fa8"
-    g.terminal_color_14 = "#00f5e9"
-    g.terminal_color_15 = "#eeeeec"
-    --]]
-    cmd("colorscheme " .. theme)
-    cmd("highlight Comment cterm=italic gui=italic")
-    --cm "color Base2Tone_LavenderLight"
-    --cmd"color flattened_dark"
-    --cmd'color flattened_light'
-    --cmd"color orbital"
-    --cmd"color nord"
-    --cmd"color dogrun"
-    --cmd"color gotham"
-    --cmd"color mountaineer"
-    --cmd"color mountaineer-grey"
-    --cmd"color mountaineer-light"
-    --cmd"color gruvbox"
-    --cmd "color one" -- https://github.com/joshdick/onedark.vim might work better with term
-    --cmd"color lucid"
-    --cmd"color Base2Tone"
-    -- g:gruvbox_invert_selection
-    -- g:gruvbox_italicize_comments
-    -- g:gruvbox_contrast_light
-    -- g:gruvbox_contrast_dark
-    -- set background=dark    " Setting dark mode
-    -- set background=light   " Setting light mode
-  end
+  end,
 }
 
--- NVIM_TUI_ENABLE_TRUE_COLOR=0

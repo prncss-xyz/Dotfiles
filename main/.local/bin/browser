@@ -1,10 +1,12 @@
 #!/usr/bin/env sh
 
-case "$(realpath --relative-to=$HOME/Personal/Projects/ .)" in
-  ..*)
-    MOZ_ENABLE_WAYLAND=1 firefox "$@"
-    ;;
-  *)
-    chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --remote-debugging-port=9222 "$@"
-    ;;
-esac
+chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --remote-debugging-port=9222 "$@"
+
+# case "$(realpath --relative-to=$HOME/Personal/Projects/ .)" in
+#   ..*)
+#     MOZ_ENABLE_WAYLAND=1 firefox "$@"
+#     ;;
+#   *)
+#     chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --remote-debugging-port=9222 "$@"
+#     ;;
+# esac

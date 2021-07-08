@@ -5,6 +5,10 @@ matcher:
   - label: "browser"
     criteria: "app_id"
     value: "firefox"
+  - label: "browser"
+    criteria: "app_id"
+    value: "chromium"
 runner:
   terminal: "kitty"
-  browser: "firefox --new-window"
+  browser: "browser"
+  # browser: "firefox --new-window"

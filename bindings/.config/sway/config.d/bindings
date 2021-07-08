@@ -18,6 +18,7 @@ bindsym $mod+shift+y exec echo previous browser > /tmp/sway-mega-hotkeys
 bindsym $mod+u exec echo next default > /tmp/sway-mega-hotkeys
 bindsym $mod+shift+u exec echo previous default > /tmp/sway-mega-hotkeys
 bindsym $mod+m exec makoctl dismiss
+bindsym $mod+shift+m exec makoctl dismiss --all
 bindsym $mod+Return [title="^scratchpad$"] scratchpad show
 bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
 bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p pass; wl-clipboard-manager unlock"

@@ -1,0 +1,12 @@
+{
+  "joba": {
+    "prefix": "joba",
+    "body": ["Job:new{", "\tcommand = ${1},", "\targs = { ${2} },", "}:start()"],
+    "description": "async job"
+  },
+  "jobs": {
+    "prefix": "jobs",
+    "body": ["Job:new{", "\tcommand = ${1},", "\targs = { ${2} },", "}:sync()"],
+    "description": "sync job"
+  }
+}

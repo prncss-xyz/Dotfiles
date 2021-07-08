@@ -1,9 +1,9 @@
-require "compe".setup {
+require('compe').setup {
   enabled = true,
   autocomplete = true,
   debug = false,
   min_length = 1,
-  preselect = "enable",
+  preselect = 'enable',
   throttle_time = 80,
   source_timeout = 200,
   incomplete_delay = 400,
@@ -13,26 +13,43 @@ require "compe".setup {
   documentation = true,
   source = {
     path = true,
-    buffer = true,
-    nvim_lsp = true,
+    buffer = {
+      kind = '﬘',
+    },
+    nvim_lsp = {
+      dup = false,
+    },
+    calc = true,
     nvim_lua = true,
-    spell = true,
-    luasnip = true,
-    treesitter = false,
+    spell = {
+      filetypes = { 'markdown' },
+    },
+    emoji = false,
+    omni = false, -- Warning: It has a lot of side-effect.
+    -- FIXME dup = false makes then disappear
+    luasnip = {
+      kind = '', -- FIXME
+      dup = false,
+      priority = 9999,
+    },
+    treesitter = false, -- Warning: it sometimes really slow.
     tabnine = false,
-  }
+  },
+}
+
+require('nvim-autopairs.completion.compe').setup {
+  map_cr = true,
+  map_complete = true,
 }
 
 function _G.completions()
-    local npairs = require("nvim-autopairs")
-    if vim.fn.pumvisible() == 1 then
-        if vim.fn.complete_info()["selected"] ~= -1 then
-            return vim.fn["compe#confirm"]("<CR>")
-        end
+  -- local npairs = require 'nvim-autopairs'
+  if vim.fn.pumvisible() == 1 then
+    if vim.fn.complete_info()['selected'] ~= -1 then
+      return vim.fn['compe#confirm'] '<CR>'
     end
-    return npairs.check_break_line_char()
+  end
+  -- return npairs.check_break_line_char()
 end
 
-require("luasnip/loaders/from_vscode").load{
-  path = 'friendly-snippets'
-}
+require('luasnip/loaders/from_vscode').lazy_load() -- FIXME: failling to use "path" argument

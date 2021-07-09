@@ -29,6 +29,6 @@ NeovideMultigrid=NeovideMultiGrid
 # PAGER=nvimpager
 TERMINAL=kitty
 RIPGREP_CONFIG_PATH OVERRIDE=${HOME}/.config/rg/config
-STOW_ACTIVE_PACKAGES OVERRIDE="base main host nympheas"
+STOW_ACTIVE_PACKAGES OVERRIDE="base main host nympheas perso"
 DOTFILES OVERRIDE=${HOME}/Dotfiles
 PROJECTS OVERRIDE=${HOME}/Media/Projects

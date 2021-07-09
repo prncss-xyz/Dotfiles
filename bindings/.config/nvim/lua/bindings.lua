@@ -80,7 +80,6 @@ local function setup()
 	map("n", "xx", "dd")
 	map("n", "X", "D")
 
-	map("", "<c-c>", "<esc>")
 	map("", "<c-z>", "u")
 	map("i", "<c-z>", "<esc>ui")
 	map("", "<c-c-z>", "<C-R>")
@@ -114,8 +113,8 @@ local function setup()
 	-- map('', '<c-n>', ':edit %:h/')
 	-- map('i', '<c-n>', '<esc>:edit %:h/')
 
-	map("", "<c-w>x", "<cmd>Bdelete!<CR>")
-	map("", "<c-w><c-x>", "<cmd>bdelete!<CR>")
+	-- map("", "<c-w>x", "<cmd>Bdelete!<CR>")
+	-- map("", "<c-w><c-x>", "<cmd>bdelete!<CR>")
 
 	-- bufferline
 	-- map('', '<c-w><s-x>', '<cmd>BufferLineCloseRight<CR><cmd>BufferLineCloseLeft<CR>')

@@ -1,3 +1,5 @@
+local augroup = require("utils").augroup
+local lambda = require("utils").lambda
 vim.cmd("let loaded_netrwPlugin = 1") -- disable netrw
 require("options")
 require("plugins")
@@ -41,20 +43,20 @@ function _G.Dump(...)
 end
 
 -- require('hlslens').setup {}
-require("trouble").setup{}
+require("trouble").setup({})
 require("commands")
 
 require("setup/dap")
-require("dapui").setup{}
-require("true-zen").setup{
+require("dapui").setup({})
+require("true-zen").setup({
 	integration = {
 		galaxyline = true,
 		gitsigns = true,
 		limelight = true,
 	},
 	ideal_writing_area_width = 100,
-}
-require("zen-mode").setup{
+})
+require("zen-mode").setup({
 	height = 0.9,
 	plugins = {
 		gitsigns = { enabled = true },
@@ -68,7 +70,7 @@ require("zen-mode").setup{
 		vim.cmd("TSContextEnable")
 		vim.cmd("Limelight!")
 	end,
-}
+})
 
 if vim.fn.isdirectory(vim.o.directory) == 0 then
 	vim.fn.mkdir(vim.o.directory, "p")
@@ -80,7 +82,7 @@ require("bindings").setup()
 require("snippets")
 require("autocommands")
 vim.cmd("set title")
-require("auto-session").setup{
+require("auto-session").setup({
 	log_level = "error",
 	-- auto_session_root_dir = "~/Personal/auto-session/",
 	auto_save_enabled = true,
@@ -88,22 +90,41 @@ require("auto-session").setup{
 	post_restore_cmds = {
 		"BufferOrderByDirectory",
 		"AutoSearchSession",
+		lambda(function()
+			-- augroup("Autosave", {
+			-- 	{
+			-- 		events = { "TabLeave", "FocusLost", "BufLeave" },
+			-- 		targets = { "*" },
+			-- 		-- command = ":update all",
+			-- 		command = ":wa!",
+			-- 	},
+			-- })
+		end),
 	},
 	pre_save_cmds = {
 		"TSContextDisable",
 		'lua require("dapui").close()',
 		"SymbolsOutlineClose",
+		"DiffviewClose",
 	},
 	-- post_restore_cmds = {"BufferLineSortByDirectory"},
-}
-require("session-lens").setup{
+})
+augroup("Autosave", {
+	{
+		events = { "TabLeave", "FocusLost", "BufLeave" },
+		targets = { "*" },
+		command = ":wa",
+	},
+})
+require("session-lens").setup({
 	shorten_path = false,
-}
-require("nvim-projectconfig").load_project_config{
+})
+require("nvim-projectconfig").load_project_config({
 	project_dir = "~/Media/Projects/projects-config/",
-}
-require("nvim-lastplace").setup{
+})
+require("nvim-lastplace").setup({
 	lastplace_ignore_buftype = { "quickfix", "nofile", "help" },
 	lastplace_ignore_filetype = { "gitcommit", "gitrebase", "svn", "hgcommit" },
 	lastplace_open_folds = true,
-}
+})
+require("diffview").setup()

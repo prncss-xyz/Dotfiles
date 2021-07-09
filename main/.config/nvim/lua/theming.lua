@@ -1,34 +1,19 @@
 -- TODO: require theme plugins here
 local dm = require('utils').deep_merge
+local theme = require'theme'
 
 -- local theme = require 'theme'
-local theme
-
-theme = {
-  name = 'solarized-flat',
-  g = {
-    neon_style = 'default',
-    -- neon_style = 'doom',
-    -- dark = 'light',
-    -- neon_style = 'dark',
-    -- neon_style =  "light",
-    neon_italic_comment = true,
-    neon_italic_keyword = true,
-    neon_bold = true,
-  },
-}
-
--- theme = {
---   name = 'solarized',
---   -- variant = 'solarized',
---   -- variant = 'solarized_high',
---   variant = 'solarized-flat',
---   -- variant = 'solarized-low',
---   -- dark = 'light',
+-- local theme = {
+--   name = 'solarized', colorscheme = 'solarized-flat',
 --   g = {
---     -- solarized_visibility = 'normal',
---     -- solarized_visibility = 'low',
---     solarized_visibility = 'high',
+--     neon_style = 'default',
+--     -- neon_style = 'doom',
+--     -- dark = 'light',
+--     -- neon_style = 'dark',
+--     -- neon_style =  "light",
+--     neon_italic_comment = true,
+--     neon_italic_keyword = true,
+--     neon_bold = true,
 --   },
 -- }
 
@@ -66,7 +51,7 @@ return {
     vim.g.limelight_conceal_guifg = 'DarkGray'
     vim.g.limelight_conceal_guifg = '#777777'
     vim.o.background = theme.dark or 'dark' -- Color name (:help cterm-colors) or ANSI code
-    vim.cmd('colorscheme ' .. (theme.variant or theme.name))
+    vim.cmd('colorscheme ' .. (theme.cholorscheme or theme.name))
     if theme.g then
       dm(vim.g, theme.g)
     end

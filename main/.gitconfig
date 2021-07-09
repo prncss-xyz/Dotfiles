@@ -3,9 +3,9 @@
 	name = Juliette Lamarche
 	signingkey = DB6F754B59A68BC3AE6CF695004A3B1CB2774189
 [diff]
-	tool = nvr
-[difftool "nvr"]
-  cmd = nvr -s -d $LOCAL $REMOTE
+	tool = nvim
+[difftool "nvim"]
+  cmd = nvim -s -d $LOCAL $REMOTE
 [difftool "kitty"]
   cmd = kitty +kitten diff $LOCAL $REMOTE
 [difftool "kitty.gui"]
@@ -15,6 +15,6 @@
 [core]
 	editor = nvim -u ~/.config/nvim/prompter.vim --noplugin
 [merge]
-  tool = nvr
-[mergetool "nvr"]
-	cmd = nvr -s -d $LOCAL $BASE $REMOTE $MERGED -c 'wincmd J | wincmd ='
+  tool = nvim
+[mergetool "nvim"]
+	cmd = nvim -s -d $LOCAL $BASE $REMOTE $MERGED -c 'wincmd J | wincmd ='

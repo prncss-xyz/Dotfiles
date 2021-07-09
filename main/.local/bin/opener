@@ -54,7 +54,8 @@ case "${MIMETYPE}" in
 
   ## PDF
   application/pdf)
-  evince "${FPATH}" &
+  browser "${FPATH}" &
+  # evince "${FPATH}" &
   exit 0;;
 
   ## Audio

@@ -3,7 +3,6 @@ local utils = require 'utils'
 local job_sync = utils.job_sync
 local command = require('utils').command
 local dotfiles = os.getenv 'DOTFILES'
-
 command('ToggleQuickFix', {}, function ()
   for _, win in pairs(vim.fn.getwininfo()) do
     if win.quickfix == 1 then

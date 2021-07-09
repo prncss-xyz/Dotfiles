@@ -1,4 +1,6 @@
-background #<%=$background%>
+# <%=$name%>
+
+background #<%=$color0%>
 foreground #<%=$foreground%>
 selection_background #<%=$selection_background%>
 selection_foreground #<%=$selection_foreground%>

@@ -2,6 +2,7 @@
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
 fish_vi_key_bindings
 alias o opener
+alias e $EDITOR
 alias bat 'bat --style=changes,header,rule,snip'
 alias ls lsd
 alias wttr 'curl "fr.wttr.in/montreal?n"'

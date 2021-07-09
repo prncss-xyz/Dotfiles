@@ -187,7 +187,7 @@ return require('packer').startup(function()
       require 'setup/gitsigns'
     end,
   }
-  -- use 'iberianpig/tig-explorer.vim'
+  use 'sindrets/diffview.nvim'
   use {
     'glepnir/galaxyline.nvim',
     config = function()

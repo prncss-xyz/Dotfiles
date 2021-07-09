@@ -2,14 +2,22 @@
 
 step() {
 	# dir dir/name.ext dir/name.ext.esh
-	echo "$1" "$2" "$3"
 	mkdir -p ~/"$1"
-	esh -o ~/"$2" "$3"
+	case "$3" in
+		*.esh)
+			echo esh -o ~/"$2" "$3"
+			esh -o ~/"$2" "$3"
+			;;
+		*)
+			echo cp -f "$3" ~/"$3"
+			cp -f "$3" ~/"$3"
+			;;
+	esac
 }
 export -f step
 
 source ~/.config/theming/theme/"$1"
-# fd -H -e esh --base-directory ~/.config/theming/skeleton
-fd -H -e esh --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {.} {}'
-
-# fd -e esh --base-directory ~/.config/theming/skeleton -x bash -c 'mkdir -p ~/{//}; esh -o ~/{.} {}'
+fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {.} {}'
+if [ -d "$HOME/.config/theming/$name" ]; then
+	fd -H --type l --base-directory "$HOME/.config/theming/$name" -x sh -c 'step {//} {.} {}'
+fi

@@ -29,6 +29,11 @@ exec languagetool --http
 exec ~/Media/Projects/sway-mega-hotkeys/cli.js
 exec ~/Media/Projects/nononotes/cli/index serve
 
+### Bring the escape key home!
+input type:keyboard {
+   xkb_options caps:swapescape
+}
+
 # assign [title="^Dotfiles$"] workspace 8
 # exec "sleep 1; $term --directory=~/Dotfiles -e nvim"
 assign [app_id="org\.kde\.kdeconnect\.sms"] workspace 9

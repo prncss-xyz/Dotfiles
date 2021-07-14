@@ -1,0 +1,24 @@
+# Configure imap username and password  
+
+defaults
+port 587
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+account juliette-lamarche
+host mail.gandi.net
+from princesse@princesse.xyz
+auth on
+tls_starttls on
+user princesse@princesse.xyz
+auth on
+passwordeval pass show webmail.gandi.net/princesse@princesse.xyz
+
+account gmail-princesse-lamarche
+host smtp.gmail.com
+from princesse.lamarche@gmail.com
+auth on
+user princesse.lamarche
+passwordeval pass show google.com/princesse.lamarche
+
+account default : juliette-lamarche

@@ -1,0 +1,58 @@
+IMAPAccount gmail-princesse-lamarche
+Host imap.gmail.com
+User princesse.lamarche
+PassCmd "pass show google.com/princesse.lamarche"
+SSLType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore gmail-princesse-lamarche-remote
+Account gmail-princesse-lamarche
+
+MaildirStore gmail-princesse-lamarche-local
+Subfolders Verbatim
+Path ~/Media/mail/gmail-princesse-lamarche/
+Inbox ~/Media/mail/gmail-princesse-lamarche/Inbox
+
+Channel gmail-princesse-lamarche-inbox
+Master :gmail-princesse-lamarche-remote:
+Slave :gmail-princesse-lamarche-local:
+Patterns * ![Gmail]* 
+Create Both
+SyncState *
+
+Group gmail-princesse-lamarche
+Channel gmail-princesse-lamarche-inbox
+
+IMAPAccount princesse-xyz
+Host mail.gandi.net
+Port 143
+User princesse@princesse.xyz
+PassCmd "pass show webmail.gandi.net/princesse@princesse.xyz"
+SSLType STARTTLS
+SSLVersion TLSv1.2
+CertificateFile ~/.certs/gandi.pem
+# To obtain the certificate, I ran this command:
+# openssl s_client -showcerts -connect gandi.net:443
+# I used the first (out of tree) certificate from the output
+# Deprecated settings:
+# Port 993
+# UseIMAPS yes
+# UseTLSv1 yes
+
+IMAPStore princesse-xyz-remote
+Account princesse-xyz
+
+MaildirStore princesse-xyz-local
+Subfolders verbatim
+Path ~/Media/mail/princesse-xyz/
+Inbox ~/Media/mail/princesse-xyz/Inbox
+
+Channel princesse-xyz-inbox
+Master :princesse-xyz-remote:
+Slave :princesse-xyz-local:
+Patterns * !"All Mail"
+Create Both
+SyncState *
+
+Group princesse-xyz
+Channel princesse-xyz-inbox

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+export GITHUB_USER=prncss-xyz
+export GITHUB_TOKEN="$(pass show github.com/prncss-xyz|tail -1)"
+/usr/bin/hub $@

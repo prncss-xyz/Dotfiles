@@ -61,4 +61,4 @@ xplr.config.modes.builtin.default.key_bindings.on_key["enter"] = {
 		},
 	},
 }
-require("type-to-nav").setup({autocomplete = true})
+require("type-to-nav").setup()

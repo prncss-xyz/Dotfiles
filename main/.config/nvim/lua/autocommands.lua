@@ -20,8 +20,8 @@ end
 
 augroup("Templates", {
 	copy(".eslintrc.js"),
-	copy(".gitignore"),
 	copy(".gitlab-ci.yml"),
+	copy(".gitignore"),
 	copy(".prettierrc.js"),
 	copy(".rgignore"),
 	copy("package.json"),
@@ -30,19 +30,19 @@ augroup("Templates", {
 
 --- automatically clear commandline messages after a few seconds delay
 --- source: http//unix.stackexchange.com/a/613645
-augroup("ClearCommandMessages", {
-	{
-		events = { "CmdlineLeave", "CmdlineChanged" },
-		targets = { ":" },
-		command = function()
-			vim.defer_fn(function()
-				if vim.fn.mode() == "n" then
-					vim.cmd([[echon '']])
-				end
-			end, 10000)
-		end,
-	},
-})
+-- augroup('ClearCommandMessages', {
+--   {
+--     events = { 'CmdlineLeave', 'CmdlineChanged' },
+--     targets = { ':' },
+--     command = function()
+--       vim.defer_fn(function()
+--         if vim.fn.mode() == 'n' then
+--           vim.cmd [[echon '']]
+--         end
+--       end, 10000)
+--     end,
+--   },
+-- })
 -- create symlink when new dotfile is created in active package
 -- NB: DOTFILES must NOT end with '/'
 -- local dotfiles = os.getenv 'DOTFILES'
@@ -129,3 +129,5 @@ augroup("NvimProjectConfig", {
 	},
 })
 vim.cmd("autocmd User LanguageToolCheckDone LanguageToolSummary")
+vim.cmd("autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()")
+-- vim.cmd"au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}"

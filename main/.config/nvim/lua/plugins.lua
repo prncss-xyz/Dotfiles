@@ -194,6 +194,7 @@ return require('packer').startup(function()
       require 'setup/galaxyline'
     end,
   }
+  use 'kosayoda/nvim-lightbulb'
   use 'brettanomyces/nvim-terminus'
   use 'romgrk/barbar.nvim'
   -- use 'akinsho/nvim-bufferline.lua'

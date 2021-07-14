@@ -110,6 +110,7 @@ nvim_lsp.sumneko_lua.setup(require('lua-dev').setup {
         diagnostics = {
           globals = {
             'use', -- packer
+            'xplr', -- xplr
           },
         },
       },

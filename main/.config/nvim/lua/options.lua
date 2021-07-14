@@ -52,22 +52,6 @@ vim.o.sidescrolloff = 5
 vim.opt.secure = true -- Disable autocmd etc for project local vimrc files.
 vim.opt.exrc = false -- Allow project local vimrc files example .nvimrc see :h exrc
 vim.opt.virtualedit = "block" -- allow cursor to move where there is no text in visual block mode
--- This is from the help docs, it enables mode shapes, "Cursor" highlight, and blinking
--- vim.opt.guicursor = {
---   [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50]],
---   [[a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor]],
---   [[sm:block-blinkwait175-blinkoff150-blinkon175]],
--- }
--- vim.g.format_options_typescript = format_options_prettier
--- vim.g.format_options_javascript = format_options_prettier
--- vim.g.format_options_typescriptreact = format_options_prettier
--- vim.g.format_options_javascriptreact = format_options_prettier
--- vim.g.format_options_json = format_options_prettier
--- vim.g.format_options_css = format_options_prettier
--- vim.g.format_options_scss = format_options_prettier
--- vim.g.format_options_html = format_options_prettier
--- vim.g.format_options_yaml = format_options_prettier
--- vim.g.format_options_markdown = format_options_prettier
 vim.g.languagetool_server_command = 'echo "Server Started"'
 vim.g.languagetool = {
 	["."] = { language = "auto" },
@@ -107,4 +91,8 @@ vim.g.bufferline = {
 }
 -- vim.opt.spelloptions = "camel"
 vim.g.operator_sandwich_no_default_key_mappings = 1
-vim.g.matchup_matchparen_offscreen = { method = "popup" }
+
+-- vim.g.matchup_matchparen_hi_surround_always = 1
+-- vim.g.matchup_matchparen_deferred = 1
+vim.g.matchup_matchparen_offscreen = { method = "status" }
+-- vim.g.matchup_matchparen_offscreen = { method = "popup" }

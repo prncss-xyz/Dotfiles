@@ -26,6 +26,9 @@ git config --global difftool.nvr.cmd "nvr -s -d \$LOCAL \$REMOTE"
 git config --global merge.tool nvr
 git config --global mergetool.nvr.cmd "nvr -s -d \$LOCAL \$BASE \$REMOTE \$MERGED -c 'wincmd J| wincmd ='"
 
+#gh completion -s fish > ~/.config/fish/completions/gh.fish
+gh config set git_protocol ssh
+
 /usr/share/qutebrowser/scripts/dictcli.py install en-US
 /usr/share/qutebrowser/scripts/dictcli.py install fr-CA
 

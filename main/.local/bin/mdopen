@@ -1,4 +1,3 @@
 #!/usr/bin/env sh
-tmpfile=$(mktemp /tmp/mdopen.XXXXXX)
-lowdown -o $tmpfile "$1"
+tmpfile=$(~/Media/Projects/mdopen2/index.js "$1")
 browser $tmpfile

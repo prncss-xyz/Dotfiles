@@ -1,6 +1,31 @@
+map('<Alt-e>', 'E');
+map('<Alt-r>', 'R');
+
+addSearchAliasX('gh', 'github', 'https://github.com/search?q=', 's');
+addSearchAliasX('npm', 'npm', 'https://www.npmjs.com/search?q=', 's');
+addSearchAliasX('lh', 'libhunt', 'https://www.libhunt.com/search?query=', 's');
+addSearchAliasX('mdn', 'mdn', 'https://developer.mozilla.org/en-US/search?q=', 's');
+addSearchAliasX('arch', 'archlinux wiki', 'https://wiki.archlinux.org/index.php?search=', 's');
+addSearchAliasX('pac', 'arch packages', 'https://archlinux.org/packages/?q=', 's');
+addSearchAliasX('aur', 'aur packages', 'https://aur.archlinux.org/packages/?K=', 's');
+
+addSearchAliasX('sea', 'seriouseats', 'https://www.seriouseats.com/search?q=', 's');
+addSearchAliasX('nell', 'nelligan', 'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=', 's');
+
+addSearchAliasX('p', 'persée', 'https://www.persee.fr/search?ta=article&q=', 's');
+addSearchAliasX('sep', 'sep', 'https://plato.stanford.edu/search/searcher.py?query=', 's');
+addSearchAliasX('c', 'cairn', 'https://www.cairn.info/resultats_recherche.php?searchTerm=', 's');
+addSearchAliasX('fr', 'francis', 'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=', 's');
+addSearchAliasX('eru', 'erudit', 'https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=', 's');
+
+addSearchAliasX('c', 'cnrtl', 'https://www.cnrtl.fr/definition/', 's');
+addSearchAliasX('usi', 'usito', 'https://usito.usherbrooke.ca/d%C3%A9finitions/', 's');
+
 // an example to create a new mapping `ctrl-y`
-mapkey('<ctrl-y>', 'Show me the money', function() {
-    Front.showPopup('a well-known phrase uttered by characters in the 1996 film Jerry Maguire (Escape to close).');
+mapkey("<ctrl-y>", "Show me the money", function () {
+  Front.showPopup(
+    "a well-known phrase uttered by characters in the 1996 film Jerry Maguire (Escape to close)."
+  );
 });
 
 // an example to replace `T` with `gt`, click `Default mappings` to see how `T` works.

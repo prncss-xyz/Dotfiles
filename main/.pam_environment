@@ -19,6 +19,7 @@ NNN_TRASH OVERRIDE=1
 NNN_FIFO OVERRIDE=/tmp/nnn.fifo
 NNN_BMS OVERRIDE=w:${HOME}/Downloads;p:${HOME}/Media/Pictures;d:${HOME}/Documents;u:/run/media/${USER};r=/run/user/1000/gvfs/mtp:host=Boyue_Likebook-T78D_T78DACT2200300015/Internal storage
 NNN_PLUG OVERRIDE=d:diffs;o:fzopen;O:fzopend;a:preview-tui;k:kdeconnect;c:fzcd;z:autojump;t:-_|kitty
+PATHMARKS_FILE OVERRIDE=${HOME}/Personal/xplr_bookmarks
 PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?
 PASSWORD_STORE_GENERATED_LENGTH=20
 MBSYNC_CONFIG OVERRIDE=${HOME}/.config/mbsync/config

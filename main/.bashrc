@@ -7,6 +7,8 @@
 
 PS1='[\u@\h \W]\$ '
 
+# export GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1)
+
 if [[ $(ps --no-header --pid=$PPID --format=cmd) != "fish" ]]; then
   echo -e "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
   echo -e "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"

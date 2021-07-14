@@ -16,6 +16,10 @@
       {
         "language": "json",
         "path": "./textmate/json.json"
+      },
+      {
+        "language": "markdown",
+        "path": "./textmate/markdown.json"
       }
     ]
   }

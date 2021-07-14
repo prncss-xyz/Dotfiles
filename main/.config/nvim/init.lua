@@ -128,3 +128,7 @@ require("nvim-lastplace").setup({
 	lastplace_open_folds = true,
 })
 require("diffview").setup()
+
+-- emoji:🕯️🪛🔨
+-- nerdfonts: 
+vim.fn.sign_define("LightBulbSign", { text = "", texthl = "", linehl = "", numhl = "" })

@@ -7,8 +7,7 @@ matcher:
     value: "firefox"
   - label: "browser"
     criteria: "app_id"
-    value: "chromium"
+    value: "Chromium"
 runner:
-  terminal: "kitty"
+  terminal: "new_term"
   browser: "browser"
-  # browser: "firefox --new-window"

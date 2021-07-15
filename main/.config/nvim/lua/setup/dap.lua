@@ -19,7 +19,10 @@ local function pick_process()
   end
   local choices = { 'Select process' }
   for i, proc in ipairs(procs) do
-    table.insert(choices, string.format('%d: pid=%d name=%s', i, proc.pid, proc.name))
+    table.insert(
+      choices,
+      string.format('%d: pid=%d name=%s', i, proc.pid, proc.name)
+    )
   end
   local choice = vim.fn.inputlist(choices)
   if choice < 1 or choice > #procs then
@@ -48,8 +51,14 @@ dap.adapters.nlua = function(callback, config)
   -- callback { type = 'server', host = '127.0.0.1', port = 30001 }
 end
 
-vim.fn.sign_define('DapBreakpoint', { text = '🛑', texthl = '', linehl = '', numhl = '' })
-vim.fn.sign_define('DapStopped', { text = '🟢', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define(
+  'DapBreakpoint',
+  { text = '🛑', texthl = '', linehl = '', numhl = '' }
+)
+vim.fn.sign_define(
+  'DapStopped',
+  { text = '🟢', texthl = '', linehl = '', numhl = '' }
+)
 -- vim.fn.sign_define('DapLogPoint', {text='→', texthl='', linehl='', numhl=''})
 -- vim.fn.sign_define('DapBreakpointRejected', {text='R', texthl='', linehl='', numhl=''})
 vim.g.dap_virtual_text = true

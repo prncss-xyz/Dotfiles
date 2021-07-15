@@ -1,6 +1,6 @@
 -- TODO: require theme plugins here
 local dm = require('utils').deep_merge
-local theme = require'theme'
+local theme = require 'theme'
 
 -- local theme = require 'theme'
 -- local theme = {
@@ -55,7 +55,5 @@ return {
     if theme.g then
       dm(vim.g, theme.g)
     end
-
   end,
 }
-

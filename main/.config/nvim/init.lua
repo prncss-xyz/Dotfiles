@@ -1,23 +1,23 @@
-local augroup = require("utils").augroup
-local lambda = require("utils").lambda
-vim.cmd("let loaded_netrwPlugin = 1") -- disable netrw
-require("options")
-require("plugins")
+local augroup = require('utils').augroup
+local lambda = require('utils').lambda
+vim.cmd 'let loaded_netrwPlugin = 1'
+require 'options'
+require 'plugins'
 
-local utils = require("utils")
+local utils = require 'utils'
 local job_sync = utils.job_sync
-local pr = job_sync(vim.fn.expand("~/.local/bin/project_root"), {})[1]
+local pr = job_sync(vim.fn.expand '~/.local/bin/project_root', {})[1]
 if pr then
-	vim.cmd("cd " .. pr)
+  vim.cmd('cd ' .. pr)
 end
 
-require("luasnip")
+require 'luasnip'
 -- require("snippets").use_suggested_mappings()
-require("theming").setup()
-require("setup/telescope")
-require("theme-exporter")
-require("setup/lsp")
-require("lightspeed").setup({})
+require('theming').setup()
+require 'setup/telescope'
+require 'theme-exporter'
+require 'setup/lsp'
+require('lightspeed').setup {}
 -- require("specs").setup({
 -- 	show_jumps = true,
 -- 	min_jump = 30,
@@ -36,96 +36,99 @@ require("lightspeed").setup({})
 -- 	},
 -- })
 
-require("treesitter-context.config").setup({
-	enable = true,
-})
+require('treesitter-context.config').setup {
+  enable = true,
+}
 function _G.Dump(...)
-	local objects = vim.tbl_map(vim.inspect, { ... })
-	print(unpack(objects))
+  local objects = vim.tbl_map(vim.inspect, { ... })
+  print(unpack(objects))
 end
 
 -- require('hlslens').setup {}
-require("trouble").setup({})
-require("commands")
+require('trouble').setup {}
+require 'commands'
 
-require("setup/dap")
-require("dapui").setup({})
-require("twilight").setup {}
-require("zen-mode").setup({
-	height = 0.9,
+require 'setup/dap'
+require('dapui').setup {}
+require('twilight').setup {}
+require('zen-mode').setup {
+  height = 0.9,
   width = 90,
   plugins = {
     options = {
       ruler = true,
       showcmd = true,
     },
-		gitsigns = { enabled = true },
-	},
-	on_open = function()
-		vim.cmd("TSContextDisable")
-		vim.cmd('echo ""')
-	end,
-	on_close = function()
-		vim.cmd("TSContextEnable")
-	end,
-})
+    gitsigns = { enabled = true },
+  },
+  on_open = function()
+    vim.cmd 'TSContextDisable'
+    vim.cmd 'echo ""'
+  end,
+  on_close = function()
+    vim.cmd 'TSContextEnable'
+  end,
+}
 
 if vim.fn.isdirectory(vim.o.directory) == 0 then
-	vim.fn.mkdir(vim.o.directory, "p")
+  vim.fn.mkdir(vim.o.directory, 'p')
 end
 
-require("telescope").load_extension("heading")
-require("bindings").setup()
+require('telescope').load_extension 'heading'
+require('bindings').setup()
 -- require 'setup/bufferline'
-require("autocommands")
-vim.cmd("set title")
-require("auto-session").setup({
-	log_level = "error",
-	-- auto_session_root_dir = "~/Personal/auto-session/",
-	auto_save_enabled = true,
-	auto_restore_enabled = true,
-	post_restore_cmds = {
-		"BufferOrderByDirectory",
-		"AutoSearchSession",
-		lambda(function()
-			-- augroup("Autosave", {
-			-- 	{
-			-- 		events = { "TabLeave", "FocusLost", "BufLeave" },
-			-- 		targets = { "*" },
-			-- 		-- command = ":update all",
-			-- 		command = ":wa!",
-			-- 	},
-			-- })
-		end),
-	},
-	pre_save_cmds = {
-		"TSContextDisable",
-		'lua require("dapui").close()',
-		"SymbolsOutlineClose",
-		"DiffviewClose",
-	},
-	-- post_restore_cmds = {"BufferLineSortByDirectory"},
+require 'autocommands'
+vim.cmd 'set title'
+require('auto-session').setup {
+  log_level = 'error',
+  -- auto_session_root_dir = "~/Personal/auto-session/",
+  auto_save_enabled = true,
+  auto_restore_enabled = true,
+  post_restore_cmds = {
+    'BufferOrderByDirectory',
+    'AutoSearchSession',
+    lambda(function()
+      -- augroup("Autosave", {
+      -- 	{
+      -- 		events = { "TabLeave", "FocusLost", "BufLeave" },
+      -- 		targets = { "*" },
+      -- 		-- command = ":update all",
+      -- 		command = ":wa!",
+      -- 	},
+      -- })
+    end),
+  },
+  pre_save_cmds = {
+    'TSContextDisable',
+    'lua require("dapui").close()',
+    'SymbolsOutlineClose',
+    'DiffviewClose',
+  },
+  -- post_restore_cmds = {"BufferLineSortByDirectory"},
+}
+augroup('Autosave', {
+  {
+    events = { 'TabLeave', 'FocusLost', 'BufLeave' },
+    targets = { '*' },
+    command = ':wa',
+  },
 })
-augroup("Autosave", {
-	{
-		events = { "TabLeave", "FocusLost", "BufLeave" },
-		targets = { "*" },
-		command = ":wa",
-	},
-})
-require("session-lens").setup({
-	shorten_path = false,
-})
-require("nvim-projectconfig").load_project_config({
-	project_dir = "~/Media/Projects/projects-config/",
-})
-require("nvim-lastplace").setup({
-	lastplace_ignore_buftype = { "quickfix", "nofile", "help" },
-	lastplace_ignore_filetype = { "gitcommit", "gitrebase", "svn", "hgcommit" },
-	lastplace_open_folds = true,
-})
-require("diffview").setup()
+require('session-lens').setup {
+  shorten_path = false,
+}
+require('nvim-projectconfig').load_project_config {
+  project_dir = '~/Media/Projects/projects-config/',
+}
+require('nvim-lastplace').setup {
+  lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
+  lastplace_ignore_filetype = { 'gitcommit', 'gitrebase', 'svn', 'hgcommit' },
+  lastplace_open_folds = true,
+}
+require('diffview').setup()
 
 -- emoji:🕯️🪛🔨
 -- nerdfonts: 
-vim.fn.sign_define("LightBulbSign", { text = "", texthl = "", linehl = "", numhl = "" })
+vim.fn.sign_define(
+  'LightBulbSign',
+  { text = '', texthl = '', linehl = '', numhl = '' }
+)

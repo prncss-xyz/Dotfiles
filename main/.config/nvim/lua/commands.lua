@@ -54,44 +54,11 @@ end)
 command("PnpmRemove", { nargs = 1 }, function(name)
 	vim.cmd("!pnpm rm " .. name)
 end)
-command( -- FIXME
-	"NN",
-	{ nargs = 1 },
-	function(name)
-		local dir = vim.fn.expand("%:p:h")
-		dir = dir or ur.cwd
-		local _, _, dir1, file = string.find(name, "(.+)/(.*)")
-		if dir1 then
-			vim.cmd("!mkdir -p " .. dir .. "/" .. dir1)
-			if #file > 0 then
-				vim.cmd("edit " .. dir .. "/" .. dir1 .. "/" .. file)
-			end
-		else
-			vim.cmd("edit " .. name)
-		end
-	end
-)
 command("T", {}, function()
 	Job
 		:new({
 			command = vim.env.TERMINAL,
 			args = {},
-		})
-		:start()
-end)
-command("F", {}, function()
-	Job
-		:new({
-			command = vim.env.TERMINAL,
-			args = { "-e", "nnn" },
-		})
-		:start()
-end)
-command("Tig", {}, function()
-	Job
-		:new({
-			command = vim.env.TERMINAL,
-			args = { "-e", "tig" },
 		})
 		:start()
 end)
@@ -101,17 +68,57 @@ command("Reload", {}, function()
       luafile %
     ]])
 end)
--- voir note ddg
-command("Searchcword", {}, function()
-  local word = vim.fn.expand("<cword>")
-  local qs = require'utils'.encode_uri(word)
-  local url = 'https://developer.mozilla.org/en-US/search?q=' .. qs
+
+local browser = os.getenv("BROWSER")
+command("BrowserSearchCword", { nargs = 1 }, function(base)
+	local word = vim.fn.expand("<cword>")
+	local qs = require("utils").encode_uri(word)
+	local url = base .. qs
 	Job
 		:new({
-			command = "browser",
+			command = browser,
+			args = { url },
+		})
+		:start()
+end)
+command("BrowserSearchVisualSelection", { nargs = 1 }, function(base)
+	local word = vim.api.nvim_eval("Get_visual_selection()")
+	local qs = require("utils").encode_uri(word)
+	local url = base .. qs
+	Job
+		:new({
+			command = browser,
+			args = { url },
+		})
+		:start()
+end)
+command("BrowserSearchGh", {}, function()
+	local word = vim.fn.expand("<cWORD>")
+	local qs = word:match("[%w%d-_.]+/[%w%d-_.]+")
+	local url = "https://github.com/" .. qs
+	Job
+		:new({
+			command = browser,
 			args = { url },
 		})
 		:start()
 end)
 
 require("telescope/md")
+
+-- gets the visual selection
+-- https://stackoverflow.com/questions/1533565/how-to-get-visually-selected-text-in-vimscript
+vim.cmd([[
+function! Get_visual_selection()
+    " Why is this not a built-in Vim script function?!
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+        return ''
+    endif
+    let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][column_start - 1:]
+    return join(lines, "\n")
+endfunction
+]])

@@ -1,7 +1,7 @@
 local gl = require("galaxyline")
 local Job = require("plenary.job")
 local gls = gl.section
-gl.short_line_list = { "LuaTree", "vista", "dbui", "goyo" }
+-- gl.short_line_list = { "LuaTree", "vista", "dbui", "goyo" }
 local skipLock = { "LuaTree", "vista", "dbui", "help" }
 
 local vim, lsp, api = vim, vim.lsp, vim.api
@@ -64,7 +64,6 @@ local function modified()
 	end
 	return ""
 end
-local backgroundGoyo = vim.g.terminal_color_10
 local colors = {
 	warn = vim.g.terminal_color_3,
 	error = vim.g.terminal_color_1,
@@ -324,49 +323,50 @@ gls.short_line_right = {
 		},
 	},
 }
-local zen = {}
 
-zen.left = {
-	{
-		Spacer2C = {
-			provider = lift(" "),
-			highlight = { text, backgroundGoyo },
-		},
-	},
-	{
-		FileNameC = {
-			provider = function()
-				return vim.fn.expand("%:t") .. " "
-			end,
-			highlight = { text, backgroundGoyo },
-		},
-	},
-	{
-		DiagnosticErrorC = {
-			provider = diagnostic_errors,
-			highlight = { text, backgroundGoyo },
-		},
-	},
-	{
-		DiagnosticWarnC = {
-			provider = diagnostic_warnings,
-			highlight = { text, backgroundGoyo },
-		},
-	},
-}
-zen.right = {
-	{
-		LineColumnC = {
-			provider = "LineColumn",
-			separator = " ",
-			separator_highlight = { background, backgroundGoyo },
-			highlight = { text, backgroundGoyo },
-		},
-		TeenthC = {
-			provider = current_line_tenth,
-			highlight = { text, backgroundGoyo },
-		},
-	},
-}
+-- local zen = {}
+-- local backgroundGoyo = vim.g.terminal_color_10
+-- zen.left = {
+-- 	{
+-- 		Spacer2C = {
+-- 			provider = lift(" "),
+-- 			highlight = { text, backgroundGoyo },
+-- 		},
+-- 	},
+-- 	{
+-- 		FileNameC = {
+-- 			provider = function()
+-- 				return vim.fn.expand("%:t") .. " "
+-- 			end,
+-- 			highlight = { text, backgroundGoyo },
+-- 		},
+-- 	},
+-- 	{
+-- 		DiagnosticErrorC = {
+-- 			provider = diagnostic_errors,
+-- 			highlight = { text, backgroundGoyo },
+-- 		},
+-- 	},
+-- 	{
+-- 		DiagnosticWarnC = {
+-- 			provider = diagnostic_warnings,
+-- 			highlight = { text, backgroundGoyo },
+-- 		},
+-- 	},
+-- }
+-- zen.right = {
+-- 	{
+-- 		LineColumnC = {
+-- 			provider = "LineColumn",
+-- 			separator = " ",
+-- 			separator_highlight = { background, backgroundGoyo },
+-- 			highlight = { text, backgroundGoyo },
+-- 		},
+-- 		TeenthC = {
+-- 			provider = current_line_tenth,
+-- 			highlight = { text, backgroundGoyo },
+-- 		},
+-- 	},
+-- }
 
-return zen
+-- return zen

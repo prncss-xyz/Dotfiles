@@ -145,14 +145,14 @@ end
 
 -- http://lua-users.org/wiki/StringRecipes
 function M.encode_uri(str)
-   if str then
-      str = str:gsub("\n", "\r\n")
-      str = str:gsub("([^%w %-%_%.%~])", function(c)
-         return ("%%%02X"):format(string.byte(c))
-      end)
-      str = str:gsub(" ", "+")
-   end
-   return str
+	if str then
+		str = str:gsub("\n", "\r\n")
+		str = str:gsub("([^%w %-%_%.%~])", function(c)
+			return ("%%%02X"):format(string.byte(c))
+		end)
+		str = str:gsub(" ", "+")
+	end
+	return str
 end
 
 return M

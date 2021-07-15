@@ -6,6 +6,14 @@ local function map(mode, lhs, rhs, opts)
 	vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
+local prefix = "<leader>b"
+
+-- TODO, help, Cheat
+local function mkSearch(abbr, help, url)
+	map("n", prefix .. abbr, string.format("<cmd>BrowserSearchCword %s<cr>", url))
+	map("v", prefix .. abbr, string.format("<cmd>BrowserSearchVisualSelection %s<cr>", url))
+end
+
 local t = function(str)
 	return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
@@ -20,6 +28,7 @@ local check_back_space = function()
 end
 
 local ls = require("luasnip")
+-- local ls = require("snippets")
 
 local function preview_location_callback(_, _, result)
 	if result == nil or vim.tbl_isempty(result) then
@@ -32,17 +41,17 @@ _G.PeekDefinition = function()
 	local params = vim.lsp.util.make_position_params()
 	return vim.lsp.buf_request(0, "textDocument/definition", params, preview_location_callback)
 end
-
 _G.tab_complete = function()
 	if vim.fn.pumvisible() == 1 then
 		return t("<C-n>")
 	elseif ls.jumpable(1) == true then
+		-- return t("<cmd>lua require'snippets'.expand_or_advance(1)<Cr>")
 		return t("<cmd>lua require'luasnip'.expand_or_jump(1)<Cr>")
 	elseif check_back_space() then
 		return t("<Tab>")
 	else
 		return t("<cmd>call emmet#moveNextPrev(1)<cr>")
-		-- return vim.fn['compe#complete']()
+		-- return vim.fn["compe#complete"]()
 	end
 end
 
@@ -50,11 +59,12 @@ _G.s_tab_complete = function()
 	if vim.fn.pumvisible() == 1 then
 		return t("<C-p>")
 	elseif ls.jumpable() == true then
+		-- return t("<cmd>lua require'snippets'.expand_or_advance(-1)<Cr>")
 		return t("<cmd>lua require'luasnip'.expand_or_jump(-1)<Cr>")
 	else
 		-- If <S-Tab> is not working in your terminal, change it to <C-h>
-		return t("<cmd>call emmet#moveNextPrev(0)<cr>")
-		-- return t '<S-Tab>'
+		-- return t("<cmd>call emmet#moveNextPrev(0)<cr>")
+		return t("<S-Tab>")
 	end
 end
 
@@ -71,6 +81,8 @@ local function setup()
 	-- asterisk
 	map("", "*", "<Plug>(asterisk-*)", { noremap = false })
 	map("", "#", "<Plug>(asterisk-#)", { noremap = false })
+	map("i", "*", "<Plug>(asterisk-*)", { noremap = false })
+	map("i", "#", "<Plug>(asterisk-#)", { noremap = false })
 	map("", "g*", "<Plug>(asterisk-g*)", { noremap = false })
 	map("", "g#", "<Plug>(asterisk-g#)", { noremap = false })
 
@@ -187,7 +199,7 @@ local function setup()
 
 	-- <cmd>lua require'bufferline'.sort_buffers_by(function (buf_a, buf_b) return buf_a.id < buf_b.id end)<CR>
 	-- finder: telescope
-	map("n", "<c-space>", "<cmd>lua Project_files()<CR>")
+	map("n", "<leader> ", "<cmd>lua Project_files()<CR>")
 	-- map('n', '<c-space>', "<cmd>lua require('telescope.builtin').git_files()<CR>")
 	map("n", "<leader>.", "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<CR>")
 	map("n", "<leader>;", "<cmd>lua require('telescope.builtin').commands()<CR>")
@@ -236,19 +248,14 @@ local function setup()
 
 	map("", "<leader>*", "<cmd>Rg <cword><cr>")
 	-- zen mode
-	map("", "<leader>zg", "<cmd>Goyo<CR>")
 	map("", "<leader>zz", "<cmd>ZenMode<CR>")
-	map("", "<leader>zt", "<cmd>:TZAtaraxis<CR>")
 
 	-- compe
 	map("i", "<c-space>", "compe#complete()", { expr = true })
-	map("i", "<CR>", "compe#confirm('<CR>')", { expr = true })
+	-- map("i", "<CR>", "compe#confirm('<CR>')", { expr = true })
 	map("i", "<C-e>", "compe#close('<C-e>')", { expr = true })
 	map("i", "<C-f>", "compe#scroll({ 'delta': +4 })", { expr = true })
 	map("i", "<C-d>", "compe#scroll({ 'delta': -4 })", { expr = true })
-
-	-- compe-autopairs
-	map("i", "<CR>", "v:lua.completions()", { expr = true })
 
 	-- spell
 	map("", "<leader>se", "<cmd>setlocal spell spelllang=en_us,cjk<cr>")
@@ -325,6 +332,34 @@ local function setup()
 	map("", "<leader>p", "<Plug>(operator-sandwich-add)", { noremap = false })
 	map("", "<leader>c", "<Plug>(operator-sandwich-delete)", { noremap = false })
 	map("", "<leader>r", "<Plug>(operator-sandwich-replace)", { noremap = false })
+
+	-- xplr
+	map("", "<leader>xx", "<cmd>XplrPicker %:p<cr>")
+
+	mkSearch("go", "google", "https://google.ca/search?q=")
+	mkSearch("d", "duckduckgo", "https://duckduckgo.com/?q=")
+	mkSearch("y", "youtube", "https://www.youtube.com/results?search_query=")
+
+	mkSearch("gh", "github", "https://github.com/search?q=")
+	mkSearch("npm", "npm", "https://www.npmjs.com/search?q=")
+	mkSearch("lh", "libhunt", "https://www.libhunt.com/search?query=")
+	mkSearch("mdn", "mdn", "https://developer.mozilla.org/en-US/search?q=")
+	mkSearch("arch", "archlinux wiki", "https://wiki.archlinux.org/index.php?search=")
+	mkSearch("pac", "arch packages", "https://archlinux.org/packages/?q=")
+	mkSearch("aur", "aur packages", "https://aur.archlinux.org/packages/?K=")
+
+	mkSearch("sea", "seriouseats", "https://www.seriouseats.com/search?q=")
+	mkSearch("nell", "nelligan", "https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=")
+
+	mkSearch("p", "persée", "https://www.persee.fr/search?ta=article&q=")
+	mkSearch("sep", "sep", "https://plato.stanford.edu/search/searcher.py?query=")
+	mkSearch("c", "cairn", "https://www.cairn.info/resultats_recherche.php?searchTerm=")
+	mkSearch("fr", "francis", "https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=")
+	mkSearch("eru", "erudit", "https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=")
+
+	mkSearch("c", "cnrtl", "https://www.cnrtl.fr/definition/")
+	mkSearch("usi", "usito", "https://usito.usherbrooke.ca/d%C3%A9finitions/")
+	map("n", prefix .. "gr", "<cmd>BrowserSearchGh<cr>")
 end
 
 return {

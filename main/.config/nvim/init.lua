@@ -11,28 +11,30 @@ if pr then
 	vim.cmd("cd " .. pr)
 end
 
+require("luasnip")
+-- require("snippets").use_suggested_mappings()
 require("theming").setup()
 require("setup/telescope")
 require("theme-exporter")
 require("setup/lsp")
 require("lightspeed").setup({})
-require("specs").setup({
-	show_jumps = true,
-	min_jump = 30,
-	popup = {
-		delay_ms = 0, -- delay before popup displays
-		inc_ms = 10, -- time increments used for fade/resize effects
-		blend = 10, -- starting blend, between 0-100 (fully transparent), see :h winblend
-		width = 10,
-		winhl = "PMenu",
-		fader = require("specs").linear_fader,
-		resizer = require("specs").shrink_resizer,
-	},
-	ignore_filetypes = {},
-	ignore_buftypes = {
-		nofile = true,
-	},
-})
+-- require("specs").setup({
+-- 	show_jumps = true,
+-- 	min_jump = 30,
+-- 	popup = {
+-- 		delay_ms = 0, -- delay before popup displays
+-- 		inc_ms = 10, -- time increments used for fade/resize effects
+-- 		blend = 10, -- starting blend, between 0-100 (fully transparent), see :h winblend
+-- 		width = 10,
+-- 		winhl = "PMenu",
+-- 		fader = require("specs").linear_fader,
+-- 		resizer = require("specs").shrink_resizer,
+-- 	},
+-- 	ignore_filetypes = {},
+-- 	ignore_buftypes = {
+-- 		nofile = true,
+-- 	},
+-- })
 
 require("treesitter-context.config").setup({
 	enable = true,
@@ -48,27 +50,23 @@ require("commands")
 
 require("setup/dap")
 require("dapui").setup({})
-require("true-zen").setup({
-	integration = {
-		galaxyline = true,
-		gitsigns = true,
-		limelight = true,
-	},
-	ideal_writing_area_width = 100,
-})
+require("twilight").setup {}
 require("zen-mode").setup({
 	height = 0.9,
-	plugins = {
+  width = 90,
+  plugins = {
+    options = {
+      ruler = true,
+      showcmd = true,
+    },
 		gitsigns = { enabled = true },
 	},
-	on_open = function(win)
+	on_open = function()
 		vim.cmd("TSContextDisable")
-		vim.cmd("Limelight")
 		vim.cmd('echo ""')
 	end,
 	on_close = function()
 		vim.cmd("TSContextEnable")
-		vim.cmd("Limelight!")
 	end,
 })
 
@@ -79,7 +77,6 @@ end
 require("telescope").load_extension("heading")
 require("bindings").setup()
 -- require 'setup/bufferline'
-require("snippets")
 require("autocommands")
 vim.cmd("set title")
 require("auto-session").setup({

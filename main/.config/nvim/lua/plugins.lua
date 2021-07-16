@@ -246,9 +246,6 @@ return require('packer').startup(function()
   -- use {"tzachar/compe-tabnine", run = "sh install.sh"} -- is that ok? crashes
   use {
     'folke/which-key.nvim',
-    config = function()
-      require('which-key').setup {}
-    end,
   }
   use {
     'RishabhRD/nvim-cheat.sh',

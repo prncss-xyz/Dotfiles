@@ -17,6 +17,8 @@ require('theming').setup()
 require 'setup/telescope'
 require 'theme-exporter'
 require 'setup/lsp'
+require('bindings').setup()
+require('which-key').setup {}
 require('lightspeed').setup {}
 -- require("specs").setup({
 -- 	show_jumps = true,
@@ -35,6 +37,25 @@ require('lightspeed').setup {}
 -- 		nofile = true,
 -- 	},
 -- })
+
+require('nononotes').setup {
+  on_ready = function()
+    vim.cmd(
+      string.format(
+        'autocmd BufRead,BufNewFile '
+          .. "*.md nnoremap <buffer> %s <cmd>lua require'nonotes'.enter_link()<cr>",
+        require('bindings').nononotes.enter_link
+      )
+    )
+    vim.cmd(
+      string.format(
+        'autocmd BufRead,BufNewFile '
+          .. "/*.md nnoremap <buffer> %s <cmd>lua require'notagain'.print_hover_title()<cr>",
+        require('bindings').nononotes.print_hover_title
+      )
+    )
+  end,
+}
 
 require('treesitter-context.config').setup {
   enable = true,
@@ -75,7 +96,6 @@ if vim.fn.isdirectory(vim.o.directory) == 0 then
 end
 
 require('telescope').load_extension 'heading'
-require('bindings').setup()
 -- require 'setup/bufferline'
 require 'autocommands'
 vim.cmd 'set title'

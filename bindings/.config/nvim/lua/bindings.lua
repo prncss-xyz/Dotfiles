@@ -37,39 +37,19 @@ function M.setup()
   vim.g.mapleader = ' '
   vim.g.user_emmet_leader_key = '<C-y>'
 
-  map('', '<C-l>', ':noh<cr>')
-  map('i', '<C-l>', '<Esc>:noh<cr>')
-  map('', '<c-s>', ':w!<CR>')
-  map('i', '<c-s>', '<Esc>:w!<CR>')
-  map('', '<m-v>', '<c-v>')
-
   -- compe
   map('i', '<c-space>', 'compe#complete()', { expr = true })
-  -- map("i", "<CR>", "compe#confirm('<CR>')", { expr = true })
-  map('i', '<C-e>', "compe#close('<C-e>')", { expr = true })
-  map('i', '<C-f>', "compe#scroll({ 'delta': +4 })", { expr = true })
-  map('i', '<C-d>', "compe#scroll({ 'delta': -4 })", { expr = true })
-  map('i', '<Tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
-  map('s', '<Tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
-  map('i', '<S-Tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
-  map('s', '<S-Tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
+  -- map("i", "<cr>", "compe#confirm('<cr>')", { expr = true })
+  map('i', '<c-e>', "compe#close('<c-e>')", { expr = true })
+  map('i', '<c-f>', "compe#scroll({ 'delta': +4 })", { expr = true })
+  map('i', '<c-d>', "compe#scroll({ 'delta': -4 })", { expr = true })
+  map('i', '<tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
+  map('s', '<tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
+  map('i', '<s-tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
+  map('s', '<s-tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
   -- needed for tab-completion
-  map('c', '<C-n>', '<down>')
-  map('c', '<C-p>', '<up>')
-
-  -- TODO: move to plugin
-  require('nononotes').setup {
-    on_ready = function()
-      vim.cmd(
-        'autocmd BufRead,BufNewFile '
-          .. "*.md nnoremap <buffer> <CR> <cmd>lua require'nonotes'.enter_link()<CR>"
-      )
-      vim.cmd(
-        'autocmd BufRead,BufNewFile '
-          .. "/*.md nnoremap <buffer> <C-k> <cmd>lua require'notagain'.print_hover_title()<CR>"
-      )
-    end,
-  }
+  map('c', '<c-n>', '<down>')
+  map('c', '<c-p>', '<up>')
 
   -- lightspeed: canceling "f" until it works better
   map('', 'f', 'f')
@@ -78,10 +58,10 @@ function M.setup()
   map('', 'T', 'T')
 
   -- asterisk
-  map('', '*', '<Plug>(asterisk-*)', { noremap = false })
-  map('', '#', '<Plug>(asterisk-#)', { noremap = false })
-  map('', 'g*', '<Plug>(asterisk-g*)', { noremap = false })
-  map('', 'g#', '<Plug>(asterisk-g#)', { noremap = false })
+  map('', '*', '<plug>(asterisk-*)', { noremap = false })
+  map('', '#', '<plug>(asterisk-#)', { noremap = false })
+  map('', 'g*', '<plug>(asterisk-g*)', { noremap = false })
+  map('', 'g#', '<plug>(asterisk-g#)', { noremap = false })
 
   -- cutlass
   map('n', 'x', 'd')
@@ -94,6 +74,8 @@ function M.setup()
   map('v', '<c-v>', 'dp')
   map('i', '<c-v>', '<esc>pa')
 
+  -- nv mappings
+  map('', '<m-v>', '<c-v>')
   for mode in string.gmatch('nv', '.') do
     wk.register({
       ['<c-w>'] = {
@@ -104,14 +86,15 @@ function M.setup()
       mode = mode,
     })
   end
-
   -- nvi mappings
   map('', '<C-l>', ':noh<cr>')
-  map('i', '<C-l>', '<Esc>:noh<cr>')
-  map('', '<c-s>', ':w!<CR>')
-  map('i', '<c-s>', '<Esc>:w!<CR>')
+  map('i', '<c-l>', '<esc>:noh<cr>a')
+  map('', '<c-s>', ':w!<cr>')
+  map('i', '<c-s>', '<esc>:w!<cr>a')
   for mode in string.gmatch('nvi', '.') do
     wk.register({
+      ['c-l'] = { '<cmd>noh<cr>', 'noh' },
+      ['c-s'] = { '<cmd>w!<cr>', 'save' },
       ['<f2>'] = { '<cmd>ToggleQuickFix<cr>', 'toggle quick fix' },
       ['<a-r>'] = { '<cmd>BufferNext<CR>', 'focus next buffer' },
       ['<a-e>'] = { '<cmd>BufferPrevious<CR>', 'focus previous buffer' },
@@ -258,42 +241,68 @@ function M.setup()
       },
       s = {
         name = '+Spell',
-        e = { '<cmd>setlocal spell spelllang=en_us,cjk<cr>' },
-        f = { '<cmd>setlocal spell spelllang=fr,cjk<cr>' },
-        b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>' },
-        x = { '<cmd>setlocal nospell | spelllang=<cr>' },
-        g = { '<cmd>LanguageToolCheck<cr>' },
+        e = { '<cmd>setlocal spell spelllang=en_us,cjk<cr>', 'en' },
+        f = { '<cmd>setlocal spell spelllang=fr,cjk<cr>', 'fr' },
+        b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
+        x = { '<cmd>setlocal nospell | spelllang=<cr>', 'none' },
+        g = { '<cmd>LanguageToolCheck<cr>', 'language tools' },
       },
       d = {
         name = '+DAP',
-        b = { "<cmd>lua require'dap'.toggle_breakpoint()<cr>" },
-        c = { "<cmd>lua require'dap'.continue()<cr>" },
-        s = { "<cmd>lua require'dap'.stop()<cr>" },
-        o = { "<cmd>lua require'dap'.step_over()<cr>" },
-        O = { "<cmd>lua require'dap'.step_out()<cr>" },
-        i = { "<cmd>lua require'dap'.step_into()<cr>" },
-        ['.'] = { "<cmd>lua require'dap'.run_last()<cr>" },
-        u = { "<cmd>lua require'dapui'.toggle()<cr>" },
-        k = { "<cmd>lua require'dap'.up()<cr>" },
-        j = { "<cmd>lua require'dap'.down()<cr>" },
-        l = { "<cmd>lua require'setup.dap'.launch()<cr>" },
-        r = { "<cmd>lua require'dap'.repl.open()<cr>" },
-        a = { "<cmd>lua require'setup/dap'.attach()<cr>" },
-        A = { "<cmd>lua require'setup/dap'.attachToRemote()<cr>" },
-        h = { "<cmd>lua require'dap.ui.widgets'.hover()<CR>" },
-        H = { "<cmd>lua require'dap.ui.variables'.hover()<CR>" },
-        v = { "<cmd>lua require'dap.ui.variables'.visual_hover()<CR>" },
-        ['?'] = { "<cmd>lua require'dap.ui.variables'.scopes()<CR>" },
-        B = { "<cmd>lua require'dap'.set_exception_breakpoints({'all'})<cr>" },
-        tc = { "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>" },
+        b = {
+          "<cmd>lua require'dap'.toggle_breakpoint()<cr>",
+          'toggle breakpoints',
+        },
+        c = { "<cmd>lua require'dap'.continue()<cr>", 'continue' },
+        s = { "<cmd>lua require'dap'.stop()<cr>", 'stop' },
+        o = { "<cmd>lua require'dap'.step_over()<cr>", 'step over' },
+        O = { "<cmd>lua require'dap'.step_out()<cr>", 'step out' },
+        i = { "<cmd>lua require'dap'.step_into()<cr>", 'step into' },
+        ['.'] = { "<cmd>lua require'dap'.run_last()<cr>", 'run last' },
+        u = { "<cmd>lua require'dapui'.toggle()<cr>", 'toggle dapui' },
+        k = { "<cmd>lua require'dap'.up()<cr>", 'up' },
+        j = { "<cmd>lua require'dap'.down()<cr>", 'down' },
+        l = { "<cmd>lua require'setup.dap'.launch()<cr>", 'launch' },
+        r = { "<cmd>lua require'dap'.repl.open()<cr>", 'repl' },
+        a = { "<cmd>lua require'setup/dap'.attach()<cr>", 'attach' },
+        A = {
+          "<cmd>lua require'setup/dap'.attachToRemote()<cr>",
+          'attach to remote',
+        },
+        h = { "<cmd>lua require'dap.ui.widgets'.hover()<CR>", 'widgets' },
+        H = { "<cmd>lua require'dap.ui.variables'.hover()<CR>", 'hover' },
+        v = {
+          "<cmd>lua require'dap.ui.variables'.visual_hover()<CR>",
+          'visual hover',
+        },
+        ['?'] = {
+          "<cmd>lua require'dap.ui.variables'.scopes()<CR>",
+          'variables scopes',
+        },
+        B = {
+          "<cmd>lua require'dap'.set_exception_breakpoints({'all'})<cr>",
+          'set exception breakoints',
+        },
+        tc = {
+          "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
+          'commands',
+        },
         ['t,'] = {
           "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
+          'configurations',
         },
         tb = {
           "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
+          'list breakpoints',
         },
-        tv = { "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>" },
-        tf = { "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>" },
+        tv = {
+          "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
+          'dap variables',
+        },
+        tf = {
+          "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
+          'dap frames',
+        },
       },
       b = {
         gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
@@ -383,5 +392,4 @@ M.plugins = {
     },
   },
 }
-
 return M

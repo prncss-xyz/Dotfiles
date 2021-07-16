@@ -24,6 +24,14 @@ function M.deep_merge(t1, t2)
   return t1
 end
 
+function M.invert(table)
+  local res = {}
+  for key, value in pairs(table) do
+    res[value] = key
+  end
+  return res
+end
+
 ---check if a certain feature/version/commit exists in nvim
 ---@param feature string
 ---@return boolean

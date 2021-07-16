@@ -52,6 +52,48 @@ require('nvim-autopairs.completion.compe').setup {
   map_complete = true,
 }
 
+local function t(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+local function check_back_space()
+  local col = vim.fn.col '.' - 1
+  if col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' then
+    return true
+  else
+    return false
+  end
+end
+
+local ls = require 'luasnip'
+-- local ls = require("snippets")
+
+function _G.tab_complete()
+  if vim.fn.pumvisible() == 1 then
+    return t '<C-n>'
+  elseif ls.jumpable(1) == true then
+    -- return t("<cmd>lua require'snippets'.expand_or_advance(1)<Cr>")
+    return t "<cmd>lua require'luasnip'.expand_or_jump(1)<Cr>"
+  elseif check_back_space() then
+    return t '<Tab>'
+  else
+    return t '<cmd>call emmet#moveNextPrev(1)<cr>'
+    -- return vim.fn["compe#complete"]()
+  end
+end
+
+function _G.s_tab_complete()
+  if vim.fn.pumvisible() == 1 then
+    return t '<C-p>'
+  elseif ls.jumpable(-1) == true then
+    -- return t("<cmd>lua require'snippets'.expand_or_advance(-1)<Cr>")
+    return t "<cmd>lua require'luasnip'.expand_or_jump(-1)<Cr>"
+  else
+    -- If <S-Tab> is not working in your terminal, change it to <C-h>
+    -- return t("<cmd>call emmet#moveNextPrev(0)<cr>")
+    return t '<S-Tab>'
+  end
+end
 -- function _G.completions()
 -- 	-- local npairs = require 'nvim-autopairs'
 -- 	if vim.fn.pumvisible() == 1 then

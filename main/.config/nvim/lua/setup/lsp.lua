@@ -1,3 +1,4 @@
+local augroup = require('utils').augroup
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 capabilities.textDocument.completion.completionItem.resolveSupport = {
@@ -27,14 +28,14 @@ do
   local method = 'textDocument/publishDiagnostics'
   local default_handler = vim.lsp.handlers[method]
   vim.lsp.handlers[method] =
-    function(err, method, result, client_id, bufnr, config)
-      default_handler(err, method, result, client_id, bufnr, config)
+    function(err, method0, result, client_id, bufnr, config)
+      default_handler(err, method0, result, client_id, bufnr, config)
       if mode == 'lsp_diagnostic' then
         local diagnostics = vim.lsp.diagnostic.get_all()
         local qflist = {}
-        for bufnr, diagnostic in pairs(diagnostics) do
+        for bufnr0, diagnostic in pairs(diagnostics) do
           for _, d in ipairs(diagnostic) do
-            d.bufnr = bufnr
+            d.bufnr = bufnr0
             d.lnum = d.range.start.line + 1
             d.col = d.range.start.character + 1
             d.text = d.message
@@ -48,35 +49,27 @@ end
 
 local nvim_lsp = require 'lspconfig'
 
-local function on_attach_efm(client, bufnr)
+local function on_attach_efm(client, _)
   client.resolved_capabilities.document_formatting = true
   client.resolved_capabilities.goto_definition = false
-  vim.api.nvim_command [[augroup Format]]
-  vim.api.nvim_command [[autocmd! * <buffer>]]
-  vim.api.nvim_command [[autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()]]
-  vim.api.nvim_command [[augroup END]]
+  vim.cmd [[
+    augroup Format
+    autocmd! * <buffer>
+    autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()
+    augroup END
+  ]]
 end
 
-local function on_attach(client, bufnr)
-  -- vim.api.nvim_buf_set_keymap(bufnr, ...)
-  -- vim.api.nvim_buf_set_option(bufnr, ...)
-  -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
+local function on_attach(client, _)
   client.resolved_capabilities.document_formatting = false
   if client.resolved_capabilities.document_highlight then
-    vim.api.nvim_exec(
-      [[
-        hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
-        hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
-        hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
-        augroup lsp_document_highlight
-          autocmd! * <buffer>
-          autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-          autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-        augroup END
-      ]],
-      false
-    )
+    vim.cmd [[
+      augroup lsp_document_highlight
+        autocmd! * <buffer>
+        autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+        autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+      augroup END
+    ]]
   end
 end
 
@@ -105,7 +98,6 @@ end
 nvim_lsp.sumneko_lua.setup(require('lua-dev').setup {
   lspconfig = {
     cmd = { 'lua-language-server' },
-    -- on_attach = on_attach,
     settings = {
       Lua = {
         diagnostics = {
@@ -149,10 +141,10 @@ local vint = {
   lintFormats = { '%f:%l:%c: %m' },
 }
 
-local rustfmt = {
-  formatCommand = 'rustfmt --emit=stdout',
-  formatStdin = true,
-}
+-- local rustfmt = {
+--   formatCommand = 'rustfmt --emit=stdout',
+--   formatStdin = true,
+-- }
 
 local shellcheck = {
   lintCommand = 'shellcheck -f gcc -x -',
@@ -206,3 +198,20 @@ nvim_lsp.efm.setup {
 -- 	}
 -- end
 -- nvim_lsp.emmet_ls.setup({ capabilities = capabilities })
+
+local function preview_location_callback(_, _, result)
+  if result == nil or vim.tbl_isempty(result) then
+    return nil
+  end
+  vim.lsp.util.preview_location(result[1])
+end
+
+_G.PeekDefinition = function()
+  local params = vim.lsp.util.make_position_params()
+  return vim.lsp.buf_request(
+    0,
+    'textDocument/definition',
+    params,
+    preview_location_callback
+  )
+end

@@ -1,3 +1,9 @@
+local M = {}
+local wk = require 'which-key'
+local invert = require('utils').invert
+
+M.plugins = {}
+
 local function map(mode, lhs, rhs, opts)
   local options = { noremap = true }
   if opts then
@@ -6,80 +12,64 @@ local function map(mode, lhs, rhs, opts)
   vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
-local prefix = '<leader>b'
-
--- TODO, help, Cheat
-local function mkSearch(abbr, help, url)
-  map('n', prefix .. abbr, string.format('<cmd>BrowserSearchCword %s<cr>', url))
-  map(
-    'v',
-    prefix .. abbr,
-    string.format('<cmd>BrowserSearchVisualSelection %s<cr>', url)
-  )
-end
-
-local t = function(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
-local check_back_space = function()
-  local col = vim.fn.col '.' - 1
-  if col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' then
-    return true
-  else
-    return false
+local function mapBrowserSearch(prefix, help0, mappings)
+  wk.register { [prefix] = { name = help0 } }
+  for abbr, value in pairs(mappings) do
+    local url, help = unpack(value)
+    wk.register({
+      [abbr] = { string.format('<cmd>BrowserSearchCword %s<cr>', url), help },
+    }, {
+      prefix = prefix,
+    })
+    wk.register({
+      [abbr] = {
+        string.format('<cmd>BrowserSearchVisualSelection %s<cr>', url),
+        help,
+      },
+    }, {
+      prefix = prefix,
+      mode = 'v',
+    })
   end
 end
 
-local ls = require 'luasnip'
--- local ls = require("snippets")
-
-local function preview_location_callback(_, _, result)
-  if result == nil or vim.tbl_isempty(result) then
-    return nil
-  end
-  vim.lsp.util.preview_location(result[1])
-end
-
-_G.PeekDefinition = function()
-  local params = vim.lsp.util.make_position_params()
-  return vim.lsp.buf_request(
-    0,
-    'textDocument/definition',
-    params,
-    preview_location_callback
-  )
-end
-_G.tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t '<C-n>'
-  elseif ls.jumpable(1) == true then
-    -- return t("<cmd>lua require'snippets'.expand_or_advance(1)<Cr>")
-    return t "<cmd>lua require'luasnip'.expand_or_jump(1)<Cr>"
-  elseif check_back_space() then
-    return t '<Tab>'
-  else
-    return t '<cmd>call emmet#moveNextPrev(1)<cr>'
-    -- return vim.fn["compe#complete"]()
-  end
-end
-
-_G.s_tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t '<C-p>'
-  elseif ls.jumpable() == true then
-    -- return t("<cmd>lua require'snippets'.expand_or_advance(-1)<Cr>")
-    return t "<cmd>lua require'luasnip'.expand_or_jump(-1)<Cr>"
-  else
-    -- If <S-Tab> is not working in your terminal, change it to <C-h>
-    -- return t("<cmd>call emmet#moveNextPrev(0)<cr>")
-    return t '<S-Tab>'
-  end
-end
-
-local function setup()
+function M.setup()
   vim.g.mapleader = ' '
   vim.g.user_emmet_leader_key = '<C-y>'
+
+  map('', '<C-l>', ':noh<cr>')
+  map('i', '<C-l>', '<Esc>:noh<cr>')
+  map('', '<c-s>', ':w!<CR>')
+  map('i', '<c-s>', '<Esc>:w!<CR>')
+  map('', '<m-v>', '<c-v>')
+
+  -- compe
+  map('i', '<c-space>', 'compe#complete()', { expr = true })
+  -- map("i", "<CR>", "compe#confirm('<CR>')", { expr = true })
+  map('i', '<C-e>', "compe#close('<C-e>')", { expr = true })
+  map('i', '<C-f>', "compe#scroll({ 'delta': +4 })", { expr = true })
+  map('i', '<C-d>', "compe#scroll({ 'delta': -4 })", { expr = true })
+  map('i', '<Tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
+  map('s', '<Tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
+  map('i', '<S-Tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
+  map('s', '<S-Tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
+  -- needed for tab-completion
+  map('c', '<C-n>', '<down>')
+  map('c', '<C-p>', '<up>')
+
+  -- TODO: move to plugin
+  require('nononotes').setup {
+    on_ready = function()
+      vim.cmd(
+        'autocmd BufRead,BufNewFile '
+          .. "*.md nnoremap <buffer> <CR> <cmd>lua require'nonotes'.enter_link()<CR>"
+      )
+      vim.cmd(
+        'autocmd BufRead,BufNewFile '
+          .. "/*.md nnoremap <buffer> <C-k> <cmd>lua require'notagain'.print_hover_title()<CR>"
+      )
+    end,
+  }
 
   -- lightspeed: canceling "f" until it works better
   map('', 'f', 'f')
@@ -90,8 +80,6 @@ local function setup()
   -- asterisk
   map('', '*', '<Plug>(asterisk-*)', { noremap = false })
   map('', '#', '<Plug>(asterisk-#)', { noremap = false })
-  map('i', '*', '<Plug>(asterisk-*)', { noremap = false })
-  map('i', '#', '<Plug>(asterisk-#)', { noremap = false })
   map('', 'g*', '<Plug>(asterisk-g*)', { noremap = false })
   map('', 'g#', '<Plug>(asterisk-g#)', { noremap = false })
 
@@ -105,384 +93,295 @@ local function setup()
   map('n', '<c-v>', 'p')
   map('v', '<c-v>', 'dp')
   map('i', '<c-v>', '<esc>pa')
-  -- map("", "<c-z>", "u")
-  -- map("i", "<c-z>", "<esc>ui")
-  -- map("", "<c-c-z>", "<C-R>")
-  -- map("i", "<c-s-z>", "<C-R>")
-  -- map("v", "<c-c>", '"+y')
-  -- map("v", "<c-x>", '"+d')
-  map('', '<m-v>', '<c-v>')
-  -- map("", "<C-l>", "<cmd>nohlsearch<cr><cmd>diffupdate<cr><cmd>syntax sync fromstart<cr><c-l>") -- Clear highlights
+
+  for mode in string.gmatch('nv', '.') do
+    wk.register({
+      ['<c-w>'] = {
+        L = { '<cmd>vsplit<cr>' },
+        J = { '<cmd>split<cr>' },
+      },
+    }, {
+      mode = mode,
+    })
+  end
+
+  -- nvi mappings
   map('', '<C-l>', ':noh<cr>')
   map('i', '<C-l>', '<Esc>:noh<cr>')
-  map('', '<c-s>', '<Esc>:w!<CR>')
+  map('', '<c-s>', ':w!<CR>')
   map('i', '<c-s>', '<Esc>:w!<CR>')
-  map('t', '<c-w>', '<C-\\><C-n>')
-  map('', '<C-w>L', '<cmd>vsplit<CR>')
-  map('', '<C-w>J', '<cmd>split<CR>')
-  map('c', '<C-n>', '<down>')
-  map('c', '<C-p>', '<up>')
-  map(
-    '',
-    'gx',
-    '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<CR>'
-  )
-  map('', '<F2>', '<cmd>ToggleQuickFix<cr>')
-  -- from https://github.com/mhinz/vim-galore
-  -- The mapping takes a register (or * by default) and opens it in the cmdline-window. Hit <cr> when you're done editing for setting the register.
-  -- Use it like this <leader>m or "q<leader>m.
-  -- Notice the use of <c-r><c-r> to make sure that the <c-r> is inserted literally. See :h c_^R^R.
-
-  -- map('', '<C-h>', '<cmd>HopChar2<cr>')
-
-  map(
-    'n',
-    '<leader>m',
-    ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>"
-  )
-
-  -- map('', '<c-n>', ':edit %:h/')
-  -- map('i', '<c-n>', '<esc>:edit %:h/')
-
-  -- map("", "<c-w>x", "<cmd>Bdelete!<CR>")
-  -- map("", "<c-w><c-x>", "<cmd>bdelete!<CR>")
-
-  -- bufferline
-  -- map('', '<c-w><s-x>', '<cmd>BufferLineCloseRight<CR><cmd>BufferLineCloseLeft<CR>')
-  -- map('', '<S-j>', '<cmd>BufferLineCycleNext<CR>')
-  -- map('', '<S-k>', '<cmd>BufferLineCyclePrev<CR>')
-  -- map('', '<A-S-j>', '<cmd>BufferLineMoveNext<CR>')
-  -- map('', '<A-S-k>', '<cmd>BufferLineMovePrev<CR>')
-  -- map('', '<leader>be', '<cmd>BufferLineSortByExtension<CR>')
-  -- map('', '<leader>bd', '<cmd>BufferLineSortByDirectory<CR>')
-  -- map('', '<A-s>', '<cmd>BufferLinePick<CR>')
-  -- map('', '<A-1>', "<cmd>lua require'bufferline'.go_to_buffer(1)<cr>")
-  -- map('', '<A-2>', "<cmd>lua require'bufferline'.go_to_buffer(2)<cr>")
-  -- map('', '<A-3>', "<cmd>lua require'bufferline'.go_to_buffer(3)<cr>")
-  -- map('', '<A-4>', "<cmd>lua require'bufferline'.go_to_buffer(4)<cr>")
-  -- map('', '<A-5>', "<cmd>lua require'bufferline'.go_to_buffer(5)<cr>")
-  -- map('', '<A-6>', "<cmd>lua require'bufferline'.go_to_buffer(6)<cr>")
-  -- map('', '<A-7>', "<cmd>lua require'bufferline'.go_to_buffer(7)<cr>")
-  -- map('', '<A-8>', "<cmd>lua require'bufferline'.go_to_buffer(8)<cr>")
-  -- map('', '<A-9>', "<cmd>lua require'bufferline'.go_to_buffer(9)<cr>")
-  -- map('t', '<A-1>', "<cmd>lua require'bufferline'.go_to_buffer(1)<cr>")
-  -- map('t', '<A-2>', "<cmd>lua require'bufferline'.go_to_buffer(2)<cr>")
-  -- map('t', '<A-3>', "<cmd>lua require'bufferline'.go_to_buffer(3)<cr>")
-  -- map('t', '<A-4>', "<cmd>lua require'bufferline'.go_to_buffer(4)<cr>")
-  -- map('t', '<A-5>', "<cmd>lua require'bufferline'.go_to_buffer(5)<cr>")
-  -- map('t', '<A-6>', "<cmd>lua require'bufferline'.go_to_buffer(6)<cr>")
-  -- map('t', '<A-7>', "<cmd>lua require'bufferline'.go_to_buffer(7)<cr>")
-  -- map('t', '<A-8>', "<cmd>lua require'bufferline'.go_to_buffer(8)<cr>")
-  -- map('t', '<A-9>', "<cmd>lua require'bufferline'.go_to_buffer(9)<cr>")
-
-  -- barbar
-  map('', '<A-r>', '<cmd>BufferNext<CR>')
-  map('', '<A-e>', '<cmd>BufferPrevious<CR>')
-  map('i', '<A-r>', '<cmd>BufferNext<CR>')
-  map('i', '<A-e>', '<cmd>BufferPrevious<CR>')
-  map('', '<A-S-r>', '<cmd>BufferMoveNext<CR>')
-  map('', '<A-S-e>', '<cmd>BufferMovePrevious<CR>')
-  map('', '<a-c>', '<cmd>BufferClose!<CR>')
-  map('', '<leader>bl', '<cmd>BufferOrderByLanguage<CR>')
-  map('', '<leader>bd', '<cmd>BufferOrderByDirectory<CR>')
-  map('', '<leader>bd', '<cmd>BufferOrderByDirectory<CR>')
-  map('', '<A-1>', '<cmd>BufferGoto 1<cr>')
-  map('', '<A-2>', '<cmd>BufferGoto 2<cr>')
-  map('', '<A-3>', '<cmd>BufferGoto 3<cr>')
-  map('', '<A-4>', '<cmd>BufferGoto 4<cr>')
-  map('', '<A-5>', '<cmd>BufferGoto 5<cr>')
-  map('', '<A-6>', '<cmd>BufferGoto 6<cr>')
-  map('', '<A-7>', '<cmd>BufferGoto 7<cr>')
-  map('', '<A-8>', '<cmd>BufferGoto 8<cr>')
-  map('', '<A-9>', '<cmd>BufferGoto 9<cr>')
-  map('i', '<A-1>', '<cmd>BufferGoto 1<cr>')
-  map('i', '<A-2>', '<cmd>BufferGoto 2<cr>')
-  map('i', '<A-3>', '<cmd>BufferGoto 3<cr>')
-  map('i', '<A-4>', '<cmd>BufferGoto 4<cr>')
-  map('i', '<A-5>', '<cmd>BufferGoto 5<cr>')
-  map('i', '<A-6>', '<cmd>BufferGoto 6<cr>')
-  map('i', '<A-7>', '<cmd>BufferGoto 7<cr>')
-  map('i', '<A-8>', '<cmd>BufferGoto 8<cr>')
-  map('i', '<A-9>', '<cmd>BufferGoto 9<cr>')
-  map('t', '<A-1>', '<cmd>BufferGoto 1<cr>')
-  map('t', '<A-2>', '<cmd>BufferGoto 2<cr>')
-  map('t', '<A-3>', '<cmd>BufferGoto 3<cr>')
-  map('t', '<A-4>', '<cmd>BufferGoto 4<cr>')
-  map('t', '<A-5>', '<cmd>BufferGoto 5<cr>')
-  map('t', '<A-6>', '<cmd>BufferGoto 6<cr>')
-  map('t', '<A-7>', '<cmd>BufferGoto 7<cr>')
-  map('t', '<A-8>', '<cmd>BufferGoto 8<cr>')
-  map('t', '<A-9>', '<cmd>BufferGoto 9<cr>')
-
-  -- <cmd>lua require'bufferline'.sort_buffers_by(function (buf_a, buf_b) return buf_a.id < buf_b.id end)<CR>
-  -- finder: telescope
-  map('n', '<leader> ', '<cmd>lua Project_files()<CR>')
-  -- map('n', '<c-space>', "<cmd>lua require('telescope.builtin').git_files()<CR>")
-  map(
-    'n',
-    '<leader>.',
-    "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<CR>"
-  )
-  map('n', '<leader>;', "<cmd>lua require('telescope.builtin').commands()<CR>")
-  map(
-    'n',
-    '<leader>fg',
-    "<cmd>lua require('telescope.builtin').live_grep()<CR>"
-  )
-  map('n', '<leader>fb', "<cmd>lua require('telescope.builtin').buffers()<CR>")
-  map('n', '<leader>?', "<cmd>lua require('telescope.builtin').help_tags()<CR>")
-  map('n', '<leader>fo', "<cmd>lua require('telescope.builtin').oldfiles()<CR>")
-  map('n', '<leader>fl', "<cmd>lua require('telescope.builtin').loclist()<CR>")
-  map(
-    'n',
-    '<leader>fr',
-    "<cmd>lua require('telescope.builtin').lsp_references()<CR>"
-  )
-  map(
-    'n',
-    '<leader>/',
-    "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<CR>"
-  )
-
-  map(
-    'n',
-    '<leader>fa',
-    "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>"
-  )
-  map(
-    'n',
-    '<leader>fA',
-    "<cmd>lua require('telescope.builtin').lsp_range_code_actions()<CR>"
-  )
-  map(
-    'n',
-    '<leader>ft',
-    "<cmd>lua require('telescope.builtin').treesitter()<CR>"
-  )
-  map('n', '<leader>fp', '<cmd>SearchSession<CR>')
-  map('n', '<leader>fs', '<cmd>Telescope symbols<cr>')
-  map('n', '<leader>fc', '<cmd>Cheatsheet<cr>')
-  map('n', '<leader>fh', '<cmd>Telescope heading<cr>')
-  map('n', '<leader>fm', '<cmd>Mdhelp<cr>')
-
-  -- LSP
-  -- -- movements
-  map('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>')
-  map('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
-  map('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
-  map('n', 'gm', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>')
-  map('n', 'gM', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>')
-  -- -- hovering
-  map('n', '<leader>lt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
-  map('n', '<leader>ld', '<cmd>lua PeekDefinition()<CR>')
-  map('n', '<leader>lk', '<cmd>lua vim.lsp.buf.hover()<CR>')
-  map('n', '<leader>ls', '<cmd>lua vim.lsp.buf.signature_help()<CR>')
-  map(
-    'n',
-    '<leader>lm',
-    '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>'
-  )
-  -- -- workspace actions
-  map('n', '<leader>lwa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>')
-  map('n', '<leader>lwr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>')
-  map(
-    'n',
-    '<leader>lwl',
-    '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>'
-  )
-  map('', '<leader>lr', '<cmd>lua vim.lsp.buf.rename()<CR>')
-  map(
-    '',
-    '<leader>lx',
-    '<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>'
-  )
-  -- -- quicklist/loclist
-  map('', '<leader>lq', '<cmd>lua vim.lsp.buf.references()<CR>')
-  map('', '<leader>ll', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>')
-  map('', '<leader>l@', '<cmd>ProDoc<cr>')
-  map('', '<leader>lo', '<cmd>SymbolsOutline<cr>')
-
-  map('', '<leader>l?', '<cmd>CheatDetect<cr>')
-
-  map('', '<leader>*', '<cmd>Rg <cword><cr>')
-  -- zen mode
-  map('', '<leader>zz', '<cmd>ZenMode<CR>')
-
-  -- compe
-  map('i', '<c-space>', 'compe#complete()', { expr = true })
-  -- map("i", "<CR>", "compe#confirm('<CR>')", { expr = true })
-  map('i', '<C-e>', "compe#close('<C-e>')", { expr = true })
-  map('i', '<C-f>', "compe#scroll({ 'delta': +4 })", { expr = true })
-  map('i', '<C-d>', "compe#scroll({ 'delta': -4 })", { expr = true })
-
-  -- spell
-  map('', '<leader>se', '<cmd>setlocal spell spelllang=en_us,cjk<cr>')
-  map('', '<leader>sf', '<cmd>setlocal spell spelllang=fr,cjk<cr>')
-  map('', '<leader>sb', '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>')
-  map('', '<leader>sx', '<cmd>setlocal nospell | spelllang=<cr>')
-  map('', '<leader>sg', '<cmd>LanguageToolCheck<cr>')
-
-  -- nonotes
-  map(
-    '',
-    '<C-g>',
-    "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<CR>"
-  )
-  map(
-    'i',
-    '<C-g>',
-    "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<CR>"
-  )
-  map(
-    '',
-    '<leader>ni',
-    "<cmd>lua require'nononotes'.prompt('insert', false, 'all')<CR>"
-  )
-  map('', '<leader>nn', "<cmd>lua require'nononotes'.new_note()<CR>")
-  map('', '<leader>ns', "<cmd>lua require'nononotes'.prompt_step()<CR>")
-  map('', '<leader>nS', "<cmd>lua require'nononotes'.new_step()<CR>")
-  map('', '<leader>nt', "<cmd>lua require'nononotes'.prompt_thread()<CR>")
-
-  require('nononotes').setup {
-    on_ready = function(dir)
-      vim.cmd(
-        'autocmd BufRead,BufNewFile '
-          .. "*.md nnoremap <buffer> <CR> <cmd>lua require'nonotes'.enter_link()<CR>"
-      )
-      vim.cmd(
-        'autocmd BufRead,BufNewFile '
-          .. "/*.md nnoremap <buffer> <C-k> <cmd>lua require'notagain'.print_hover_title()<CR>"
-      )
-    end,
+  for mode in string.gmatch('nvi', '.') do
+    wk.register({
+      ['<f2>'] = { '<cmd>ToggleQuickFix<cr>', 'toggle quick fix' },
+      ['<a-r>'] = { '<cmd>BufferNext<CR>', 'focus next buffer' },
+      ['<a-e>'] = { '<cmd>BufferPrevious<CR>', 'focus previous buffer' },
+      ['<a-s-r>'] = { '<cmd>BufferMoveNext<CR>', 'move buffer next' },
+      ['<a-s-e>'] = { '<cmd>BufferMovePrevious<CR>', 'move buffer previous' },
+      ['<a-c>'] = { '<cmd>BufferClose!<CR>', 'close buffer' },
+      -- slowed by matchup ambiguous mapping
+      ['<c-g>'] = {
+        "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<CR>",
+        'pick note',
+      },
+    }, {
+      mode = mode,
+    })
+    for i = 1, 9 do
+      wk.register({
+        [string.format('<a-%d>', i)] = {
+          string.format('<cmd>BufferGoto %i<cr>', i),
+          string.format('focus buffer %d', i),
+        },
+      }, {
+        mode = mode,
+      })
+    end
+  end
+  wk.register {
+    g = {
+      x = {
+        '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<CR>',
+        'open current url',
+      },
+      D = { '<cmd>lua vim.lsp.buf.declaration()<CR>', 'go declaration' },
+      d = { '<cmd>lua vim.lsp.buf.definition()<CR>', 'go definition' },
+      i = { '<cmd>lua vim.lsp.buf.implementation()<CR>', 'go implementation' },
+      m = { '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', 'go next diagnostic' },
+      M = {
+        '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>',
+        'go previous diagnostic',
+      },
+    },
+    ['<leader>'] = {
+      ['<leader>'] = {
+        '<cmd>lua Project_files()<CR>',
+        'project file',
+      },
+      ['*'] = { '<cmd>Rg <cword><cr>', 'rg current word' },
+      zz = { '<cmd>ZenMode<CR>', 'zen mode' },
+      m = {
+        ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>",
+        'macro edition',
+      },
+      f = {
+        name = '+picker',
+        b = { "<cmd>lua require('telescope.builtin').buffers()<CR>", 'buffers' },
+        o = { "<cmd>lua require('telescope.builtin').oldfiles()<CR>", 'oldfiles' },
+        l = { "<cmd>lua require('telescope.builtin').loclist()<CR>", 'loclist' },
+        g = {
+          "<cmd>lua require('telescope.builtin').live_grep()<CR>",
+          'live grep',
+        },
+        r = {
+          "<cmd>lua require('telescope.builtin').lsp_references()<CR>",
+          'lsp references',
+        },
+        a = {
+          "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>",
+          'code actions',
+        },
+        A = {
+          "<cmd>lua require('telescope.builtin').lsp_range_code_actions()<CR>",
+          'range code actions',
+        },
+        t = {
+          "<cmd>lua require('telescope.builtin').treesitter()<CR>",
+          'treesitter',
+        },
+        p = { '<cmd>SearchSession<CR>', 'sessions' },
+        s = { '<cmd>Telescope symbols<cr>', 'symbols' },
+        c = { '<cmd>Cheatsheet<cr>', 'cheatsheet' },
+        h = { '<cmd>Telescope heading<cr>', 'heading' },
+        m = { '<cmd>Mdhelp<cr>', 'md help' },
+        ['.'] = {
+          "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<CR>",
+          'dofiles',
+        },
+        [';'] = {
+          "<cmd>lua require('telescope.builtin').commands()<CR>",
+          'commands',
+        },
+        ['?'] = {
+          "<cmd>lua require('telescope.builtin').help_tags()<CR>",
+          'help tags',
+        },
+        ['/'] = {
+          "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<CR>",
+          'current buffer fuzzy find',
+        },
+      },
+      n = {
+        name = '+notes',
+        i = {
+          "<cmd>lua require'nononotes'.prompt('insert', false, 'all')<CR>",
+          'insert note id',
+        },
+        n = { "<cmd>lua require'nononotes'.new_note()<CR>", 'new note' },
+        s = { "<cmd>lua require'nononotes'.prompt_step()<CR>", 'pick step id' },
+        S = { "<cmd>lua require'nononotes'.new_step()<CR>", 'new step' },
+        t = { "<cmd>lua require'nononotes'.prompt_thread()<CR>", 'prick step id' },
+      },
+      l = {
+        name = '+LSP',
+        k = { '<cmd>lua vim.lsp.buf.hover()<CR>', 'hover' },
+        t = {
+          '<cmd>lua vim.lsp.buf.type_definition()<CR>',
+          'hover type definition',
+        },
+        d = { '<cmd>lua PeekDefinition()<CR>', 'hover definition' },
+        s = { '<cmd>lua vim.lsp.buf.signature_help()<CR>', 'signature help' },
+        wa = {
+          '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
+          'add workspace folder',
+        },
+        wr = {
+          '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
+          'rm workspace folder',
+        },
+        wl = {
+          '<cmd>lua vim.lsp.buf.list_workspace_folder()<CR>',
+          'rm workspace folder',
+        },
+        r = { '<cmd>lua vim.lsp.buf.rename()<CR>', 'rename' },
+        x = {
+          '<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>',
+          'stop active clients',
+        },
+        q = {
+          '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
+          'show line diagnostics',
+        },
+        m = { '<cmd>lua vim.lsp.buf.references()<CR>', 'references' },
+        ['@'] = { '<cmd>ProDoc<cr>', 'prepare doc comment' },
+        o = { '<cmd>SymbolsOutline<cr>', 'symbols outline' },
+        ['?'] = { '<cmd>CheatDetect<cr>', 'Cheat' },
+      },
+      s = {
+        name = '+Spell',
+        e = { '<cmd>setlocal spell spelllang=en_us,cjk<cr>' },
+        f = { '<cmd>setlocal spell spelllang=fr,cjk<cr>' },
+        b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>' },
+        x = { '<cmd>setlocal nospell | spelllang=<cr>' },
+        g = { '<cmd>LanguageToolCheck<cr>' },
+      },
+      d = {
+        name = '+DAP',
+        b = { "<cmd>lua require'dap'.toggle_breakpoint()<cr>" },
+        c = { "<cmd>lua require'dap'.continue()<cr>" },
+        s = { "<cmd>lua require'dap'.stop()<cr>" },
+        o = { "<cmd>lua require'dap'.step_over()<cr>" },
+        O = { "<cmd>lua require'dap'.step_out()<cr>" },
+        i = { "<cmd>lua require'dap'.step_into()<cr>" },
+        ['.'] = { "<cmd>lua require'dap'.run_last()<cr>" },
+        u = { "<cmd>lua require'dapui'.toggle()<cr>" },
+        k = { "<cmd>lua require'dap'.up()<cr>" },
+        j = { "<cmd>lua require'dap'.down()<cr>" },
+        l = { "<cmd>lua require'setup.dap'.launch()<cr>" },
+        r = { "<cmd>lua require'dap'.repl.open()<cr>" },
+        a = { "<cmd>lua require'setup/dap'.attach()<cr>" },
+        A = { "<cmd>lua require'setup/dap'.attachToRemote()<cr>" },
+        h = { "<cmd>lua require'dap.ui.widgets'.hover()<CR>" },
+        H = { "<cmd>lua require'dap.ui.variables'.hover()<CR>" },
+        v = { "<cmd>lua require'dap.ui.variables'.visual_hover()<CR>" },
+        ['?'] = { "<cmd>lua require'dap.ui.variables'.scopes()<CR>" },
+        B = { "<cmd>lua require'dap'.set_exception_breakpoints({'all'})<cr>" },
+        tc = { "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>" },
+        ['t,'] = {
+          "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
+        },
+        tb = {
+          "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
+        },
+        tv = { "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>" },
+        tf = { "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>" },
+      },
+      b = {
+        gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
+        man = { '<cmd>BrowserMan<cr>', 'man page' },
+      },
+    },
   }
-
-  -- map('', 'n', "<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>)")
-  -- map('', 'N', "<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>)")
-  -- map('', '*', "*<Cmd>lua require('hlslens').start()<CR>")
-  -- map('', '#', "#<Cmd>lua require('hlslens').start()<CR>")
-  -- map('', 'g*', "g*<Cmd>lua require('hlslens').start()<CR>")
-  -- map('', 'g#', "g#<Cmd>lua require('hlslens').start()<CR>")
-
-  map('i', '<Tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
-  map('s', '<Tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
-  map('i', '<S-Tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
-  map('s', '<S-Tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
-
-  -- dap
-  map('', '<leader>db', "<cmd>lua require'dap'.toggle_breakpoint()<cr>")
-  map(
-    '',
-    '<leader>dB',
-    "<cmd>lua require'dap'.set_exception_breakpoints({'all'})<cr>"
-  )
-  map('', '<leader>dc', "<cmd>lua require'dap'.continue()<cr>")
-  map('', '<leader>ds', "<cmd>lua require'dap'.stop()<cr>")
-  map('', '<leader>do', "<cmd>lua require'dap'.step_over()<cr>")
-  map('', '<leader>dO', "<cmd>lua require'dap'.step_out()<cr>")
-  map('', '<leader>di', "<cmd>lua require'dap'.step_into()<cr>")
-  map('', '<leader>d.', "<cmd>lua require'dap'.run_last()<cr>")
-  map('', '<leader>du', "<cmd>lua require'dapui'.toggle()<cr>")
-
-  map('', '<leader>dk', "<cmd>lua require'dap'.up()<cr>")
-  map('', '<leader>dj', "<cmd>lua require'dap'.down()<cr>")
-
-  map('', '<leader>dl', "<cmd>lua require'setup.dap'.launch()<cr>")
-  map('', '<leader>dr', "<cmd>lua require'dap'.repl.open()<cr>")
-  map('', '<leader>da', "<cmd>lua require'setup/dap'.attach()<cr>")
-  map('', '<leader>dA', "<cmd>lua require'setup/dap'.attachToRemote()<cr>")
-
-  map(
-    '',
-    '<leader>dtc',
-    "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>"
-  )
-  map(
-    '',
-    '<leader>dt,',
-    "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>"
-  )
-  map(
-    '',
-    '<leader>dtb',
-    "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>"
-  )
-  map(
-    '',
-    '<leader>dtv',
-    "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>"
-  )
-  map(
-    '',
-    '<leader>dtf',
-    "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>"
-  )
-
-  map('', '<leader>dh', "<cmd>lua require'dap.ui.widgets'.hover()<CR>")
-  map('', '<leader>dH', "<cmd>lua require'dap.ui.variables'.hover()<CR>")
-  map('', '<leader>dv', "<cmd>lua require'dap.ui.variables'.visual_hover()<CR>")
-  map('', '<leader>d?', "<cmd>lua require'dap.ui.variables'.scopes()<CR>")
-
-  -- sandwich
-  map('', '<leader>p', '<Plug>(operator-sandwich-add)', { noremap = false })
-  map('', '<leader>c', '<Plug>(operator-sandwich-delete)', { noremap = false })
-  map('', '<leader>r', '<Plug>(operator-sandwich-replace)', { noremap = false })
-
-  -- xplr
-  map('', '<leader>xx', '<cmd>XplrPicker %:p<cr>')
-
-  mkSearch('go', 'google', 'https://google.ca/search?q=')
-  mkSearch('d', 'duckduckgo', 'https://duckduckgo.com/?q=')
-  mkSearch('y', 'youtube', 'https://www.youtube.com/results?search_query=')
-
-  mkSearch('gh', 'github', 'https://github.com/search?q=')
-  mkSearch('npm', 'npm', 'https://www.npmjs.com/search?q=')
-  mkSearch('lh', 'libhunt', 'https://www.libhunt.com/search?query=')
-  mkSearch('mdn', 'mdn', 'https://developer.mozilla.org/en-US/search?q=')
-  mkSearch(
-    'arch',
-    'archlinux wiki',
-    'https://wiki.archlinux.org/index.php?search='
-  )
-  mkSearch('pac', 'arch packages', 'https://archlinux.org/packages/?q=')
-  mkSearch('aur', 'aur packages', 'https://aur.archlinux.org/packages/?K=')
-
-  mkSearch('sea', 'seriouseats', 'https://www.seriouseats.com/search?q=')
-  mkSearch(
-    'nell',
-    'nelligan',
-    'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg='
-  )
-
-  mkSearch('p', 'persée', 'https://www.persee.fr/search?ta=article&q=')
-  mkSearch('sep', 'sep', 'https://plato.stanford.edu/search/searcher.py?query=')
-  mkSearch(
-    'c',
-    'cairn',
-    'https://www.cairn.info/resultats_recherche.php?searchTerm='
-  )
-  mkSearch(
-    'fr',
-    'francis',
-    'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms='
-  )
-  mkSearch(
-    'eru',
-    'erudit',
-    'https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term='
-  )
-
-  mkSearch('c', 'cnrtl', 'https://www.cnrtl.fr/definition/')
-  mkSearch('usi', 'usito', 'https://usito.usherbrooke.ca/d%C3%A9finitions/')
-  map('n', prefix .. 'gr', '<cmd>BrowserSearchGh<cr>')
-  map('n', prefix .. 'man', '<cmd>BrowserMan<cr>')
+  mapBrowserSearch('<leader>b', '+browser search', {
+    go = { 'https://google.ca/search?q=', 'google' },
+    d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
+    y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
+    gh = { 'https://github.com/search?q=', 'github' },
+    npm = { 'https://www.npmjs.com/search?q=', 'npm' },
+    lh = { 'https://www.libhunt.com/search?query=', 'libhunt' },
+    mdn = { 'https://developer.mozilla.org/en-US/search?q=', 'mdn' },
+    pac = { 'https://archlinux.org/packages/?q=', 'arch packages' },
+    aur = { 'https://aur.archlinux.org/packages/?K=', 'aur packages' },
+    sea = { 'https://www.seriouseats.com/search?q=', 'seriouseats' },
+    p = { 'https://www.persee.fr/search?ta=article&q=', 'persée' },
+    sep = { 'https://plato.stanford.edu/search/searcher.py?query=', 'sep' },
+    cn = { 'https://www.cnrtl.fr/definition/', 'cnrtl' },
+    usi = { 'https://usito.usherbrooke.ca/d%C3%A9finitions/', 'usito' },
+    arch = { 'https://wiki.archlinux.org/index.php?search=', 'archlinux wiki' },
+    nell = {
+      'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
+      'nelligan',
+    },
+    ca = { 'https://www.cairn.info/resultats_recherche.php?searchTerm=', 'cairn' },
+    fr = {
+      'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=',
+      'francis',
+    },
+    eru = {
+      'https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=',
+      'erudit',
+    },
+  })
 end
 
-return {
-  setup = setup,
+M.plugins = {
+  nononotes = invert {
+    ['<cr>'] = 'enter_link',
+    ['<c-k>'] = 'print_hover_title',
+  },
   treesitter = {
-    init_selection = 'gnn',
-    node_incremental = 'grn',
-    scope_incremental = 'grc',
-    node_decremental = 'grm',
+    incremental_selection = {
+      keymaps = invert {
+        gnn = 'init_selection',
+        grn = 'node_incremental',
+        nrc = 'scope_incremental',
+        grm = 'node_decremental',
+      },
+    },
+    textobjects = {
+      select = {
+        keymaps = {
+          ['af'] = '@function.outer',
+          ['if'] = '@function.inner',
+          ['ia'] = '@parameter.inner',
+          ['a,'] = {
+            javascript = '(pair) @object', -- not working
+          },
+        },
+      },
+      swap = {
+        swap_next = {
+          ['<leader>a'] = '@parameter.inner',
+        },
+        swap_previous = {
+          ['<leader>A'] = '@parameter.inner',
+        },
+      },
+      move = {
+        goto_next_start = {
+          [',f'] = '@function.outer',
+        },
+        goto_previous_end = {
+          [',F'] = '@function.outer',
+        },
+      },
+    },
+    textsubjects = {
+      keymaps = {
+        ['.'] = 'textsubjects-smart',
+        [';'] = 'textsubjects-big',
+      },
+    },
   },
 }
+
+return M

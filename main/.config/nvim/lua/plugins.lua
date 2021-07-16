@@ -164,11 +164,6 @@ return require('packer').startup(function()
       'Lua',
     },
   }
-  --[[
-
-  (cbca)
-
-  --]]
 
   -- UI
   use 'haringsrob/nvim_context_vt'

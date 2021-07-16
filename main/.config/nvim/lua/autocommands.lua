@@ -114,6 +114,8 @@ augroup('TerminalEnter', {
 --     end,
 --   },
 -- })
+
+-- FIXME
 augroup('PackerCompile', {
   {
     events = { 'BufWritePost' },
@@ -131,3 +133,10 @@ augroup('NvimProjectConfig', {
 vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
 vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"
 -- vim.cmd"au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}"
+augroup('Autosave', {
+  {
+    events = { 'TabLeave', 'FocusLost', 'BufLeave' },
+    targets = { '*' },
+    command = ':wa',
+  },
+})

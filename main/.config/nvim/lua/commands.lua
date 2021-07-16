@@ -113,7 +113,7 @@ command('BrowserMan', {}, function()
   local word = vim.fn.expand '<cword>'
   Job
     :new({
-      command = "hman",
+      command = 'hman',
       args = { word },
     })
     :start()

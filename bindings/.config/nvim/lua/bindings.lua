@@ -2,6 +2,8 @@ local M = {}
 local wk = require 'which-key'
 local invert = require('utils').invert
 
+-- TODO gitsigns
+
 M.plugins = {}
 
 local function map(mode, lhs, rhs, opts)
@@ -34,9 +36,6 @@ local function mapBrowserSearch(prefix, help0, mappings)
 end
 
 function M.setup()
-  vim.g.mapleader = ' '
-  vim.g.user_emmet_leader_key = '<C-y>'
-
   -- compe
   map('i', '<c-space>', 'compe#complete()', { expr = true })
   -- map("i", "<cr>", "compe#confirm('<cr>')", { expr = true })
@@ -75,35 +74,31 @@ function M.setup()
   map('i', '<c-v>', '<esc>pa')
 
   -- nv mappings
-  map('', '<m-v>', '<c-v>')
   for mode in string.gmatch('nv', '.') do
     wk.register({
+      ['<m-v>'] = { '<c-v>', 'square selection' },
       ['<c-w>'] = {
-        L = { '<cmd>vsplit<cr>' },
-        J = { '<cmd>split<cr>' },
+        L = { '<cmd>vsplit<cr>', 'split left' },
+        J = { '<cmd>split<cr>', 'split down' },
       },
     }, {
       mode = mode,
     })
   end
   -- nvi mappings
-  map('', '<C-l>', ':noh<cr>')
-  map('i', '<c-l>', '<esc>:noh<cr>a')
-  map('', '<c-s>', ':w!<cr>')
-  map('i', '<c-s>', '<esc>:w!<cr>a')
   for mode in string.gmatch('nvi', '.') do
     wk.register({
-      ['c-l'] = { '<cmd>noh<cr>', 'noh' },
-      ['c-s'] = { '<cmd>w!<cr>', 'save' },
+      ['<c-l>'] = { '<cmd>noh<cr>', 'noh' },
+      ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       ['<f2>'] = { '<cmd>ToggleQuickFix<cr>', 'toggle quick fix' },
-      ['<a-r>'] = { '<cmd>BufferNext<CR>', 'focus next buffer' },
-      ['<a-e>'] = { '<cmd>BufferPrevious<CR>', 'focus previous buffer' },
-      ['<a-s-r>'] = { '<cmd>BufferMoveNext<CR>', 'move buffer next' },
-      ['<a-s-e>'] = { '<cmd>BufferMovePrevious<CR>', 'move buffer previous' },
-      ['<a-c>'] = { '<cmd>BufferClose!<CR>', 'close buffer' },
+      ['<a-r>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
+      ['<a-e>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },
+      ['<a-s-r>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
+      ['<a-s-e>'] = { '<cmd>BufferMovePrevious<cr>', 'move buffer previous' },
+      ['<a-c>'] = { '<cmd>BufferClose!<cr>', 'close buffer' },
       -- slowed by matchup ambiguous mapping
       ['<c-g>'] = {
-        "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<CR>",
+        "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
         'pick note',
       },
     }, {
@@ -120,121 +115,123 @@ function M.setup()
       })
     end
   end
+
+  -- n mappings
   wk.register {
     g = {
       x = {
-        '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<CR>',
+        '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<cr>',
         'open current url',
       },
-      D = { '<cmd>lua vim.lsp.buf.declaration()<CR>', 'go declaration' },
-      d = { '<cmd>lua vim.lsp.buf.definition()<CR>', 'go definition' },
-      i = { '<cmd>lua vim.lsp.buf.implementation()<CR>', 'go implementation' },
-      m = { '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', 'go next diagnostic' },
+      D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
+      d = { '<cmd>lua vim.lsp.buf.definition()<cr>', 'go definition' },
+      i = { '<cmd>lua vim.lsp.buf.implementation()<cr>', 'go implementation' },
+      m = { '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'go next diagnostic' },
       M = {
-        '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>',
+        '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
         'go previous diagnostic',
       },
     },
     ['<leader>'] = {
       ['<leader>'] = {
-        '<cmd>lua Project_files()<CR>',
+        '<cmd>lua Project_files()<cr>',
         'project file',
       },
       ['*'] = { '<cmd>Rg <cword><cr>', 'rg current word' },
-      zz = { '<cmd>ZenMode<CR>', 'zen mode' },
+      zz = { '<cmd>ZenMode<cr>', 'zen mode' },
       m = {
         ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>",
         'macro edition',
       },
       f = {
         name = '+picker',
-        b = { "<cmd>lua require('telescope.builtin').buffers()<CR>", 'buffers' },
-        o = { "<cmd>lua require('telescope.builtin').oldfiles()<CR>", 'oldfiles' },
-        l = { "<cmd>lua require('telescope.builtin').loclist()<CR>", 'loclist' },
+        b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
+        o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", 'oldfiles' },
+        l = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
         g = {
-          "<cmd>lua require('telescope.builtin').live_grep()<CR>",
+          "<cmd>lua require('telescope.builtin').live_grep()<cr>",
           'live grep',
         },
         r = {
-          "<cmd>lua require('telescope.builtin').lsp_references()<CR>",
+          "<cmd>lua require('telescope.builtin').lsp_references()<cr>",
           'lsp references',
         },
         a = {
-          "<cmd>lua require('telescope.builtin').lsp_code_actions()<CR>",
+          "<cmd>lua require('telescope.builtin').lsp_code_actions()<cr>",
           'code actions',
         },
         A = {
-          "<cmd>lua require('telescope.builtin').lsp_range_code_actions()<CR>",
+          "<cmd>lua require('telescope.builtin').lsp_range_code_actions()<cr>",
           'range code actions',
         },
         t = {
-          "<cmd>lua require('telescope.builtin').treesitter()<CR>",
+          "<cmd>lua require('telescope.builtin').treesitter()<cr>",
           'treesitter',
         },
-        p = { '<cmd>SearchSession<CR>', 'sessions' },
+        p = { '<cmd>SearchSession<cr>', 'sessions' },
         s = { '<cmd>Telescope symbols<cr>', 'symbols' },
         c = { '<cmd>Cheatsheet<cr>', 'cheatsheet' },
         h = { '<cmd>Telescope heading<cr>', 'heading' },
         m = { '<cmd>Mdhelp<cr>', 'md help' },
         ['.'] = {
-          "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<CR>",
+          "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<cr>",
           'dofiles',
         },
         [';'] = {
-          "<cmd>lua require('telescope.builtin').commands()<CR>",
+          "<cmd>lua require('telescope.builtin').commands()<cr>",
           'commands',
         },
         ['?'] = {
-          "<cmd>lua require('telescope.builtin').help_tags()<CR>",
+          "<cmd>lua require('telescope.builtin').help_tags()<cr>",
           'help tags',
         },
         ['/'] = {
-          "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<CR>",
+          "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
           'current buffer fuzzy find',
         },
       },
       n = {
         name = '+notes',
         i = {
-          "<cmd>lua require'nononotes'.prompt('insert', false, 'all')<CR>",
+          "<cmd>lua require'nononotes'.prompt('insert', false, 'all')<cr>",
           'insert note id',
         },
-        n = { "<cmd>lua require'nononotes'.new_note()<CR>", 'new note' },
-        s = { "<cmd>lua require'nononotes'.prompt_step()<CR>", 'pick step id' },
-        S = { "<cmd>lua require'nononotes'.new_step()<CR>", 'new step' },
-        t = { "<cmd>lua require'nononotes'.prompt_thread()<CR>", 'prick step id' },
+        n = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
+        s = { "<cmd>lua require'nononotes'.prompt_step()<cr>", 'pick step id' },
+        S = { "<cmd>lua require'nononotes'.new_step()<cr>", 'new step' },
+        t = { "<cmd>lua require'nononotes'.prompt_thread()<cr>", 'prick step id' },
       },
       l = {
         name = '+LSP',
-        k = { '<cmd>lua vim.lsp.buf.hover()<CR>', 'hover' },
+        k = { '<cmd>lua vim.lsp.buf.hover()<cr>', 'hover' },
         t = {
-          '<cmd>lua vim.lsp.buf.type_definition()<CR>',
+          '<cmd>lua vim.lsp.buf.type_definition()<cr>',
           'hover type definition',
         },
-        d = { '<cmd>lua PeekDefinition()<CR>', 'hover definition' },
-        s = { '<cmd>lua vim.lsp.buf.signature_help()<CR>', 'signature help' },
+        d = { '<cmd>lua PeekDefinition()<cr>', 'hover definition' },
+        s = { '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'signature help' },
         wa = {
-          '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>',
+          '<cmd>lua vim.lsp.buf.add_workspace_folder()<cr>',
           'add workspace folder',
         },
         wr = {
-          '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>',
+          '<cmd>lua vim.lsp.buf.remove_workspace_folder()<cr>',
           'rm workspace folder',
         },
         wl = {
-          '<cmd>lua vim.lsp.buf.list_workspace_folder()<CR>',
+          '<cmd>lua vim.lsp.buf.list_workspace_folder()<cr>',
           'rm workspace folder',
         },
-        r = { '<cmd>lua vim.lsp.buf.rename()<CR>', 'rename' },
+        r = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
         x = {
           '<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>',
           'stop active clients',
         },
         q = {
-          '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>',
+          '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>',
           'show line diagnostics',
         },
-        m = { '<cmd>lua vim.lsp.buf.references()<CR>', 'references' },
+        m = { '<cmd>lua vim.lsp.buf.references()<cr>', 'references' },
         ['@'] = { '<cmd>ProDoc<cr>', 'prepare doc comment' },
         o = { '<cmd>SymbolsOutline<cr>', 'symbols outline' },
         ['?'] = { '<cmd>CheatDetect<cr>', 'Cheat' },
@@ -269,14 +266,14 @@ function M.setup()
           "<cmd>lua require'setup/dap'.attachToRemote()<cr>",
           'attach to remote',
         },
-        h = { "<cmd>lua require'dap.ui.widgets'.hover()<CR>", 'widgets' },
-        H = { "<cmd>lua require'dap.ui.variables'.hover()<CR>", 'hover' },
+        h = { "<cmd>lua require'dap.ui.widgets'.hover()<cr>", 'widgets' },
+        H = { "<cmd>lua require'dap.ui.variables'.hover()<cr>", 'hover' },
         v = {
-          "<cmd>lua require'dap.ui.variables'.visual_hover()<CR>",
+          "<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
           'visual hover',
         },
         ['?'] = {
-          "<cmd>lua require'dap.ui.variables'.scopes()<CR>",
+          "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
           'variables scopes',
         },
         B = {
@@ -310,6 +307,7 @@ function M.setup()
       },
     },
   }
+
   mapBrowserSearch('<leader>b', '+browser search', {
     go = { 'https://google.ca/search?q=', 'google' },
     d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
@@ -343,6 +341,14 @@ function M.setup()
 end
 
 M.plugins = {
+  vim = {
+    -- options related to mapping
+    g = {
+
+      mapleader = ' ',
+      user_emmet_leader_key = '<C-y>',
+    },
+  },
   nononotes = invert {
     ['<cr>'] = 'enter_link',
     ['<c-k>'] = 'print_hover_title',
@@ -391,5 +397,25 @@ M.plugins = {
       },
     },
   },
+  gitsigns = {
+    keymaps = {
+      noremap = true,
+      buffer = true,
+      ['n ]c'] = {
+        expr = true,
+        "&diff ? ']c' : '<cmd>lua require\"gitsigns\".next_hunk()<cr>'",
+      },
+      ['n [c'] = {
+        expr = true,
+        "&diff ? '[c' : '<cmd>lua require\"gitsigns\".prev_hunk()<cr>'",
+      },
+      ['n <leader>hs'] = '<cmd>lua require"gitsigns".stage_hunk()<cr>',
+      ['n <leader>hu'] = '<cmd>lua require"gitsigns".undo_stage_hunk()<cr>',
+      ['n <leader>hr'] = '<cmd>lua require"gitsigns".reset_hunk()<cr>',
+      ['n <leader>hp'] = '<cmd>lua require"gitsigns".preview_hunk()<cr>',
+      ['n <leader>hb'] = '<cmd>lua require"gitsigns".blame_line()<cr>',
+    },
+  },
 }
+
 return M

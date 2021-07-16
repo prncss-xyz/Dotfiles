@@ -1,3 +1,5 @@
+local M = {}
+
 local dap = require 'dap'
 
 local function pick_process()
@@ -31,42 +33,26 @@ local function pick_process()
   return procs[choice].pid
 end
 
-dap.configurations.lua = {
-  {
-    type = 'nlua',
-    request = 'attach',
-    name = 'Attach to running Neovim instance',
-    host = function()
-      return '127.0.0.1'
-    end,
-    port = function()
-      local val = 54231
-      return val
-    end,
-  },
-}
+function M.setup()
+  dap.configurations.lua = {
+    {
+      type = 'nlua',
+      request = 'attach',
+      name = 'Attach to running Neovim instance',
+      host = function()
+        return '127.0.0.1'
+      end,
+      port = function()
+        local val = 54231
+        return val
+      end,
+    },
+  }
 
-dap.adapters.nlua = function(callback, config)
-  callback { type = 'server', host = config.host, port = config.port }
-  -- callback { type = 'server', host = '127.0.0.1', port = 30001 }
+  dap.adapters.nlua = function(callback, config)
+    callback { type = 'server', host = config.host, port = config.port }
+    -- callback { type = 'server', host = '127.0.0.1', port = 30001 }
+  end
 end
 
-vim.fn.sign_define(
-  'DapBreakpoint',
-  { text = '🛑', texthl = '', linehl = '', numhl = '' }
-)
-vim.fn.sign_define(
-  'DapStopped',
-  { text = '🟢', texthl = '', linehl = '', numhl = '' }
-)
--- vim.fn.sign_define('DapLogPoint', {text='→', texthl='', linehl='', numhl=''})
--- vim.fn.sign_define('DapBreakpointRejected', {text='R', texthl='', linehl='', numhl=''})
-vim.g.dap_virtual_text = true
-vim.g.dap_virtual_text = 'all frames' -- experimental
-
-return {
-  -- launch = launch,
-  -- debugJest = debugJest,
-  -- attach = attach,
-  -- attachToRemote = attachToRemote,
-}
+return M

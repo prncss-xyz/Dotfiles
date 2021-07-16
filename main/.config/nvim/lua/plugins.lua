@@ -18,7 +18,7 @@ return require('packer').startup(function()
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate',
     config = function()
-      require 'setup/treesitter'
+      require('setup/treesitter').setup()
     end,
   }
 
@@ -39,7 +39,7 @@ return require('packer').startup(function()
   use {
     'nvim-telescope/telescope.nvim',
     config = function()
-      require 'setup/telescope'
+      require('setup/telescope').setup()
     end,
   }
   use 'kyazdani42/nvim-web-devicons'
@@ -49,14 +49,31 @@ return require('packer').startup(function()
 
   -- Projects
   use 'ethanholz/nvim-lastplace'
-  use 'windwp/nvim-projectconfig'
-  use 'rmagatti/auto-session'
+  use {
+    'windwp/nvim-projectconfig',
+    config = function()
+      require('nvim-projectconfig').load_project_config {
+        project_dir = '~/Media/Projects/projects-config/',
+      }
+    end,
+  }
+  use {
+    'rmagatti/auto-session',
+    config = function()
+      require('setup/auto-session').setup()
+    end,
+  }
   use {
     'rmagatti/session-lens',
     requires = {
       'rmagatti/auto-session',
       'nvim-telescope/telescope.nvim',
     },
+    config = function()
+      require('session-lens').setup {
+        shorten_path = false,
+      }
+    end,
     -- after = {
     --   'rmagatti/auto-session',
     --   'nvim-telescope/telescope.nvim',
@@ -74,7 +91,12 @@ return require('packer').startup(function()
   use 'haya14busa/vim-asterisk'
   use 'andymass/vim-matchup'
   use 'bkad/CamelCaseMotion'
-  use 'ggandor/lightspeed.nvim'
+  use {
+    'ggandor/lightspeed.nvim',
+    config = function()
+      require('lightspeed').setup {}
+    end,
+  }
 
   -- Edition
   use 'matze/vim-move'
@@ -124,7 +146,9 @@ return require('packer').startup(function()
   }
   use {
     'neovim/nvim-lspconfig',
-    config = function() end,
+    config = function()
+      require('setup/lsp').setup()
+    end,
   }
 
   use 'L3MON4D3/LuaSnip'
@@ -132,9 +156,21 @@ return require('packer').startup(function()
   -- use("norcalli/snippets.nvim")
 
   -- use "jose-elias-alvarez/nvim-lsp-ts-utils"
-  use 'romgrk/nvim-treesitter-context'
-
-  use 'mfussenegger/nvim-dap'
+  -- shows the context of the currently visible buffer contents
+  use {
+    'romgrk/nvim-treesitter-context',
+    config = function()
+      require('treesitter-context.config').setup {
+        enable = true,
+      }
+    end,
+  }
+  use {
+    'mfussenegger/nvim-dap',
+    config = function()
+      require('setup/dap').setup()
+    end,
+  }
   use {
     'nvim-telescope/telescope-dap.nvim',
     requires = {
@@ -151,7 +187,13 @@ return require('packer').startup(function()
     requires = { 'vim-test/vim-test' },
     run = ':UpdateRemotePlugins',
   }
-  use { 'rcarriga/nvim-dap-ui', requires = { 'mfussenegger/nvim-dap' } }
+  use {
+    'rcarriga/nvim-dap-ui',
+    requires = { 'mfussenegger/nvim-dap' },
+    config = function()
+      require('dapui').setup {}
+    end,
+  }
 
   -- Language syntax
   use 'potatoesmaster/i3-vim-syntax'
@@ -171,7 +213,12 @@ return require('packer').startup(function()
     'mbbill/undotree', -- FIXME
     command = { 'UndotreeToggle' },
   }
-  use 'folke/zen-mode.nvim'
+  use {
+    'folke/zen-mode.nvim',
+    config = function()
+      require('setup/zen-mode').setup()
+    end,
+  }
   use 'wellle/visual-split.vim'
   use { 'kevinhwang91/nvim-bqf' }
   use {
@@ -180,23 +227,29 @@ return require('packer').startup(function()
       require 'setup/compe'
     end,
   }
-  use 'folke/trouble.nvim'
+  use {
+    'folke/trouble.nvim',
+    config = function()
+      require('trouble').setup {}
+    end,
+  }
   use {
     'lewis6991/gitsigns.nvim',
     config = function()
-      require 'setup/gitsigns'
+      require('setup/gitsigns').setup()
     end,
   }
-  use 'sindrets/diffview.nvim'
+  use {
+    'sindrets/diffview.nvim',
+    config = function()
+      require('diffview').setup()
+    end,
+  }
   use {
     'glepnir/galaxyline.nvim',
     config = function()
       require 'setup/galaxyline'
     end,
-  }
-  use {
-    'sayanarijit/xplr.vim',
-    command = { 'Xp', 'XplrPicker' },
   }
   use 'kosayoda/nvim-lightbulb'
   use 'brettanomyces/nvim-terminus'
@@ -208,8 +261,16 @@ return require('packer').startup(function()
   }
   use 'simrat39/symbols-outline.nvim'
   use 'p00f/nvim-ts-rainbow'
-  use 'folke/twilight.nvim'
-  use 'nvim-telescope/telescope-fzy-native.nvim'
+  use {
+    'folke/twilight.nvim',
+    config = function()
+      require('twilight').setup {}
+    end,
+  }
+  use {
+    'nvim-telescope/telescope-fzy-native.nvim',
+    requires = 'nvim-telescope/telescope.nvim',
+  }
   use {
     'metakirby5/codi.vim',
     command = { 'codi', 'codi!', 'codi!!' },
@@ -246,6 +307,9 @@ return require('packer').startup(function()
   -- use {"tzachar/compe-tabnine", run = "sh install.sh"} -- is that ok? crashes
   use {
     'folke/which-key.nvim',
+    config = function()
+      require('which-key').setup {}
+    end,
   }
   use {
     'RishabhRD/nvim-cheat.sh',
@@ -270,7 +334,12 @@ return require('packer').startup(function()
   }
 
   -- Notes
-  use '~/Media/Projects/nononotes-nvim'
+  use {
+    '~/Media/Projects/nononotes-nvim',
+    config = function()
+      require('setup/nononotes').setup()
+    end,
+  }
   -- use '~/Media/Projects/snippets'
 
   -- Color schemes

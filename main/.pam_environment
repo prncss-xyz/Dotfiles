@@ -24,12 +24,10 @@ PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?
 PASSWORD_STORE_GENERATED_LENGTH=20
 MBSYNC_CONFIG OVERRIDE=${HOME}/.config/mbsync/config
 NOTMUCH_CONFIG OVERRIDE=${HOME}/.config/notmuch/config
-NV_DIR OVERRIDE=${HOME}/Personal/notes
 GUI OVERRIDE=${HOME}/.local/bin/newterm
 NeovideMultigrid=NeovideMultiGrid
 # PAGER=nvimpager
 TERMINAL=kitty
 RIPGREP_CONFIG_PATH OVERRIDE=${HOME}/.config/rg/config
-STOW_ACTIVE_PACKAGES OVERRIDE="base main host nympheas perso"
 DOTFILES OVERRIDE=${HOME}/Dotfiles
 PROJECTS OVERRIDE=${HOME}/Media/Projects

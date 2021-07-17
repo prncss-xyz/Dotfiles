@@ -25,7 +25,7 @@ local function mapBrowserSearch(prefix, help0, mappings)
     })
     wk.register({
       [abbr] = {
-        string.format('<cmd>BrowserSearchVisualSelection %s<cr>', url),
+        string.format('"zy<cmd>BrowserSearchZ %s<cr>', url),
         help,
       },
     }, {

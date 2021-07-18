@@ -1,32 +1,15 @@
-local Job = require('plenary').job
 local augroup = require('utils').augroup
 local dotfiles = os.getenv 'DOTFILES'
 
-local template = function(endings)
-  return {
-    events = { 'BufNewFile' },
-    targets = { '*.' .. endings },
-    command = '0r $HOME/.config/nvim/templates/skeleton.' .. endings,
-  }
-end
-
-local copy = function(name)
-  return {
-    events = { 'BufNewFile' },
-    targets = { name },
-    command = '0r $HOME/.config/nvim/templates/' .. name,
-  }
-end
-
-augroup('Templates', {
-  copy '.eslintrc.js',
-  copy '.gitlab-ci.yml',
-  copy '.gitignore',
-  copy '.prettierrc.js',
-  copy '.rgignore',
-  copy 'package.json',
-  copy 'stylua.toml',
+augroup('MakeExecutable', {
+  {
+    events = { 'BufWritePost' },
+    targets = { dotfiles .. '*/.local/bin/*' },
+    command = 'Chmod +x',
+  },
 })
+
+-- TODO: make executable
 
 --- automatically clear commandline messages after a few seconds delay
 --- source: http//unix.stackexchange.com/a/613645
@@ -67,20 +50,6 @@ augroup('Templates', {
 --     },
 --   })
 -- end
-augroup('MakeExecutable', {
-  {
-    events = { 'BufWritePost' },
-    targets = { dotfiles .. '/*/.local/bin/*' },
-    command = function()
-      Job
-        :new({
-          command = 'chmod',
-          args = { '+x', vim.fn.expand '%' },
-        })
-        :start()
-    end,
-  },
-})
 
 augroup('TerminalNonumbers', {
   {

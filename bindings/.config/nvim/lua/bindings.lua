@@ -56,6 +56,10 @@ function M.setup()
   map('', 't', 't')
   map('', 'T', 'T')
 
+  -- nvim-ts-hint-textobject
+  map('o', 'm', ":<C-U>lua require('tsht').nodes()<CR>")
+  map('v', 'm', ":lua require('tsht').nodes()<CR>")
+
   -- asterisk
   map('', '*', '<plug>(asterisk-*)', { noremap = false })
   map('', '#', '<plug>(asterisk-#)', { noremap = false })
@@ -133,6 +137,9 @@ function M.setup()
       },
     },
     ['<leader>'] = {
+      p = { '<Plug>(operator-sandwich-add)', 'sandwich make' },
+      c = { '<Plug>(operator-sandwich-delete)', 'sandwich delete' },
+      r = { '<Plug>(operator-sandwich-replace)', 'sandwich replace' },
       ['<leader>'] = {
         '<cmd>lua Project_files()<cr>',
         'project file',

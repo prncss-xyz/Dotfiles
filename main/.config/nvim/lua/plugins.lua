@@ -97,6 +97,7 @@ return require('packer').startup(function()
       require('lightspeed').setup {}
     end,
   }
+  use 'mfussenegger/nvim-ts-hint-textobject'
 
   -- Edition
   use 'matze/vim-move'
@@ -150,7 +151,6 @@ return require('packer').startup(function()
       require('setup/lsp').setup()
     end,
   }
-
   use 'L3MON4D3/LuaSnip'
   use 'rafamadriz/friendly-snippets'
   -- use("norcalli/snippets.nvim")
@@ -334,6 +334,7 @@ return require('packer').startup(function()
   }
 
   -- Notes
+  use '~/Media/Projects/closet'
   use {
     '~/Media/Projects/nononotes-nvim',
     config = function()

@@ -21,3 +21,7 @@ require('bindings').setup()
 require('signs').setup()
 require 'theme-exporter'
 require 'autocommands'
+
+require('templates').setup {
+  path = os.getenv 'PROJECTS' .. '/closet/templates',
+}

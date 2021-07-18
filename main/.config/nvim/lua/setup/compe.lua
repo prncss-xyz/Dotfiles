@@ -44,9 +44,10 @@ require('compe').setup {
     tabnine = false,
   },
 }
---
--- require("snippets").use_suggested_mappings()
 
+require 'snip'
+
+-- require("snippets").use_suggested_mappings()
 require('nvim-autopairs.completion.compe').setup {
   map_cr = true,
   map_complete = true,
@@ -94,20 +95,13 @@ function _G.s_tab_complete()
     return t '<S-Tab>'
   end
 end
--- function _G.completions()
--- 	-- local npairs = require 'nvim-autopairs'
--- 	if vim.fn.pumvisible() == 1 then
--- 		if vim.fn.complete_info()["selected"] ~= -1 then
--- 			return vim.fn["compe#confirm"]("<CR>")
--- 		end
--- 	end
--- 	-- return npairs.check_break_line_char()
--- end
 
-require('luasnip/loaders/from_vscode').lazy_load() -- FIXME: failling to use "path" argument
+require('luasnip/loaders/from_vscode').lazy_load {
+  paths = os.getenv 'PROJECTS' .. '/closet',
+}
 
 -- completion-nvim
 
 -- Completion is triggered if completion_trigger_character is entered. It's limitation of completion-nvim.
-
-vim.g.completion_trigger_character = { '.' }
+-- used with emmet language server
+-- vim.g.completion_trigger_character = { '.' }

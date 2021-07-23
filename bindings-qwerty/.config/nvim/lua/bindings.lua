@@ -35,11 +35,25 @@ local function mapBrowserSearch(prefix, help0, mappings)
   end
 end
 
+function _G.Dsm()
+  vim.cmd "lua require('tsht').nodes()"
+  vim.cmd 'normal! y'
+  vim.cmd "lua require('tsht').nodes()"
+  vim.cmd 'normal! "_d'
+end
+
+function _G.Csm()
+  vim.cmd "lua require('tsht').nodes()"
+  vim.cmd 'normal! y'
+  vim.cmd "lua require('tsht').nodes()"
+  vim.cmd 'normal! "_c'
+end
+
 function M.setup()
   -- compe
   map('i', '<c-space>', 'compe#complete()', { expr = true })
   -- map("i", "<cr>", "compe#confirm('<cr>')", { expr = true })
-  map('i', '<c-e>', "compe#close('<c-e>')", { expr = true })
+  map('i', '<c-e>', "compe#close('<c-e>')", { expr = true, silent = true })
   map('i', '<c-f>', "compe#scroll({ 'delta': +4 })", { expr = true })
   map('i', '<c-d>', "compe#scroll({ 'delta': -4 })", { expr = true })
   map('i', '<tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
@@ -49,22 +63,82 @@ function M.setup()
   -- needed for tab-completion
   map('c', '<c-n>', '<down>')
   map('c', '<c-p>', '<up>')
+  -- luasnip
+  map(
+    'i',
+    '<c-o>',
+    "luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'",
+    { expr = true, noremap = false }
+  )
+  map(
+    's',
+    '<c-o>',
+    "luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'",
+    { expr = true, noremap = false }
+  )
 
   -- lightspeed: canceling "f" until it works better
-  map('', 'f', 'f')
-  map('', 'F', 'F')
-  map('', 't', 't')
-  map('', 'T', 'T')
+  -- map('', 'f', 'f')
+  -- map('', 'F', 'F')
+  -- map('', 't', 't')
+  -- map('', 'T', 'T')
+  map('n', 'f', '<Plug>(eft-f)', { noremap = false })
+  map('x', 'f', '<Plug>(eft-f)', { noremap = false })
+  map('o', 'f', '<Plug>(eft-f)', { noremap = false })
+  map('n', 'F', '<Plug>(eft-F)', { noremap = false })
+  map('x', 'F', '<Plug>(eft-F)', { noremap = false })
+  map('o', 'F', '<Plug>(eft-F)', { noremap = false })
+
+  map('n', 't', '<Plug>(eft-t)', { noremap = false })
+  map('x', 't', '<Plug>(eft-t)', { noremap = false })
+  map('o', 't', '<Plug>(eft-t)', { noremap = false })
+  map('n', 'T', '<Plug>(eft-T)', { noremap = false })
+  map('x', 'T', '<Plug>(eft-T)', { noremap = false })
+  map('o', 'T', '<Plug>(eft-T)', { noremap = false })
+
+  map('n', ';', '<Plug>(eft-;)', { noremap = false })
+  map('x', ';', '<Plug>(eft-;)', { noremap = false })
+
+  -- local function eats(ops)
+  --   for _, op in ipairs(ops) do
+  --     map('n', 'cs' .. op, string.format('yi%s"_ca%s', op, op))
+  --     map('n', 'ds' .. op, string.format('yi%s"_da%s', op, op))
+  --   end
+  -- end
+  -- eats { '"', "'", '`', '(', '{', '[', 'w', 'W', 's', 'p', 't', '>' }
+  -- map('n', 'csm', ':lua Csm()<cr>')
+  -- map('n', 'dsm', ':lua Dsm()<cr>')
+  -- map('n', 'cs%', 'yi%"_c;', { noremap = false })
+  -- map('n', 'ds%', 'yi%"_d;', { noremap = false })
+  -- not repeatable
+
+  -- matchup_convenience_map
+  -- I% and A% instead of 1i% and 1A%
+  -- target.vim incompatibilities
 
   -- nvim-ts-hint-textobject
   map('o', 'm', ":<C-U>lua require('tsht').nodes()<CR>")
   map('v', 'm', ":lua require('tsht').nodes()<CR>")
 
   -- asterisk
-  map('', '*', '<plug>(asterisk-*)', { noremap = false })
-  map('', '#', '<plug>(asterisk-#)', { noremap = false })
-  map('', 'g*', '<plug>(asterisk-g*)', { noremap = false })
-  map('', 'g#', '<plug>(asterisk-g#)', { noremap = false })
+  map(
+    '',
+    '*',
+    '<plug>(asterisk-*)<cmd>lua require("hlslens").start()<cr>',
+    { noremap = false }
+  )
+  map(
+    '',
+    'g*',
+    '<plug>(asterisk-g*)<cmd>lua require("hlslens").start()<cr>',
+    { noremap = false }
+  )
+  map(
+    '',
+    'g#',
+    '<plug>(asterisk-g#)<cmd>lua require("hlslens").start()<cr>',
+    { noremap = false }
+  )
 
   -- cutlass
   map('n', 'x', 'd')
@@ -77,14 +151,19 @@ function M.setup()
   map('v', '<c-v>', 'dp')
   map('i', '<c-v>', '<esc>pa')
 
+  -- i mappings
+  wk.register({
+    ['<c-l>'] = { '<esc>:nohlsearch<cr>a', 'nohlsearch' },
+  }, {
+    mode = 'i',
+  })
+
   -- nv mappings
   for mode in string.gmatch('nv', '.') do
     wk.register({
+      -- plugin's documentation specifies to use 's' instead of '<cmd>, which indeed do not produce expected results
+      ['<c-l>'] = { ':nohlsearch<cr>', 'nohlsearch' },
       ['<m-v>'] = { '<c-v>', 'square selection' },
-      ['<c-w>'] = {
-        L = { '<cmd>vsplit<cr>', 'split left' },
-        J = { '<cmd>split<cr>', 'split down' },
-      },
     }, {
       mode = mode,
     })
@@ -92,7 +171,6 @@ function M.setup()
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     wk.register({
-      ['<c-l>'] = { '<cmd>noh<cr>', 'noh' },
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       ['<f2>'] = { '<cmd>ToggleQuickFix<cr>', 'toggle quick fix' },
       ['<a-r>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
@@ -100,10 +178,18 @@ function M.setup()
       ['<a-s-r>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
       ['<a-s-e>'] = { '<cmd>BufferMovePrevious<cr>', 'move buffer previous' },
       ['<a-c>'] = { '<cmd>BufferClose!<cr>', 'close buffer' },
-      -- slowed by matchup ambiguous mapping
       ['<c-g>'] = {
         "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
         'pick note',
+      },
+      ['<c-w>'] = {
+        L = { '<cmd>vsplit<cr>', 'split left' },
+        J = { '<cmd>split<cr>', 'split down' },
+      },
+      ['<a-o>'] = {
+        '<cmd>BufferCloseBuffersRight<cr><cmd>BufferCloseBuffersLeft<cr><c-w>o',
+        -- '<cmd>BufferCloseBuffersRight|BufferCloseBuffersLeft<cr>',
+        'buffer only',
       },
     }, {
       mode = mode,
@@ -120,8 +206,17 @@ function M.setup()
     end
   end
 
+  -- x mappings
+  wk.register({
+    ds = { '<Plug>(operator-sandwich-delete)', 'sandwich delete' },
+    cs = { '<Plug>(operator-sandwich-replace)', 'sandwich replace' },
+  }, {
+    mode = 'x',
+  })
+
   -- n mappings
   wk.register {
+    ys = { '<Plug>(operator-sandwich-add)', 'sandwich make' },
     g = {
       x = {
         '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<cr>',
@@ -137,9 +232,6 @@ function M.setup()
       },
     },
     ['<leader>'] = {
-      p = { '<Plug>(operator-sandwich-add)', 'sandwich make' },
-      c = { '<Plug>(operator-sandwich-delete)', 'sandwich delete' },
-      r = { '<Plug>(operator-sandwich-replace)', 'sandwich replace' },
       ['<leader>'] = {
         '<cmd>lua Project_files()<cr>',
         'project file',
@@ -248,7 +340,7 @@ function M.setup()
         e = { '<cmd>setlocal spell spelllang=en_us,cjk<cr>', 'en' },
         f = { '<cmd>setlocal spell spelllang=fr,cjk<cr>', 'fr' },
         b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
-        x = { '<cmd>setlocal nospell | spelllang=<cr>', 'none' },
+        x = { '<cmd>setlocal nospell spelllang=<cr>', 'none' },
         g = { '<cmd>LanguageToolCheck<cr>', 'language tools' },
       },
       d = {
@@ -375,6 +467,9 @@ M.plugins = {
           ['af'] = '@function.outer',
           ['if'] = '@function.inner',
           ['ia'] = '@parameter.inner',
+          ['aq'] = {
+            lua = '@string',
+          },
           ['a,'] = {
             javascript = '(pair) @object', -- not working
           },

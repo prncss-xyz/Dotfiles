@@ -44,7 +44,8 @@ deep_merge(vim, {
     undofile = true,
     updatetime = 500,
     wildignorecase = true,
-    wildmode = 'full:list',
+    wildoptions = 'pum',
+    pumblend = 20,
     wrap = true,
     grepprg = [[rg --glob "!.git" --no-heading --vimgrep --follow $*]],
     -- bufhidden = "wipe",
@@ -103,6 +104,7 @@ deep_merge(vim, {
     secure = true, -- disable autocmd etc for project local vimrc files
     exrc = false, -- allow project local vimrc files example .nvimrc see :h exrc
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
+    lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
     -- spelloptions = "camel",
   },
   env = {

@@ -1,4 +1,5 @@
 local augroup = require('utils').augroup
+local command = require('utils').command
 local dotfiles = os.getenv 'DOTFILES'
 
 augroup('MakeExecutable', {
@@ -85,13 +86,13 @@ augroup('TerminalEnter', {
 -- })
 
 -- FIXME
-augroup('PackerCompile', {
-  {
-    events = { 'BufWritePost' },
-    targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
-    command = 'PackerCompile',
-  },
-})
+-- augroup('PackerCompile', {
+--   {
+--     events = { 'BufWritePost' },
+--     targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
+--     command = 'PackerCompile',
+--   },
+-- })
 augroup('NvimProjectConfig', {
   {
     events = { 'DirChanged' },
@@ -100,12 +101,15 @@ augroup('NvimProjectConfig', {
   },
 })
 vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
-vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"
+
+-- vim.cmd "autocmd cursorhold,cursorholdi * lua require'nvim-lightbulb'.update_lightbulb()"
+
 -- vim.cmd"au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}"
 augroup('Autosave', {
   {
     events = { 'TabLeave', 'FocusLost', 'BufLeave' },
     targets = { '*' },
+    modifiers = { 'silent!' },
     command = ':wa',
   },
 })

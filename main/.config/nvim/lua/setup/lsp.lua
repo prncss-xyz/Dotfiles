@@ -7,8 +7,8 @@ local servers = {
   'jsonls',
   'vimls',
   'yamlls',
-  -- 'pyls',
   'tsserver',
+  -- 'pyls',
 }
 
 local augroup = require('utils').augroup
@@ -68,12 +68,10 @@ function M.setup()
   local function on_attach_efm(client, _)
     client.resolved_capabilities.document_formatting = true
     client.resolved_capabilities.goto_definition = false
-    vim.cmd [[
-    augroup Format
-    autocmd! * <buffer>
-    autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()
-    augroup END
-  ]]
+    -- silent is necessary for vim will complain about calling undojoin after undo
+    vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
+    -- vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
+    -- vim.cmd 'autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()'
   end
 
   local function on_attach(client, _)
@@ -117,14 +115,14 @@ function M.setup()
   })
 
   local prettier = {
-    formatcommand = ([[
-      prettier
-      ${--config-precedence:configprecedence}
-      ${--tab-width:tabwidth}
-      ${--single-quote:singlequote}
-      ${--trailing-comma:trailingcomma}
-  ]]):gsub('\n', ''),
+    formatCommand = 'prettierd "${INPUT}"',
+    formatStdin = true,
   }
+
+  -- local prettier = {
+  --   formatcommand = 'prettier_d_slim --stdin --stdin-filepath ${INPUT}',
+  --   formatStdin = true,
+  -- }
 
   local eslint = {
     lintCommand = 'eslint_d -f unix --stdin --stdin-filename ${INPUT}',

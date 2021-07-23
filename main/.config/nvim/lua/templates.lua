@@ -1,35 +1,34 @@
-local augroup = require('utils').augroup
 local command = require('utils').command
+-- TODO - try to use regex captures
 
 local M = {}
 
 local templates
 
--- loads templates from specified directory
--- transforms filenames to globs to vim regex
--- makes a list of filenames, regex
-local function load_templates(path)
-  local res = {}
-  local p = io.popen(string.format('cd %q; fd -H -t f', path))
-  for filename in p:lines() do
-    local glob = filename:gsub('STAR', '*')
+local function load_templates()
+  if templates then
+    return
+  end
+  templates = {}
+  for _, value in pairs(require('luasnip').snippets.TEMPLATES) do
+    local glob = value.trigger
+    value.trigger = ''
     local re_string = vim.fn.glob2regpat(glob)
     local re = vim.regex(re_string)
-    table.insert(res, {
-      filename = filename,
+    table.insert(templates, {
       glob = glob,
+      value = value,
       re = re,
-      command = '0r ' .. path .. '/' .. filename,
     })
   end
-  p:close()
-  return res
+  return templates
 end
 
 -- picks the most specific match by the following startegy:
 -- amongst all the matching patters, the most specific is the pattern that is
 -- matched by every patter (patterns always match themselves)
 local function match(filename)
+  load_templates()
   local res = {}
   for _, pattern in ipairs(templates) do
     local m = pattern.re:match_str(filename)
@@ -43,7 +42,7 @@ local function match(filename)
   for _, t1 in ipairs(res) do
     local m
     for _, t2 in ipairs(res) do
-      m = t2.re:match_str(t1.filename)
+      m = t2.re:match_str(t1.glob)
       if not m then
         break
       end
@@ -55,7 +54,6 @@ local function match(filename)
 end
 
 function M.setup(opts)
-  templates = load_templates(opts.path)
   vim.cmd 'autocmd BufNewFile * TemplateMatch'
   -- autocommand
 end
@@ -63,27 +61,34 @@ end
 command('TemplateMatch', {}, function()
   local template = match(vim.fn.expand '%')
   if template then
-    vim.cmd(template.command)
+    local snippet = (template.value):copy()
+    snippet.trigger = ''
+    snippet:trigger_expand(
+      Luasnip_current_nodes[vim.api.nvim_get_current_buf()]
+    )
   end
 end)
 
-local function getAlt(file)
-  local base, ext
-  base, ext = file:match '(.+)%.test(%.[%w%d]+)$'
-  if base then
-    return base .. ext
-  end
-  base, ext = file:match '(.+)(%.[%w%d]+)$'
-  if base then
-    return base .. '.test' .. ext
+local function alts(patterns, file)
+  for _, pattern in ipairs(patterns) do
+    if file:match(pattern[1]) then
+      return file:gsub(pattern[1], pattern[2])
+    end
   end
 end
 
-command('AltTest', {}, function()
-  local alt = getAlt(vim.fn.expand '%')
-  if alt then
-    vim.cmd('e ' .. alt)
-  end
-end)
+function M.setupAlts(rules)
+  command('AltTest', {}, function()
+    local alt = alts(rules, vim.fn.expand '%')
+    if alt then
+      vim.cmd('e ' .. alt)
+    end
+  end)
+end
+
+M.setupAlts {
+  { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
+  { '(.+)(%.[%w%d]+)$', '%1.test%2' },
+}
 
 return M

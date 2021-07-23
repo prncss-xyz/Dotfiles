@@ -12,6 +12,7 @@ end
 vim.cmd 'packadd packer.nvim'
 return require('packer').startup(function()
   use { 'wbthomason/packer.nvim', opt = true }
+  -- use 'kabouzeid/nvim-lspinstall'
   -- Utils
   use 'tami5/sql.nvim'
   use {
@@ -20,11 +21,42 @@ return require('packer').startup(function()
     config = function()
       require('setup/treesitter').setup()
     end,
+    requires = {
+      'p00f/nvim-ts-rainbow',
+      {
+        'nvim-treesitter/playground',
+        cmd = { 'Tsplaygroundtoggle' },
+      },
+      'nvim-treesitter/nvim-treesitter-textobjects',
+      'RRethy/nvim-treesitter-textsubjects',
+      -- Use 'tressitter 'to autoclose and autorename html tag
+      'windwp/nvim-ts-autotag',
+      -- Language support
+      {
+        'lewis6991/spellsitter.nvim',
+        config = function()
+          require('spellsitter').setup()
+        end,
+      },
+      -- shows the context of the currently visible buffer contents
+      {
+        'romgrk/nvim-treesitter-context',
+        config = function()
+          require('treesitter-context.config').setup {
+            enable = true,
+          }
+        end,
+      },
+    },
   }
 
   -- TUI
-  use 'nvim-lua/popup.nvim'
-  use 'nvim-lua/plenary.nvim'
+  use {
+    'nvim-lua/plenary.nvim',
+  }
+  use {
+    'nvim-lua/popup.nvim',
+  }
   -- pictograms
   use {
     'onsails/lspkind-nvim',
@@ -32,15 +64,24 @@ return require('packer').startup(function()
       require('lspkind').init {
         symbol_map = {
           Snippet = '',
+          Field = '識',
         },
       }
     end,
   }
   use {
     'nvim-telescope/telescope.nvim',
+    event = 'CursorHold',
     config = function()
       require('setup/telescope').setup()
     end,
+    requires = {
+      'nvim-telescope/telescope-fzy-native.nvim',
+      'nvim-telescope/telescope-symbols.nvim',
+      'crispgm/telescope-heading.nvim',
+      'sudormrfbin/cheatsheet.nvim',
+      'nvim-telescope/telescope-dap.nvim',
+    },
   }
   use 'kyazdani42/nvim-web-devicons'
 
@@ -62,25 +103,17 @@ return require('packer').startup(function()
     config = function()
       require('setup/auto-session').setup()
     end,
-  }
-  use {
-    'rmagatti/session-lens',
     requires = {
-      'rmagatti/auto-session',
-      'nvim-telescope/telescope.nvim',
+      'rmagatti/session-lens',
+      config = function()
+        require('session-lens').setup {
+          shorten_path = false,
+        }
+      end,
     },
-    config = function()
-      require('session-lens').setup {
-        shorten_path = false,
-      }
-    end,
-    -- after = {
-    --   'rmagatti/auto-session',
-    --   'nvim-telescope/telescope.nvim',
-    -- },
   }
 
-  -- Docs
+  -- Lua dev
   use 'nanotee/luv-vimdocs'
   use 'folke/lua-dev.nvim'
   use 'milisims/nvim-luaref'
@@ -91,6 +124,7 @@ return require('packer').startup(function()
   use 'haya14busa/vim-asterisk'
   use 'andymass/vim-matchup'
   use 'bkad/CamelCaseMotion'
+  use 'hrsh7th/vim-eft'
   use {
     'ggandor/lightspeed.nvim',
     config = function()
@@ -100,21 +134,14 @@ return require('packer').startup(function()
   use 'mfussenegger/nvim-ts-hint-textobject'
 
   -- Edition
+  use 'kana/vim-textobj-user'
   use 'matze/vim-move'
   use 'svermeulen/vim-cutlass'
   use 'tommcdo/vim-exchange'
   use 'machakann/vim-sandwich'
   use 'mattn/emmet-vim'
-  use {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-    -- requires = { 'nvim-treesitter/nvim-treesitter' },
-    -- after = { 'nvim-treesitter/nvim-treesitter' },
-  }
-  use {
-    'RRethy/nvim-treesitter-textsubjects',
-    -- requires = { 'nvim-treesitter/nvim-treesitter' },
-    -- after = { 'nvim-treesitter/nvim-treesitter' },
-  }
+  -- segment in camelCase etc words; changed bindings
+  use '~/Media/Projects/vim-textobj-variable-segment'
   use {
     'b3nj5m1n/kommentary',
     config = function()
@@ -123,63 +150,58 @@ return require('packer').startup(function()
       })
     end,
   }
-  use 'JoosepAlviste/nvim-ts-context-commentstring'
-  use {
-    -- insert or delete brackets, parens, quotes in pair
-    'windwp/nvim-autopairs',
-    config = function()
-      require('nvim-autopairs').setup()
-    end,
-  }
-  -- Use 'tressitter 'to autoclose and autorename html tag
-  use {
-    'windwp/nvim-ts-autotag',
-    -- requires = { 'nvim-treesitter/nvim-treesitter' },
-    -- after = { 'nvim-treesitter/nvim-treesitter' },
-  }
-
-  -- Language support
-  use {
-    'lewis6991/spellsitter.nvim',
-    config = function()
-      require('spellsitter').setup()
-    end,
-  }
   use {
     'neovim/nvim-lspconfig',
+    event = 'BufReadPre',
     config = function()
       require('setup/lsp').setup()
     end,
+    requires = {
+      {
+        'kosayoda/nvim-lightbulb',
+        config = function()
+          require('utils').augroup('NvimLightbulb', {
+            {
+              events = { 'CursorHold', 'CursorHoldI' },
+              targets = { '*' },
+              command = function()
+                require('nvim-lightbulb').update_lightbulb()
+              end,
+            },
+          })
+        end,
+        use {
+          'folke/trouble.nvim',
+          after = 'nvim-lspconfig',
+          config = function()
+            require('trouble').setup {}
+          end,
+          cmd = { 'Trouble', 'TroubleClose', 'TroubleToggle', 'TroubleRefresh' },
+        },
+      },
+    },
   }
-  use 'L3MON4D3/LuaSnip'
-  use 'rafamadriz/friendly-snippets'
-  -- use("norcalli/snippets.nvim")
 
   -- use "jose-elias-alvarez/nvim-lsp-ts-utils"
-  -- shows the context of the currently visible buffer contents
-  use {
-    'romgrk/nvim-treesitter-context',
-    config = function()
-      require('treesitter-context.config').setup {
-        enable = true,
-      }
-    end,
-  }
   use {
     'mfussenegger/nvim-dap',
     config = function()
       require('setup/dap').setup()
     end,
-  }
-  use {
-    'nvim-telescope/telescope-dap.nvim',
     requires = {
-      'mfussenegger/nvim-dap',
-      'nvim-treesitter/nvim-treesitter',
-      'nvim-telescope/telescope.nvim',
+      {
+        'theHamsta/nvim-dap-virtual-text',
+        after = 'nvim-dap',
+      },
+      {
+        'rcarriga/nvim-dap-ui',
+        after = 'nvim-dap',
+        config = function()
+          require('dapui').setup {}
+        end,
+      },
     },
   }
-  use 'theHamsta/nvim-dap-virtual-text'
   use 'jbyuki/one-small-step-for-vimkind'
   use 'vim-test/vim-test'
   use {
@@ -187,20 +209,13 @@ return require('packer').startup(function()
     requires = { 'vim-test/vim-test' },
     run = ':UpdateRemotePlugins',
   }
-  use {
-    'rcarriga/nvim-dap-ui',
-    requires = { 'mfussenegger/nvim-dap' },
-    config = function()
-      require('dapui').setup {}
-    end,
-  }
 
   -- Language syntax
   use 'potatoesmaster/i3-vim-syntax'
 
   use {
     'rafcamlet/nvim-luapad',
-    command = {
+    cmd = {
       'Luapad',
       'LuaRun',
       'Lua',
@@ -218,23 +233,43 @@ return require('packer').startup(function()
     config = function()
       require('setup/zen-mode').setup()
     end,
+    cmd = { 'ZenMode' },
   }
   use 'wellle/visual-split.vim'
   use { 'kevinhwang91/nvim-bqf' }
   use {
     'hrsh7th/nvim-compe',
+    event = 'InsertEnter',
+    wants = { 'LuaSnip', 'nvim-autopairs' },
     config = function()
       require 'setup/compe'
     end,
-  }
-  use {
-    'folke/trouble.nvim',
-    config = function()
-      require('trouble').setup {}
-    end,
+    requires = {
+      {
+        'L3MON4D3/LuaSnip',
+        wants = 'friendly-snippets',
+        event = 'InsertCharPre',
+        config = function()
+          require 'setup/luasnip'
+        end,
+      },
+      {
+        'rafamadriz/friendly-snippets',
+        event = 'InsertCharPre',
+      },
+      {
+        -- insert or delete brackets, parens, quotes in pair
+        'windwp/nvim-autopairs',
+        event = 'InsertCharPre',
+        config = function()
+          require('nvim-autopairs').setup {}
+        end,
+      },
+    },
   }
   use {
     'lewis6991/gitsigns.nvim',
+    event = 'BufRead',
     config = function()
       require('setup/gitsigns').setup()
     end,
@@ -244,6 +279,13 @@ return require('packer').startup(function()
     config = function()
       require('diffview').setup()
     end,
+    -- this does not seem to have an effect
+    cmd = {
+      'DiffviewOpen',
+      'DiffViewToggleFiles',
+      'DiffViewFocusFiles',
+      'DiffViewRefresh',
+    },
   }
   use {
     'glepnir/galaxyline.nvim',
@@ -251,7 +293,6 @@ return require('packer').startup(function()
       require 'setup/galaxyline'
     end,
   }
-  use 'kosayoda/nvim-lightbulb'
   use 'brettanomyces/nvim-terminus'
   use 'romgrk/barbar.nvim'
   -- use 'akinsho/nvim-bufferline.lua'
@@ -260,39 +301,16 @@ return require('packer').startup(function()
     'liuchengxu/vista.vim',
   }
   use 'simrat39/symbols-outline.nvim'
-  use 'p00f/nvim-ts-rainbow'
   use {
     'folke/twilight.nvim',
     config = function()
       require('twilight').setup {}
     end,
-  }
-  use {
-    'nvim-telescope/telescope-fzy-native.nvim',
-    requires = 'nvim-telescope/telescope.nvim',
+    cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
   }
   use {
     'metakirby5/codi.vim',
-    command = { 'codi', 'codi!', 'codi!!' },
-  }
-  use {
-    'nvim-treesitter/playground',
-    command = { 'tsplaygroundtoggle' },
-  }
-  use 'nvim-telescope/telescope-symbols.nvim'
-  use {
-    'crispgm/telescope-heading.nvim',
-    requires = {
-      { 'nvim-telescope/telescope.nvim' },
-    },
-  }
-  use {
-    'sudormrfbin/cheatsheet.nvim',
-    requires = {
-      { 'nvim-telescope/telescope.nvim' },
-      { 'nvim-lua/popup.nvim' },
-      { 'nvim-lua/plenary.nvim' },
-    },
+    -- cmd = { 'Codi', 'Codi!', 'Codi!!' },
   }
 
   -- Integration
@@ -301,7 +319,7 @@ return require('packer').startup(function()
   -- Natural languages
   use {
     'vigoux/LanguageTool.nvim',
-    command = { 'LanguageToolSetup', 'LanguageToolCheck' },
+    cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
   }
   -- Learning
   -- use {"tzachar/compe-tabnine", run = "sh install.sh"} -- is that ok? crashes
@@ -314,7 +332,7 @@ return require('packer').startup(function()
   use {
     'RishabhRD/nvim-cheat.sh',
     requires = 'RishabhRD/popfix',
-    command = {
+    cmd = {
       'Cheat',
       'CheatWithoutComments',
       'CheatList',

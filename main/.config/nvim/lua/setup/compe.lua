@@ -35,8 +35,7 @@ require('compe').setup {
     omni = false, -- Warning: It has a lot of side-effect.
     -- FIXME dup = false makes then disappear
     luasnip = {
-      -- kind = '', -- FIXME
-      kind = 'x', -- FIXME
+      kind = '', -- FIXME
       dup = false,
       priority = 9999,
     },
@@ -45,9 +44,6 @@ require('compe').setup {
   },
 }
 
-require 'snip'
-
--- require("snippets").use_suggested_mappings()
 require('nvim-autopairs.completion.compe').setup {
   map_cr = true,
   map_complete = true,
@@ -73,7 +69,6 @@ function _G.tab_complete()
   if vim.fn.pumvisible() == 1 then
     return t '<C-n>'
   elseif ls.jumpable(1) == true then
-    -- return t("<cmd>lua require'snippets'.expand_or_advance(1)<Cr>")
     return t "<cmd>lua require'luasnip'.expand_or_jump(1)<Cr>"
   elseif check_back_space() then
     return t '<Tab>'
@@ -87,7 +82,6 @@ function _G.s_tab_complete()
   if vim.fn.pumvisible() == 1 then
     return t '<C-p>'
   elseif ls.jumpable(-1) == true then
-    -- return t("<cmd>lua require'snippets'.expand_or_advance(-1)<Cr>")
     return t "<cmd>lua require'luasnip'.expand_or_jump(-1)<Cr>"
   else
     -- If <S-Tab> is not working in your terminal, change it to <C-h>

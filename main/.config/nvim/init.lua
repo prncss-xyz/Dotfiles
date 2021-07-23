@@ -1,6 +1,31 @@
+local disabled_built_ins = {
+    "netrw",
+    "netrwPlugin",
+    "netrwSettings",
+    "netrwFileHandlers",
+    "gzip",
+    "zip",
+    "zipPlugin",
+    "tar",
+    "tarPlugin",
+    "getscript",
+    "getscriptPlugin",
+    "vimball",
+    "vimballPlugin",
+    "2html_plugin",
+    "logipat",
+    "rrhelper",
+    "spellfile_plugin",
+    "matchit"
+}
+for _, plugin in pairs(disabled_built_ins) do
+    vim.g["loaded_" .. plugin] = 1
+end
+
+require 'plugins'
+
 local utils = require 'utils'
 local job_sync = utils.job_sync
-vim.cmd 'let loaded_netrwPlugin = 1' -- disable netrw
 vim.cmd 'set title'
 require 'signs'
 require 'options'
@@ -15,13 +40,10 @@ if pr then
   vim.cmd('cd ' .. pr)
 end
 
-require 'plugins'
 require('theming').setup()
 require('bindings').setup()
 require('signs').setup()
 require 'theme-exporter'
 require 'autocommands'
 
-require('templates').setup {
-  path = os.getenv 'PROJECTS' .. '/closet/templates',
-}
+require('templates').setup()

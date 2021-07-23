@@ -1,4 +1,4 @@
-#abbr -g ytdl 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
+abbr -g ytdl 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
 alias gh-token 'export GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1)'
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
 fish_vi_key_bindings

@@ -5,7 +5,7 @@ end
 
 -------- Function equivalent to dirname in POSIX systems
 xplr.fn.custom.dirname = function(path)
-  if str:match(".-/.-") then
+  if path:match(".-/.-") then
     local name = string.gsub(path, "(.*/)(.*)", "%1")
     return name
   else

@@ -11,9 +11,8 @@ local servers = {
   -- 'pyls',
 }
 
-local augroup = require('utils').augroup
-
 function M.setup()
+  local nvim_lsp = require 'lspconfig'
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities.textDocument.completion.completionItem.snippetSupport = true
   capabilities.textDocument.completion.completionItem.resolveSupport = {
@@ -63,14 +62,13 @@ function M.setup()
       end
   end
 
-  local nvim_lsp = require 'lspconfig'
-
   local function on_attach_efm(client, _)
     client.resolved_capabilities.document_formatting = true
     client.resolved_capabilities.goto_definition = false
     -- silent is necessary for vim will complain about calling undojoin after undo
-    vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
-    -- vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
+    -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
+    -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
+    vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
     -- vim.cmd 'autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()'
   end
 
@@ -225,6 +223,8 @@ function M.setup()
       preview_location_callback
     )
   end
+  nvim_lsp.markdown = {}
+  nvim_lsp.md = {}
 end
 
 return M

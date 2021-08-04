@@ -1,7 +1,7 @@
 local M = {}
 
 local function getColors0(name)
-  r = vim.api.nvim_exec('hi ' .. name, true)
+  local r = vim.api.nvim_exec('hi ' .. name, true)
   local bg = string.match(r, 'guibg' .. '=#([%x]+)')
   if bg then
     bg = bg:lower()

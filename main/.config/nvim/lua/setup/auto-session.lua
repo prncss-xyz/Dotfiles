@@ -5,6 +5,7 @@ function M.setup()
     log_level = 'error',
     -- auto_session_root_dir = "~/Personal/auto-session/",
     auto_save_enabled = true,
+    auto_session_root_dir = os.getenv 'HOME' .. '/Media/sessions/',
     auto_restore_enabled = true,
     post_restore_cmds = {
       'BufferOrderByDirectory',
@@ -12,11 +13,10 @@ function M.setup()
     },
     pre_save_cmds = {
       'TSContextDisable',
-      'lua require("dapui").close()',
+      -- 'lua require("dapui").close()',
       'SymbolsOutlineClose',
-      'DiffviewClose',
+      -- 'DiffviewClose',
     },
-    -- post_restore_cmds = {"BufferLineSortByDirectory"},
   }
 end
 return M

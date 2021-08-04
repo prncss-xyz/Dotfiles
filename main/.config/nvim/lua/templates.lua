@@ -10,7 +10,11 @@ local function load_templates()
     return
   end
   templates = {}
-  for _, value in pairs(require('luasnip').snippets.TEMPLATES) do
+  local ls = require 'luasnip'
+  if not ls then
+    return
+  end
+  for _, value in pairs(ls.snippets.TEMPLATES) do
     local glob = value.trigger
     value.trigger = ''
     local re_string = vim.fn.glob2regpat(glob)
@@ -21,7 +25,6 @@ local function load_templates()
       re = re,
     })
   end
-  return templates
 end
 
 -- picks the most specific match by the following startegy:

@@ -35,7 +35,8 @@ function fish_title
     end
     set branch (git branch --show-current 2>/dev/null)
     if [ -n "$branch" ]
-      echo  " $branch — $pat"
+      echo  "$pat — $branch"
+      #      echo  " $branch — $pat"
     else
       echo $pat
     end

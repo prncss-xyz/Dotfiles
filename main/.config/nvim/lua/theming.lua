@@ -24,6 +24,7 @@ local theme = require 'theme'
 --     gruvbox_material_background = 'soft',
 --   },
 -- }
+-- https://github.com/Murtaza-Udaipurwala/gruvqueen
 
 -- theme = {
 --   name = 'nord',

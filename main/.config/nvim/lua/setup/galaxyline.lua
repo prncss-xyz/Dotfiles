@@ -2,7 +2,7 @@ local gl = require 'galaxyline'
 local Job = require 'plenary.job'
 local gls = gl.section
 -- gl.short_line_list = { "LuaTree", "vista", "dbui", "goyo" }
-local skipLock = { 'LuaTree', 'vista', 'dbui', 'help' }
+local skipLock = { 'Trouble', 'LuaTree', 'vista', 'dbui', 'help' }
 
 local vim, lsp, api = vim, vim.lsp, vim.api
 
@@ -31,12 +31,8 @@ local function set_title()
       end,
     })
     :sync()
-  local titlestring = ''
-  if branch then
-    titlestring = titlestring .. ' ' .. branch .. ' — '
-  else
-    titlestring = titlestring .. ' '
-  end
+  -- local titlestring = ''
+  local titlestring = ''
   local home = vim.loop.os_homedir()
   local dir = vim.fn.getcwd()
   if dir == home then
@@ -48,6 +44,10 @@ local function set_title()
     end
   end
   titlestring = titlestring .. dir
+  if branch then
+    titlestring = titlestring .. ' — ' .. branch
+    -- titlestring = titlestring .. ' ' .. branch .. ' — '
+  end
   vim.cmd(string.format('let &titlestring=%q', titlestring))
 end
 

@@ -5,6 +5,7 @@ function M.setup()
     deep_merge(require('bindings').plugins.treesitter, {
       rainbow = {
         enable = true,
+        -- xetended_mode = true,
       },
       autotag = {
         enable = true,

@@ -7,7 +7,11 @@ local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 
-local p = require('luasnip.util.functions').partial
+require('luasnip/loaders/from_vscode').lazy_load {
+  paths = os.getenv 'PROJECTS' .. '/closet',
+}
+
+local p = require('luasnip.extras').partial
 --
 -- not succeding to access system clipboard through LSP protocol
 -- using vim api instead
@@ -107,3 +111,4 @@ ls.snippets = {
     }),
   },
 }
+require('templates').setup()

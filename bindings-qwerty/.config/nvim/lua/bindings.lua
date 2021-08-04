@@ -3,8 +3,70 @@ local wk = require 'which-key'
 local invert = require('utils').invert
 
 -- TODO gitsigns
-
+--
 M.plugins = {}
+
+local function t(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+-- https://github.com/folke/dot/blob/master/config/nvim/lua/config/compe.lua
+function _G.confirm()
+  if vim.fn.pumvisible() == 1 then
+    return vim.fn['compe#confirm'] { keys = '<cr>', select = true }
+  else
+    return require('nvim-autopairs').autopairs_cr()
+  end
+end
+
+-- should not call tabout in 's' mode, but seams harmless
+--- <tab> to jump to next snippet's placeholder
+function _G.tab_complete()
+  return require('luasnip').jump(1) and '' or t '<Plug>(TaboutMulti)'
+end
+
+--- <s-tab> to jump to next snippet's placeholder
+function _G.s_tab_complete()
+  return require('luasnip').jump(-1) and '' or t '<Plug>(TaboutBackMulti)'
+end
+
+-- local function check_back_space()
+--   local col = vim.fn.col '.' - 1
+--   if col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' then
+--     return true
+--   else
+--     return false
+--   end
+-- end
+--
+-- function _G.tab_complete()
+--   local ls = require 'luasnip'
+--   if vim.fn.pumvisible() == 1 then
+--     return t '<C-n>'
+--   elseif ls.jumpable(1) == true then
+--     return t "<cmd>lua require'luasnip'.expand_or_jump(1)<cr>"
+--     -- elseif check_back_space() then
+--     --   return t '<Tab>'
+--   else
+--     return t '<Plug>(Tabout)'
+--     -- return t '<cmd>call emmet#moveNextPrev(1)<cr>'
+--     -- return vim.fn["compe#complete"]()
+--   end
+-- end
+
+-- function _G.s_tab_complete()
+--   local ls = require 'luasnip'
+--   if vim.fn.pumvisible() == 1 then
+--     return t '<C-p>'
+--   elseif ls.jumpable(-1) == true then
+--     return t "<cmd>lua require'luasnip'.expand_or_jump(-1)<cr>"
+--   else
+--     return t '<Plug>(TaboutBack)'
+--     -- If <S-Tab> is not working in your terminal, change it to <C-h>
+--     -- return t("<cmd>call emmet#moveNextPrev(0)<cr>")
+--     -- return t '<S-Tab>'
+--   end
+-- end
 
 local function map(mode, lhs, rhs, opts)
   local options = { noremap = true }
@@ -35,31 +97,11 @@ local function mapBrowserSearch(prefix, help0, mappings)
   end
 end
 
-function _G.Dsm()
-  vim.cmd "lua require('tsht').nodes()"
-  vim.cmd 'normal! y'
-  vim.cmd "lua require('tsht').nodes()"
-  vim.cmd 'normal! "_d'
-end
-
-function _G.Csm()
-  vim.cmd "lua require('tsht').nodes()"
-  vim.cmd 'normal! y'
-  vim.cmd "lua require('tsht').nodes()"
-  vim.cmd 'normal! "_c'
-end
-
 function M.setup()
   -- compe
   map('i', '<c-space>', 'compe#complete()', { expr = true })
-  -- map("i", "<cr>", "compe#confirm('<cr>')", { expr = true })
+  map('i', '<cr>', 'v:lua.confirm()', { expr = true })
   map('i', '<c-e>', "compe#close('<c-e>')", { expr = true, silent = true })
-  map('i', '<c-f>', "compe#scroll({ 'delta': +4 })", { expr = true })
-  map('i', '<c-d>', "compe#scroll({ 'delta': -4 })", { expr = true })
-  map('i', '<tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
-  map('s', '<tab>', 'v:lua.tab_complete()', { expr = true, silent = true })
-  map('i', '<s-tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
-  map('s', '<s-tab>', 'v:lua.s_tab_complete()', { expr = true, silent = true })
   -- needed for tab-completion
   map('c', '<c-n>', '<down>')
   map('c', '<c-p>', '<up>')
@@ -96,47 +138,74 @@ function M.setup()
   map('x', 'T', '<Plug>(eft-T)', { noremap = false })
   map('o', 'T', '<Plug>(eft-T)', { noremap = false })
 
+  -- Tabout + Compe
+  map(
+    's',
+    '<tab>',
+    'v:lua.tab_complete()',
+    { expr = true, silent = true, noremap = false }
+  )
+  map(
+    'i',
+    '<tab>',
+    'v:lua.tab_complete()',
+    { expr = true, silent = true, noremap = false }
+  )
+  map(
+    's',
+    '<s-tab>',
+    'v:lua.s_tab_complete()',
+    { expr = true, silent = true, noremap = false }
+  )
+  map(
+    'i',
+    '<s-tab>',
+    'v:lua.s_tab_complete()',
+    { expr = true, silent = true, noremap = false }
+  )
+  map(
+    's',
+    '<s-tab>',
+    'v:lua.s_tab_complete()',
+    { expr = true, silent = true, noremap = false }
+  )
+
+  -- FIXME
   map('n', ';', '<Plug>(eft-;)', { noremap = false })
   map('x', ';', '<Plug>(eft-;)', { noremap = false })
 
-  -- local function eats(ops)
-  --   for _, op in ipairs(ops) do
-  --     map('n', 'cs' .. op, string.format('yi%s"_ca%s', op, op))
-  --     map('n', 'ds' .. op, string.format('yi%s"_da%s', op, op))
-  --   end
-  -- end
-  -- eats { '"', "'", '`', '(', '{', '[', 'w', 'W', 's', 'p', 't', '>' }
-  -- map('n', 'csm', ':lua Csm()<cr>')
-  -- map('n', 'dsm', ':lua Dsm()<cr>')
-  -- map('n', 'cs%', 'yi%"_c;', { noremap = false })
-  -- map('n', 'ds%', 'yi%"_d;', { noremap = false })
-  -- not repeatable
-
-  -- matchup_convenience_map
-  -- I% and A% instead of 1i% and 1A%
-  -- target.vim incompatibilities
-
-  -- nvim-ts-hint-textobject
-  map('o', 'm', ":<C-U>lua require('tsht').nodes()<CR>")
-  map('v', 'm', ":lua require('tsht').nodes()<CR>")
-
-  -- asterisk
+  map(
+    '',
+    'n',
+    "<cmd>execute('normal! ' . v:count1 . 'n')<cr><cmd>lua require('hlslens').start()<cr>"
+  )
+  map(
+    '',
+    'N',
+    "<cmd>execute('normal! ' . v:count1 . 'N')<cr><cmd>lua require('hlslens').start()<cr>"
+  )
   map(
     '',
     '*',
-    '<plug>(asterisk-*)<cmd>lua require("hlslens").start()<cr>',
+    '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
+    { noremap = false }
+  )
+  map(
+    '',
+    '#',
+    '<plug>(asterisk-z#)<cmd>lua require"hlslens".start()<cr>',
     { noremap = false }
   )
   map(
     '',
     'g*',
-    '<plug>(asterisk-g*)<cmd>lua require("hlslens").start()<cr>',
+    '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
     { noremap = false }
   )
   map(
     '',
     'g#',
-    '<plug>(asterisk-g#)<cmd>lua require("hlslens").start()<cr>',
+    '<plug>(asterisk-gz#)<cmd>lua require"hlslens".start()<cr>',
     { noremap = false }
   )
 
@@ -171,8 +240,8 @@ function M.setup()
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     wk.register({
+      ['<c-a>'] = { ':b#<cr>' }, -- FIXME
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
-      ['<f2>'] = { '<cmd>ToggleQuickFix<cr>', 'toggle quick fix' },
       ['<a-r>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
       ['<a-e>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },
       ['<a-s-r>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
@@ -182,10 +251,10 @@ function M.setup()
         "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
         'pick note',
       },
-      ['<c-w>'] = {
-        L = { '<cmd>vsplit<cr>', 'split left' },
-        J = { '<cmd>split<cr>', 'split down' },
-      },
+      -- ['<c-w>'] = {
+      --   L = { '<cmd>vsplit<cr>', 'split left' },
+      --   J = { '<cmd>split<cr>', 'split down' },
+      -- },
       ['<a-o>'] = {
         '<cmd>BufferCloseBuffersRight<cr><cmd>BufferCloseBuffersLeft<cr><c-w>o',
         -- '<cmd>BufferCloseBuffersRight|BufferCloseBuffersLeft<cr>',
@@ -208,14 +277,17 @@ function M.setup()
 
   -- x mappings
   wk.register({
-    ds = { '<Plug>(operator-sandwich-delete)', 'sandwich delete' },
-    cs = { '<Plug>(operator-sandwich-replace)', 'sandwich replace' },
+    ['<leader>d'] = { '<Plug>(operator-sandwich-delete)', 'sandwich delete' },
+    ['<leader>c'] = { '<Plug>(operator-sandwich-replace)', 'sandwich replace' },
+    ['<leader>y'] = { '<Plug>(operator-sandwich-add)', 'sandwich replace' },
   }, {
     mode = 'x',
   })
 
   -- n mappings
   wk.register {
+    --FIXME: is something else remapping it
+    ['z='] = { '<cmd>WhichKey z=<cr>', 'suggestions' },
     ys = { '<Plug>(operator-sandwich-add)', 'sandwich make' },
     g = {
       x = {
@@ -230,10 +302,12 @@ function M.setup()
         '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
         'go previous diagnostic',
       },
+      -- t = {'<cmd>require("trouble").next({skip_groups = true, jump = true})<cr>', 'trouble, next'},
+      -- T = {'<cmd>require("trouble").previous({skip_groups = true, jump = true})<cr>', 'trouble, previous'},
     },
     ['<leader>'] = {
       ['<leader>'] = {
-        '<cmd>lua Project_files()<cr>',
+        "<cmd>lua require'setup/telescope'.project_files()<cr>",
         'project file',
       },
       ['*'] = { '<cmd>Rg <cword><cr>', 'rg current word' },
@@ -241,6 +315,30 @@ function M.setup()
       m = {
         ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>",
         'macro edition',
+      },
+      p = {
+        name = '+panel',
+        t = { '<cmd>TroubleToggle<cr>', 'toggle' },
+        m = {
+          '<cmd>TroubleToggle lsp_workspace_diagnostics<cr>',
+          'lsp diagnostics',
+        },
+        M = {
+          '<cmd>TroubleToggle lsp_document_diagnostics<cr>',
+          'lsp document diagnostics',
+        },
+        q = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
+        l = { '<cmd>TroubleToggle loclist<cr>', 'loclist' },
+        r = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
+      },
+      o = {
+        name = '+outline',
+        v = { '<cmd>SymbolsOutlineClose<cr><cmd>VoomToggle markdown<cr>', 'voom' },
+        s = {
+          '<cmd>SymbolsOutline<cr><cmd>Voomquit<cr>',
+          'symbols',
+        },
+        x = { '<cmd>SymbolsOutlineClose<cr><cmd>Voomquit<cr>', 'close' },
       },
       f = {
         name = '+picker',
@@ -342,6 +440,7 @@ function M.setup()
         b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
         x = { '<cmd>setlocal nospell spelllang=<cr>', 'none' },
         g = { '<cmd>LanguageToolCheck<cr>', 'language tools' },
+        ['='] = { '<cmd>WhichKey z=<cr>', 'suggestions' },
       },
       d = {
         name = '+DAP',
@@ -452,6 +551,26 @@ M.plugins = {
     ['<cr>'] = 'enter_link',
     ['<c-k>'] = 'print_hover_title',
   },
+  telescope = function()
+    local actions = require 'telescope.actions'
+    -- local trouble = require 'trouble.providers.telescope'
+    return {
+      defaults = {
+        mappings = {
+          i = {
+            ['<c-q>'] = actions.send_to_qflist,
+            ['<c-l>'] = actions.send_to_loclist,
+            -- ['<c-t>'] = trouble.open_with_trouble,
+          },
+          n = {
+            ['<c-j>'] = actions.file_split,
+            ['<c-l>'] = actions.file_vsplit,
+            -- ['<c-t>'] = trouble.open_ith_trouble,
+          },
+        },
+      },
+    }
+  end,
   treesitter = {
     incremental_selection = {
       keymaps = invert {
@@ -468,7 +587,7 @@ M.plugins = {
           ['if'] = '@function.inner',
           ['ia'] = '@parameter.inner',
           ['aq'] = {
-            lua = '@string',
+            lua = '@string.outer',
           },
           ['a,'] = {
             javascript = '(pair) @object', -- not working
@@ -519,5 +638,39 @@ M.plugins = {
     },
   },
 }
+
+-- TODO
+-- TODO
+-- -- segment in camelCase etc words; changed bindings
+-- -- ,w etc
+-- '~/Media/Projects/vim-textobj-variable-segment',
+-- -- same syntaxic group
+-- -- ay, iy
+-- ???
+-- 'kana/vim-textobj-syntax',
+-- -- remap vim, abbvr: numbers etc.
+-- 'preservim/vim-textobj-sentence',
+-- -- last pasted text
+-- -- gb
+
+-- 'saaguero/vim-textobj-pastedtext',
+-- -- last searched pattern
+-- -- a/ i/ a? i?
+-- 'kana/vim-textobj-lastpat',
+-- -- current line
+-- -- al il
+-- 'kana/vim-textobj-line',
+-- -- TODO: smart quote navigation: ". ."
+-- -- markdown
+-- -- headers: 1) ]] [[ 2) ][ [] 3) ]} [{ x) ]h [h
+-- --
+-- 'coachshea/vim-textobj-markdown',
+-- -- indent level
+-- -- same) ai ii same or deaper) aI iI
+-- -- text blocs
+-- -- current or next) ]m [m
+-- -- current or previous) ]n [n
+-- 'michaeljsmith/vim-indent-object',
+-- TODO
 
 return M

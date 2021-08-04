@@ -1,5 +1,4 @@
 local augroup = require('utils').augroup
-local command = require('utils').command
 local dotfiles = os.getenv 'DOTFILES'
 
 augroup('MakeExecutable', {

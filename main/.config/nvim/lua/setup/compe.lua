@@ -26,76 +26,17 @@ require('compe').setup {
     nvim_lsp = {
       -- dup = false,
     },
-    calc = true,
-    nvim_lua = true,
-    spell = {
-      filetypes = { 'markdown' },
-    },
+    calc = {},
+    nvim_lua = {},
+    spell = {},
     emoji = false,
     omni = false, -- Warning: It has a lot of side-effect.
     -- FIXME dup = false makes then disappear
     luasnip = {
       kind = '', -- FIXME
       dup = false,
-      priority = 9999,
     },
     treesitter = false, -- Warning: it sometimes really slow.
     tabnine = false,
   },
 }
-
-require('nvim-autopairs.completion.compe').setup {
-  map_cr = true,
-  map_complete = true,
-}
-
-local function t(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
-local function check_back_space()
-  local col = vim.fn.col '.' - 1
-  if col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' then
-    return true
-  else
-    return false
-  end
-end
-
-local ls = require 'luasnip'
--- local ls = require("snippets")
-
-function _G.tab_complete()
-  if vim.fn.pumvisible() == 1 then
-    return t '<C-n>'
-  elseif ls.jumpable(1) == true then
-    return t "<cmd>lua require'luasnip'.expand_or_jump(1)<Cr>"
-  elseif check_back_space() then
-    return t '<Tab>'
-  else
-    return t '<cmd>call emmet#moveNextPrev(1)<cr>'
-    -- return vim.fn["compe#complete"]()
-  end
-end
-
-function _G.s_tab_complete()
-  if vim.fn.pumvisible() == 1 then
-    return t '<C-p>'
-  elseif ls.jumpable(-1) == true then
-    return t "<cmd>lua require'luasnip'.expand_or_jump(-1)<Cr>"
-  else
-    -- If <S-Tab> is not working in your terminal, change it to <C-h>
-    -- return t("<cmd>call emmet#moveNextPrev(0)<cr>")
-    return t '<S-Tab>'
-  end
-end
-
-require('luasnip/loaders/from_vscode').lazy_load {
-  paths = os.getenv 'PROJECTS' .. '/closet',
-}
-
--- completion-nvim
-
--- Completion is triggered if completion_trigger_character is entered. It's limitation of completion-nvim.
--- used with emmet language server
--- vim.g.completion_trigger_character = { '.' }

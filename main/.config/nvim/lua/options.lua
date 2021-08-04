@@ -18,16 +18,16 @@ deep_merge(vim, {
     completeopt = 'menuone,noselect',
     cursorline = true,
     expandtab = true,
-    foldexpr = '[[<Cmd>lua require("nvim_treesitter").foldexpr()<CR>]]',
+    foldexpr = '[[<cmd>lua require("nvim_treesitter").foldexpr()<cr>]]',
     foldmethod = 'expr',
-    guifont = 'Fira Code NerdFont',
+    -- guifont = 'Fira Code NerdFont',
     hidden = true,
     ignorecase = true,
     incsearch = true,
     lazyredraw = true,
     linebreak = true,
     mouse = 'a',
-    scrolloff = 5,
+    scrolloff = 10,
     shiftwidth = indent,
     shortmess = vim.o.shortmess .. 'c',
     showmode = false,
@@ -43,6 +43,7 @@ deep_merge(vim, {
     termguicolors = true,
     undofile = true,
     updatetime = 500,
+    -- timeoutlen = 300,
     wildignorecase = true,
     wildoptions = 'pum',
     pumblend = 20,
@@ -70,14 +71,19 @@ deep_merge(vim, {
     -- indent_blankline_char_highlight_list = {"SpecialKey", "DevIconIni"},
     indent_blankline_show_current_context = true,
     indent_blankline_buftype_exclude = { 'terminal', 'help' },
+    vim_markdown_folding_disabled = 1,
+    vim_markdown_conceal_code_blocks = 0,
+    vim_markodwn_frontmatter = 1,
+    vim_markdown_toc_autofit = 1,
+    vim_markdown_emphasis_multiline = 0,
+    vim_markdown_frontmatter = 1,
+    vim_markdown_new_list_item_indent = indent,
     markdown_fenced_languages = {
       'js=javascript',
+      'jsx=javascriptreact',
       'ts=typescript',
-      'shell=sh',
-      'sh=sh',
+      'tsx=typescriptreact',
       'bash=sh',
-      'console=sh',
-      'lua=lua',
     },
     -- barbar
     bufferline = {
@@ -96,10 +102,14 @@ deep_merge(vim, {
     dap_virtual_text = 'all frames', -- experimental
   },
   wo = {
-    number = true,
+    number = false,
     relativenumber = false,
     signcolumn = 'yes',
   },
+  opt_local = { conceallevel = 2 },
+  -- vim.opt.{option}: behaves like :set
+  -- vim.opt_global.{option}: behaves like :setglobal
+  -- vim.opt_local.{option}: behaves like :setlocal
   opt = {
     secure = true, -- disable autocmd etc for project local vimrc files
     exrc = false, -- allow project local vimrc files example .nvimrc see :h exrc

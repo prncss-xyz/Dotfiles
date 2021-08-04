@@ -3,15 +3,6 @@ local utils = require 'utils'
 local job_sync = utils.job_sync
 local command = require('utils').command
 local dotfiles = os.getenv 'DOTFILES'
-command('ToggleQuickFix', {}, function()
-  for _, win in pairs(vim.fn.getwininfo()) do
-    if win.quickfix == 1 then
-      vim.cmd 'cclose'
-      return
-    end
-  end
-  vim.cmd 'copen'
-end)
 command('ExportTheme', { nargs = 1 }, function(name)
   require('theme-exporter').export_theme(name)
 end)
@@ -120,4 +111,4 @@ command('BrowserMan', {}, function()
     :start()
 end)
 
-require 'telescope/md'
+-- require 'telescope/md'

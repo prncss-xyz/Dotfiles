@@ -363,6 +363,7 @@ return require('packer').startup(function()
       },
     },
   }
+  use {'tzachar/compe-tabnine', run='./install.sh'}
   use 'vim-voom/VOoM'
   use {
     'lewis6991/gitsigns.nvim',

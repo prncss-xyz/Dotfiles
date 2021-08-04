@@ -37,6 +37,9 @@ require('compe').setup {
       dup = false,
     },
     treesitter = false, -- Warning: it sometimes really slow.
-    tabnine = false,
+    tabnine = {
+      priority = 5000,
+      sort = false,
+    },
   },
 }

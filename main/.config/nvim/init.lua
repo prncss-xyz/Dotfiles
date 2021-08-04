@@ -45,3 +45,4 @@ require('bindings').setup()
 require('signs').setup()
 require 'theme-exporter'
 require 'autocommands'
+-- require('nvim-startup').setup()

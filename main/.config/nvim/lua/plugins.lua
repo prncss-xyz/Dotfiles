@@ -139,14 +139,15 @@ return require('packer').startup(function()
   -- Navigation
   use 'haya14busa/vim-asterisk'
   use 'andymass/vim-matchup'
-  use 'bkad/CamelCaseMotion'
   use 'hrsh7th/vim-eft'
   use {
     'ggandor/lightspeed.nvim',
     config = function()
       require('lightspeed').setup {}
     end,
-  } -- Edition
+  }
+
+  -- Edition
   use {
     'kana/vim-textobj-user',
     requires = {
@@ -180,6 +181,12 @@ return require('packer').startup(function()
       'michaeljsmith/vim-indent-object',
     },
   }
+  use {
+    'AckslD/nvim-anywise-reg.lua',
+    config = function()
+      require 'setup/anywise_reg'
+    end,
+  }
 
   use {
     -- weirdly seams required to format yaml frontmatter
@@ -208,7 +215,7 @@ return require('packer').startup(function()
   --   end,
   -- }
   use 'matze/vim-move'
-  use 'svermeulen/vim-cutlass'
+  -- use 'svermeulen/vim-cutlass'
   use 'tommcdo/vim-exchange'
   use 'machakann/vim-sandwich'
   use 'mattn/emmet-vim'
@@ -363,7 +370,7 @@ return require('packer').startup(function()
       },
     },
   }
-  use {'tzachar/compe-tabnine', run='./install.sh'}
+  use { 'tzachar/compe-tabnine', run = './install.sh' }
   use 'vim-voom/VOoM'
   use {
     'lewis6991/gitsigns.nvim',
@@ -468,7 +475,6 @@ return require('packer').startup(function()
     end,
   }
 
-  -- Notes
   use '~/Media/Projects/closet'
 
   -- Color schemes
@@ -508,4 +514,5 @@ return require('packer').startup(function()
       require('setup/auto-session').setup()
     end,
   }
+  use 'henriquehbr/nvim-startup.lua'
 end)

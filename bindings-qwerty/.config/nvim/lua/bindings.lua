@@ -68,12 +68,18 @@ end
 --   end
 -- end
 
-local function map(mode, lhs, rhs, opts)
+local function map(modes, lhs, rhs, opts)
   local options = { noremap = true }
   if opts then
     options = vim.tbl_extend('force', options, opts)
   end
-  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+  if modes == '' then
+    vim.api.nvim_set_keymap('', lhs, rhs, options)
+    return
+  end
+  for mode in modes:gmatch '.' do
+    vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+  end
 end
 
 local function mapBrowserSearch(prefix, help0, mappings)
@@ -105,75 +111,52 @@ function M.setup()
   -- needed for tab-completion
   map('c', '<c-n>', '<down>')
   map('c', '<c-p>', '<up>')
+
   -- luasnip
   map(
-    'i',
+    'is',
     '<c-o>',
     "luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'",
     { expr = true, noremap = false }
   )
   map(
-    's',
-    '<c-o>',
-    "luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'",
+    'is',
+    '<c-i>',
+    "luasnip#choice_active() ? '<Plug>luasnip-previous-choice' : '<C-E>'",
     { expr = true, noremap = false }
   )
 
-  -- lightspeed: canceling "f" until it works better
-  -- map('', 'f', 'f')
-  -- map('', 'F', 'F')
-  -- map('', 't', 't')
-  -- map('', 'T', 'T')
-  map('n', 'f', '<Plug>(eft-f)', { noremap = false })
-  map('x', 'f', '<Plug>(eft-f)', { noremap = false })
-  map('o', 'f', '<Plug>(eft-f)', { noremap = false })
-  map('n', 'F', '<Plug>(eft-F)', { noremap = false })
-  map('x', 'F', '<Plug>(eft-F)', { noremap = false })
-  map('o', 'F', '<Plug>(eft-F)', { noremap = false })
+  -- eft
+  map('nx', ';', '<plug>(eft-repeat)', { noremap = false })
+  map('nxo', 'f', '<plug>(eft-f)', { noremap = false })
+  map('nxo', 'F', '<plug>(eft-F)', { noremap = false })
+  map('nxo', 't', '<plug>(eft-t)', { noremap = false })
+  map('nxo', 'T', '<plug>(eft-T)', { noremap = false })
 
-  map('n', 't', '<Plug>(eft-t)', { noremap = false })
-  map('x', 't', '<Plug>(eft-t)', { noremap = false })
-  map('o', 't', '<Plug>(eft-t)', { noremap = false })
-  map('n', 'T', '<Plug>(eft-T)', { noremap = false })
-  map('x', 'T', '<Plug>(eft-T)', { noremap = false })
-  map('o', 'T', '<Plug>(eft-T)', { noremap = false })
+  -- nohl on insert
+  -- https://vi.stackexchange.com/questions/10407/stop-highlighting-when-entering-insert-mode
+  for _, comm in ipairs { 'a', 'A', '<Insert>', 'i', 'I', 'gI', 'gi', 'o', 'O' } do
+    map(
+      '',
+      comm,
+      "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>"
+        .. comm
+    )
+  end
 
   -- Tabout + Compe
   map(
-    's',
+    'is',
     '<tab>',
     'v:lua.tab_complete()',
     { expr = true, silent = true, noremap = false }
   )
   map(
-    'i',
-    '<tab>',
-    'v:lua.tab_complete()',
-    { expr = true, silent = true, noremap = false }
-  )
-  map(
-    's',
+    'is',
     '<s-tab>',
     'v:lua.s_tab_complete()',
     { expr = true, silent = true, noremap = false }
   )
-  map(
-    'i',
-    '<s-tab>',
-    'v:lua.s_tab_complete()',
-    { expr = true, silent = true, noremap = false }
-  )
-  map(
-    's',
-    '<s-tab>',
-    'v:lua.s_tab_complete()',
-    { expr = true, silent = true, noremap = false }
-  )
-
-  -- FIXME
-  map('n', ';', '<Plug>(eft-;)', { noremap = false })
-  map('x', ';', '<Plug>(eft-;)', { noremap = false })
-
   map(
     '',
     'n',
@@ -209,29 +192,28 @@ function M.setup()
     { noremap = false }
   )
 
-  -- cutlass
-  map('n', 'x', 'd')
-  map('x', 'x', 'd')
+  -- cutlass-inspired
+  -- select mode missing
+  map('nx', 'x', 'd')
+  map('nx', 'X', 'c')
+  map('nx', 'c', '"_c')
+  map('n', 'cc', '"_S')
+  map('nx', 'C', '"_C')
+  map('nx', 'd', '"_d')
+  map('n', 'dd', '"_dd')
+  map('nx', 'D', '"_D')
+  map('nx', 'x', 'd')
   map('n', 'xx', 'dd')
-  map('n', 'X', 'D')
   map('v', 'p', '"_dp')
   map('v', 'P', '"_dP')
   map('n', '<c-v>', 'p')
   map('v', '<c-v>', 'dp')
   map('i', '<c-v>', '<esc>pa')
 
-  -- i mappings
-  wk.register({
-    ['<c-l>'] = { '<esc>:nohlsearch<cr>a', 'nohlsearch' },
-  }, {
-    mode = 'i',
-  })
-
   -- nv mappings
   for mode in string.gmatch('nv', '.') do
     wk.register({
       -- plugin's documentation specifies to use 's' instead of '<cmd>, which indeed do not produce expected results
-      ['<c-l>'] = { ':nohlsearch<cr>', 'nohlsearch' },
       ['<m-v>'] = { '<c-v>', 'square selection' },
     }, {
       mode = mode,
@@ -240,7 +222,8 @@ function M.setup()
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     wk.register({
-      ['<c-a>'] = { ':b#<cr>' }, -- FIXME
+      ['<c-l>'] = { '<cmd>nohlsearch<cr>', 'nohlsearch' },
+      ['<c-a>'] = { '<cmd>b#<cr>' }, -- FIXME
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       ['<a-r>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
       ['<a-e>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },

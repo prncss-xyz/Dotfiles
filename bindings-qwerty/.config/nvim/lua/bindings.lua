@@ -28,44 +28,6 @@ function _G.s_tab_complete()
   return require('luasnip').jump(-1) and '' or t '<Plug>(TaboutBackMulti)'
 end
 
--- local function check_back_space()
---   local col = vim.fn.col '.' - 1
---   if col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' then
---     return true
---   else
---     return false
---   end
--- end
---
--- function _G.tab_complete()
---   local ls = require 'luasnip'
---   if vim.fn.pumvisible() == 1 then
---     return t '<C-n>'
---   elseif ls.jumpable(1) == true then
---     return t "<cmd>lua require'luasnip'.expand_or_jump(1)<cr>"
---     -- elseif check_back_space() then
---     --   return t '<Tab>'
---   else
---     return t '<Plug>(Tabout)'
---     -- return t '<cmd>call emmet#moveNextPrev(1)<cr>'
---     -- return vim.fn["compe#complete"]()
---   end
--- end
-
--- function _G.s_tab_complete()
---   local ls = require 'luasnip'
---   if vim.fn.pumvisible() == 1 then
---     return t '<C-p>'
---   elseif ls.jumpable(-1) == true then
---     return t "<cmd>lua require'luasnip'.expand_or_jump(-1)<cr>"
---   else
---     return t '<Plug>(TaboutBack)'
---     -- If <S-Tab> is not working in your terminal, change it to <C-h>
---     -- return t("<cmd>call emmet#moveNextPrev(0)<cr>")
---     -- return t '<S-Tab>'
---   end
--- end
-
 local function map(modes, lhs, rhs, opts)
   local options = { noremap = true }
   if opts then
@@ -102,6 +64,32 @@ local function mapBrowserSearch(prefix, help0, mappings)
 end
 
 function M.setup()
+  -- dial
+  map(
+    'nv',
+    '<C-a>',
+    '<Plug>(dial-increment)',
+    { silent = true, noremap = false }
+  )
+  map(
+    'nv',
+    '<c-x>',
+    '<Plug>(dial-decrement)',
+    { silent = true, noremap = false }
+  )
+  map(
+    'v',
+    'g<c-a>',
+    '<Plug>(dial-increment-additional)',
+    { silent = true, noremap = false }
+  )
+  map(
+    'v',
+    'g<c-x>',
+    '<Plug>(dial-decrement-additional)',
+    { silent = true, noremap = false }
+  )
+
   -- compe
   map('i', '<c-space>', 'compe#complete()', { expr = true })
   map('i', '<cr>', 'v:lua.confirm()', { expr = true })
@@ -203,7 +191,15 @@ function M.setup()
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     wk.register({
-      ['<c-l>'] = { '<cmd>nohlsearch<cr>', 'nohlsearch' },
+      ['<a-h>'] = {"<cmd>lua require('Navigator').left()<cr>", "window left" },
+      ['<a-j>'] = {"<cmd>lua require('Navigator').down()<cr>", "window down" },
+      ['<a-k>'] = {"<cmd>lua require('Navigator').up()<cr>", "window up" },
+      ['<a-l>'] = {"<cmd>lua require('Navigator').right()<cr>", "window right" },
+      ['<a-p>'] = {"<cmd>lua require('Navigator').previous()<cr>", "window previous" },
+      ['<c-l>'] = {
+        "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
+        'nohlsearch',
+      },
       ['<c-a>'] = { '<cmd>b#<cr>' }, -- FIXME
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       ['<a-r>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
@@ -298,7 +294,8 @@ function M.setup()
         name = '+outline',
         v = { '<cmd>SymbolsOutlineClose<cr><cmd>VoomToggle markdown<cr>', 'voom' },
         s = {
-          '<cmd>SymbolsOutline<cr><cmd>Voomquit<cr>',
+          '<cmd>SymbolsOutline<cr>',
+          -- '<cmd>SymbolsOutline<cr><cmd>Voomquit<cr>',
           'symbols',
         },
         x = { '<cmd>SymbolsOutlineClose<cr><cmd>Voomquit<cr>', 'close' },

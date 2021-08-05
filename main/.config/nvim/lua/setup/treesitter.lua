@@ -1,86 +1,90 @@
-local M = {}
 local deep_merge = require('utils').deep_merge
-function M.setup()
-  require('nvim-treesitter.configs').setup(
-    deep_merge(require('bindings').plugins.treesitter, {
-      rainbow = {
-        enable = true,
-        -- xetended_mode = true,
-      },
-      autotag = {
-        enable = true,
-      },
-      ensure_installed = {
-        'bash',
-        'c',
-        'cpp',
-        'css',
-        'elm',
-        'fish',
-        'go',
-        'graphql',
-        'html',
-        'javascript',
-        'jsdoc',
-        'json',
-        'latex',
-        'lua',
-        'php',
-        'python',
-        'ql',
-        'regex',
-        'rust',
-        'scss',
-        'svelte',
-        'toml',
-        'tsx',
-        'typescript',
-        'vue',
-        'yaml',
-      },
-      -- ensure_installed = "maintained",
-      highlight = {
-        enable = true,
-        use_languagetree = true,
-      },
-      incremental_selection = {
-        enable = true,
-      },
-      indent = {
-        enable = true,
-      },
-      context_commentstring = {
-        enable = true,
-        config = {
-          javascript = {
-            __default = '// %s',
-            jsx_element = '{/* %s */}',
-            jsx_fragment = '{/* %s */}',
-            jsx_attribute = '// %s',
-            comment = '// %s',
-          },
+-- local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
+-- parser_configs.markdown = {
+--   install_info = {
+--     url = 'https://github.com/ikatyang/tree-sitter-markdown',
+--     files = { 'src/parser.c', 'src/scanner.cc' },
+--   },
+--   filetype = 'markdown',
+-- }
+require('nvim-treesitter.configs').setup(
+  deep_merge(require('bindings').plugins.treesitter, {
+    rainbow = {
+      enable = true,
+      extended_mode = true,
+    },
+    autotag = {
+      enable = true,
+    },
+    ensure_installed = {
+      -- 'markdown',
+      'bash',
+      'c',
+      'cpp',
+      'css',
+      'elm',
+      'fish',
+      'go',
+      'graphql',
+      'html',
+      'javascript',
+      'jsdoc',
+      'json',
+      'latex',
+      'lua',
+      'php',
+      'python',
+      'ql',
+      'regex',
+      'rust',
+      'scss',
+      'svelte',
+      'toml',
+      'tsx',
+      'typescript',
+      'vue',
+      'yaml',
+    },
+    -- ensure_installed = "maintained",
+    highlight = {
+      enable = true,
+      use_languagetree = true,
+    },
+    incremental_selection = {
+      enable = true,
+    },
+    indent = {
+      enable = true,
+    },
+    context_commentstring = {
+      enable = true,
+      config = {
+        javascript = {
+          __default = '// %s',
+          jsx_element = '{/* %s */}',
+          jsx_fragment = '{/* %s */}',
+          jsx_attribute = '// %s',
+          comment = '// %s',
         },
       },
-      matchup = {
+    },
+    matchup = {
+      enable = true,
+    },
+    textsubjects = {
+      enable = true,
+    },
+    textobjects = {
+      select = {
         enable = true,
       },
-      textsubjects = {
+      swap = {
         enable = true,
       },
-      textobjects = {
-        select = {
-          enable = true,
-        },
-        swap = {
-          enable = true,
-        },
-        move = {
-          enable = true,
-          set_jumps = true,
-        },
+      move = {
+        enable = true,
+        set_jumps = true,
       },
-    })
-  )
-end
-
-return M
+    },
+  })
+)

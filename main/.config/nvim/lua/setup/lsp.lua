@@ -65,10 +65,11 @@ function M.setup()
   local function on_attach_efm(client, _)
     client.resolved_capabilities.document_formatting = true
     client.resolved_capabilities.goto_definition = false
+    vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
+
     -- silent is necessary for vim will complain about calling undojoin after undo
     -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
     -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
-    vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
     -- vim.cmd 'autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()'
   end
 
@@ -96,6 +97,7 @@ function M.setup()
     }
   end
 
+  -- ? https://github.com/folke/lua-dev.nvim/issues/21
   nvim_lsp.sumneko_lua.setup(require('lua-dev').setup {
     lspconfig = {
       cmd = { 'lua-language-server' },
@@ -169,28 +171,31 @@ function M.setup()
     formatStdin = true,
   }
 
-  nvim_lsp.efm.setup {
-    on_attach = on_attach_efm,
-    init_options = { documentFormatting = true },
-    settings = {
-      languages = {
-        vim = { vint },
-        lua = { stylua },
-        typescript = { prettier, eslint },
-        javascript = { prettier, eslint },
-        typescriptreact = { prettier, eslint },
-        javascriptreact = { prettier, eslint },
-        yaml = { prettier },
-        json = { prettier },
-        html = { prettier },
-        scss = { prettier },
-        css = { prettier },
-        markdown = { prettier },
-        sh = { shfmt, shellcheck },
-        toml = { prettier },
-      },
-    },
-  }
+  -- nvim_lsp.efm.setup {
+  --   on_attach = on_attach_efm,
+  --   init_options = { documentFormatting = true },
+  --   root_dir = vim.loop.cwd,
+  --   settings = {
+  --     rootMarkers = { '.git/' },
+  --     languages = {
+  --       Outline = {},
+  --       vim = { vint },
+  --       lua = { stylua },
+  --       typescript = { prettier, eslint },
+  --       javascript = { prettier, eslint },
+  --       typescriptreact = { prettier, eslint },
+  --       javascriptreact = { prettier, eslint },
+  --       yaml = { prettier },
+  --       json = { prettier },
+  --       html = { prettier },
+  --       scss = { prettier },
+  --       css = { prettier },
+  --       markdown = { prettier },
+  --       sh = { shfmt, shellcheck },
+  --       toml = { prettier },
+  --     },
+  --   },
+  -- }
 
   -- does not work with jsx/tsx, will keep using emmet.vim
   -- local configs = require("lspconfig/configs")

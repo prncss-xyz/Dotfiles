@@ -18,7 +18,7 @@ return require('packer').startup(function()
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate',
     config = function()
-      require('setup/treesitter').setup()
+      require 'setup.treesitter'
     end,
     requires = {
       'p00f/nvim-ts-rainbow',
@@ -149,6 +149,31 @@ return require('packer').startup(function()
 
   -- Edition
   use {
+    'monaqa/dial.nvim',
+    config = function()
+      local dial = require 'dial'
+      dial.augends['custom#boolean'] = dial.common.enum_cyclic {
+        name = 'boolean',
+        strlist = { 'true', 'false' },
+      }
+      dial.config.searchlist.normal = {
+        'number#decimal',
+        'number#hex',
+        'number#binary',
+        'date#[%Y-%m-%d]',
+        'markup#markdown#header',
+        'custom#boolean',
+      }
+    end,
+  }
+  use {
+    'jghauser/mkdir.nvim',
+    config = function()
+      require 'mkdir'
+    end,
+  }
+
+  use {
     'kana/vim-textobj-user',
     requires = {
       -- ,w etc
@@ -214,7 +239,7 @@ return require('packer').startup(function()
   --     })
   --   end,
   -- }
-  use 'matze/vim-move'
+  -- use 'matze/vim-move'
   use {
     'kevinhwang91/nvim-hclipboard',
     config = function()
@@ -293,6 +318,12 @@ return require('packer').startup(function()
         end,
       },
     },
+  }
+  use {
+    'numToStr/Navigator.nvim',
+    config = function ()
+      require'Navigator'.setup{}
+    end
   }
 
   -- use "jose-elias-alvarez/nvim-lsp-ts-utils"
@@ -381,6 +412,7 @@ return require('packer').startup(function()
   use {
     'lewis6991/gitsigns.nvim',
     event = 'BufRead',
+    cmd = 'Voomquit',
     config = function()
       require('setup/gitsigns').setup()
     end,

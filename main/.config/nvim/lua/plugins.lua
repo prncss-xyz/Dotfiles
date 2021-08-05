@@ -85,15 +85,15 @@ return require('packer').startup(function()
       'crispgm/telescope-heading.nvim',
       'sudormrfbin/cheatsheet.nvim',
       -- 'nvim-telescope/telescope-dap.nvim',
-      -- {
-      --   after = 'telescope.nvim',
-      --   'rmagatti/session-lens',
-      --   config = function()
-      --     require('session-lens').setup {
-      --       shorten_path = false,
-      --     }
-      --   end,
-      -- },
+      {
+        after = 'telescope.nvim',
+        'rmagatti/session-lens',
+        config = function()
+          require('session-lens').setup {
+            shorten_path = false,
+          }
+        end,
+      },
       {
         after = 'telescope.nvim',
         '~/Media/Projects/nononotes-nvim',
@@ -438,7 +438,6 @@ return require('packer').startup(function()
     cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
   }
   -- Learning
-  -- use {"tzachar/compe-tabnine", run = "sh install.sh"} -- is that ok? crashes
   use {
     'folke/which-key.nvim',
     config = function()

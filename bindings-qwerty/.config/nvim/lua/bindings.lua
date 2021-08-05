@@ -1,9 +1,8 @@
 local M = {}
 local wk = require 'which-key'
+
 local invert = require('utils').invert
 
--- TODO gitsigns
---
 M.plugins = {}
 
 local function t(str)
@@ -133,16 +132,17 @@ function M.setup()
   map('nxo', 't', '<plug>(eft-t)', { noremap = false })
   map('nxo', 'T', '<plug>(eft-T)', { noremap = false })
 
-  -- nohl on insert
-  -- https://vi.stackexchange.com/questions/10407/stop-highlighting-when-entering-insert-mode
-  for _, comm in ipairs { 'a', 'A', '<Insert>', 'i', 'I', 'gI', 'gi', 'o', 'O' } do
-    map(
-      '',
-      comm,
-      "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>"
-        .. comm
-    )
-  end
+  -- -- nohl on insert
+  -- -- https://vi.stackexchange.com/questions/10407/stop-highlighting-when-entering-insert-mode
+  -- breaks operators in expressions such as `daw`
+  -- for _, cmd in ipairs { 'a', 'A', '<Insert>', 'i', 'I', 'gI', 'gi', 'o', 'O' } do
+  --   map(
+  --     '',
+  --     cmd,
+  --     "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>"
+  --       .. cmd
+  --   )
+  -- end
 
   -- Tabout + Compe
   map(
@@ -194,21 +194,21 @@ function M.setup()
 
   -- cutlass-inspired
   -- select mode missing
-  map('nx', 'x', 'd')
-  map('nx', 'X', 'c')
-  map('nx', 'c', '"_c')
-  map('n', 'cc', '"_S')
-  map('nx', 'C', '"_C')
-  map('nx', 'd', '"_d')
-  map('n', 'dd', '"_dd')
-  map('nx', 'D', '"_D')
-  map('nx', 'x', 'd')
-  map('n', 'xx', 'dd')
-  map('v', 'p', '"_dp')
-  map('v', 'P', '"_dP')
-  map('n', '<c-v>', 'p')
-  map('v', '<c-v>', 'dp')
-  map('i', '<c-v>', '<esc>pa')
+  -- incompatible with anywise_reg
+  -- map('nx', 'x', '"+d')
+  -- map('n', 'xx', '"+dd')
+  -- map('nx', 'X', '"+c')
+  -- map('nx', 'c', '"_c')
+  -- map('n', 'cc', '"_S')
+  -- map('nx', 'C', '"_C')
+  -- map('nx', 'd', '"_d')
+  -- map('n', 'dd', '"_dd')
+  -- map('nx', 'D', '"_D')
+  -- map('v', 'p', '"_dp')
+  -- map('v', 'P', '"_dP')
+  -- map('n', '<c-v>', 'p')
+  -- map('v', '<c-v>', 'dp')
+  -- map('i', '<c-v>', '<esc>pa')
 
   -- nv mappings
   for mode in string.gmatch('nv', '.') do

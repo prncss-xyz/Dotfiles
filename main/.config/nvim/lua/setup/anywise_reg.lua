@@ -23,14 +23,15 @@ local textobjects = {
 ac.setup(textobjects)
 
 require('anywise_reg').setup {
-  operators = { 'y' },
+  operators = {  },
+  -- operators = { 'y' },
   textobjects = textobjects,
   paste_keys = {
     ['p'] = 'p',
   },
   register_print_cmd = true,
 }
-
+ac.setmap('y', '"+', 'y')
 ac.setmap('x', '"+', 'd')
 ac.setmap('X', '"+', 'c')
 -- cutlass-inspired
@@ -45,8 +46,9 @@ map('nx', 'C', '"_C')
 map('nx', 'd', '"_d')
 map('n', 'dd', '"_dd')
 map('nx', 'D', '"_D')
-map('v', 'p', '"_dp')
-map('v', 'P', '"_dP')
+-- map('v', 'p', '"_dp')
+-- map('v', 'P', '"_dP')
 map('n', '<c-v>', 'P')
-map('v', '<c-v>', 'dp')
+map('v', '<c-v>', 'p')
+-- map('v', '<c-v>', 'dp')
 map('i', '<c-v>', '<esc>pa')

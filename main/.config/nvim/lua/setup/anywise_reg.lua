@@ -1,4 +1,4 @@
-local ac = require'anywise_compat'
+local ac = require 'anywise_compat'
 
 -- anywise-reg + cutlass
 local function map(modes, lhs, rhs, opts)
@@ -31,7 +31,6 @@ require('anywise_reg').setup {
   register_print_cmd = true,
 }
 
-
 ac.setmap('x', '"+', 'd')
 ac.setmap('X', '"+', 'c')
 -- cutlass-inspired
@@ -48,6 +47,6 @@ map('n', 'dd', '"_dd')
 map('nx', 'D', '"_D')
 map('v', 'p', '"_dp')
 map('v', 'P', '"_dP')
-map('n', '<c-v>', 'p')
+map('n', '<c-v>', 'P')
 map('v', '<c-v>', 'dp')
 map('i', '<c-v>', '<esc>pa')

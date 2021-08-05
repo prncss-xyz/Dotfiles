@@ -215,6 +215,12 @@ return require('packer').startup(function()
   --   end,
   -- }
   use 'matze/vim-move'
+  use {
+    'kevinhwang91/nvim-hclipboard',
+    config = function()
+      require 'setup.hclipboard'
+    end,
+  }
   -- use 'svermeulen/vim-cutlass'
   use 'tommcdo/vim-exchange'
   use 'machakann/vim-sandwich'

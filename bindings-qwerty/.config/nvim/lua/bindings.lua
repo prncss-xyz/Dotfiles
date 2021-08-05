@@ -1,6 +1,5 @@
 local M = {}
 local wk = require 'which-key'
-
 local invert = require('utils').invert
 
 M.plugins = {}
@@ -192,24 +191,6 @@ function M.setup()
     { noremap = false }
   )
 
-  -- cutlass-inspired
-  -- select mode missing
-  -- incompatible with anywise_reg
-  -- map('nx', 'x', '"+d')
-  -- map('n', 'xx', '"+dd')
-  -- map('nx', 'X', '"+c')
-  -- map('nx', 'c', '"_c')
-  -- map('n', 'cc', '"_S')
-  -- map('nx', 'C', '"_C')
-  -- map('nx', 'd', '"_d')
-  -- map('n', 'dd', '"_dd')
-  -- map('nx', 'D', '"_D')
-  -- map('v', 'p', '"_dp')
-  -- map('v', 'P', '"_dP')
-  -- map('n', '<c-v>', 'p')
-  -- map('v', '<c-v>', 'dp')
-  -- map('i', '<c-v>', '<esc>pa')
-
   -- nv mappings
   for mode in string.gmatch('nv', '.') do
     wk.register({
@@ -270,10 +251,9 @@ function M.setup()
   -- n mappings
   wk.register {
     --FIXME: is something else remapping it
-    ['z='] = { '<cmd>WhichKey z=<cr>', 'suggestions' },
     ys = { '<Plug>(operator-sandwich-add)', 'sandwich make' },
     g = {
-      x = {
+      b = {
         '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<cr>',
         'open current url',
       },

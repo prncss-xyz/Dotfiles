@@ -1,0 +1,13 @@
+require('hclipboard').start()
+-- require('hclipboard').setup({
+--   should_bypass_cb = function(regname, ev)
+--     print(regname, ev.operator)
+--     local ret = false
+--     if ev.visual and (ev.operator ~= 'y') then
+--       if ev.regname == '' or ev.regname == regname then
+--         ret = true
+--       end
+--     end
+--     return ret
+--   end,
+-- }).start()

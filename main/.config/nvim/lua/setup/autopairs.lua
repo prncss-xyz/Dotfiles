@@ -3,7 +3,6 @@ local Rule = require 'nvim-autopairs.rule'
 local cond = require 'nvim-autopairs.conds'
 local npairs = require 'nvim-autopairs'
 
-print 'setup'
 npairs.add_rules {
   Rule('*', '*', 'markdown'),
   Rule('**', '*', 'markdown'):with_move(cond.none),

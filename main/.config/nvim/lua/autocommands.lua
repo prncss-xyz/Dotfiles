@@ -51,6 +51,20 @@ augroup('MakeExecutable', {
 --   })
 -- end
 
+-- not working
+-- augroup('Illuminate', {
+--   events = {'BufReadPost'},
+--   targets = '*',
+--   -- command = 'hi illuminatedWord cterm=underline gui=underline'
+--   command = 'hi link illuminatedWord IncSearch'
+-- })
+-- vim.cmd[[
+-- augroup illuminate_augroup
+--     autocmd!
+--     autocmd VimEnter * hi link illuminatedWord IncSearch
+-- augroup END
+-- ]]
+
 augroup('TerminalNonumbers', {
   {
     events = { 'TermOpen' },

@@ -191,6 +191,8 @@ function M.setup()
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     wk.register({
+      ['<c-n>'] = {'<cmd>lua require"illuminate".next_reference{wrap=true}<cr>', 'next occurence'},
+      ['<c-p>'] = {'<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>', 'previous occurence'},
       ['<a-h>'] = {"<cmd>lua require('Navigator').left()<cr>", "window left" },
       ['<a-j>'] = {"<cmd>lua require('Navigator').down()<cr>", "window down" },
       ['<a-k>'] = {"<cmd>lua require('Navigator').up()<cr>", "window up" },

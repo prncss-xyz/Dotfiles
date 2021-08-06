@@ -110,5 +110,15 @@ command('BrowserMan', {}, function()
     })
     :start()
 end)
+--
+--- Like :only but delete other buffers
+command('OnlyBuffer', {}, function()
+  local cur_buf = vim.api.nvim_get_current_buf()
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if cur_buf ~= buf then
+      pcall(vim.cmd, 'bd ' .. buf)
+    end
+  end
+end)
 
 -- require 'telescope/md'

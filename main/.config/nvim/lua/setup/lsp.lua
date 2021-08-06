@@ -12,6 +12,9 @@ local servers = {
 }
 
 function M.setup()
+  vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
+  vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
+  vim.api.nvim_command [[ hi def link LspReferenceRead CursorLine ]]
   local nvim_lsp = require 'lspconfig'
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -62,14 +65,14 @@ function M.setup()
       end
   end
 
-  local function on_attach_efm(client, _)
+  local function on_attach_format(client, _)
     client.resolved_capabilities.document_formatting = true
     client.resolved_capabilities.goto_definition = false
     vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
 
     -- silent is necessary for vim will complain about calling undojoin after undo
     -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
-    -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
+    vim.cmd 'autocmd BufWritePre <buffer> silent! lua vim.lsp.buf.formatting_sync()'
     -- vim.cmd 'autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()'
   end
 
@@ -84,6 +87,7 @@ function M.setup()
       augroup END
     ]]
     end
+    require('illuminate').on_attach(client)
   end
 
   for _, lsp in ipairs(servers) do
@@ -100,6 +104,7 @@ function M.setup()
   -- ? https://github.com/folke/lua-dev.nvim/issues/21
   nvim_lsp.sumneko_lua.setup(require('lua-dev').setup {
     lspconfig = {
+      on_attach = on_attach,
       cmd = { 'lua-language-server' },
       settings = {
         Lua = {
@@ -114,88 +119,43 @@ function M.setup()
     },
   })
 
-  local prettier = {
-    formatCommand = 'prettierd "${INPUT}"',
-    formatStdin = true,
-  }
+  local null_ls = require 'null-ls'
+  local b = null_ls.builtins
 
-  -- local prettier = {
-  --   formatcommand = 'prettier_d_slim --stdin --stdin-filepath ${INPUT}',
-  --   formatStdin = true,
-  -- }
-
-  local eslint = {
-    lintCommand = 'eslint_d -f unix --stdin --stdin-filename ${INPUT}',
-    lintStdin = true,
-    lintFormats = { '%f:%l:%c: %m' },
-    lintIgnoreExitCode = true,
-    formatCommand = 'eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}',
-    formatStdin = true,
-  }
-
-  local stylua = {
-    formatcommand = 'stylua -',
-    formatStdin = true,
-  }
-
-  -- local selene = {
-  --   lintComman = "selene --display-style quiet -",
-  --   lintIgnoreExitCode = true,
-  --   lintStdin = true,
-  --   lintFormats = { "%f:%l:%c: %tarning%m", "%f:%l:%c: %tarning%m" },
-  -- }
-
-  local vint = {
-    lintCommand = 'vint -',
-    lintStdin = true,
-    lintFormats = { '%f:%l:%c: %m' },
-  }
-
-  -- local rustfmt = {
-  --   formatCommand = 'rustfmt --emit=stdout',
-  --   formatStdin = true,
-  -- }
-
-  local shellcheck = {
-    lintCommand = 'shellcheck -f gcc -x -',
-    lintStdin = true,
-    lintFormats = {
-      '%f=%l:%c: %trror: %m',
-      '%f=%l:%c: %tarning: %m',
-      '%f=%l:%c: %tote: %m',
+  local sources = {
+    b.formatting.prettierd.with {
+      filetypes = {
+        'javascript',
+        'javascriptreact',
+        'typescript',
+        'typescriptreact',
+        'vue',
+        'svelte',
+        'css',
+        'html',
+        'json',
+        'yaml',
+        'markdown',
+        'scss',
+        'toml',
+      },
     },
+    -- b.diagnostics.selene,
+    b.formatting.eslint_d,
+    b.formatting.stylua,
+    b.formatting.shfmt,
+    -- b.diagnostics.vale,
+    -- b.diagnostics.write_good,
+    -- b.diagnostics.misspell, -- yay -S misspell
+    b.diagnostics.shellcheck,
+    b.code_actions.gitsigns,
+    b.formatting.fish_indent,
   }
 
-  local shfmt = {
-    formatCommand = 'shfmt -ci -s -bn',
-    formatStdin = true,
+  null_ls.config {
+    sources = sources,
   }
-
-  -- nvim_lsp.efm.setup {
-  --   on_attach = on_attach_efm,
-  --   init_options = { documentFormatting = true },
-  --   root_dir = vim.loop.cwd,
-  --   settings = {
-  --     rootMarkers = { '.git/' },
-  --     languages = {
-  --       Outline = {},
-  --       vim = { vint },
-  --       lua = { stylua },
-  --       typescript = { prettier, eslint },
-  --       javascript = { prettier, eslint },
-  --       typescriptreact = { prettier, eslint },
-  --       javascriptreact = { prettier, eslint },
-  --       yaml = { prettier },
-  --       json = { prettier },
-  --       html = { prettier },
-  --       scss = { prettier },
-  --       css = { prettier },
-  --       markdown = { prettier },
-  --       sh = { shfmt, shellcheck },
-  --       toml = { prettier },
-  --     },
-  --   },
-  -- }
+  require('lspconfig')['null-ls'].setup { on_attach = on_attach_format }
 
   -- does not work with jsx/tsx, will keep using emmet.vim
   -- local configs = require("lspconfig/configs")
@@ -228,8 +188,6 @@ function M.setup()
       preview_location_callback
     )
   end
-  nvim_lsp.markdown = {}
-  nvim_lsp.md = {}
 end
 
 return M

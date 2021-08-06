@@ -29,6 +29,7 @@ return require('packer').startup(function()
       'JoosepAlviste/nvim-ts-context-commentstring',
       'nvim-treesitter/nvim-treesitter-textobjects',
       'RRethy/nvim-treesitter-textsubjects',
+      -- "beloglazov/vim-textobj-punctuation", -- au/iu for punctuation
       'mfussenegger/nvim-ts-hint-textobject',
       -- Use 'tressitter 'to autoclose and autorename html tag
       'windwp/nvim-ts-autotag',
@@ -148,6 +149,7 @@ return require('packer').startup(function()
   }
 
   -- Edition
+  --
   use {
     'monaqa/dial.nvim',
     config = function()
@@ -200,7 +202,7 @@ return require('packer').startup(function()
       'coachshea/vim-textobj-markdown',
       -- indent level
       -- same) ai ii same or deaper) aI iI
-      -- text blocs
+      -- text blocks
       -- current or next) ]m [m
       -- current or previous) ]n [n
       'michaeljsmith/vim-indent-object',
@@ -259,7 +261,8 @@ return require('packer').startup(function()
     end,
   }
   use {
-    'neovim/nvim-lspconfig',
+      'neovim/nvim-lspconfig',
+    wants = 'null-ls',
     config = function()
       require('setup/lsp').setup()
     end,
@@ -275,6 +278,19 @@ return require('packer').startup(function()
       --   end,
       -- },
       --
+      {
+        'mfussenegger/nvim-lint',
+      },
+      {
+        'jose-elias-alvarez/null-ls.nvim',
+        config = function()
+          require('setup.null-ls')
+        end,
+      },
+      {
+        'RRethy/vim-illuminate',
+        after = 'nvim-lspconfig',
+      },
       {
         'kosayoda/nvim-lightbulb',
         config = function()
@@ -313,7 +329,7 @@ return require('packer').startup(function()
           vim.g.symbols_outline = {
             auto_preview = false,
             position = 'left',
-            -- lsp_blacklist = { 'efm' },
+            lsp_blacklist = { 'efm' },
           }
         end,
       },
@@ -321,9 +337,9 @@ return require('packer').startup(function()
   }
   use {
     'numToStr/Navigator.nvim',
-    config = function ()
-      require'Navigator'.setup{}
-    end
+    config = function()
+      require('Navigator').setup {}
+    end,
   }
 
   -- use "jose-elias-alvarez/nvim-lsp-ts-utils"
@@ -355,6 +371,7 @@ return require('packer').startup(function()
   -- }
 
   -- Language syntax
+  -- blankname/vim-fish
   use 'potatoesmaster/i3-vim-syntax'
   -- use {
   --   'rafcamlet/nvim-luapad',

@@ -84,15 +84,20 @@ return require('packer').startup(function()
       'nvim-telescope/telescope-fzy-native.nvim',
       'nvim-telescope/telescope-symbols.nvim',
       'crispgm/telescope-heading.nvim',
-      'sudormrfbin/cheatsheet.nvim',
+      -- not compatible with pnpm
+      -- 'nvim-telescope/telescope-node-modules.nvim',
       -- 'nvim-telescope/telescope-dap.nvim',
       {
         after = 'telescope.nvim',
         'rmagatti/session-lens',
         config = function()
           require('session-lens').setup {
-            shorten_path = false,
+            path_display = { 'shorten' },
           }
+          -- if telescope loads sync, put that in init.lua
+          if os.getenv 'HOME' == os.getenv 'PWD' then
+            require('session-lens').search_session()
+          end
         end,
       },
       {
@@ -101,6 +106,14 @@ return require('packer').startup(function()
         config = function()
           require('setup/nononotes').setup()
         end,
+      },
+      -- unable to install
+      -- {
+      --   'nvim-telescope/telescope-arecibo.nvim',
+      --   rocks = { 'openssl', 'lua-http-parser' },
+      -- },
+      {
+        '~/Media/Projects/telescope-bookmarks.nvim',
       },
     },
   }
@@ -133,7 +146,6 @@ return require('packer').startup(function()
 
   -- Lua dev
   use 'nanotee/luv-vimdocs'
-  use 'folke/lua-dev.nvim'
   use 'milisims/nvim-luaref'
   use 'glepnir/prodoc.nvim'
 
@@ -149,23 +161,10 @@ return require('packer').startup(function()
   }
 
   -- Edition
-  --
   use {
     'monaqa/dial.nvim',
     config = function()
-      local dial = require 'dial'
-      dial.augends['custom#boolean'] = dial.common.enum_cyclic {
-        name = 'boolean',
-        strlist = { 'true', 'false' },
-      }
-      dial.config.searchlist.normal = {
-        'number#decimal',
-        'number#hex',
-        'number#binary',
-        'date#[%Y-%m-%d]',
-        'markup#markdown#header',
-        'custom#boolean',
-      }
+      require 'setup.dial'
     end,
   }
   use {
@@ -261,10 +260,10 @@ return require('packer').startup(function()
     end,
   }
   use {
-      'neovim/nvim-lspconfig',
-    wants = 'null-ls',
+    'neovim/nvim-lspconfig',
+    wants = { 'lua-dev', 'null-ls' },
     config = function()
-      require('setup/lsp').setup()
+      require('setup.lsp').setup()
     end,
     -- needs to load early for trouble can integrate with telescope
     -- event = 'BufReadPre'
@@ -278,14 +277,14 @@ return require('packer').startup(function()
       --   end,
       -- },
       --
-      {
-        'mfussenegger/nvim-lint',
-      },
+      -- {
+      --   'mfussenegger/nvim-lint',
+      -- },
       {
         'jose-elias-alvarez/null-ls.nvim',
-        config = function()
-          require('setup.null-ls')
-        end,
+      },
+      {
+        'folke/lua-dev.nvim',
       },
       {
         'RRethy/vim-illuminate',
@@ -325,13 +324,9 @@ return require('packer').startup(function()
       -- },
       {
         'simrat39/symbols-outline.nvim',
-        config = function()
-          vim.g.symbols_outline = {
-            auto_preview = false,
-            position = 'left',
-            lsp_blacklist = { 'efm' },
-          }
-        end,
+        -- config = function()
+        --   require('symbols-outline').setup{}
+        -- end,
       },
     },
   }
@@ -425,11 +420,9 @@ return require('packer').startup(function()
     },
   }
   use { 'tzachar/compe-tabnine', run = './install.sh' }
-  use 'vim-voom/VOoM'
   use {
     'lewis6991/gitsigns.nvim',
     event = 'BufRead',
-    cmd = 'Voomquit',
     config = function()
       require('setup/gitsigns').setup()
     end,
@@ -517,15 +510,15 @@ return require('packer').startup(function()
       'CheatListWithoutComments',
     },
   }
-
   -- FX
   -- use {
   --   'edluffy/specs.nvim', -- not working
   -- }
+  use 'psliwka/vim-smoothie'
   use {
     'karb94/neoscroll.nvim',
     config = function()
-      require('neoscroll').setup {}
+      -- require('neoscroll').setup {}
     end,
   }
 
@@ -554,7 +547,6 @@ return require('packer').startup(function()
   use 'pineapplegiant/spaceduck'
   use 'glepnir/oceanic-material'
 
-  -- FIXME
   -- use {
   --   "folke/persistence.nvim",
   --   event = "BufReadPre",

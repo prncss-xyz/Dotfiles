@@ -11,6 +11,7 @@ set $right l
 # Basics:
 #
 bindsym $mod+t exec echo next terminal > /tmp/sway-mega-hotkeys
+bindsym $mod+n exec kitty -e nvim
 # Start a terminal
 bindsym $mod+shift+t exec echo previous terminal > /tmp/sway-mega-hotkeys
 bindsym $mod+y exec echo next browser > /tmp/sway-mega-hotkeys

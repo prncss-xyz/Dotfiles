@@ -3,7 +3,8 @@ alias gh-token 'export GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1)'
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
 fish_vi_key_bindings
 alias o opener
-alias e $EDITOR
+# alias e nvr -s
+alias e nvim
 alias bat 'bat --style=changes,header,rule,snip'
 alias ls lsd
 alias wttr 'curl "fr.wttr.in/montreal?n"'
@@ -26,19 +27,19 @@ bind \cg 'git diff; commandline -f repaint'
 bind \cf f
 
 function fish_title
-  if  set -q TERMINUSOPEN
-    echo (basename $PWD)"/"
-  else
-    set pat (realpath --relative-base=$HOME $PWD)
-    if [ "$pat" = "." ]
-      set pat "~"
-    end
-    set branch (git branch --show-current 2>/dev/null)
-    if [ -n "$branch" ]
-      echo  "$pat — $branch"
-      #      echo  " $branch — $pat"
+    if set -q TERMINUSOPEN
+        echo (basename $PWD)"/"
     else
-      echo $pat
+        set pat (realpath --relative-base=$HOME $PWD)
+        if [ "$pat" = "." ]
+            set pat "~"
+        end
+        set branch (git branch --show-current 2>/dev/null)
+        if [ -n "$branch" ]
+            echo "$pat — $branch"
+            #      echo  " $branch — $pat"
+        else
+            echo $pat
+        end
     end
-  end
 end

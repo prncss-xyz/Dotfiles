@@ -100,6 +100,20 @@ deep_merge(vim, {
     -- vim.g.matchup_matchparen_offscreen = { method = "popup" }
     -- dap_virtual_text = true,
     dap_virtual_text = 'all frames', -- experimental
+    symbols_outline = {
+      width = 30,
+      show_guides = false,
+      auto_preview = false,
+      position = 'left',
+      symbols = {
+        Method = { icon = '_', hl = 'TSMethod' },
+      },
+      show_symbol_details = false,
+      symbol_blacklist = {},
+      lsp_blacklist = {
+        'null-ls',
+      },
+    },
   },
   wo = {
     number = false,

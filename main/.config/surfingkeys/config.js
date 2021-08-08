@@ -1,5 +1,5 @@
-map("<Alt-e>", "E");
-map("<Alt-r>", "R");
+map("<Alt-p>", "E");
+map("<Alt-n>", "R");
 
 settings.modeAfterYank = "Normal"; // FIXME
 addSearchAliasX("gh", "github", "https://github.com/search?q=", "s");

@@ -1,0 +1,11 @@
+1.) Line 5, column 3, Rule ID: MORFOLOGIK_RULE_EN_US prio=-10
+Message: Possible spelling mistake found.
+Suggestion: Vim; NVM; N vim
+# Nvim - TODO  
+  ^^^^         
+
+3.) Line 26, column 9, Rule ID: WORD_CONTAINS_UNDERSCORE[1]
+Message: In standard English, a word does not contain an underscore character (_). Make sure that the word ‘header _ mark’ is correct.
+    find = function(cursor, line)         header_mark_s, header_mark_e = line:find("^#+")         ...
+                                          ^^^^^^^^^^^                                             
+

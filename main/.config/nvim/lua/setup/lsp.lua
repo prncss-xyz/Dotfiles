@@ -68,7 +68,6 @@ function M.setup()
   local function on_attach_format(client, _)
     client.resolved_capabilities.document_formatting = true
     client.resolved_capabilities.goto_definition = false
-    vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
 
     -- silent is necessary for vim will complain about calling undojoin after undo
     -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
@@ -81,11 +80,11 @@ function M.setup()
     if client.resolved_capabilities.document_highlight then
       vim.cmd [[
       augroup lsp_document_highlight
-        autocmd! * <buffer>
-        autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-        autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+      autocmd! * <buffer>
+      autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+      autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
       augroup END
-    ]]
+      ]]
     end
     require('illuminate').on_attach(client)
   end
@@ -102,7 +101,7 @@ function M.setup()
   end
 
   -- ? https://github.com/folke/lua-dev.nvim/issues/21
-  nvim_lsp.sumneko_lua.setup(require('lua-dev').setup {
+  local luadev = require('lua-dev').setup {
     lspconfig = {
       on_attach = on_attach,
       cmd = { 'lua-language-server' },
@@ -117,12 +116,33 @@ function M.setup()
         },
       },
     },
-  })
+  }
+  nvim_lsp.sumneko_lua.setup(luadev)
+
+  -- nvim_lsp.sumneko_lua.setup {
+  --   on_attach = on_attach,
+  --   cmd = { 'lua-language-server' },
+  --   settings = {
+  --     Lua = {
+  --       diagnostics = {
+  --         globals = {
+  --           'use', -- packer
+  --           'xplr', -- xplr
+  --         },
+  --       },
+  --     },
+  --   },
+  --   capabilities = capabilities,
+  --   flags = {
+  --     debounce_text_changes = 500,
+  --     allow_incremental_sync = true,
+  --   },
+  -- }
 
   local null_ls = require 'null-ls'
   local b = null_ls.builtins
-
   local sources = {
+    require('nl-language-tool').diagnostics,
     b.formatting.prettierd.with {
       filetypes = {
         'javascript',
@@ -155,7 +175,7 @@ function M.setup()
   null_ls.config {
     sources = sources,
   }
-  require('lspconfig')['null-ls'].setup { on_attach = on_attach_format }
+  nvim_lsp['null-ls'].setup { on_attach = on_attach_format }
 
   -- does not work with jsx/tsx, will keep using emmet.vim
   -- local configs = require("lspconfig/configs")
@@ -188,6 +208,46 @@ function M.setup()
       preview_location_callback
     )
   end
+
+  -- not working
+  --
+  -- https://github.com/iamcco/diagnostic-languageserver/blob/fa26d7f803d76b8a79649187bd4366f5a817ecac/README.md
+  -- https://jose-elias-alvarez.medium.com/configuring-neovims-lsp-client-for-typescript-development-5789d58ea9c
+
+  -- local filetypes = { markdown = 'languagetool' }
+
+  -- cat 3c7f5935.md|languagetool --line-by-line /dev/stdin
+
+  -- local linters = {
+  --   languagetool = {
+  --     command = 'languagetool',
+  --     debounce = 200,
+  --     args = { '/dev/stdin' },
+  --     offsetLine = 0,
+  --     offsetColumn = 0,
+  --     sourceName = 'languagetool',
+  --     formatLines = 2,
+  --     formatPattern = {
+  --       '^\\d+?\\.\\)\\s+Line\\s+(\\d+),\\s+column\\s+(\\d+),\\s+([^\\n]+)\nMessage:\\s+(.*)$',
+  --       {
+  --         line = 1,
+  --         column = 2,
+  --         message = { 4, 3 },
+  --       },
+  --     },
+  --   },
+  -- }
+
+  -- nvim_lsp.diagnosticls.setup {
+  --   on_attach = on_attach,
+  --   filetypes = vim.tbl_keys(filetypes),
+  --   init_options = {
+  --     filetypes = filetypes,
+  --     linters = linters,
+  --     formatters = {},
+  --     formatFiletypes = {},
+  --   },
+  -- }
 end
 
 return M

@@ -1,4 +1,6 @@
 local M = {}
+
+local map = require('utils').map
 local wk = require 'which-key'
 local invert = require('utils').invert
 
@@ -28,20 +30,6 @@ function _G.s_tab_complete()
   return require('luasnip').jump(-1) and '' or t '<Plug>(TaboutBackMulti)'
 end
 
-local function map(modes, lhs, rhs, opts)
-  local options = { noremap = true }
-  if opts then
-    options = vim.tbl_extend('force', options, opts)
-  end
-  if modes == '' then
-    vim.api.nvim_set_keymap('', lhs, rhs, options)
-    return
-  end
-  for mode in modes:gmatch '.' do
-    vim.api.nvim_set_keymap(mode, lhs, rhs, options)
-  end
-end
-
 local function mapBrowserSearch(prefix, help0, mappings)
   wk.register { [prefix] = { name = help0 } }
   for abbr, value in pairs(mappings) do
@@ -64,18 +52,19 @@ local function mapBrowserSearch(prefix, help0, mappings)
 end
 
 function M.setup()
-  -- dial
+  map('n', 'é', '/')
+  -- luasnip + dia
   map(
-    'nv',
-    '<C-a>',
-    '<Plug>(dial-increment)',
-    { silent = true, noremap = false }
+    'nvi',
+    '<c-a>',
+    "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
+    { expr = true, noremap = false }
   )
   map(
-    'nv',
+    'nvi',
     '<c-x>',
-    '<Plug>(dial-decrement)',
-    { silent = true, noremap = false }
+    "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
+    { expr = true, noremap = false }
   )
   map(
     'v',
@@ -98,26 +87,13 @@ function M.setup()
   map('c', '<c-n>', '<down>')
   map('c', '<c-p>', '<up>')
 
-  -- luasnip
-  map(
-    'is',
-    '<c-o>',
-    "luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'",
-    { expr = true, noremap = false }
-  )
-  map(
-    'is',
-    '<c-i>',
-    "luasnip#choice_active() ? '<Plug>luasnip-previous-choice' : '<C-E>'",
-    { expr = true, noremap = false }
-  )
-
   -- eft
-  map('nx', ';', '<plug>(eft-repeat)', { noremap = false })
+  map('nx', ':', '<plug>(eft-repeat)', { noremap = false })
   map('nxo', 'f', '<plug>(eft-f)', { noremap = false })
   map('nxo', 'F', '<plug>(eft-F)', { noremap = false })
   map('nxo', 't', '<plug>(eft-t)', { noremap = false })
   map('nxo', 'T', '<plug>(eft-T)', { noremap = false })
+  map('nx', ';', ':')
 
   -- -- nohl on insert
   -- -- https://vi.stackexchange.com/questions/10407/stop-highlighting-when-entering-insert-mode
@@ -147,12 +123,12 @@ function M.setup()
   map(
     '',
     'n',
-    "<cmd>execute('normal! ' . v:count1 . 'n')<cr><cmd>lua require('hlslens').start()<cr>"
+    "<cmd>execute('normal! ' . v:count1 . 'nzz')<cr><cmd>lua require('hlslens').start()<cr>"
   )
   map(
     '',
     'N',
-    "<cmd>execute('normal! ' . v:count1 . 'N')<cr><cmd>lua require('hlslens').start()<cr>"
+    "<cmd>execute('normal! ' . v:count1 . 'Nzzt')<cr><cmd>lua require('hlslens').start()<cr>"
   )
   map(
     '',
@@ -191,24 +167,54 @@ function M.setup()
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     wk.register({
-      ['<c-n>'] = {'<cmd>lua require"illuminate".next_reference{wrap=true}<cr>', 'next occurence'},
-      ['<c-p>'] = {'<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>', 'previous occurence'},
-      ['<a-h>'] = {"<cmd>lua require('Navigator').left()<cr>", "window left" },
-      ['<a-j>'] = {"<cmd>lua require('Navigator').down()<cr>", "window down" },
-      ['<a-k>'] = {"<cmd>lua require('Navigator').up()<cr>", "window up" },
-      ['<a-l>'] = {"<cmd>lua require('Navigator').right()<cr>", "window right" },
-      ['<a-p>'] = {"<cmd>lua require('Navigator').previous()<cr>", "window previous" },
+      ['<a-p>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },
+      ['<a-n>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
+      ['<a-h>'] = { "<cmd>lua require('Navigator').left()<cr>", 'window left' },
+      ['<a-j>'] = { "<cmd>lua require('Navigator').down()<cr>", 'window down' },
+      ['<a-k>'] = { "<cmd>lua require('Navigator').up()<cr>", 'window up' },
+      ['<a-l>'] = { "<cmd>lua require('Navigator').right()<cr>", 'window right' },
+      ['<a-b>'] = {
+        "<cmd>lua require('Navigator').previous()<cr>",
+        'window back',
+      },
+      ['<a-c>'] = { '<cmd>BufferClose!<cr>', 'close buffer' },
+      ['<a-o>'] = {
+        '<cmd>BufferCloseBuffersRight<cr><cmd>BufferCloseBuffersLeft<cr><c-w>o',
+        'buffer only',
+      },
+      ['<a-m>'] = {
+        '<cmd>TroubleToggle lsp_workspace_diagnostics<cr>',
+        'lsp diagnostics',
+      },
+      ['<a-M>'] = {
+        '<cmd>TroubleToggle lsp_document_diagnostics<cr>',
+        'lsp document diagnostics',
+      },
+      ['<a-q>'] = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
+      ['<a-u>'] = { '<cmd>TroubleToggle loclist<cr>', 'loclist' },
+      ['<a-r>'] = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
+      ['<a-s>'] = {
+        '<cmd>SymbolsOutline<cr>',
+        'symbols',
+      },
+      ['<a-x>'] = { '<cmd>q<cr>', 'close window' },
+      ['<a-z>'] = { '<cmd>ZenMode<cr>', 'zen mode' },
       ['<c-l>'] = {
         "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
         'nohlsearch',
       },
-      ['<c-a>'] = { '<cmd>b#<cr>' }, -- FIXME
-      ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
-      ['<a-r>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
-      ['<a-e>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },
+      ['<c-n>'] = {
+        '<cmd>lua require"illuminate".next_reference{wrap=true}<cr>',
+        'next occurence',
+      },
+      ['<c-p>'] = {
+        '<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>',
+        'previous occurence',
+      },
       ['<a-s-r>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
       ['<a-s-e>'] = { '<cmd>BufferMovePrevious<cr>', 'move buffer previous' },
-      ['<a-c>'] = { '<cmd>BufferClose!<cr>', 'close buffer' },
+      ['<c-a>'] = { '<cmd>b#<cr>' }, -- FIXME
+      ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       ['<c-g>'] = {
         "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
         'pick note',
@@ -217,11 +223,6 @@ function M.setup()
       --   L = { '<cmd>vsplit<cr>', 'split left' },
       --   J = { '<cmd>split<cr>', 'split down' },
       -- },
-      ['<a-o>'] = {
-        '<cmd>BufferCloseBuffersRight<cr><cmd>BufferCloseBuffersLeft<cr><c-w>o',
-        -- '<cmd>BufferCloseBuffersRight|BufferCloseBuffersLeft<cr>',
-        'buffer only',
-      },
     }, {
       mode = mode,
     })
@@ -250,103 +251,113 @@ function M.setup()
   wk.register {
     --FIXME: is something else remapping it
     ys = { '<Plug>(operator-sandwich-add)', 'sandwich make' },
-    g = {
-      b = {
+    Y = {
+      u = {
         '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<cr>',
         'open current url',
       },
+      gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
+      man = { '<cmd>BrowserMan<cr>', 'man page' },
+    },
+    -- movements
+    g = {
+      name = '+move',
       D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
-      d = { '<cmd>lua vim.lsp.buf.definition()<cr>', 'go definition' },
-      i = { '<cmd>lua vim.lsp.buf.implementation()<cr>', 'go implementation' },
+      i = {
+        '<cmd>require("telescope.").builtin.lsp_implementations()<cr>',
+        'go implementation',
+      },
+      a = { 'gi', 'Move to the last insertion and INSERT' },
+      d = {
+        '<cmd>require("telescope.builtin").lsp_definitions()<cr>',
+        'go definition',
+      },
       m = { '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'go next diagnostic' },
       M = {
         '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
         'go previous diagnostic',
       },
-      -- t = {'<cmd>require("trouble").next({skip_groups = true, jump = true})<cr>', 'trouble, next'},
-      -- T = {'<cmd>require("trouble").previous({skip_groups = true, jump = true})<cr>', 'trouble, previous'},
-    },
-    ['<leader>'] = {
-      ['<leader>'] = {
+      l = { --
+        "<cmd>lua require('telescope.builtin').live_grep()<cr>",
+        'live grep',
+      },
+      r = {
+        "<cmd>lua require('telescope.builtin').lsp_references()<cr>",
+        'lsp references',
+      },
+      h = { '<cmd>Telescope heading<cr>', 'heading' }, --
+      ['é'] = {
+        "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
+        'current buffer fuzzy find',
+      },
+      t = {
+        '<cmd>lua require("trouble").next({skip_groups = true, jump = true})<cr>',
+        'trouble, next',
+      },
+      T = {
+        '<cmd>lua require("trouble").previous({skip_groups = true, jump = true})<cr>',
+        'trouble, previous',
+      },
+      ['.'] = {
+        "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<cr>",
+        'dofiles',
+      },
+      S = {
+        "<cmd>lua require('telescope.builtin').treesitter()<cr>",
+        'treesitter',
+      },
+      o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", 'oldfiles' },
+      L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
+      b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
+      [' '] = {
         "<cmd>lua require'setup/telescope'.project_files()<cr>",
         'project file',
       },
-      ['*'] = { '<cmd>Rg <cword><cr>', 'rg current word' },
-      zz = { '<cmd>ZenMode<cr>', 'zen mode' },
+      w = { '<cmd>Rg <cword><cr>', 'rg current word' }, --
+    },
+    H = {
+      name = '+help',
+
+      m = {
+        "<cmd>lua require('telescope.builtin').man_pages()<cr>",
+        'man pages',
+      },
+      y = {
+        "<cmd>lua require('telescope').extensions.bookmarks.bookmarks()<cr>",
+        'bookmarks',
+      },
+      c = { '<cmd>Cheatsheet<cr>', 'cheatsheet' },
+      p = { '<cmd>Mdhelp<cr>', 'md help' },
+      v = {
+        "<cmd>lua require('telescope.builtin').help_tags()<cr>",
+        'help tags',
+      },
+    },
+    ['<leader>'] = {
       m = {
         ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>",
         'macro edition',
       },
       p = {
-        name = '+panel',
-        t = { '<cmd>TroubleToggle<cr>', 'toggle' },
-        m = {
-          '<cmd>TroubleToggle lsp_workspace_diagnostics<cr>',
-          'lsp diagnostics',
-        },
-        M = {
-          '<cmd>TroubleToggle lsp_document_diagnostics<cr>',
-          'lsp document diagnostics',
-        },
-        q = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
-        l = { '<cmd>TroubleToggle loclist<cr>', 'loclist' },
-        r = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
-      },
-      o = {
-        name = '+outline',
-        v = { '<cmd>SymbolsOutlineClose<cr><cmd>VoomToggle markdown<cr>', 'voom' },
-        s = {
-          '<cmd>SymbolsOutline<cr>',
-          -- '<cmd>SymbolsOutline<cr><cmd>Voomquit<cr>',
-          'symbols',
-        },
-        x = { '<cmd>SymbolsOutlineClose<cr><cmd>Voomquit<cr>', 'close' },
-      },
-      f = {
         name = '+picker',
-        b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
-        o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", 'oldfiles' },
-        l = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
-        g = {
-          "<cmd>lua require('telescope.builtin').live_grep()<cr>",
-          'live grep',
-        },
-        r = {
-          "<cmd>lua require('telescope.builtin').lsp_references()<cr>",
-          'lsp references',
-        },
+        -- telescope.load_extension 'node_modules'
+        p = { '<cmd>SearchSession<cr>', 'sessions' },
         a = {
-          "<cmd>lua require('telescope.builtin').lsp_code_actions()<cr>",
+          "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
           'code actions',
         },
         A = {
-          "<cmd>lua require('telescope.builtin').lsp_range_code_actions()<cr>",
+          "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
           'range code actions',
         },
-        t = {
-          "<cmd>lua require('telescope.builtin').treesitter()<cr>",
-          'treesitter',
+        s = {
+          "<cmd>lua require'telescope.builtin'.symbols{ sources = {'math', 'emoji'} }<cr>",
+          'symbols',
         },
-        p = { '<cmd>SearchSession<cr>', 'sessions' },
-        s = { '<cmd>Telescope symbols<cr>', 'symbols' },
-        c = { '<cmd>Cheatsheet<cr>', 'cheatsheet' },
-        h = { '<cmd>Telescope heading<cr>', 'heading' },
-        m = { '<cmd>Mdhelp<cr>', 'md help' },
-        ['.'] = {
-          "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<cr>",
-          'dofiles',
-        },
+        -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
         [';'] = {
           "<cmd>lua require('telescope.builtin').commands()<cr>",
           'commands',
-        },
-        ['?'] = {
-          "<cmd>lua require('telescope.builtin').help_tags()<cr>",
-          'help tags',
-        },
-        ['/'] = {
-          "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
-          'current buffer fuzzy find',
         },
       },
       n = {
@@ -381,19 +392,18 @@ function M.setup()
           '<cmd>lua vim.lsp.buf.list_workspace_folder()<cr>',
           'rm workspace folder',
         },
-        r = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
+        n = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
         x = {
           '<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>',
           'stop active clients',
         },
-        q = {
+        m = {
           '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>',
           'show line diagnostics',
         },
-        m = { '<cmd>lua vim.lsp.buf.references()<cr>', 'references' },
-        ['@'] = { '<cmd>ProDoc<cr>', 'prepare doc comment' },
-        o = { '<cmd>SymbolsOutline<cr>', 'symbols outline' },
-        ['?'] = { '<cmd>CheatDetect<cr>', 'Cheat' },
+        r = { '<cmd>lua vim.lsp.buf.references()<cr>', 'references' },
+        h = { '<cmd>ProDoc<cr>', 'prepare doc comment' },
+        H = { '<cmd>CheatDetect<cr>', 'Cheat' },
       },
       s = {
         name = '+Spell',
@@ -402,7 +412,10 @@ function M.setup()
         b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
         x = { '<cmd>setlocal nospell spelllang=<cr>', 'none' },
         g = { '<cmd>LanguageToolCheck<cr>', 'language tools' },
-        ['='] = { '<cmd>WhichKey z=<cr>', 'suggestions' },
+        s = {
+          "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
+          'spell suggest',
+        },
       },
       d = {
         name = '+DAP',
@@ -461,14 +474,10 @@ function M.setup()
           'dap frames',
         },
       },
-      b = {
-        gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
-        man = { '<cmd>BrowserMan<cr>', 'man page' },
-      },
     },
   }
 
-  mapBrowserSearch('<leader>b', '+browser search', {
+  mapBrowserSearch('Y', '+browser search', {
     go = { 'https://google.ca/search?q=', 'google' },
     d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
     y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
@@ -499,7 +508,6 @@ function M.setup()
     },
   })
 end
-
 M.plugins = {
   vim = {
     -- options related to mapping
@@ -515,19 +523,19 @@ M.plugins = {
   },
   telescope = function()
     local actions = require 'telescope.actions'
-    -- local trouble = require 'trouble.providers.telescope'
+    local trouble = require 'trouble.providers.telescope'
     return {
       defaults = {
         mappings = {
           i = {
             ['<c-q>'] = actions.send_to_qflist,
             ['<c-l>'] = actions.send_to_loclist,
-            -- ['<c-t>'] = trouble.open_with_trouble,
+            ['<c-t>'] = trouble.open_with_trouble,
           },
           n = {
             ['<c-j>'] = actions.file_split,
             ['<c-l>'] = actions.file_vsplit,
-            -- ['<c-t>'] = trouble.open_ith_trouble,
+            ['<c-t>'] = trouble.open_ith_trouble,
           },
         },
       },
@@ -582,6 +590,7 @@ M.plugins = {
   },
   gitsigns = {
     keymaps = {
+      name = 'git',
       noremap = true,
       buffer = true,
       ['n ]c'] = {

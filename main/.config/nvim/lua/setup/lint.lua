@@ -1,9 +1,10 @@
 local augroup = require('utils').augroup
-local lint = require 'lint'
+local lint = require 'lint' 
+local offset_to_position = require('lint.util').offset_to_position
 
 lint.linters_by_ft = {
-  lua = { 'codespell' },
-  -- markdown = { 'languagetool' },
+  -- lua = { 'codespell' },
+  markdown = { 'languagetool' },
 }
 augroup('Linters', {
   {

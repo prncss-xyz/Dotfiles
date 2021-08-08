@@ -18,17 +18,20 @@ local disabled_built_ins = {
   'spellfile_plugin',
   'matchit',
 }
-for _, plugin in pairs(disabled_built_ins) do
-  vim.g['loaded_' .. plugin] = 1
-end
+-- for _, plugin in pairs(disabled_built_ins) do
+--   vim.g['loaded_' .. plugin] = 1
+-- end
 
+vim.cmd 'cabbrev help tab help'
+vim.cmd 'cabbrev h tab help'
+
+require 'options'
 require 'plugins'
 
 local utils = require 'utils'
 local job_sync = utils.job_sync
 vim.cmd 'set title'
 require 'signs'
-require 'options'
 require 'commands'
 
 if vim.fn.isdirectory(vim.o.directory) == 0 then

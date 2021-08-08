@@ -99,13 +99,14 @@ augroup('TerminalEnter', {
 -- })
 
 -- FIXME
--- augroup('PackerCompile', {
---   {
---     events = { 'BufWritePost' },
---     targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
---     command = 'PackerCompile',
---   },
--- })
+augroup('PackerCompile', {
+  {
+    events = { 'BufWritePost' },
+    targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
+    command = 'Reload',
+    -- command = 'PackerCompile',
+  },
+})
 augroup('NvimProjectConfig', {
   {
     events = { 'DirChanged' },

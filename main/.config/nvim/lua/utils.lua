@@ -2,6 +2,22 @@ local Job = require('plenary').job
 
 local M = {}
 
+
+function M.map(modes, lhs, rhs, opts)
+  local options = { noremap = true }
+  if opts then
+    options = vim.tbl_extend('force', options, opts)
+  end
+  if modes == '' then
+    vim.api.nvim_set_keymap('', lhs, rhs, options)
+    return
+  end
+  for mode in modes:gmatch '.' do
+    vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+  end
+end
+
+
 M._store = {}
 
 -- mostly taken from https://github.com/akinsho/dotfiles/blob/main/.config/nvim/lua/as/globals.lua

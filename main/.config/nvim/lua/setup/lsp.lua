@@ -7,7 +7,7 @@ local servers = {
   'jsonls',
   'vimls',
   'yamlls',
-  'tsserver',
+  -- 'tsserver',
   -- 'pyls',
 }
 
@@ -89,6 +89,49 @@ function M.setup()
     require('illuminate').on_attach(client)
   end
 
+  local function on_attach_ts(client, buffnr)
+    on_attach(client)
+    local ts_utils = require 'nvim-lsp-ts-utils'
+
+    -- defaults
+    ts_utils.setup {
+      debug = false,
+      disable_commands = false,
+      enable_import_on_completion = false,
+
+      -- import all
+      import_all_timeout = 5000, -- ms
+      import_all_priorities = {
+        buffers = 4, -- loaded buffer names
+        buffer_content = 3, -- loaded buffer content
+        local_files = 2, -- git files or files with relative path markers
+        same_file = 1, -- add to existing import statement
+      },
+      import_all_scan_buffers = 100,
+      import_all_select_source = false,
+
+      -- eslint
+      eslint_enable_code_actions = true,
+      eslint_enable_disable_comments = true,
+      eslint_bin = 'eslint_d',
+      eslint_config_fallback = nil,
+      eslint_enable_diagnostics = true,
+      eslint_show_rule_id = true,
+
+      -- formatting
+      enable_formatting = false,
+
+      -- update imports on file move
+      update_imports_on_move = true,
+      require_confirmation_on_move = true,
+      watch_dir = nil,
+    }
+
+    -- required to fix code action ranges
+    ts_utils.setup_client(client)
+    -- client.resolved_capabilities.document_formatting = false
+  end
+
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
       on_attach = on_attach,
@@ -99,6 +142,10 @@ function M.setup()
       },
     }
   end
+
+  -- nvim_lsp.tsserver.setup {
+  --   on_attach = on_attach,
+  -- }
 
   -- ? https://github.com/folke/lua-dev.nvim/issues/21
   local luadev = require('lua-dev').setup {
@@ -117,6 +164,7 @@ function M.setup()
       },
     },
   }
+
   nvim_lsp.sumneko_lua.setup(luadev)
 
   -- nvim_lsp.sumneko_lua.setup {
@@ -142,7 +190,7 @@ function M.setup()
   local null_ls = require 'null-ls'
   local b = null_ls.builtins
   local sources = {
-    require('nl-language-tool').diagnostics,
+    -- require('nl-language-tool').diagnostics,
     b.formatting.prettierd.with {
       filetypes = {
         'javascript',
@@ -161,14 +209,14 @@ function M.setup()
       },
     },
     -- b.diagnostics.selene,
-    b.formatting.eslint_d,
+    -- b.formatting.eslint_d,
     b.formatting.stylua,
     b.formatting.shfmt,
     -- b.diagnostics.vale,
     -- b.diagnostics.write_good,
     -- b.diagnostics.misspell, -- yay -S misspell
     b.diagnostics.shellcheck,
-    b.code_actions.gitsigns,
+    -- b.code_actions.gitsigns,
     b.formatting.fish_indent,
   }
 

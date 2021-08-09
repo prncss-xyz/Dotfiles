@@ -23,7 +23,7 @@ local textobjects = {
 ac.setup(textobjects)
 
 require('anywise_reg').setup {
-  operators = {  },
+  operators = {},
   -- operators = { 'y' },
   textobjects = textobjects,
   paste_keys = {
@@ -38,7 +38,7 @@ ac.setmap('X', '"+', 'c')
 -- select mode missing
 map('nx', 'x', '"+d')
 map('n', 'xx', '"+dd')
-map('nx', 'X', '"+c')
+map('nx', 'mx', '"+c')
 
 map('nx', 'c', '"_c')
 map('n', 'cc', '"_S')

@@ -149,7 +149,15 @@ return require('packer').startup(function()
   use 'milisims/nvim-luaref'
   use 'glepnir/prodoc.nvim'
 
+  use {
+    'jghauser/mkdir.nvim',
+    config = function()
+      require 'mkdir'
+    end,
+  }
+
   -- Navigation
+  use 'kshenoy/vim-signature'
   use 'haya14busa/vim-asterisk'
   use 'andymass/vim-matchup'
   use 'hrsh7th/vim-eft'
@@ -161,16 +169,11 @@ return require('packer').startup(function()
   }
 
   -- Edition
+  use 'matze/vim-move'
   use {
     'monaqa/dial.nvim',
     config = function()
       require 'setup.dial'
-    end,
-  }
-  use {
-    'jghauser/mkdir.nvim',
-    config = function()
-      require 'mkdir'
     end,
   }
 
@@ -240,22 +243,27 @@ return require('packer').startup(function()
   --     })
   --   end,
   -- }
-  -- use 'matze/vim-move'
   use {
     'kevinhwang91/nvim-hclipboard',
     config = function()
       require 'setup.hclipboard'
     end,
   }
-  -- use 'svermeulen/vim-cutlass'
   use 'tommcdo/vim-exchange'
   use 'machakann/vim-sandwich'
-  use 'mattn/emmet-vim'
+  use {
+    'svermeulen/vim-macrobatics',
+    requires = 'tpope/vim-repeat',
+  }
+  -- use 'mattn/emmet-vim'
   use {
     'b3nj5m1n/kommentary',
     config = function()
       require('kommentary.config').configure_language('default', {
         prefer_single_line_comments = true,
+      })
+      require('kommentary.config').configure_language('fish', {
+        single_line_comment_string = '#',
       })
     end,
   }
@@ -282,6 +290,9 @@ return require('packer').startup(function()
       -- },
       {
         'jose-elias-alvarez/null-ls.nvim',
+      },
+      {
+        'jose-elias-alvarez/nvim-lsp-ts-utils',
       },
       {
         'folke/lua-dev.nvim',
@@ -449,7 +460,21 @@ return require('packer').startup(function()
   use 'brettanomyces/nvim-terminus'
   use 'romgrk/barbar.nvim'
   -- use 'akinsho/nvim-bufferline.lua'
-  use 'lukas-reineke/indent-blankline.nvim'
+  use {
+    'lukas-reineke/indent-blankline.nvim',
+    config = function()
+      local highlitght_list = { 'CursorLine', 'Function' }
+      require('indent_blankline').setup {
+        show_current_context = false,
+        char = ' ',
+        buftype_exclude = { 'terminal', 'help' },
+        filetype_exclude = { 'markdown' },
+        char_highlight_list = highlitght_list,
+        space_char_highlight_list = highlitght_list,
+        space_char_blankline_highlight_list = highlitght_list,
+      }
+    end,
+  }
 
   -- navigation
   use {
@@ -491,10 +516,10 @@ return require('packer').startup(function()
     config = function()
       require('which-key').setup {
         plugins = {
-          -- FIXME: working only after delai
-          spelling = {
-            enabled = true,
-            suggestions = 20,
+          -- FIXME: working only after delay
+          presets = {
+            z = false,
+            g = false,
           },
         },
       }
@@ -514,11 +539,11 @@ return require('packer').startup(function()
   -- use {
   --   'edluffy/specs.nvim', -- not working
   -- }
-  use 'psliwka/vim-smoothie'
+  -- use 'psliwka/vim-smoothie'
   use {
     'karb94/neoscroll.nvim',
     config = function()
-      -- require('neoscroll').setup {}
+      require('neoscroll').setup {}
     end,
   }
 

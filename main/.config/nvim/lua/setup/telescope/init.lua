@@ -61,11 +61,12 @@ end
 M.md = require 'setup/telescope/md'
 
 -- https://vim.fandom.com/wiki/To_switch_back_to_normal_mode_automatically_after_inaction
-vim.cmd [[
-" set 'updatetime' to 15 seconds when in insert mode
-au InsertEnter * let updaterestore=&updatetime | set updatetime=5000
-au InsertLeave * let &updatetime=updaterestore
-]]
+vim.cmd 'au CursorHoldI * stopinsert'
+-- vim.cmd [[
+-- " set 'updatetime' to 15 seconds when in insert mode
+-- au InsertEnter * let updaterestore=&updatetime | set updatetime=5000
+-- au InsertLeave * let &updatetime=updaterestore
+-- ]]
 
 return M
 -- finders.new_oneshot_job

@@ -98,13 +98,13 @@ augroup('TerminalEnter', {
 --   },
 -- })
 
--- FIXME
 augroup('PackerCompile', {
   {
     events = { 'BufWritePost' },
     targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
     command = 'Reload',
     -- command = 'PackerCompile',
+    -- need to fix PackerCompile related bug
   },
 })
 augroup('NvimProjectConfig', {
@@ -119,6 +119,14 @@ vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
 -- vim.cmd "autocmd cursorhold,cursorholdi * lua require'nvim-lightbulb'.update_lightbulb()"
 
 -- vim.cmd"au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}"
+augroup('Test', {
+  {
+    events = { 'TabLeave', 'FocusLost', 'BufLeave' },
+    targets = { '*' },
+    modifiers = { 'silent!' },
+    command = 'echo "CACA!"',
+  },
+})
 augroup('Autosave', {
   {
     events = { 'TabLeave', 'FocusLost', 'BufLeave' },

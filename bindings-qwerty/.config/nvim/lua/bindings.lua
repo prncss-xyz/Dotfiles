@@ -52,7 +52,91 @@ local function mapBrowserSearch(prefix, help0, mappings)
 end
 
 function M.setup()
-  map('n', 'é', '/')
+  map('n', 'q', '<nop>')
+  map('n', 'Q', '<nop>')
+  map('n', 'm', '<nop>')
+
+  local edit = 'm'
+  local jump = 'g'
+  -- local mark = 'z'
+  local move = 'q'
+  local mark = 'M'
+
+  local left = 'h'
+  local up = 'j'
+  local down = 'k'
+  local right = 'l'
+
+  local uLeft = string.upper(left)
+  local uUp = string.upper(up)
+  local uDown = string.upper(down)
+  local uRight = string.upper(right)
+
+  local function remark(new, old)
+    map('', mark .. new, '`' .. old)
+    map('', mark .. new, "'" .. old)
+  end
+  remark('V', '<')
+  remark('v', '>')
+  remark('p', '[')
+  remark('P', ']')
+  map('n', 'Ms', 'm')
+  map('n', 'Mm', "'")
+  map('n', 'Mlm', '`') -- not working ?? whichkwey
+
+  -- Small experiment...
+  -- map('n', 'i', '<nop>')
+  -- map('n', 'a', '<nop>')
+  -- map('n', 'I', 'i')
+  -- map('n', 'A', 'a')
+  -- map('n', 'ii', 'i')
+  -- map('n', 'aa', 'a')
+  -- map('n', 'iI', 'I')
+  -- map('n', 'aA', 'A')
+
+  -- -- word
+  -- --  'n', 'w', 'w'
+  -- map('n', 'W', 'ge')
+  -- map('o', 'w', 'iw')
+  -- map('o', 'W', 'aw')
+  -- map('n', 'iw', 'ea')
+  -- map('n', 'iW', 'bi')
+
+  -- -- WORD
+  -- map('n', 'e', 'W')
+  -- map('n', 'E', 'gE')
+  -- map('o', 'e', 'iW')
+  -- map('o', 'E', 'aW')
+  -- map('n', 'ie', 'Ea')
+  -- map('n', 'iE', 'Bi')
+
+  -- matze move
+  map('v', 'mj', '<Plug>MoveBlockDown', { noremap = false })
+  map('v', 'mk', '<Plug>MoveBlockUp', { noremap = false })
+  map('v', 'mh', '<Plug>MoveBlockLeft', { noremap = false })
+  map('v', 'ml', '<Plug>MoveBlockRight', { noremap = false })
+  map('n', 'mj', '<Plug>MoveLineDown', { noremap = false })
+  map('n', 'mk', '<Plug>MoveLineUp', { noremap = false })
+  map('n', 'mh', '<Plug>MoveCharLeft', { noremap = false })
+  map('n', 'ml', '<Plug>MoveCharRight', { noremap = false })
+
+  -- sandwich
+  map('', 'ms', '<Plug>(operator-sandwich-add)', { noremap = false })
+  map('', 'mr', '<Plug>(operator-sandwich-replace)', { noremap = false })
+  map('', 'md', '<Plug>(operator-sandwich-delete)', { noremap = false })
+
+  -- kommentary
+  map('n', 'mcc', '<Plug>kommentary_line_default', { noremap = false })
+  map('n', 'mc', '<Plug>kommentary_motion_default', { noremap = false })
+  map('x', 'mc', '<Plug>kommentary_visual_default<esc>', { noremap = false })
+
+  -- maybe not K... if visual only
+  -- VSSPlit
+  map('x', 'Kr', '<Plug>(Visual-Split-VSResize)', { noremap = false })
+  map('x', 'KS', '<Plug>(Visual-Split-VSSplit)', { noremap = false })
+  map('x', 'Kk', '<Plug>(Visual-Split-VSSplitAbove)', { noremap = false })
+  map('x', 'Kj', '<Plug>(Visual-Split-VSSplitBelow)', { noremap = false })
+
   -- luasnip + dia
   map(
     'nvi',
@@ -130,40 +214,43 @@ function M.setup()
     'N',
     "<cmd>execute('normal! ' . v:count1 . 'Nzzt')<cr><cmd>lua require('hlslens').start()<cr>"
   )
+  -- map(
+  --   '',
+  --   '*',
+  --   '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
+  --   { noremap = false }
+  -- )
+  -- map(
+  --   '',
+  --   '#',
+  --   '<plug>(asterisk-z#)<cmd>lua require"hlslens".start()<cr>',
+  --   { noremap = false }
+  -- )
+  -- map(
+  --   '',
+  --   'g*',
+  --   '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
+  --   { noremap = false }
+  -- )
+  -- map(
+  --   '',
+  --   'g#',
+  --   '<plug>(asterisk-gz#)<cmd>lua require"hlslens".start()<cr>',
+  --   { noremap = false }
+  -- )
   map(
     '',
-    '*',
+    'gw',
     '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
     { noremap = false }
   )
   map(
     '',
-    '#',
-    '<plug>(asterisk-z#)<cmd>lua require"hlslens".start()<cr>',
-    { noremap = false }
-  )
-  map(
-    '',
-    'g*',
+    'gW',
     '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
     { noremap = false }
   )
-  map(
-    '',
-    'g#',
-    '<plug>(asterisk-gz#)<cmd>lua require"hlslens".start()<cr>',
-    { noremap = false }
-  )
 
-  -- nv mappings
-  for mode in string.gmatch('nv', '.') do
-    wk.register({
-      -- plugin's documentation specifies to use 's' instead of '<cmd>, which indeed do not produce expected results
-      ['<m-v>'] = { '<c-v>', 'square selection' },
-    }, {
-      mode = mode,
-    })
-  end
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     wk.register({
@@ -238,19 +325,80 @@ function M.setup()
     end
   end
 
-  -- x mappings
-  wk.register({
-    ['<leader>d'] = { '<Plug>(operator-sandwich-delete)', 'sandwich delete' },
-    ['<leader>c'] = { '<Plug>(operator-sandwich-replace)', 'sandwich replace' },
-    ['<leader>y'] = { '<Plug>(operator-sandwich-add)', 'sandwich replace' },
-  }, {
-    mode = 'x',
-  })
+  -- for mode in string.gmatch('nx', '.') do
+  --   wk.register({}, {mode = mode})
+  -- end
+
+  -- nvo mappings
+  for mode in string.gmatch('nvo', '.') do
+    wk.register({
+      -- local movements
+      g = {
+        name = '+local movements',
+        h = { '<cmd>Telescope heading<cr>', 'heading' }, --
+        ['é'] = {
+          "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
+          'current buffer fuzzy find',
+        },
+        S = {
+          "<cmd>lua require('telescope.builtin').treesitter()<cr>",
+          'treesitter',
+        },
+        L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
+        -- i = { "]'", 'next lowercase mark' },
+        -- I = { "['", 'previous lowercase mark' },
+        -- u = { ']`', "next lowercase mark's line" },
+        -- U = { '[`', "previous lowercase mark's line" },
+        a = { '%', 'cycle matching elements' },
+      },
+    }, {
+      mode = mode,
+    })
+  end
+
+  -- visual selection
+  for mode in string.gmatch('nx', '.') do
+    wk.register({
+      ['é'] = { '/', 'search' },
+      ['É'] = { '?', 'backward' },
+      K = {
+        name = '+visual selection',
+        s = { '<c-v>', 'square selection' },
+        K = { 'gv', 'reselect' },
+      },
+      m = {
+        name = '+edit',
+        n = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
+        s = {
+          "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
+          'spell suggest',
+        },
+        u = { 'gu', 'uppercase' },
+        U = { 'gU', 'uppercase' },
+        ['~'] = { 'g~', 'toggle case' },
+        t = { '>>', 'indent' },
+        T = { '<<', 'dedent' },
+        a = {
+          "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
+          'code actions',
+        },
+        A = {
+          "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
+          'range code actions',
+        },
+        S = {
+          "<cmd>lua require'telescope.builtin'.symbols{ sources = {'math', 'emoji'} }<cr>",
+          'symbols',
+        },
+      },
+    }, {
+      mode = mode,
+    })
+  end
 
   -- n mappings
   wk.register {
-    --FIXME: is something else remapping it
-    ys = { '<Plug>(operator-sandwich-add)', 'sandwich make' },
+    W = { 'q', 'record  macro' },
     Y = {
       u = {
         '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<cr>',
@@ -259,36 +407,35 @@ function M.setup()
       gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
       man = { '<cmd>BrowserMan<cr>', 'man page' },
     },
-    -- movements
+    -- global movements
     g = {
-      name = '+move',
-      D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
-      i = {
-        '<cmd>require("telescope.").builtin.lsp_implementations()<cr>',
-        'go implementation',
-      },
-      a = { 'gi', 'Move to the last insertion and INSERT' },
-      d = {
-        '<cmd>require("telescope.builtin").lsp_definitions()<cr>',
-        'go definition',
-      },
       m = { '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'go next diagnostic' },
       M = {
         '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
         'go previous diagnostic',
       },
-      l = { --
+    },
+    q = {
+      name = '+global movements',
+      -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
+      e = { 'm', 'set mark' },
+      E = { '<esc>:delmarks ', 'del mark' },
+      D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
+      i = {
+        '<cmd>require("telescope.").builtin.lsp_implementations()<cr>',
+        'go implementation',
+      },
+      d = {
+        '<cmd>require("telescope.builtin").lsp_definitions()<cr>',
+        'go definition',
+      },
+      ['é'] = {
         "<cmd>lua require('telescope.builtin').live_grep()<cr>",
         'live grep',
       },
       r = {
         "<cmd>lua require('telescope.builtin').lsp_references()<cr>",
         'lsp references',
-      },
-      h = { '<cmd>Telescope heading<cr>', 'heading' }, --
-      ['é'] = {
-        "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
-        'current buffer fuzzy find',
       },
       t = {
         '<cmd>lua require("trouble").next({skip_groups = true, jump = true})<cr>',
@@ -302,18 +449,13 @@ function M.setup()
         "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<cr>",
         'dofiles',
       },
-      S = {
-        "<cmd>lua require('telescope.builtin').treesitter()<cr>",
-        'treesitter',
-      },
       o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", 'oldfiles' },
-      L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
       b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
       [' '] = {
         "<cmd>lua require'setup/telescope'.project_files()<cr>",
         'project file',
       },
-      w = { '<cmd>Rg <cword><cr>', 'rg current word' }, --
+      w = { '<cmd>Rg <cword><cr>', 'rg current word' },
     },
     H = {
       name = '+help',
@@ -342,19 +484,6 @@ function M.setup()
         name = '+picker',
         -- telescope.load_extension 'node_modules'
         p = { '<cmd>SearchSession<cr>', 'sessions' },
-        a = {
-          "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
-          'code actions',
-        },
-        A = {
-          "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
-          'range code actions',
-        },
-        s = {
-          "<cmd>lua require'telescope.builtin'.symbols{ sources = {'math', 'emoji'} }<cr>",
-          'symbols',
-        },
-        -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
         [';'] = {
           "<cmd>lua require('telescope.builtin').commands()<cr>",
           'commands',
@@ -392,7 +521,6 @@ function M.setup()
           '<cmd>lua vim.lsp.buf.list_workspace_folder()<cr>',
           'rm workspace folder',
         },
-        n = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
         x = {
           '<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>',
           'stop active clients',
@@ -412,10 +540,6 @@ function M.setup()
         b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
         x = { '<cmd>setlocal nospell spelllang=<cr>', 'none' },
         g = { '<cmd>LanguageToolCheck<cr>', 'language tools' },
-        s = {
-          "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
-          'spell suggest',
-        },
       },
       d = {
         name = '+DAP',
@@ -584,7 +708,7 @@ M.plugins = {
     textsubjects = {
       keymaps = {
         ['.'] = 'textsubjects-smart',
-        [';'] = 'textsubjects-big',
+        [','] = 'textsubjects-big',
       },
     },
   },

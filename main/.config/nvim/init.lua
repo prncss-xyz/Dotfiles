@@ -43,9 +43,21 @@ if pr then
   vim.cmd('cd ' .. pr)
 end
 
+-- https://vim.fandom.com/wiki/To_switch_back_to_normal_mode_automatically_after_inaction
+vim.cmd 'au CursorHoldI * stopinsert'
+-- vim.cmd [[
+-- " set 'updatetime' to 15 seconds when in insert mode
+-- au InsertEnter * let updaterestore=&updatetime | set updatetime=5000
+-- au InsertLeave * let &updatetime=updaterestore
+-- ]]
 require('theming').setup()
 require('bindings').setup()
 require('signs').setup()
 require 'theme-exporter'
 require 'autocommands'
 -- require('nvim-startup').setup()
+
+-- not workping
+-- local isHome = (os.getenv 'HOME' == os.getenv 'PWD') if isHome then
+--   require('session-lens').search_session()
+-- end

@@ -7,6 +7,15 @@ local deep_merge = require('utils').deep_merge
 --   },
 --   filetype = 'markdown',
 -- }
+--
+local javascript = {
+  __default = '// %s',
+  jsx_element = '{/* %s */}',
+  jsx_fragment = '{/* %s */}',
+  jsx_attribute = '// %s',
+  comment = '// %s',
+}
+
 require('nvim-treesitter.configs').setup(
   deep_merge(require('bindings').plugins.treesitter, {
     rainbow = {
@@ -59,13 +68,10 @@ require('nvim-treesitter.configs').setup(
     context_commentstring = {
       enable = true,
       config = {
-        javascript = {
-          __default = '// %s',
-          jsx_element = '{/* %s */}',
-          jsx_fragment = '{/* %s */}',
-          jsx_attribute = '// %s',
-          comment = '// %s',
-        },
+        javascript = javascript,
+        javascriptreact = javascript,
+        typescript = javascript,
+        typescriptreact = javascript,
       },
     },
     matchup = {

@@ -1,8 +1,8 @@
 local M = {}
-local actions = require 'telescope.actions'
-local deep_merge = require('utils').deep_merge
 
 function M.setup()
+  local actions = require 'telescope.actions'
+  local deep_merge = require('utils').deep_merge
   local telescope = require 'telescope'
   telescope.setup(deep_merge(require('bindings').plugins.telescope(), {
     defaults = {
@@ -58,15 +58,7 @@ M.project_files = function()
   end
 end
 
-M.md = require 'setup/telescope/md'
-
--- https://vim.fandom.com/wiki/To_switch_back_to_normal_mode_automatically_after_inaction
-vim.cmd 'au CursorHoldI * stopinsert'
--- vim.cmd [[
--- " set 'updatetime' to 15 seconds when in insert mode
--- au InsertEnter * let updaterestore=&updatetime | set updatetime=5000
--- au InsertLeave * let &updatetime=updaterestore
--- ]]
+M.md = require 'plugins.telescope.md'
 
 return M
 -- finders.new_oneshot_job

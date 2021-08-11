@@ -68,10 +68,10 @@ require('nvim-treesitter.configs').setup(
     context_commentstring = {
       enable = true,
       config = {
-        javascript = javascript,
-        javascriptreact = javascript,
-        typescript = javascript,
-        typescriptreact = javascript,
+--        javascript = javascript,
+  --      javascriptreact = javascript,
+    --    typescript = javascript,
+      --  typescriptreact = javascript,
       },
     },
     matchup = {

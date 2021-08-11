@@ -71,8 +71,8 @@ function M.setup()
 
     -- silent is necessary for vim will complain about calling undojoin after undo
     -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
-    vim.cmd 'autocmd BufWritePre <buffer> silent! lua vim.lsp.buf.formatting_sync()'
-    -- vim.cmd 'autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()'
+    -- vim.cmd 'autocmd BufWritePre <buffer> silent! lua vim.lsp.buf.formatting_sync()'
+    vim.cmd 'autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()'
   end
 
   local function on_attach(client, _)
@@ -143,9 +143,9 @@ function M.setup()
     }
   end
 
-  -- nvim_lsp.tsserver.setup {
-  --   on_attach = on_attach,
-  -- }
+  nvim_lsp.tsserver.setup {
+    on_attach = on_attach,
+  }
 
   -- ? https://github.com/folke/lua-dev.nvim/issues/21
   local luadev = require('lua-dev').setup {
@@ -216,10 +216,9 @@ function M.setup()
     -- b.diagnostics.write_good,
     -- b.diagnostics.misspell, -- yay -S misspell
     b.diagnostics.shellcheck,
-    -- b.code_actions.gitsigns,
+    b.code_actions.gitsigns,
     b.formatting.fish_indent,
   }
-
   null_ls.config {
     sources = sources,
   }

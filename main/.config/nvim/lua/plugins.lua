@@ -1,24 +1,39 @@
--- bootstraping packer
-local execute = vim.api.nvim_command
-local fn = vim.fn
-local install_path = fn.stdpath 'data' .. '/site/pack/packer/opt/packer.nvim'
-if fn.empty(fn.glob(install_path)) > 0 then
-  execute(
-    '!git clone https://github.com/wbthomason/packer.nvim ' .. install_path
-  )
-  execute 'packadd packer.nvim'
+local install_path = vim.fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+  vim.fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
+  vim.api.nvim_command 'packadd packer.nvim'
 end
 
-vim.cmd 'packadd packer.nvim'
 return require('packer').startup(function()
-  use { 'wbthomason/packer.nvim', opt = true }
-  -- Utils
+  use 'wbthomason/packer.nvim'
+  --use_rocks 'iconv'
   use 'tami5/sql.nvim'
+  use {
+    'nvim-lua/plenary.nvim',
+  }
+  use {
+    'nvim-lua/popup.nvim',
+  }
+  use {
+    'onsails/lspkind-nvim',
+    config = function() 
+      require('lspkind').init {
+        symbol_map = {
+          Snippet = '',
+          Field = '識',
+        },
+      }
+    end
+  }
+  use 'kyazdani42/nvim-web-devicons'
+
+  -- tree sitter
   use {
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate',
     config = function()
-      require 'setup.treesitter'
+      require 'plugins.treesitter'
     end,
     requires = {
       'p00f/nvim-ts-rainbow',
@@ -45,118 +60,248 @@ return require('packer').startup(function()
       {
         'romgrk/nvim-treesitter-context',
         config = function()
-          require('treesitter-context.config').setup {
-            enable = true,
-          }
+          require('treesitter-context.config').setup {}
+          table.insert(_G.pre_save_cmds, 'TSContextDisable')
         end,
       },
       'haringsrob/nvim_context_vt',
     },
   }
 
-  -- TUI
+  -- extra syntax
+  use 'blankname/vim-fish'
+  use 'potatoesmaster/i3-vim-syntax'
+  use 'fladson/vim-kitty'
   use {
-    'nvim-lua/plenary.nvim',
+    -- weirdly seems required to format yaml frontmatter
+    'godlygeek/tabular',
+    requires = {
+      'plasticboy/vim-markdown',
+      ft = 'markdown',
+      -- unsuccessful setting options here
+    },
   }
+
+  -- Natural languages
   use {
-    'nvim-lua/popup.nvim',
+    'vigoux/LanguageTool.nvim',
+    cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
   }
-  -- pictograms
+
+  -- lua dev
+  use 'nanotee/luv-vimdocs'
+  use 'milisims/nvim-luaref'
+  use 'glepnir/prodoc.nvim'
+
+  
+  -- LSP
   use {
-    'onsails/lspkind-nvim',
+    'neovim/nvim-lspconfig',
     config = function()
-      require('lspkind').init {
-        symbol_map = {
-          Snippet = '',
-          Field = '識',
-        },
+      require('plugins.lsp').setup()
+    end,
+    -- needs to load early for trouble can integrate with telescope
+    requires = {
+      {
+        'jose-elias-alvarez/null-ls.nvim',
+      },
+      {
+        'jose-elias-alvarez/nvim-lsp-ts-utils',
+      },
+      {
+        'folke/lua-dev.nvim',
+      },
+      {
+        'RRethy/vim-illuminate',
+      },
+      {
+        'kosayoda/nvim-lightbulb',
+        config = function()
+          require('utils').augroup('NvimLightbulb', {
+            {
+              events = { 'CursorHold', 'CursorHoldI' },
+              targets = { '*' },
+              command = function()
+                require('nvim-lightbulb').update_lightbulb()
+              end,
+            },
+          })
+        end,
+      },
+      {
+        'simrat39/symbols-outline.nvim',
+      },
+    },
+  }
+
+  -- completion
+  use {
+    'hrsh7th/nvim-compe',
+    config = function()
+      require 'plugins.compe'
+    end,
+
+    requires = {
+      {
+        'L3MON4D3/LuaSnip',
+        config = function()
+          require 'plugins.luasnip'
+        end,
+      },
+      {
+        'rafamadriz/friendly-snippets',
+      },
+      {
+        -- insert or delete brackets, parens, quotes in pair
+        'windwp/nvim-autopairs',
+        config = function()
+          require 'plugins.autopairs'
+        end,
+      },
+    },
+  }
+
+  -- UI
+  use {
+    'glepnir/galaxyline.nvim',
+    config = function()
+      require 'plugins.galaxyline'
+    end,
+  }
+  use {
+    'folke/trouble.nvim',
+    module = 'trouble.providers.telescope',
+    config = function()
+      require('trouble').setup {
+        use_lsp_diagnostic_signs = true,
       }
+    end,
+  }
+  use {
+    'lewis6991/gitsigns.nvim',
+    config = function()
+      require('plugins.gitsigns').setup()
+    end,
+  }
+  use 'kevinhwang91/nvim-hlslens'
+  use {
+    'karb94/neoscroll.nvim',
+    config = function()
+      require('neoscroll').setup {}
     end,
   }
   use {
     'nvim-telescope/telescope.nvim',
     event = 'CursorHold',
-    -- after = 'trouble',
+    module_pattern = 'telescope.*',
     config = function()
-      require('setup/telescope').setup()
+      require('plugins.telescope').setup()
     end,
     requires = {
       'nvim-telescope/telescope-fzy-native.nvim',
       'nvim-telescope/telescope-symbols.nvim',
       'crispgm/telescope-heading.nvim',
+      '~/Media/Projects/telescope-bookmarks.nvim',
       -- not compatible with pnpm
       -- 'nvim-telescope/telescope-node-modules.nvim',
       -- 'nvim-telescope/telescope-dap.nvim',
-      {
-        after = 'telescope.nvim',
-        'rmagatti/session-lens',
-        config = function()
-          require('session-lens').setup {
-            path_display = { 'shorten' },
-          }
-          -- if telescope loads sync, put that in init.lua
-          if os.getenv 'HOME' == os.getenv 'PWD' then
-            require('session-lens').search_session()
-          end
-        end,
-      },
-      {
-        after = 'telescope.nvim',
-        '~/Media/Projects/nononotes-nvim',
-        config = function()
-          require('setup/nononotes').setup()
-        end,
-      },
-      -- unable to install
-      -- {
-      --   'nvim-telescope/telescope-arecibo.nvim',
-      --   rocks = { 'openssl', 'lua-http-parser' },
-      -- },
-      {
-        '~/Media/Projects/telescope-bookmarks.nvim',
-      },
+    }
+  }
+  use {
+    'romgrk/barbar.nvim',
+    setup = function() 
+      require'utils'.deep_merge(vim, { g = {
+        bufferline = {
+          auto_hide = true,
+          icon_separator_active = '',
+          icon_separator_inactive = '',
+          icon_close_tab = '',
+          icon_close_tab_modified = '',
+        }
+      } })
+      table.insert(_G.post_restore_cmds, 'BufferOrderByDirectory')
+    end,
+  }
+  use {
+    after = 'telescope.nvim',
+    '~/Media/Projects/nononotes-nvim',
+    config = function()
+      require('plugins.nononotes').setup()
+    end,
+  }
+  use {
+    'kyazdani42/nvim-tree.lua',
+    requires = 'kyazdani42/nvim-web-devicons',
+  }
+  use {
+    'numToStr/Navigator.nvim',
+    config = function()
+      require('Navigator').setup {}
+    end,
+  }
+  use {
+    'sindrets/diffview.nvim',
+    config = function()
+      require('diffview').setup()
+    end,
+    -- this does not seem to have an effect
+    cmd = {
+      'DiffviewOpen',
+      'DiffViewToggleFiles',
+      'DiffViewFocusFiles',
+      'DiffViewRefresh',
     },
   }
-  use 'kyazdani42/nvim-web-devicons'
-
-  -- Installers
-  -- use 'Pocco81/DAPInstall.nvim'
-
-  -- Projects
 
   use {
-    'windwp/nvim-projectconfig',
+    'folke/zen-mode.nvim',
     config = function()
-      require('nvim-projectconfig').load_project_config {
-        project_dir = '~/Media/Projects/projects-config/',
+      require('setup/zen-mode').setup()
+    end,
+    cmd = { 'ZenMode' },
+  }
+  use {
+    'folke/twilight.nvim',
+    config = function()
+      require('twilight').setup {}
+    end,
+    cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
+  }
+  use {
+    'metakirby5/codi.vim',
+    cmd = { 'Codi', 'Codi!', 'Codi!!' },
+  }
+
+  use 'wellle/visual-split.vim'
+
+
+  -- UI-side
+  use {
+    'mbbill/undotree', -- FIXME
+    command = { 'UndotreeToggle' },
+  }
+
+
+
+
+  -- bindings
+  use 'kana/vim-submode'
+  use {
+    'folke/which-key.nvim',
+    config = function()
+      require('which-key').setup {
+        plugins = {
+          presets = {
+            z = false,
+            g = false,
+          },
+        },
       }
-    end,
-  }
-  use {
-    'ethanholz/nvim-lastplace',
-    config = function()
-      require('nvim-lastplace').setup {
-        lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
-        lastplace_open_folds = true,
-      }
-    end,
-  }
-  -- UI
-  use 'kevinhwang91/nvim-hlslens'
-
-  -- Lua dev
-  use 'nanotee/luv-vimdocs'
-  use 'milisims/nvim-luaref'
-  use 'glepnir/prodoc.nvim'
-
-  use {
-    'jghauser/mkdir.nvim',
-    config = function()
-      require 'mkdir'
+      require'bindings'.setup()
     end,
   }
 
-  -- Navigation
+  -- navigation
   use 'kshenoy/vim-signature'
   use 'haya14busa/vim-asterisk'
   use 'andymass/vim-matchup'
@@ -167,16 +312,61 @@ return require('packer').startup(function()
       require('lightspeed').setup {}
     end,
   }
+  use {
+    -- "/Volumes/Data SSD/repos/nvim/tabout.nvim",
+    'abecodes/tabout.nvim',
+    config = function()
+      require('tabout').setup {
+        tabkey = '',
+        backwards_tabkey = '',
+      }
+    end,
+  }
 
-  -- Edition
+
+  -- edition
+  use {
+    'kevinhwang91/nvim-hclipboard',
+    config = function()
+      require 'plugins.hclipboard'
+    end,
+  }
+  use {
+    'AckslD/nvim-anywise-reg.lua',
+    config = function()
+      require 'plugins.anywise_reg'
+    end,
+  }
   use 'matze/vim-move'
   use {
     'monaqa/dial.nvim',
     config = function()
-      require 'setup.dial'
+      require 'plugins.dial'
     end,
   }
-
+  use 'tommcdo/vim-exchange'
+  use 'machakann/vim-sandwich'
+  use {
+    'svermeulen/vim-macrobatics',
+    setup = function ()
+      require'utils'.deep_merge (vim.g, {
+        Mac_NamedMacrosDirectory = '~/Media/Projects/macrobatics',
+      })
+    end,
+    requires = 'tpope/vim-repeat',
+  }
+  -- use 'mattn/emmet-vim'
+  use {
+    'b3nj5m1n/kommentary',
+    config = function()
+      require('kommentary.config').configure_language('default', {
+        prefer_single_line_comments = true,
+      })
+      require('kommentary.config').configure_language('fish', {
+        single_line_comment_string = '#',
+      })
+    end,
+  }
   use {
     'kana/vim-textobj-user',
     requires = {
@@ -208,382 +398,75 @@ return require('packer').startup(function()
       -- current or next) ]m [m
       -- current or previous) ]n [n
       'michaeljsmith/vim-indent-object',
-    },
-  }
-  use {
-    'AckslD/nvim-anywise-reg.lua',
-    config = function()
-      require 'setup/anywise_reg'
-    end,
-  }
-
-  use {
-    -- weirdly seams required to format yaml frontmatter
-    'godlygeek/tabular',
-    requires = {
-      'plasticboy/vim-markdown',
-      ft = 'markdown',
-      -- unsuccessful setting options here
-    },
-  }
-
-  -- use {
-  --   'preservim/vim-pencil',
-  --   local deep_merge = require('utils').deep_merge
-  --   config = function()
-  --     vim.cmd [[
-  --       let g:pencil#conceallevel = 3     " 0=disable, 1=one char, 2=hide char, 3=hide all (def)
-  --       let g:pencil#concealcursor = 'c'  " n=normal, v=visual, i=insert, c=command (def)
-  --     ]]
-  --     deep_merge(vim, {
-  --       -- g = {
-  --       --   ['pencil#conceallevel'] = 3, -- 0=disable, 1=one char, 2=hide char, 3=hide all (def)
-  --       --   ['pencil#concealcursor'] = 'c', -- n=normal, v=visual, i=insert, c=command (def)
-  --       -- },
-  --     })
-  --   end,
-  -- }
-  use {
-    'kevinhwang91/nvim-hclipboard',
-    config = function()
-      require 'setup.hclipboard'
-    end,
-  }
-  use 'tommcdo/vim-exchange'
-  use 'machakann/vim-sandwich'
-  use {
-    'svermeulen/vim-macrobatics',
-    requires = 'tpope/vim-repeat',
-  }
-  -- use 'mattn/emmet-vim'
-  use {
-    'b3nj5m1n/kommentary',
-    config = function()
-      require('kommentary.config').configure_language('default', {
-        prefer_single_line_comments = true,
-      })
-      require('kommentary.config').configure_language('fish', {
-        single_line_comment_string = '#',
-      })
-    end,
-  }
-  use {
-    'neovim/nvim-lspconfig',
-    wants = { 'lua-dev', 'null-ls' },
-    config = function()
-      require('setup.lsp').setup()
-    end,
-    -- needs to load early for trouble can integrate with telescope
-    -- event = 'BufReadPre'
-    requires = {
       -- {
-      --   'kabouzeid/nvim-lspinstall',
-      --   -- after = 'nvim-lspconfig',
-      --   config = function()
-      --     require('lspinstall').setup()
-      --     require('setup/lsp').setup()
-      --   end,
+      --   'sgur/vim-textobj-parameter',
+      --   requires = {
+      --     'AckslD/nvim-revJ',
+      --     config = function()
+      --       require('revj').setup {
+      --         keymaps = {
+      --           operator = 'mJ', -- for operator (+motion)
+      --           line = 'mJ', -- for formatting current line
+      --           visual = 'mJ', -- for formatting visual selection
+      --         },
+      --       }
+      --     end,
+      --   },
       -- },
-      --
-      -- {
-      --   'mfussenegger/nvim-lint',
-      -- },
-      {
-        'jose-elias-alvarez/null-ls.nvim',
-      },
-      {
-        'jose-elias-alvarez/nvim-lsp-ts-utils',
-      },
-      {
-        'folke/lua-dev.nvim',
-      },
-      {
-        'RRethy/vim-illuminate',
-        after = 'nvim-lspconfig',
-      },
-      {
-        'kosayoda/nvim-lightbulb',
-        config = function()
-          require('utils').augroup('NvimLightbulb', {
-            {
-              events = { 'CursorHold', 'CursorHoldI' },
-              targets = { '*' },
-              command = function()
-                require('nvim-lightbulb').update_lightbulb()
-              end,
-            },
-          })
-        end,
-      },
-      {
-        'folke/trouble.nvim',
-        after = 'nvim-lspconfig',
-        config = function()
-          require('trouble').setup {
-            use_lsp_diagnostic_signs = true,
-          }
-        end,
-        -- cmd = { 'Trouble', 'TroubleClose', 'TroubleToggle', 'TroubleRefresh' },
-      },
-      -- { -- not working
-      --   'stevearc/aerial.nvim',
-      --   config = function()
-      --     vim.g.aerial = {
-      --       default_direction = 'prefer_left',
-      --     }
-      --   end,
-      -- },
-      {
-        'simrat39/symbols-outline.nvim',
-        -- config = function()
-        --   require('symbols-outline').setup{}
-        -- end,
-      },
     },
   }
-  use {
-    'numToStr/Navigator.nvim',
-    config = function()
-      require('Navigator').setup {}
-    end,
-  }
 
-  -- use "jose-elias-alvarez/nvim-lsp-ts-utils"
-  -- use {
-  --   'mfussenegger/nvim-dap',
-  --   config = function()
-  --     require('setup/dap').setup()
-  --   end,
-  --   requires = {
-  --     {
-  --       'theHamsta/nvim-dap-virtual-text',
-  --       after = 'nvim-dap',
-  --     },
-  --     {
-  --       'rcarriga/nvim-dap-ui',
-  --       after = 'nvim-dap',
-  --       config = function()
-  --         require('dapui').setup {}
-  --       end,
-  --     },
-  --   },
-  -- }
-  -- use 'jbyuki/one-small-step-for-vimkind'
-  -- use 'vim-test/vim-test'
-  -- use {
-  --   'rcarriga/vim-ultest',
-  --   requires = { 'vim-test/vim-test' },
-  --   run = ':UpdateRemotePlugins',
-  -- }
-
-  -- Language syntax
-  -- blankname/vim-fish
-  use 'potatoesmaster/i3-vim-syntax'
-  -- use {
-  --   'rafcamlet/nvim-luapad',
-  --   cmd = {
-  --     'Luapad',
-  --     'LuaRun',
-  --     'Lua',
-  --   },
-  -- }
-
-  -- UI
+  -- session
   use {
-    'mbbill/undotree', -- FIXME
-    command = { 'UndotreeToggle' },
-  }
-  use {
-    'folke/zen-mode.nvim',
+    'windwp/nvim-projectconfig',
     config = function()
-      require('setup/zen-mode').setup()
-    end,
-    cmd = { 'ZenMode' },
-  }
-  use 'wellle/visual-split.vim'
-  use {
-    'hrsh7th/nvim-compe',
-    event = 'BufRead',
-    wants = { 'LuaSnip', 'nvim-autopairs' },
-    config = function()
-      require 'setup/compe'
-    end,
-
-    requires = {
-      {
-        'L3MON4D3/LuaSnip',
-        wants = 'friendly-snippets',
-        after = 'nvim-compe',
-        config = function()
-          require 'setup/luasnip'
-        end,
-      },
-      {
-        'rafamadriz/friendly-snippets',
-      },
-      {
-        -- insert or delete brackets, parens, quotes in pair
-        'windwp/nvim-autopairs',
-        config = function()
-          require 'setup/autopairs'
-        end,
-      },
-    },
-  }
-  use { 'tzachar/compe-tabnine', run = './install.sh' }
-  use {
-    'lewis6991/gitsigns.nvim',
-    event = 'BufRead',
-    config = function()
-      require('setup/gitsigns').setup()
-    end,
-  }
-  use {
-    'sindrets/diffview.nvim',
-    config = function()
-      require('diffview').setup()
-    end,
-    -- this does not seem to have an effect
-    cmd = {
-      'DiffviewOpen',
-      'DiffViewToggleFiles',
-      'DiffViewFocusFiles',
-      'DiffViewRefresh',
-    },
-  }
-  use {
-    'glepnir/galaxyline.nvim',
-    config = function()
-      require 'setup/galaxyline'
-    end,
-  }
-  use 'brettanomyces/nvim-terminus'
-  use 'romgrk/barbar.nvim'
-  -- use 'akinsho/nvim-bufferline.lua'
-  use {
-    'lukas-reineke/indent-blankline.nvim',
-    config = function()
-      local highlitght_list = { 'CursorLine', 'Function' }
-      require('indent_blankline').setup {
-        show_current_context = false,
-        char = ' ',
-        buftype_exclude = { 'terminal', 'help' },
-        filetype_exclude = { 'markdown' },
-        char_highlight_list = highlitght_list,
-        space_char_highlight_list = highlitght_list,
-        space_char_blankline_highlight_list = highlitght_list,
-      }
-    end,
-  }
-
-  -- navigation
-  use {
-    -- "/Volumes/Data SSD/repos/nvim/tabout.nvim",
-    'abecodes/tabout.nvim',
-    wants = { 'nvim-treesitter' },
-    after = { 'nvim-compe' },
-    config = function()
-      require('tabout').setup {
-        tabkey = '',
-        backwards_tabkey = '',
-      }
-    end,
-  }
-  --
-  use {
-    'folke/twilight.nvim',
-    config = function()
-      require('twilight').setup {}
-    end,
-    cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
-  }
-  use {
-    'metakirby5/codi.vim',
-    -- cmd = { 'Codi', 'Codi!', 'Codi!!' },
-  }
-
-  -- Integration
-  use 'tpope/vim-eunuch'
-
-  -- Natural languages
-  use {
-    'vigoux/LanguageTool.nvim',
-    cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
-  }
-  -- Learning
-  use {
-    'folke/which-key.nvim',
-    config = function()
-      require('which-key').setup {
-        plugins = {
-          -- FIXME: working only after delay
-          presets = {
-            z = false,
-            g = false,
-          },
-        },
+      require('nvim-projectconfig').load_project_config {
+        project_dir = '~/Media/Projects/projects-config/',
       }
     end,
   }
   use {
-    'RishabhRD/nvim-cheat.sh',
-    requires = 'RishabhRD/popfix',
-    cmd = {
-      'Cheat',
-      'CheatWithoutComments',
-      'CheatList',
-      'CheatListWithoutComments',
-    },
-  }
-  -- FX
-  -- use {
-  --   'edluffy/specs.nvim', -- not working
-  -- }
-  -- use 'psliwka/vim-smoothie'
-  use {
-    'karb94/neoscroll.nvim',
+    'ethanholz/nvim-lastplace',
     config = function()
-      require('neoscroll').setup {}
+      require('nvim-lastplace').setup {
+        lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
+        lastplace_open_folds = true,
+      }
     end,
   }
+  use {
+    "folke/persistence.nvim",
+    config = function()
+      require("persistence").setup()
+    end,
+  }
+  use {
+    'rmagatti/auto-session',
+     config = function() require'plugins.auto-session' end,
+     requires = {
+      'rmagatti/session-lens',
+      module = 'session-lens'
+    },
+  }
 
-  use '~/Media/Projects/closet'
-
-  -- Color schemes
+  -- themes
   use 'rafamadriz/neon'
   -- classics
   use 'ishan9299/nvim-solarized-lua'
   use 'sainnhe/gruvbox-material'
-  use 'shaunsingh/nord.nvim'
-  use 'NTBBloodbath/doom-one.nvim'
-  use 'sainnhe/edge'
-  use 'sainnhe/everforest'
-  use 'sainnhe/sonokai'
-  use 'folke/tokyonight.nvim'
-  use 'marko-cerovac/material.nvim'
-  --
-  -- old but cute --
-  -- monochromish
-  use 'fcpg/vim-orbital'
-  use 'wadackel/vim-dogrun'
-  -- poly
-  use 'whatyouhide/vim-gotham'
-  -- more poly
-  use 'pineapplegiant/spaceduck'
-  use 'glepnir/oceanic-material'
 
-  -- use {
-  --   "folke/persistence.nvim",
-  --   event = "BufReadPre",
-  --   config = function()
-  --     require("persistence").setup()
-  --   end,
-  -- }
+  -- various
   use {
-    'rmagatti/auto-session',
+    'jghauser/mkdir.nvim',
     config = function()
-      require('setup/auto-session').setup()
+      require 'mkdir'
     end,
   }
-  use 'henriquehbr/nvim-startup.lua'
+  use 'tpope/vim-eunuch'
+  use {
+    'henriquehbr/nvim-startup.lua',
+    config = function() 
+      require 'nvim-startup'.setup {}
+    end
+  }
 end)

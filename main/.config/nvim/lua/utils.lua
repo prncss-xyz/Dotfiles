@@ -1,4 +1,3 @@
-local Job = require('plenary').job
 
 local M = {}
 
@@ -163,6 +162,7 @@ function M.lambda(cb)
 end
 
 function M.job_sync(command, args)
+local Job = require('plenary').job
   local res
   Job
     :new({

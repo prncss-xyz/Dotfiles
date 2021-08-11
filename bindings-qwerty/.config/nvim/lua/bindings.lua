@@ -1,5 +1,4 @@
 local M = {}
-
 local map = require('utils').map
 local wk = require 'which-key'
 local invert = require('utils').invert
@@ -61,6 +60,7 @@ function M.setup()
   -- local mark = 'z'
   local move = 'q'
   local mark = 'M'
+  local macro = 'Q'
 
   local left = 'h'
   local up = 'j'
@@ -109,19 +109,73 @@ function M.setup()
   -- map('o', 'E', 'aW')
   -- map('n', 'ie', 'Ea')
   -- map('n', 'iE', 'Bi')
+  -- ;q
+
+  -- " Use <nowait> to override the default bindings which wait for another key press
+
+  -- macrobatics
+  map('n', macro .. macro, '<plug>(Mac_Play)', { noremap = false })
+  map('n', macro .. 'r', '<plug>(Mac_RecordNew)', { noremap = false })
+  map('n', macro .. 'n', '<plug>(Mac_RotateBack)', { noremap = false })
+  map('n', macro .. 'N', '<plug>(Mac_RotateForward)', { noremap = false })
+  map('n', macro .. 'a', '<plug>(Mac_Append)', { noremap = false })
+  map('n', macro .. 'A', '<plug>(Mac_Prepend)', { noremap = false })
+  map('n', macro .. 'w', '<plug>(Mac_NameCurrentMacro)', { noremap = false })
+  map(
+    'n',
+    macro .. 'fw',
+    '<plug>(Mac_NameCurrentMacroForFileType)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    macro .. 'sw',
+    '<plug>(Mac_NameCurrentMacroForCurrentSession)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    macro .. 'ér',
+    '<plug>(Mac_SearchForNamedMacroAndOverwrite)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    macro .. 'én',
+    '<plug>(Mac_SearchForNamedMacroAndRename)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    macro .. 'éd',
+    '<plug>(Mac_SearchForNamedMacroAndDelete)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    macro .. 'éq',
+    '<plug>(Mac_SearchForNamedMacroAndPlay)',
+    { noremap = false }
+  )
+  map('n', macro .. 'l', 'DisplayMacroHistory')
 
   -- matze move
+  vim.cmd [[
+	call submode#enter_with('move', 'n', 'r', 'mj', '<Plug>MoveLineDown')
+	call submode#enter_with('move', 'n', 'r', 'mk', '<Plug>MoveLineUp')
+  call submode#map('move', 'n', 'r', 'j', '<Plug>MoveLineDown')
+  call submode#map('move', 'n', 'r', 'k', '<Plug>MoveLineUp')
+	call submode#leave_with('move', 'n', '', '<Esc>')
+  ]]
   map('v', 'mj', '<Plug>MoveBlockDown', { noremap = false })
   map('v', 'mk', '<Plug>MoveBlockUp', { noremap = false })
   map('v', 'mh', '<Plug>MoveBlockLeft', { noremap = false })
   map('v', 'ml', '<Plug>MoveBlockRight', { noremap = false })
-  map('n', 'mj', '<Plug>MoveLineDown', { noremap = false })
-  map('n', 'mk', '<Plug>MoveLineUp', { noremap = false })
-  map('n', 'mh', '<Plug>MoveCharLeft', { noremap = false })
   map('n', 'ml', '<Plug>MoveCharRight', { noremap = false })
+  map('n', 'mh', '<Plug>MoveCharLeft', { noremap = false })
 
   -- sandwich
-  map('', 'ms', '<Plug>(operator-sandwich-add)', { noremap = false })
+  map('', 'my', '<Plug>(operator-sandwich-add)', { noremap = false })
   map('', 'mr', '<Plug>(operator-sandwich-replace)', { noremap = false })
   map('', 'md', '<Plug>(operator-sandwich-delete)', { noremap = false })
 
@@ -130,8 +184,8 @@ function M.setup()
   map('n', 'mc', '<Plug>kommentary_motion_default', { noremap = false })
   map('x', 'mc', '<Plug>kommentary_visual_default<esc>', { noremap = false })
 
-  -- maybe not K... if visual only
   -- VSSPlit
+  -- maybe not K... if visual only
   map('x', 'Kr', '<Plug>(Visual-Split-VSResize)', { noremap = false })
   map('x', 'KS', '<Plug>(Visual-Split-VSSplit)', { noremap = false })
   map('x', 'Kk', '<Plug>(Visual-Split-VSSplitAbove)', { noremap = false })
@@ -368,6 +422,7 @@ function M.setup()
       },
       m = {
         name = '+edit',
+        J = { 'gJ' },
         n = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
         s = {
           "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
@@ -398,8 +453,11 @@ function M.setup()
 
   -- n mappings
   wk.register {
-    W = { 'q', 'record  macro' },
     Y = {
+      b = {
+        "<cmd>lua require('telescope').extensions.bookmarks.bookmarks()<cr>",
+        'bookmarks',
+      },
       u = {
         '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<cr>',
         'open current url',
@@ -450,12 +508,12 @@ function M.setup()
         'dofiles',
       },
       o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", 'oldfiles' },
-      b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
       [' '] = {
-        "<cmd>lua require'setup/telescope'.project_files()<cr>",
+        "<cmd>lua require'plugins.telescope'.project_files()<cr>",
         'project file',
       },
       w = { '<cmd>Rg <cword><cr>', 'rg current word' },
+      b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
     },
     H = {
       name = '+help',
@@ -463,10 +521,6 @@ function M.setup()
       m = {
         "<cmd>lua require('telescope.builtin').man_pages()<cr>",
         'man pages',
-      },
-      y = {
-        "<cmd>lua require('telescope').extensions.bookmarks.bookmarks()<cr>",
-        'bookmarks',
       },
       c = { '<cmd>Cheatsheet<cr>', 'cheatsheet' },
       p = { '<cmd>Mdhelp<cr>', 'md help' },
@@ -476,10 +530,6 @@ function M.setup()
       },
     },
     ['<leader>'] = {
-      m = {
-        ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>",
-        'macro edition',
-      },
       p = {
         name = '+picker',
         -- telescope.load_extension 'node_modules'
@@ -556,11 +606,11 @@ function M.setup()
         u = { "<cmd>lua require'dapui'.toggle()<cr>", 'toggle dapui' },
         k = { "<cmd>lua require'dap'.up()<cr>", 'up' },
         j = { "<cmd>lua require'dap'.down()<cr>", 'down' },
-        l = { "<cmd>lua require'setup.dap'.launch()<cr>", 'launch' },
+        l = { "<cmd>lua require'plugins.dap'.launch()<cr>", 'launch' },
         r = { "<cmd>lua require'dap'.repl.open()<cr>", 'repl' },
-        a = { "<cmd>lua require'setup/dap'.attach()<cr>", 'attach' },
+        a = { "<cmd>lua require'plugins.dap'.attach()<cr>", 'attach' },
         A = {
-          "<cmd>lua require'setup/dap'.attachToRemote()<cr>",
+          "<cmd>lua require'plugins.dap'.attachToRemote()<cr>",
           'attach to remote',
         },
         h = { "<cmd>lua require'dap.ui.widgets'.hover()<cr>", 'widgets' },

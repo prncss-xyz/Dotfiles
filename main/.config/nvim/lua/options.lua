@@ -95,16 +95,7 @@ deep_merge(vim, {
       GotoPrevMarker = 'MS',
       GotoNextMarkerAny = 'M.s',
       GotoPrevMarkerAny = 'M.S',
-      ListBufferMarks = 'Mha',
       ListBufferMarkers = 'Mhs',
-    },
-    -- barbar
-    bufferline = {
-      auto_hide = true,
-      icon_separator_active = '',
-      icon_separator_inactive = '',
-      icon_close_tab = '',
-      icon_close_tab_modified = '',
     },
     operator_sandwich_no_default_key_mappings = 1,
     -- matchup_matchparen_hi_surround_always = 1,
@@ -151,4 +142,4 @@ deep_merge(vim, {
     EDITOR = 'nvr',
   },
 })
-deep_merge(vim, require('bindings').plugins.vim)
+-- deep_merge(vim, require('bindings').plugins.vim)

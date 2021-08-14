@@ -53,7 +53,7 @@ deep_merge(vim, {
   },
   g = {
     autosave = 1,
-     -- see https://languagetool.org/http-api/swagger-ui/#!/default/post_check
+    -- see https://languagetool.org/http-api/swagger-ui/#!/default/post_check
     languagetool_server_command = 'echo "Server Started"',
     languagetool = {
       ['.'] = { language = 'auto' },
@@ -61,7 +61,7 @@ deep_merge(vim, {
     ['asterisk#keeppos'] = 1,
     undotree_SplitWidth = 30,
     undotree_TreeVertShape = '│',
-    vim_markdown_folding_disabled = 1,
+    vim_markdown_folding_disabled = 0,
     vim_markdown_conceal_code_blocks = 0,
     vim_markodwn_frontmatter = 1,
     vim_markdown_toc_autofit = 1,
@@ -75,29 +75,39 @@ deep_merge(vim, {
       'tsx=typescriptreact',
       'bash=sh',
     },
+    ['textobj#sentence#select'] = 's',
+    ['textobj#sentence#move_p'] = 'S',
+    ['textobj#sentence#move_n'] = 's',
+    textobj_datetime_no_default_key_mappings = 1,
+    pastedtext_select_key = '_',
     SignatureMap = {
-      -- Leader = 'M',
+      Leader = 'M',
       PlaceNextMark = 'My',
       ToggleMarkAtLine = 'Mt',
       PurgeMarksAtLine = 'Mda',
       DeleteMark = 'Mxa',
       PurgeMarks = 'MdA',
       PurgeMarkers = 'Mds',
-      GotoNextLineAlpha = 'Mla',
-      GotoPrevLineAlpha = 'MlA',
-      GotoNextSpotAlpha = 'Ma',
-      GotoPrevSpotAlpha = 'MA',
-      GotoNextLineByPos = 'Mlp',
-      GotoPrevLineByPos = 'MlP',
-      GotoNextSpotByPos = 'Mp',
-      GotoPrevSpotByPos = 'MP',
-      GotoNextMarker = 'Ms',
-      GotoPrevMarker = 'MS',
-      GotoNextMarkerAny = 'M.s',
-      GotoPrevMarkerAny = 'M.S',
       ListBufferMarkers = 'Mhs',
+
+      -- movements
+      GotoNextLineAlpha = 'ggm',
+      GotoPrevLineAlpha = 'ggM',
+      GotoNextSpotAlpha = 'gm',
+      GotoPrevSpotAlpha = 'gM',
+      GotoNextLineByPos = 'ggb',
+      GotoPrevLineByPos = 'ggB',
+      GotoNextSpotByPos = 'gb',
+      GotoPrevSpotByPos = 'gB',
+      GotoNextMarker = 'gx',
+      GotoPrevMarker = 'gX',
+      GotoNextMarkerAny = 'ge',
+      GotoPrevMarkerAny = 'gE',
     },
+    exchange_no_mappings = 1,
     operator_sandwich_no_default_key_mappings = 1,
+    textobj_sandwich_no_default_key_mappings = 1,
+    ninja_feet_no_mappings = 1,
     -- matchup_matchparen_hi_surround_always = 1,
     -- matchup_matchparen_deferred = 1,
     matchup_matchparen_offscreen = { method = 'status' },
@@ -126,11 +136,11 @@ deep_merge(vim, {
     relativenumber = false,
     signcolumn = 'yes',
   },
-  opt_local = { conceallevel = 2 },
   -- vim.opt.{option}: behaves like :set
   -- vim.opt_global.{option}: behaves like :setglobal
   -- vim.opt_local.{option}: behaves like :setlocal
   opt = {
+    conceallevel = 2,
     secure = true, -- disable autocmd etc for project local vimrc files
     exrc = false, -- allow project local vimrc files example .nvimrc see :h exrc
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,

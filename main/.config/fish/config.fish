@@ -4,7 +4,7 @@ abbr -g gncc 'commit -a --allow-empty-message -m ""'
 fish_vi_key_bindings
 alias o opener
 # alias e nvr -s
-alias e nvim --startuptime /tmp/nvim-startuptime
+alias e 'nvim --startuptime /tmp/nvim-startuptime'
 alias bat 'bat --style=changes,header,rule,snip'
 alias ls lsd
 alias wttr 'curl "fr.wttr.in/montreal?n"'
@@ -18,7 +18,8 @@ starship init fish | source
 zoxide init fish | source
 kitty + complete setup fish | source
 
-bind \ml 'accept-autosuggestion' # not working
+bind \ef accept-autosuggestion # not working
+bind \F accept-autosuggestion
 
 # tabtab source for packages
 # uninstall by removing these lines

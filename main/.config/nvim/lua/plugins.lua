@@ -1,13 +1,19 @@
-local install_path = vim.fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+local install_path = vim.fn.stdpath 'data'
+  .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  vim.fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
+  vim.fn.system {
+    'git',
+    'clone',
+    'https://github.com/wbthomason/packer.nvim',
+    install_path,
+  }
   vim.api.nvim_command 'packadd packer.nvim'
 end
 
 return require('packer').startup(function()
   use 'wbthomason/packer.nvim'
-  --use_rocks 'iconv'
+  -- use_rocks 'iconv'
   use 'tami5/sql.nvim'
   use {
     'nvim-lua/plenary.nvim',
@@ -17,14 +23,14 @@ return require('packer').startup(function()
   }
   use {
     'onsails/lspkind-nvim',
-    config = function() 
+    config = function()
       require('lspkind').init {
         symbol_map = {
           Snippet = '',
           Field = '識',
         },
       }
-    end
+    end,
   }
   use 'kyazdani42/nvim-web-devicons'
 
@@ -61,7 +67,7 @@ return require('packer').startup(function()
         'romgrk/nvim-treesitter-context',
         config = function()
           require('treesitter-context.config').setup {}
-          table.insert(_G.pre_save_cmds, 'TSContextDisable')
+          table.insert(_G.pre_save_cmds, 'NvimTreeClose')
         end,
       },
       'haringsrob/nvim_context_vt',
@@ -93,7 +99,6 @@ return require('packer').startup(function()
   use 'milisims/nvim-luaref'
   use 'glepnir/prodoc.nvim'
 
-  
   -- LSP
   use {
     'neovim/nvim-lspconfig',
@@ -162,6 +167,26 @@ return require('packer').startup(function()
   }
 
   -- UI
+  use { 'vim-scripts/conomode.vim', disable = true }
+  use {
+    'gelguy/wilder.nvim',
+    -- disable = true,
+  }
+  use {
+    'lukas-reineke/indent-blankline.nvim',
+    config = function()
+      local highlitght_list = { 'CursorLine', 'Function' }
+      require('indent_blankline').setup {
+        show_current_context = false,
+        char = ' ',
+        buftype_exclude = { 'terminal', 'help' },
+        filetype_exclude = { 'markdown', 'help' },
+        char_highlight_list = highlitght_list,
+        space_char_highlight_list = highlitght_list,
+        space_char_blankline_highlight_list = highlitght_list,
+      }
+    end,
+  }
   use {
     'glepnir/galaxyline.nvim',
     config = function()
@@ -205,20 +230,22 @@ return require('packer').startup(function()
       -- not compatible with pnpm
       -- 'nvim-telescope/telescope-node-modules.nvim',
       -- 'nvim-telescope/telescope-dap.nvim',
-    }
+    },
   }
   use {
     'romgrk/barbar.nvim',
-    setup = function() 
-      require'utils'.deep_merge(vim, { g = {
-        bufferline = {
-          auto_hide = true,
-          icon_separator_active = '',
-          icon_separator_inactive = '',
-          icon_close_tab = '',
-          icon_close_tab_modified = '',
-        }
-      } })
+    setup = function()
+      require('utils').deep_merge(vim, {
+        g = {
+          bufferline = {
+            auto_hide = true,
+            icon_separator_active = '',
+            icon_separator_inactive = '',
+            icon_close_tab = '',
+            icon_close_tab_modified = '',
+          },
+        },
+      })
       table.insert(_G.post_restore_cmds, 'BufferOrderByDirectory')
     end,
   }
@@ -232,6 +259,9 @@ return require('packer').startup(function()
   use {
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons',
+    config = function()
+      table.insert(_G.pre_save_cmds, 'BufferOrderByDirectory')
+    end,
   }
   use {
     'numToStr/Navigator.nvim',
@@ -274,15 +304,11 @@ return require('packer').startup(function()
 
   use 'wellle/visual-split.vim'
 
-
   -- UI-side
   use {
     'mbbill/undotree', -- FIXME
     command = { 'UndotreeToggle' },
   }
-
-
-
 
   -- bindings
   use 'kana/vim-submode'
@@ -297,12 +323,12 @@ return require('packer').startup(function()
           },
         },
       }
-      require'bindings'.setup()
+      require('bindings').setup()
     end,
   }
 
   -- navigation
-  use 'kshenoy/vim-signature'
+  use { 'kshenoy/vim-signature' }
   use 'haya14busa/vim-asterisk'
   use 'andymass/vim-matchup'
   use 'hrsh7th/vim-eft'
@@ -322,7 +348,6 @@ return require('packer').startup(function()
       }
     end,
   }
-
 
   -- edition
   use {
@@ -348,8 +373,8 @@ return require('packer').startup(function()
   use 'machakann/vim-sandwich'
   use {
     'svermeulen/vim-macrobatics',
-    setup = function ()
-      require'utils'.deep_merge (vim.g, {
+    setup = function()
+      require('utils').deep_merge(vim.g, {
         Mac_NamedMacrosDirectory = '~/Media/Projects/macrobatics',
       })
     end,
@@ -368,53 +393,41 @@ return require('packer').startup(function()
     end,
   }
   use {
+    'AckslD/nvim-revJ.lua',
+    config = function()
+      require('revj').setup {
+        keymaps = {
+          operator = 'mj', -- for operator (+motion)
+          line = 'mmj', -- for formatting current line
+          visual = 'mj', -- for formatting visual selection
+        },
+      }
+    end,
+  }
+  use {
     'kana/vim-textobj-user',
     requires = {
-      -- ,w etc
-      '~/Media/Projects/vim-textobj-variable-segment',
-      -- same syntactic group
-      -- ay, iy
-      'kana/vim-textobj-syntax',
+      -- iv, av
+      'Julian/vim-textobj-variable-segment',
+      -- ad, id
+      'kana/vim-textobj-datetime',
       -- remap vim, abbvr: numbers etc.
+      -- as, is (configuratble)
       'preservim/vim-textobj-sentence',
-
-      -- last pasted text
-      -- gb
-      'saaguero/vim-textobj-pastedtext',
-      -- last searched pattern
-      -- a/ i/ a? i?
-      'kana/vim-textobj-lastpat',
-      -- current line
       -- al il
       'kana/vim-textobj-line',
-      -- TODO: smart quote navigation: ". ."
-      -- markdown
-      -- headers: 1) ]] [[ 2) ][ [] 3) ]} [{ x) ]h [h
-      --
-      'coachshea/vim-textobj-markdown',
+      -- ae, ie
+      'kana/vim-textobj-entire',
       -- indent level
       -- same) ai ii same or deaper) aI iI
-      -- text blocks
-      -- current or next) ]m [m
-      -- current or previous) ]n [n
       'michaeljsmith/vim-indent-object',
-      -- {
-      --   'sgur/vim-textobj-parameter',
-      --   requires = {
-      --     'AckslD/nvim-revJ',
-      --     config = function()
-      --       require('revj').setup {
-      --         keymaps = {
-      --           operator = 'mJ', -- for operator (+motion)
-      --           line = 'mJ', -- for formatting current line
-      --           visual = 'mJ', -- for formatting visual selection
-      --         },
-      --       }
-      --     end,
-      --   },
-      -- },
+      -- a,, i,
+      -- let g:vim_textobj_parameter_mapping = ','
+      'sgur/vim-textobj-parameter',
     },
   }
+  use 'wellle/targets.vim'
+  use 'tommcdo/vim-ninja-feet'
 
   -- session
   use {
@@ -435,17 +448,19 @@ return require('packer').startup(function()
     end,
   }
   use {
-    "folke/persistence.nvim",
+    'folke/persistence.nvim',
     config = function()
-      require("persistence").setup()
+      require('persistence').setup()
     end,
   }
   use {
     'rmagatti/auto-session',
-     config = function() require'plugins.auto-session' end,
-     requires = {
+    config = function()
+      require 'plugins.auto-session'
+    end,
+    requires = {
       'rmagatti/session-lens',
-      module = 'session-lens'
+      module = 'session-lens',
     },
   }
 
@@ -465,8 +480,8 @@ return require('packer').startup(function()
   use 'tpope/vim-eunuch'
   use {
     'henriquehbr/nvim-startup.lua',
-    config = function() 
-      require 'nvim-startup'.setup {}
-    end
+    config = function()
+      require('nvim-startup').setup {}
+    end,
   }
 end)

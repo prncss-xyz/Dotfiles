@@ -1,6 +1,19 @@
-
 local M = {}
 
+function M.buf_map(modes, lhs, rhs, opts)
+  local bufnr = vim.fn.bufnr()
+  local options = { noremap = true }
+  if opts then
+    options = vim.tbl_extend('force', options, opts)
+  end
+  if modes == '' then
+    vim.api.nvim_buf_set_keymap(bufnr, '', lhs, rhs, options)
+    return
+  end
+  for mode in modes:gmatch '.' do
+    vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, options)
+  end
+end
 
 function M.map(modes, lhs, rhs, opts)
   local options = { noremap = true }
@@ -15,7 +28,6 @@ function M.map(modes, lhs, rhs, opts)
     vim.api.nvim_set_keymap(mode, lhs, rhs, options)
   end
 end
-
 
 M._store = {}
 
@@ -162,7 +174,7 @@ function M.lambda(cb)
 end
 
 function M.job_sync(command, args)
-local Job = require('plenary').job
+  local Job = require('plenary').job
   local res
   Job
     :new({

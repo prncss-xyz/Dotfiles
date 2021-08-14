@@ -6,16 +6,6 @@ command('ExportTheme', { nargs = 1 }, function(name)
   require('theme-exporter').export_theme(name)
 end)
 
-command('AutoSearchSession', {}, function()
-  local pr = require 'plenary/job'.job_sync(vim.fn.expand '~/.local/bin/project_root', {})[1]
-  if pr then
-    vim.cmd('cd ' .. pr)
-  end
-  if not pr then
-    vim.cmd 'SearchSession'
-  end
-end)
-
 command('LaunchOSV', {}, function()
   local filetype = vim.bo.filetype
   if filetype == 'lua' then
@@ -38,7 +28,7 @@ command('EditSnippet', {}, function()
 end)
 
 command('NpmRun', { nargs = 1 }, function(task)
-  require 'plenary/job'.Job
+  require('plenary.job')
     :new({
       command = vim.env.TERMINAL,
       args = { '-e', 'fish', '-C', 'npm run ' .. task },
@@ -47,7 +37,7 @@ command('NpmRun', { nargs = 1 }, function(task)
 end)
 
 command('T', {}, function()
-  Job
+  require('plenary.job')
     :new({
       command = vim.env.TERMINAL,
       args = {},
@@ -67,7 +57,7 @@ command('BrowserSearchCword', { nargs = 1 }, function(base)
   local word = vim.fn.expand '<cword>'
   local qs = require('utils').encode_uri(word)
   local url = base .. qs
-  require 'plenary/job'.Job
+  require('plenary.job')
     :new({
       command = browser,
       args = { url },
@@ -79,7 +69,7 @@ command('BrowserSearchZ', { nargs = 1 }, function(base)
   local word = vim.fn.getreg 'z'
   local qs = require('utils').encode_uri(word)
   local url = base .. qs
-  require 'plenary/job'.Job
+  require('plenary.job')
     :new({
       command = browser,
       args = { url },
@@ -91,7 +81,7 @@ command('BrowserSearchGh', {}, function()
   local word = vim.fn.expand '<cWORD>'
   local qs = word:match '[%w%d-_.]+/[%w%d-_.]+'
   local url = 'https://github.com/' .. qs
-  require 'plenary/job'.Job
+  require('plenary.job')
     :new({
       command = browser,
       args = { url },
@@ -99,9 +89,9 @@ command('BrowserSearchGh', {}, function()
     :start()
 end)
 
-command('BrowserMan', {}, function() 
+command('BrowserMan', {}, function()
   local word = vim.fn.expand '<cword>'
-  require 'plenary/job'.Job
+  require('plenary.job')
     :new({
       command = 'hman',
       args = { word },

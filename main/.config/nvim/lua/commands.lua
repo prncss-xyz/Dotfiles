@@ -36,7 +36,7 @@ command('NpmRun', { nargs = 1 }, function(task)
     :start()
 end)
 
-command('T', {}, function()
+command('Term', {}, function()
   require('plenary.job')
     :new({
       command = vim.env.TERMINAL,

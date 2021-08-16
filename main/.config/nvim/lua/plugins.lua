@@ -167,11 +167,8 @@ return require('packer').startup(function()
   }
 
   -- UI
-  use { 'vim-scripts/conomode.vim', disable = true }
-  use {
-    'gelguy/wilder.nvim',
-    -- disable = true,
-  }
+  use { 'vim-scripts/conomode.vim' }
+  use { 'gelguy/wilder.nvim' }
   use {
     'lukas-reineke/indent-blankline.nvim',
     config = function()
@@ -328,13 +325,20 @@ return require('packer').startup(function()
   }
 
   -- navigation
-  use { 'kshenoy/vim-signature' }
+  use {
+    'kshenoy/vim-signature',
+    setup = function()
+      local deep_merge = require('utils').deep_merge
+      deep_merge(vim, require('bindings').plugins.signature)
+    end,
+  }
   use 'haya14busa/vim-asterisk'
   use 'andymass/vim-matchup'
   use 'hrsh7th/vim-eft'
   use {
     'ggandor/lightspeed.nvim',
     config = function()
+      vim.cmd 'unmap s'
       require('lightspeed').setup {}
     end,
   }
@@ -370,7 +374,17 @@ return require('packer').startup(function()
     end,
   }
   use 'tommcdo/vim-exchange'
-  use 'machakann/vim-sandwich'
+  use {
+    'machakann/vim-sandwich',
+    setup = function()
+      require('utils').deep_merge(vim, {
+        g = {
+          -- not as documented
+          sandwich_no_default_key_mappings = 1,
+        },
+      })
+    end,
+  }
   use {
     'svermeulen/vim-macrobatics',
     setup = function()
@@ -380,7 +394,7 @@ return require('packer').startup(function()
     end,
     requires = 'tpope/vim-repeat',
   }
-  -- use 'mattn/emmet-vim'
+  use 'mattn/emmet-vim'
   use {
     'b3nj5m1n/kommentary',
     config = function()
@@ -396,33 +410,22 @@ return require('packer').startup(function()
     'AckslD/nvim-revJ.lua',
     config = function()
       require('revj').setup {
-        keymaps = {
-          operator = 'mj', -- for operator (+motion)
-          line = 'mmj', -- for formatting current line
-          visual = 'mj', -- for formatting visual selection
-        },
+        keymaps = require('bindings').plugins.revJ,
       }
     end,
   }
   use {
     'kana/vim-textobj-user',
+    setup = function()
+      require('utils').deep_merge(vim, require('bindings').plugins)
+    end,
     requires = {
-      -- iv, av
       'Julian/vim-textobj-variable-segment',
-      -- ad, id
       'kana/vim-textobj-datetime',
-      -- remap vim, abbvr: numbers etc.
-      -- as, is (configuratble)
-      'preservim/vim-textobj-sentence',
-      -- al il
+      -- 'preservim/vim-textobj-sentence',
       'kana/vim-textobj-line',
-      -- ae, ie
       'kana/vim-textobj-entire',
-      -- indent level
-      -- same) ai ii same or deaper) aI iI
       'michaeljsmith/vim-indent-object',
-      -- a,, i,
-      -- let g:vim_textobj_parameter_mapping = ','
       'sgur/vim-textobj-parameter',
     },
   }
@@ -463,6 +466,10 @@ return require('packer').startup(function()
       module = 'session-lens',
     },
   }
+  -- use {
+  --   'ahmedkhalf/project.nvim',
+  --   require('project_nvim').setup {},
+  -- }
 
   -- themes
   use 'rafamadriz/neon'

@@ -71,8 +71,8 @@ function M.setup()
 
     -- silent is necessary for vim will complain about calling undojoin after undo
     -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
-    -- vim.cmd 'autocmd BufWritePre <buffer> silent! lua vim.lsp.buf.formatting_sync()'
-    vim.cmd 'autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()'
+    vim.cmd 'autocmd BufWritePre <buffer> silent! lua vim.lsp.buf.formatting_sync()'
+    -- vim.cmd 'autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()'
   end
 
   local function on_attach(client, _)

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+name="$1"
+
+step() {
+	# dir dir/name.ext dir/name.ext.esh
+	mkdir -p ~/"$1"
+	case "$3" in
+	*.esh)
+		echo esh -o ~/"$2" "$3"
+		esh -o ~/"$2" "$3"
+		;;
+	*)
+		echo cp -f "$3" ~/"$3"
+		cp -f "$3" ~/"$3"
+		;;
+	esac
+}
+export -f step
+
+source ~/.config/theming/theme/"$name"
+if [ -f ~/.config/theming/theme/"$name"-extra ]; then
+  source ~/.config/theming/theme/"$name"-extra
+fi
+
+
+
+fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {.} {}'
+if [ -d "$HOME/.config/theming/$name" ]; then
+	fd -H --type l --base-directory "$HOME/.config/theming/$name" -x sh -c 'step {//} {.} {}'
+fi

@@ -19,27 +19,35 @@ require('compe').setup {
     min_height = 1,
   },
   source = {
-    path = true,
+    path = {
+      priority = 10000, -- default
+    },
     buffer = {
       kind = '﬘',
+      priority = 10, -- default
     },
     nvim_lsp = {
+      priority = 1000,
       -- dup = false,
     },
-    calc = {},
-    nvim_lua = {},
-    spell = {},
+    calc = {
+      priority = 50, -- default
+    },
+    nvim_lua = {
+      priority = 100, -- default
+    },
+    spell = {
+      priority = 90, -- default
+    },
     emoji = false,
     omni = false, -- Warning: It has a lot of side-effect.
     -- FIXME dup = false makes then disappear
     luasnip = {
       kind = '', -- FIXME
       dup = false,
+      priority = 100, -- default,
     },
     treesitter = false, -- Warning: it sometimes really slow.
-    tabnine = {
-      priority = 5000,
-      sort = false,
-    },
+    tabnine = false,
   },
 }

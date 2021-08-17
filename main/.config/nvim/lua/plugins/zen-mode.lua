@@ -9,6 +9,7 @@ function M.setup()
         showcmd = true,
       },
       gitsigns = { enabled = true },
+      twilight = { enable = true },
     },
     on_open = function()
       vim.cmd 'TSContextDisable'

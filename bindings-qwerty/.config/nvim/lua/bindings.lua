@@ -22,7 +22,7 @@ local invert = require('utils').invert
 --   opts = opts or {}
 --   register0(t, opts.mode or '', opts.prefix or '')
 -- end
-local wk = {register = register}
+-- local wk = { register = register }
 
 M.plugins = {}
 
@@ -39,6 +39,17 @@ local macro = 'Q'
 local editor = 'L'
 local help = 'H'
 local browser = 'Y'
+
+local remap = vim.api.nvim_set_keymap
+local npairs = require('nvim-autopairs')
+
+_G.completion_confirm=function()
+  if vim.fn.pumvisible() ~= 0  then
+      return npairs.esc("<cr>")
+  else
+    return npairs.autopairs_cr()
+  end
+end
 
 function _G.edit_rel()
   return (':e ' .. vim.fn.expand '%:h' .. '/')
@@ -97,7 +108,7 @@ function M.setup()
   local map = require('utils').map
   local wk = require 'which-key'
 
-  map('nx', '<space><space>', ':')
+  map('nx', '<leader><leader>', ':')
 
   map('', edit, '<nop>')
   map('', jump, '<nop>')
@@ -114,7 +125,7 @@ function M.setup()
   map('', 'gg', '<nop>')
   map('', 'gg', '<nop>')
   map('n', '<c-h>', 'v:lua.edit_rel()', { expr = true })
-  local function remark(new, old) 
+  local function remark(new, old)
     map('', mark .. new, '`' .. old)
     map('', mark .. new, "'" .. old)
   end
@@ -126,7 +137,11 @@ function M.setup()
   map('n', 'm', "'")
   map('n', mark .. 'm', '`') -- not working ?? whichkwey
 
-  -- Small experiment...
+  -- auto-pairs
+  -- weirdly workds after a few times
+  map('i' , '<cr>', 'v:lua.completion_confirm()', {expr = true})
+  
+  
   -- map('n', 'i', '<nop>')
   -- map('n', 'a', '<nop>')
   -- map('n', 'I', 'i')
@@ -218,7 +233,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 
   -- exchange (repeat)
   map('nx', edit .. 'x', '<Plug>(Exchange)', { noremap = false })
-  map('nx', edit ..edit ..  'x', '<Plug>(ExchangeLine)', { noremap = false })
+  map('nx', edit .. edit .. 'x', '<Plug>(ExchangeLine)', { noremap = false })
   map('nx', edit .. 'xc', '<Plug>(ExchangeClear)', { noremap = false })
 
   -- sandwich
@@ -235,13 +250,23 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   map('o', edit .. 'na', '<Plug>(ninja-left-foot-a)', { noremap = false })
   map('o', edit .. 'Ni', '<Plug>(ninja-right-foot-inner)', { noremap = false })
   map('o', edit .. 'Na', '<Plug>(ninja-right-foot-a)', { noremap = false })
-  map('n', move .. 'n', '<Plug>(ninja-insert)', { noremap = false })
-  map('n', move .. 'N', '<Plug>(ninja-append)', { noremap = false })
+  map('n', jump .. 'n', '<Plug>(ninja-insert)', { noremap = false })
+  map('n', jump .. 'N', '<Plug>(ninja-append)', { noremap = false })
 
   -- kommentary
-  map('n', edit ..edit ..  'c', '<Plug>kommentary_line_default', { noremap = false })
+  map(
+    'n',
+    edit .. edit .. 'c',
+    '<Plug>kommentary_line_default',
+    { noremap = false }
+  )
   map('n', edit .. 'c', '<Plug>kommentary_motion_default', { noremap = false })
-  map('x', edit .. 'c', '<Plug>kommentary_visual_default<esc>', { noremap = false })
+  map(
+    'x',
+    edit .. 'c',
+    '<Plug>kommentary_visual_default<esc>',
+    { noremap = false }
+  )
 
   -- VSSPlit
   -- maybe not K... if visual only
@@ -272,13 +297,13 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   -- luasnip + dial
   -- FIXME
   map(
-    'nvi',
+    'nv',
     '<c-a>',
     "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
     { expr = true, noremap = false }
   )
   map(
-    'nvi',
+    'nv',
     '<c-x>',
     "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
     { expr = true, noremap = false }
@@ -287,13 +312,13 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     'v',
     'm<c-a>',
     '<Plug>(dial-increment-additional)',
-    { silent = true, noremap = false }
+    { expr = true, silent = true, noremap = false }
   )
   map(
     'v',
     'm<c-x>',
     '<Plug>(dial-decrement-additional)',
-    { silent = true, noremap = false }
+    { expr = true, silent = true, noremap = false }
   )
 
   -- compe
@@ -370,22 +395,22 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   -- )
   map(
     '',
-    move .. 'q',
+    jump .. 'q',
     '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
     { noremap = false }
   )
   map(
     '',
-    move .. 'Q',
+    jump .. 'Q',
     '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
     { noremap = false }
   )
 
-  map('', move .. 'c', '%', { noremap = false })
-  map('', move .. 'C', 'g%', { noremap = false })
-  map('', move .. 'y', '[%', { noremap = false })
-  map('', move .. 'Y', ']%', { noremap = false })
-  map('', move .. 'i', 'z%', { noremap = false })
+  map('', jump .. 'c', '%', { noremap = false })
+  map('', jump .. 'C', 'g%', { noremap = false })
+  map('', jump .. 'y', '[%', { noremap = false })
+  map('', jump .. 'Y', ']%', { noremap = false })
+  map('', jump .. 'i', 'z%', { noremap = false })
   map('o', 'ic', 'i%', { noremap = false })
   map('o', 'ac', 'a%', { noremap = false })
 
@@ -426,7 +451,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>',
         'previous occurence',
       },
-      ['<c-q>'] = { '<cmd>qa<cr>', 'quit' },
+      ['<c-q>'] = { '<cmd>qa!<cr>', 'quit' },
       ['<c-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       -- ['<c-w>'] = {
@@ -456,7 +481,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   for mode in string.gmatch('nvo', '.') do
     wk.register({
       -- local movements
-      [move] = {
+      [jump] = {
         name = '+local movements',
         ['é'] = {
           "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
@@ -517,7 +542,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 
   -- n mappings
   wk.register {
-    L = {
+    [editor] = {
       name = '+editor state',
       n = {
         "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
@@ -544,6 +569,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>SymbolsOutline<cr>',
         'symbols',
       },
+      z = { '<cmd>ZenMode<cr>', 'zen mode' },
     },
     Y = {
       b = {
@@ -557,7 +583,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
       man = { '<cmd>BrowserMan<cr>', 'man page' },
     },
-    [move] = {
+    [jump] = {
       a = { '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'go next diagnostic' },
       A = {
         '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
@@ -625,8 +651,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         'help tags',
       },
     },
-    ['<space>'] = {
-      p = { '<cmd>SearchSession<cr>', 'sessions' },
+    ['<leader>'] = {
+      i = { '<cmd>SearchSession<cr>', 'sessions' },
       [';'] = {
         "<cmd>lua require('telescope.builtin').commands()<cr>",
         'commands',
@@ -787,18 +813,18 @@ local SignatureMap = invert {
   [mark .. 'dA'] = 'PurgeMarks',
   [mark .. 'sa'] = 'PurgeMarkers',
   [mark .. 'ha'] = 'ListBufferMarkers',
-  [move .. move .. 'm'] = 'GotoNextLineAlpha',
-  [move .. move .. 'M'] = 'GotoPrevLineAlpha',
-  [move .. 'm'] = 'GotoNextSpotAlpha',
-  [move .. 'M'] = 'GotoPrevSpotAlpha',
-  [move .. move .. 'b'] = 'GotoNextLineByPos',
-  [move .. move .. 'B'] = 'GotoPrevLineByPos',
-  [move .. 'b'] = 'GotoNextSpotByPos',
-  [move .. 'B'] = 'GotoPrevSpotByPos',
-  [move .. 'x'] = 'GotoNextMarker',
-  [move .. 'X'] = 'GotoPrevMarker',
-  [move .. 'e'] = 'GotoNextMarkerAny',
-  [move .. 'E'] = 'GotoPrevMarkerAny',
+  [jump .. jump .. 'm'] = 'GotoNextLineAlpha',
+  [jump .. jump .. 'M'] = 'GotoPrevLineAlpha',
+  [jump .. 'm'] = 'GotoNextSpotAlpha',
+  [jump .. 'M'] = 'GotoPrevSpotAlpha',
+  [jump .. jump .. 'b'] = 'GotoNextLineByPos',
+  [jump .. jump .. 'B'] = 'GotoPrevLineByPos',
+  [jump .. 'b'] = 'GotoNextSpotByPos',
+  [jump .. 'B'] = 'GotoPrevSpotByPos',
+  [jump .. 'x'] = 'GotoNextMarker',
+  [jump .. 'X'] = 'GotoPrevMarker',
+  [jump .. 'e'] = 'GotoNextMarkerAny',
+  [jump .. 'E'] = 'GotoPrevMarkerAny',
 }
 SignatureMap.Leader = 'M'
 
@@ -827,7 +853,7 @@ M.plugins = {
   },
   signature = signature,
   nononotes = invert {
-    ['<cr>'] = 'enter_link',
+    -- ['<cr>'] = 'enter_link',
     ['<c-k>'] = 'print_hover_title',
   },
   telescope = function()

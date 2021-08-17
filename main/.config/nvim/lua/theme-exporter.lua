@@ -31,10 +31,13 @@ local dir = vim.fn.expand '~/.config/theming/theme'
 
 function M.export_theme(name)
   dir = vim.fn.expand(dir)
+  local colorscheme = vim.api.nvim_exec('colorscheme', true)
   local colors = M.getColors()
   os.execute('mkdir -p ' .. dir)
   local dest = io.open(dir .. '/' .. name, 'w')
   dest:write(string.format('export name=%q\n', name))
+  dest:write(string.format('export colorscheme=%q\n', colorscheme))
+  dest:write(string.format('export o_background=%q\n', vim.o.background))
   for i = 0, 15 do
     local color_name = string.format('terminal_color_%d', i)
     dest:write(

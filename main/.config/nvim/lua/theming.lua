@@ -47,10 +47,6 @@ local theme = require 'theme'
 
 return {
   setup = function()
-    vim.g.limelight_conceal_ctermfg = 'gray'
-    vim.g.limelight_conceal_ctermfg = 240
-    vim.g.limelight_conceal_guifg = 'DarkGray'
-    vim.g.limelight_conceal_guifg = '#777777'
     vim.o.background = theme.dark or 'dark' -- Color name (:help cterm-colors) or ANSI code
     vim.cmd('colorscheme ' .. (theme.cholorscheme or theme.name))
     if theme.g then

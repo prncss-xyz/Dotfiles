@@ -1,4 +1,4 @@
-/* <%=$name%>*/
+/* $name*/
 * {
   border: none;
   border-radius: 0;
@@ -8,9 +8,9 @@
 }
 
 window#waybar {
-  background: #<%=$color0%>;
+  background: #$color0;
   opacity: 0.9;
-  color: #<%=$foreground%>;
+  color: #$foreground;
 }
 
 #window {
@@ -25,20 +25,20 @@ window#waybar {
   padding-left: 5px;
   padding-right: 5px;
   background: transparent;
-  color: #<%=$foreground%>;
+  color: #$foreground;
 }
 
 #workspaces button.focused {
-  background-color: #<%=$color6%>;
-  color: #<%=$foreground%>;
+  background-color: #$color6;
+  color: #$foreground;
 }
 
 #mode {
   padding-top: 1px;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: #<%=$color4%>;
-  color: #<%=$color7%>;
+  background-color: #$color4;
+  color: #$color7;
 }
 
 #clock {
@@ -50,20 +50,20 @@ window#waybar {
 /* not themed the battery yet */
 
 #battery {
-  background-color: #<%=$color0%>;
+  background-color: #$color0;
   color: black;
 }
 
 @keyframes blink {
   to {
-    background-color: #<%=$color0%>;
+    background-color: #$color0;
     color: black;
   }
 }
 
 #battery.warning:not(.charging) {
-  background: #<%=$color0%>;
-  color: #<%=$foreground%>;
+  background: #$color0;
+  color: #$foreground;
   animation-name: blink;
   animation-duration: 0.5s;
   animation-timing-function: linear;

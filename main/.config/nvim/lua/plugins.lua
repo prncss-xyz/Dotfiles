@@ -13,7 +13,7 @@ end
 
 return require('packer').startup(function()
   use 'wbthomason/packer.nvim'
-  -- use_rocks 'iconv'
+  use_rocks 'iconv'
   use 'tami5/sql.nvim'
   use {
     'nvim-lua/plenary.nvim',
@@ -88,12 +88,6 @@ return require('packer').startup(function()
     },
   }
 
-  -- Natural languages
-  use {
-    'vigoux/LanguageTool.nvim',
-    cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
-  }
-
   -- lua dev
   use 'nanotee/luv-vimdocs'
   use 'milisims/nvim-luaref'
@@ -135,6 +129,22 @@ return require('packer').startup(function()
       },
       {
         'simrat39/symbols-outline.nvim',
+        setup = function()
+          vim.g.symbols_outline = {
+            width = 30,
+            show_guides = false,
+            auto_preview = false,
+            position = 'left',
+            symbols = {
+              Method = { icon = '_', hl = 'TSMethod' },
+            },
+            show_symbol_details = false,
+            symbol_blacklist = {},
+            lsp_blacklist = {
+              'null-ls',
+            },
+          }
+        end,
       },
     },
   }
@@ -160,15 +170,19 @@ return require('packer').startup(function()
         -- insert or delete brackets, parens, quotes in pair
         'windwp/nvim-autopairs',
         config = function()
+
           require 'plugins.autopairs'
         end,
       },
     },
   }
 
-  -- UI
+  -- command line
   use { 'vim-scripts/conomode.vim' }
   use { 'gelguy/wilder.nvim' }
+
+  -- UI
+  use 'beauwilliams/focus.nvim'
   use {
     'lukas-reineke/indent-blankline.nvim',
     config = function()
@@ -254,13 +268,6 @@ return require('packer').startup(function()
     end,
   }
   use {
-    'kyazdani42/nvim-tree.lua',
-    requires = 'kyazdani42/nvim-web-devicons',
-    config = function()
-      table.insert(_G.pre_save_cmds, 'BufferOrderByDirectory')
-    end,
-  }
-  use {
     'numToStr/Navigator.nvim',
     config = function()
       require('Navigator').setup {}
@@ -283,7 +290,7 @@ return require('packer').startup(function()
   use {
     'folke/zen-mode.nvim',
     config = function()
-      require('setup/zen-mode').setup()
+      require('plugins.zen-mode').setup()
     end,
     cmd = { 'ZenMode' },
   }
@@ -292,18 +299,30 @@ return require('packer').startup(function()
     config = function()
       require('twilight').setup {}
     end,
-    cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
+    -- cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
   }
   use {
     'metakirby5/codi.vim',
     cmd = { 'Codi', 'Codi!', 'Codi!!' },
   }
-
   use 'wellle/visual-split.vim'
 
   -- UI-side
   use {
+    'kyazdani42/nvim-tree.lua',
+    requires = 'kyazdani42/nvim-web-devicons',
+    config = function()
+      table.insert(_G.pre_save_cmds, 'BufferOrderByDirectory')
+    end,
+  }
+  use {
     'mbbill/undotree', -- FIXME
+    setup = function()
+      require('utils').deep_merge(vim.g, {
+        undotree_SplitWidth = 30,
+        undotree_TreeVertShape = '│',
+      })
+    end,
     command = { 'UndotreeToggle' },
   }
 
@@ -332,8 +351,23 @@ return require('packer').startup(function()
       deep_merge(vim, require('bindings').plugins.signature)
     end,
   }
-  use 'haya14busa/vim-asterisk'
-  use 'andymass/vim-matchup'
+  use {
+    'haya14busa/vim-asterisk',
+    setup = function()
+      vim.g['asterisk#keeppos'] = 1
+    end,
+  }
+  use {
+    'andymass/vim-matchup',
+    setup = function()
+      require('utils').deep_merge(vim.g, {
+        -- matchup_matchparen_offscreen = { method = "popup" }
+        -- matchup_matchparen_hi_surround_always = 1,
+        -- matchup_matchparen_deferred = 1,
+        matchup_matchparen_offscreen = { method = 'status' },
+      })
+    end,
+  }
   use 'hrsh7th/vim-eft'
   use {
     'ggandor/lightspeed.nvim',
@@ -353,7 +387,7 @@ return require('packer').startup(function()
     end,
   }
 
-  -- edition
+  -- clipboard
   use {
     'kevinhwang91/nvim-hclipboard',
     config = function()
@@ -366,14 +400,38 @@ return require('packer').startup(function()
       require 'plugins.anywise_reg'
     end,
   }
-  use 'matze/vim-move'
+  -- use {
+  --   'bfredl/nvim-miniyank',
+  --   setup = function()
+  --     require('utils').deep_merge(vim.g, {
+  --       -- miniyank_delete_maxlines = 1,
+  --       miniyank_filename = '/home/prncss/.miniyank.mpack',
+  --     })
+  --   end,
+  -- }
+  -- use {
+  --   'svermeulen/vim-yoink',
+  -- }
+
+  -- edition
+  use {
+    'matze/vim-move',
+    setup = function()
+      vim.g.move_map_keys = 0
+    end,
+  }
   use {
     'monaqa/dial.nvim',
     config = function()
       require 'plugins.dial'
     end,
   }
-  use 'tommcdo/vim-exchange'
+  use {
+    'tommcdo/vim-exchange',
+    setup = function()
+      vim.g.exchange_no_mappings = 1
+    end,
+  }
   use {
     'machakann/vim-sandwich',
     setup = function()
@@ -381,6 +439,8 @@ return require('packer').startup(function()
         g = {
           -- not as documented
           sandwich_no_default_key_mappings = 1,
+          operator_sandwich_no_default_key_mappings = 1,
+          textobj_sandwich_no_default_key_mappings = 1,
         },
       })
     end,
@@ -397,6 +457,9 @@ return require('packer').startup(function()
   use 'mattn/emmet-vim'
   use {
     'b3nj5m1n/kommentary',
+    setup = function()
+      vim.g.kommentary_create_default_mappings = false
+    end,
     config = function()
       require('kommentary.config').configure_language('default', {
         prefer_single_line_comments = true,
@@ -421,16 +484,31 @@ return require('packer').startup(function()
     end,
     requires = {
       'Julian/vim-textobj-variable-segment',
-      'kana/vim-textobj-datetime',
+      {
+        'kana/vim-textobj-datetime',
+        setup = function()
+          vim.g.textobj_datetime_no_default_key_mappings = 1
+        end,
+      },
       -- 'preservim/vim-textobj-sentence',
-      'kana/vim-textobj-line',
+      {
+        'kana/vim-textobj-line',
+        setup = function()
+          vim.g.textobj_line_no_default_key_mappings = 1
+        end,
+      },
       'kana/vim-textobj-entire',
       'michaeljsmith/vim-indent-object',
       'sgur/vim-textobj-parameter',
     },
   }
   use 'wellle/targets.vim'
-  use 'tommcdo/vim-ninja-feet'
+  use {
+    'tommcdo/vim-ninja-feet',
+    setup = function()
+      vim.g.ninja_feet_no_mappings = 1
+    end,
+  }
 
   -- session
   use {
@@ -476,8 +554,22 @@ return require('packer').startup(function()
   -- classics
   use 'ishan9299/nvim-solarized-lua'
   use 'sainnhe/gruvbox-material'
+  use {'rose-pine/neovim', as = 'rose-pine'}
 
   -- various
+  use {
+    'vigoux/LanguageTool.nvim',
+    cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
+    setup = function()
+      require('utils').deep_merge(vim.g, {
+        -- see https://languagetool.org/http-api/swagger-ui/#!/default/post_check
+        languagetool_server_command = 'echo "Server Started"',
+        languagetool = {
+          ['.'] = { language = 'auto' },
+        },
+      })
+    end,
+  }
   use {
     'jghauser/mkdir.nvim',
     config = function()

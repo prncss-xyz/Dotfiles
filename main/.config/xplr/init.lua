@@ -12,7 +12,6 @@ require('xargs').setup()
 require('zoxide').setup()
 require('trash-cli').setup()
 require('dua-cli').setup()
-require('preview-tabbed').setup()
 require 'icons'
 require 'utils'
 
@@ -57,6 +56,18 @@ xplr.config.modes.builtin.default.key_bindings.on_key['enter'] = {
         echo "ChangeDirectory: $XPLR_FOCUS_PATH" >> $XPLR_PIPE_MSG_IN
       else
         opener "$XPLR_FOCUS_PATH"
+      fi
+      ]],
+    },
+  },
+}
+xplr.config.modes.builtin.default.key_bindings.on_key['m'] = {
+  help = 'open',
+  messages = {
+    {
+      ['BashExec'] = [[
+      if [ -f "$XPLR_FOCUS_PATH" ]; then
+        mvf "$XPLR_FOCUS_PATH"
       fi
       ]],
     },

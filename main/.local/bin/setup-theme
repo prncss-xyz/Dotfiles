@@ -3,17 +3,21 @@
 name="$1"
 
 step() {
+	# dir dir/name.ext dir/name.ext.esh
 	mkdir -p ~/"$1"
-  echo envsubst '< ' "$2" ' > ' ~/"$2"
-  envsubst < "$2" > ~/"$2"
+  echo $1 $2 $3
+  echo "envsubst" '< ' "$HOME/.config/theming/$3/$2" ">" ~/"$2"
+  envsubst < "$HOME/.config/theming/$3/$2" > ~/"$2"
 }
 export -f step
 
-source ~/.config/theming/theme/"$name"
+source ~/.config/theming/theme-vars/"$name"-generated
 if [ -f ~/.config/theming/theme/"$name"-extra ]; then
-  source ~/.config/theming/theme/"$name"-extra
+  source ~/.config/theming/theme-vars/"$name"-extra
 fi
-fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {}'
+fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {} skeleton'
+echo 'bis'
 if [ -d "$HOME/.config/theming/$name" ]; then
-	fd -H --type l --base-directory "$HOME/.config/theming/$name" -x sh -c 'step {//} {}'
+  echo 'ter'
+	fd -H --type l --base-directory "$HOME/.config/theming/theme/$name" -x sh -c "step {//} {} theme/$name"
 fi

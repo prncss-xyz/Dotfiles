@@ -1,0 +1,81 @@
+#!/usr/bin/env sh
+
+source="$(realpath $1)"
+
+FPATH="$1"
+FNAME=$(basename "$1")
+ext="${FNAME##*.}"
+if [ -n "$ext" ]; then
+	ext="$(printf "%s" "${ext}" | tr '[:upper:]' '[:lower:]')"
+fi
+
+case "${ext}" in
+md | markdown) ;;
+
+htm | html) ;;
+
+	## text
+pdf | doc | docx | epub) ;;
+
+esac
+
+MIMETYPE="$(file -bL --mime-type -- "${FPATH}")"
+case "${MIMETYPE}" in
+inode/x-empty)
+	exit 1
+	;;
+
+## Image
+image/*)
+	cd "$(xdg-user-dir PICTURES)"
+	history=pictures
+	;;
+
+## Text/html
+text/html)
+	cd "$(xdg-user-dir DOCUMENTS)"
+	history=text
+	;;
+
+## PDF
+application/pdf)
+	cd "$(xdg-user-dir DOCUMENTS)"
+	history=text
+	;;
+
+## Ebook
+application/vnd.openxmlformats-officedocument.wordprocessingml.document | \
+	application/x-mobipocket-ebook | \
+	application/epub+zip)
+	cd "$(xdg-user-dir DOCUMENTS)"
+	history=text
+	;;
+
+## Text
+text/*)
+	cd "$(xdg-user-dir DOCUMENTS)"
+	history=text
+	;;
+
+## DjVu
+image/vnd.djvu)
+	cd "$(xdg-user-dir DOCUMENTS)"
+	history=text
+	;;
+
+## Audio
+audio/*)
+	exit 1
+	;;
+
+## Video
+video/*)
+	exit 1
+	;;
+esac
+
+result="$(fd -t d -x echo '{}' | fzf --history=$HOME/.histories/$history --print-query | tail -1)"
+if [ -n "$result" ]; then
+	mkdir -p "$result"
+	mv "$source" "$result"
+fi

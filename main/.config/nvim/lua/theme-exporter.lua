@@ -27,7 +27,7 @@ function M.getColors()
   return res
 end
 
-local dir = vim.fn.expand '~/.config/theming/theme'
+local dir = vim.fn.expand '~/Dotfiles/main/.config/theming/theme-vars'
 
 function M.export_theme(name)
   dir = vim.fn.expand(dir)

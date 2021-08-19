@@ -1,7 +1,5 @@
 [binds]
-<Shift+H> = n
-<Shift+L> = p
-<Ctrl+x> = exec trash-put $imv_current_file
-<Ctrl+m> = exec mv_pictures $imv_current_file
+<Shift+n> = n
+<Shift+p> = p
 <Ctrl+k> = pan 50 0
 <Ctrl+j> = pan 50 100

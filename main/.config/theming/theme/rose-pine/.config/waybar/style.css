@@ -25,12 +25,12 @@ window#waybar {
   padding-left: 5px;
   padding-right: 5px;
   background: transparent;
-  color: #$foreground;
+  color: #$color8;
 }
 
 #workspaces button.focused {
-  background-color: #$color6;
-  color: #$foreground;
+  background-color: #$color14;
+  color: #$color8;
 }
 
 #mode {
@@ -51,7 +51,7 @@ window#waybar {
 
 #battery {
   background-color: #$color0;
-  color: $color8;
+  color: black;
 }
 
 @keyframes blink {

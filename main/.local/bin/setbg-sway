@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 THEME=$(cat "$HOME/.config/theme/name")
-FILE="$(shuf -n1 $HOME/Media/Pictures/wallpapers-lists/$THEME.txt)"
-FILE="$HOME/Media/Pictures/wallpapers-lists/$FILE"
+FILE=$(fd -e jpg -e png . ~/Media/Pictures/Wallpapers/$THEME|shuf -n1) 
 echo "output * bg \"$FILE\" fill" > ~/.config/sway/config.d/bg

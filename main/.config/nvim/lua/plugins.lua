@@ -182,7 +182,6 @@ return require('packer').startup(function()
   use { 'gelguy/wilder.nvim' }
 
   -- UI
-  use 'beauwilliams/focus.nvim'
   use {
     'lukas-reineke/indent-blankline.nvim',
     config = function()

@@ -2,7 +2,7 @@ local gl = require 'galaxyline'
 local Job = require 'plenary.job'
 local gls = gl.section
 -- gl.short_line_list = { "LuaTree", "vista", "dbui", "goyo" }
-local skipLock = { 'Trouble', 'LuaTree', 'vista', 'dbui', 'help' }
+local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'vista', 'dbui', 'help' }
 
 local vim, lsp, api = vim, vim.lsp, vim.api
 
@@ -79,7 +79,7 @@ local text = colors.text
 local background = colors.background
 local background2 = colors.background2
 local warn = colors.warn
-local err = text.error
+local err = colors.error
 
 local separator = ''
 

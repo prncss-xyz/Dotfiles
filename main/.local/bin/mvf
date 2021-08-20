@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-source="$(realpath $1)"
+source=$(realpath "$1")
 
 FPATH="$1"
 FNAME=$(basename "$1")
@@ -22,7 +22,7 @@ esac
 MIMETYPE="$(file -bL --mime-type -- "${FPATH}")"
 case "${MIMETYPE}" in
 inode/x-empty)
-	exit 1
+	exit 2
 	;;
 
 ## Image
@@ -65,12 +65,12 @@ image/vnd.djvu)
 
 ## Audio
 audio/*)
-	exit 1
+	exit 3
 	;;
 
 ## Video
 video/*)
-	exit 1
+	exit 4
 	;;
 esac
 
@@ -78,4 +78,5 @@ result="$(fd -t d -x echo '{}' | fzf --history=$HOME/.histories/$history --print
 if [ -n "$result" ]; then
 	mkdir -p "$result"
 	mv "$source" "$result"
+  echo "$PWD/$result/$FNAME" > /tmp/mvf
 fi

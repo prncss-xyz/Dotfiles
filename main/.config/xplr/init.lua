@@ -62,13 +62,23 @@ xplr.config.modes.builtin.default.key_bindings.on_key['enter'] = {
   },
 }
 xplr.config.modes.builtin.default.key_bindings.on_key['m'] = {
-  help = 'open',
+  help = 'mvf current',
   messages = {
     {
       ['BashExec'] = [[
       if [ -f "$XPLR_FOCUS_PATH" ]; then
         mvf "$XPLR_FOCUS_PATH"
       fi
+      ]],
+    },
+  },
+}
+xplr.config.modes.builtin.default.key_bindings.on_key['M'] = {
+  help = 'mvf last',
+  messages = {
+    {
+      ['BashExec'] = [[
+        mvf "$(cat /tmp/mvf)"
       ]],
     },
   },

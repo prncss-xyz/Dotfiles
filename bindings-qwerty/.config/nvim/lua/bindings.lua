@@ -548,6 +548,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
         'pick note',
       },
+      N = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
       a = {
         '<cmd>TroubleToggle lsp_workspace_diagnostics<cr>',
         'lsp diagnostics',
@@ -598,7 +599,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       o = { '`.', 'jump to last change' },
       O = { '``', 'jump to before last jump' },
     },
-    q = {
+    [move] = {
       name = '+global movements',
       -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
       D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },

@@ -1,9 +1,9 @@
 local M = {}
 
 M.galaxyline = {
-  text = '#$color8',
-  background = '#$color12',
-  background2 = '#$color14',
+  text = '#$text',
+  background = '#$primary',
+  background2 = '#$accent',
 }
 
 M.setup = function()

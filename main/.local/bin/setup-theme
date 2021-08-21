@@ -11,13 +11,16 @@ step() {
 }
 export -f step
 
-source ~/.config/theming/theme-vars/"$name"-generated
-if [ -f ~/.config/theming/theme/"$name"-extra ]; then
-  source ~/.config/theming/theme-vars/"$name"-extra
-fi
+source ~/.config/theming/generated/"$name".sh
+source ~/.config/theming/extra/"$name".sh
+
+export text="${text:-$foreground}"
+export accent="${accent:-$color6}"
+export primary="${primary:-$color12}"
+
 fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {} skeleton'
 echo 'bis'
 if [ -d "$HOME/.config/theming/$name" ]; then
   echo 'ter'
-	fd -H --type l --base-directory "$HOME/.config/theming/theme/$name" -x sh -c "step {//} {} theme/$name"
+	fd -H --type l --base-directory "$HOME/.config/theming/specific/$name" -x sh -c "step {//} {} specific/$name"
 fi

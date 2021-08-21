@@ -20,3 +20,5 @@
   tool = nvim
 [mergetool "nvim"]
 	cmd = nvim -s -d $LOCAL $BASE $REMOTE $MERGED -c 'wincmd J | wincmd ='
+[pull]
+	rebase = true

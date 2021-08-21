@@ -29,10 +29,24 @@ exec languagetool --http
 exec ~/Media/Projects/sway-mega-hotkeys/cli.js
 exec ~/Media/Projects/nononotes/cli/index serve
 
-### Bring the escape key home!
 input type:keyboard {
-   xkb_options caps:swapescape
+  ### Bring the escape key home!
+  xkb_options caps:swapescape
+  xkb_layout ca
+  xkb_variant multi
 }
+
+input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {
+  ### Bring the escape key home!
+  xkb_options caps:swapescape
+  xkb_layout ca
+  xkb_variant multi
+}
+
+# input "12951:18804:ZSA_Technology_Labs_ErgoDox_EZ" {
+#   xkb_layout "fr"
+#   xkb_variant "bepo"
+# }
 
 # assign [title="^Dotfiles$"] workspace 8
 # exec "sleep 1; $term --directory=~/Dotfiles -e nvim"
@@ -51,10 +65,10 @@ seat * hide_cursor 10000
 
 # Read `man 5 sway-input` for more information about this section.
 
-input "type:keyboard" {
-  xkb_layout ca
-  xkb_variant multi
-}
+# input "type:keyboard" {
+#   xkb_layout ca
+#   xkb_variant multi
+# }
 
 ### Placement
 

@@ -12,11 +12,13 @@ step() {
 export -f step
 
 source ~/.config/theming/generated/"$name".sh
-source ~/.config/theming/extra/"$name".sh
 
-export text="${text:-$foreground}"
-export accent="${accent:-$color6}"
-export primary="${primary:-$color12}"
+export text="$foreground"
+export accent="$color6"
+export primary="$color12"
+export font="Montserrat"
+
+source ~/.config/theming/extra/"$name".sh
 
 fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {} skeleton'
 echo 'bis'

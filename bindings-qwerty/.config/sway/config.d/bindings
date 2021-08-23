@@ -225,6 +225,8 @@ mode audio {
   bindsym m exec pactl set-sink-mute @DEFAULT_SINK@ toggle; mode default
   bindsym $up exec pactl set-sink-volume @DEFAULT_SINK@ +4%
   bindsym $down exec pactl set-sink-volume @DEFAULT_SINK@ -4%
+  bindsym shift+$up exec pactl set-sink-volume @DEFAULT_SINK@ +12%
+  bindsym shift+$down exec pactl set-sink-volume @DEFAULT_SINK@ -12%
   bindsym Escape mode default
   bindsym return mode default
 }

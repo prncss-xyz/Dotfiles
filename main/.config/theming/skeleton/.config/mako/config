@@ -1,0 +1,14 @@
+font=$font sans 10
+background-color=#$primary
+text-color=#$text
+border-color=#$primary
+border-radius=3
+
+[urgency=low]
+border-color=#$primary
+
+[urgency=normal]
+border-color=#$primary
+
+[urgency=high]
+border-color=#$color1

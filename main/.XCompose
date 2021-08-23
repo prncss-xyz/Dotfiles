@@ -1,0 +1,11 @@
+include "%L"
+
+<dead_grave> <c>        : "ç"   ccedilla # LATIN SMALL LETTER C WITH CEDILLA
+<dead_grave> <C>        : "Ç"   Ccedilla # LATIN CAPITAL LETTER C WITH CEDILLA
+<dead_grave> <b>        : "«"   guillemotleft # LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
+<dead_grave> <eacute>  	: "»"   guillemotright # RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
+<dead_grave> <k>        : "œ"   oe # LATIN SMALL LIGATURE OE
+<dead_grave> <K>        : "Œ"   OE # LATIN CAPITAL LIGATURE OE
+<dead_grave> <w>        : "æ"   ae # LATIN SMALL LETTER AE
+<dead_grave> <W>        : "Æ"   AE # LATIN CAPITAL LETTER AE
+

@@ -18,16 +18,15 @@ starship init fish | source
 zoxide init fish | source
 kitty + complete setup fish | source
 
-bind \ef accept-autosuggestion # not working
-bind \F accept-autosuggestion
+# not working
+# FIXME not working (from official exemple: https://fishshell.com/docs/current/cmds/bind.html)
+bind \cP history-search-backward
+bind \cN history-search-forward
+
 
 # tabtab source for packages
 # uninstall by removing these lines
 [ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true
-
-# FIXME not working (from official exemple: https://fishshell.com/docs/current/cmds/bind.html)
-bind \cg 'git diff; commandline -f repaint'
-bind \cf f
 
 function fish_title
     if set -q TERMINUSOPEN

@@ -83,6 +83,30 @@ xplr.config.modes.builtin.default.key_bindings.on_key['M'] = {
     },
   },
 }
+xplr.config.modes.builtin.default.key_bindings.on_key['t'] = {
+  help = 'tag put current',
+  messages = {
+    {
+      ['BashExec'] = [[
+      if [ -f "$XPLR_FOCUS_PATH" ]; then
+        tag-put "$XPLR_FOCUS_PATH"
+      fi
+      ]],
+    },
+  },
+}
+xplr.config.modes.builtin.default.key_bindings.on_key['T'] = {
+  help = 'tag put current',
+  messages = {
+    {
+      ['BashExec'] = [[
+      if [ -f "$XPLR_FOCUS_PATH" ]; then
+        tag-put "$(cat /tmp/mvf)"
+      fi
+      ]],
+    },
+  },
+}
 require('type-to-nav').setup()
 require('icons').setup()
 -- xplr.config.node_types.symlink.meta.icon = nil

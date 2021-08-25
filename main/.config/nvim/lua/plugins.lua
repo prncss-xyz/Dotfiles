@@ -170,7 +170,6 @@ return require('packer').startup(function()
         -- insert or delete brackets, parens, quotes in pair
         'windwp/nvim-autopairs',
         config = function()
-
           require 'plugins.autopairs'
         end,
       },
@@ -202,6 +201,14 @@ return require('packer').startup(function()
     config = function()
       require 'plugins.galaxyline'
     end,
+    requires = {
+      {
+        'SmiteshP/nvim-gps',
+        config = function()
+          require('nvim-gps').setup {}
+        end,
+      },
+    },
   }
   use {
     'folke/trouble.nvim',
@@ -553,7 +560,7 @@ return require('packer').startup(function()
   -- classics
   use 'ishan9299/nvim-solarized-lua'
   use 'sainnhe/gruvbox-material'
-  use {'rose-pine/neovim', as = 'rose-pine'}
+  use { 'rose-pine/neovim', as = 'rose-pine' }
 
   -- various
   use {

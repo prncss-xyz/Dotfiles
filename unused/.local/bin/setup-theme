@@ -23,8 +23,6 @@ if [ -f ~/.config/theming/theme/"$name"-extra ]; then
   source ~/.config/theming/theme/"$name"-extra
 fi
 
-
-
 fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {.} {}'
 if [ -d "$HOME/.config/theming/$name" ]; then
 	fd -H --type l --base-directory "$HOME/.config/theming/$name" -x sh -c 'step {//} {.} {}'

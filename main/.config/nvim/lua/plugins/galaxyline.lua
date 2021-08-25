@@ -1,10 +1,28 @@
+local gps = require("nvim-gps")
 local gl = require 'galaxyline'
 local Job = require 'plenary.job'
 local gls = gl.section
--- gl.short_line_list = { "LuaTree", "vista", "dbui", "goyo" }
-local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'vista', 'dbui', 'help' }
+gl.short_line_list = { 'NvimTree', 'Outline', 'Trouble' }
+local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'dbui', 'help' }
 
 local vim, lsp, api = vim, vim.lsp, vim.api
+
+local trouble_mode = function()
+  local mode = require 'trouble.config'.options.mode
+  if mode == 'lsp_workspace_diagnostics' then
+    return 'workspace diagnostics'
+  end
+  if mode == 'lsp_document_diagnostics' then
+    return 'document diagnostics'
+  end
+  if mode == 'lsp_references' then
+    return 'references'
+  end
+  if mode == 'lsp_definitions' then
+    return 'definitions'
+  end
+  return mode
+end
 
 local getDisplayname = function()
   local file = vim.fn.expand '%:p'
@@ -17,6 +35,12 @@ local getDisplayname = function()
     return '~/' .. file:sub(#home + 2)
   end
   return file
+end
+
+local line_column = function()
+  local line = vim.fn.line '.'
+  local column = vim.fn.col '.'
+  return string.format('%3d:%02d ', line, column)
 end
 
 local function set_title()
@@ -81,7 +105,8 @@ local background2 = colors.background2
 local warn = colors.warn
 local err = colors.error
 
-local separator = ''
+local separator = ' '
+-- local separator = ''
 
 local function get_nvim_lsp_diagnostic(diag_type)
   if next(lsp.buf_get_clients(0)) == nil then
@@ -150,6 +175,10 @@ local buffer_not_empty = function()
   return false
 end
 
+local function line_count()
+  return vim.fn.line '$'
+end
+
 local function current_line_tenth()
   local current_line = vim.fn.line '.'
   local total_line = vim.fn.line '$'
@@ -194,7 +223,7 @@ gls.left = {
         set_title()
         return getDisplayname() .. ' '
       end,
-      separator = separator,
+      -- separator = separator,
       separator_highlight = { background, background2 },
       highlight = { text, background2 },
     },
@@ -203,7 +232,7 @@ gls.left = {
     Spacer3 = {
       provider = lift ' ',
       highlight = { text, background },
-    },
+    }
   },
   {
     Readonly = {
@@ -220,13 +249,24 @@ gls.left = {
   {
     DiagnosticError = {
       provider = diagnostic_errors,
-      highlight = { err, background },
+      highlight = { text, background },
     },
   },
   {
     DiagnosticWarn = {
       provider = diagnostic_warnings,
-      highlight = { warn, background },
+      highlight = { text, background },
+    },
+  },
+  {
+    nvimGPS = {
+      highlight = { text, background },
+      provider = function()
+        return gps.get_location()
+      end,
+      condition = function()
+        return gps.is_available()
+      end,
     },
   },
 }
@@ -240,17 +280,23 @@ gls.right = {
   --  },
   {
     LineColumn = {
-
-      provider = 'LineColumn',
-      separator = ' ',
+      provider = line_column,
       separator_highlight = { background, background },
       highlight = { text, background },
     },
   },
   {
-    Teenth = {
-      provider = current_line_tenth,
+    LineCount = {
+      provider = line_count,
       separator_highlight = { background, background },
+      highlight = { text, background },
+    },
+  },
+  {
+    Space = {
+      provider = function()
+        return ' '
+      end,
       highlight = { text, background },
     },
   },
@@ -273,7 +319,11 @@ gls.short_line_left = {
   {
     FileNameB = {
       provider = function()
-        return vim.api.nvim_eval '@%' .. ' '
+        local name = vim.api.nvim_eval '@%'
+        if name == 'Trouble' then
+          return trouble_mode()
+        end
+        return name
       end,
       separator = ' ',
       separator_highlight = { background, background },
@@ -313,21 +363,21 @@ gls.short_line_left = {
 }
 
 gls.short_line_right = {
-  {
-    LineColumnB = {
-      provider = 'LineColumn',
-      separator = ' ',
-      separator_highlight = { background, background },
-      highlight = { text, background },
-    },
-  },
-  {
-    TeenthB = {
-      provider = current_line_tenth,
-      separator_highlight = { background, background },
-      highlight = { text, background },
-    },
-  },
+  -- {
+  --   LineColumnB = {
+  --     provider = 'LineColumn',
+  --     separator = ' ',
+  --     separator_highlight = { background, background },
+  --     highlight = { text, background },
+  --   },
+  -- },
+  -- {
+  --   TeenthB = {
+  --     provider = current_line_tenth,
+  --     separator_highlight = { background, background },
+  --     highlight = { text, background },
+  --   },
+  -- },
 }
 
 -- local zen = {}

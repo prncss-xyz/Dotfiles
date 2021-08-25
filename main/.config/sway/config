@@ -31,17 +31,14 @@ exec ~/Media/Projects/nononotes/cli/index serve
 
 input type:keyboard {
   ### Bring the escape key home!
-  xkb_options caps:swapescape
   xkb_layout ca
+  xkb_variant multi
 }
 
-
-# input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {
-#   ### Bring the escape key home!
-#   xkb_options caps:swapescape
-#   xkb_layout ca
-#   xkb_variant multi
-# }
+input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {
+  ### Bring the escape key home!
+  xkb_options caps:swapescape
+}
 
 # input "12951:18804:ZSA_Technology_Labs_ErgoDox_EZ" {
 #   xkb_layout "fr"

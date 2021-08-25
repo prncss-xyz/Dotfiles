@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+source=$(realpath "$1")
+hash=$(printf '%s' "$source"|md5sum|cut -d\  -f1)
+ext="${1##*.}"
+dir=$(dirname "$1")
+
+cd dir
+root="$(tag-root)"
+if [ -z "$root" ]; then
+  exit 1
+fi
+
+cd "$root/.tags"
+result="$(fd -t d -x echo '{}' | fzf --history=$HOME/.histories/tags --print-query | tail -1)"
+if [ -n "$result" ]; then
+	mkdir -p "$result"
+  ln -sT "$source" "$result/$hash.$ext"
+fi
+
+# /home/prncss/Media/Pictures/Screenshot from 2019-12-09 12-42-23.png

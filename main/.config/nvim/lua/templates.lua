@@ -6,9 +6,6 @@ local M = {}
 local templates
 
 local function load_templates()
-  if templates then
-    return
-  end
   templates = {}
   local ls = require 'luasnip'
   if not ls then
@@ -31,7 +28,6 @@ end
 -- amongst all the matching patters, the most specific is the pattern that is
 -- matched by every patter (patterns always match themselves)
 local function match(filename)
-  load_templates()
   local res = {}
   for _, pattern in ipairs(templates) do
     local m = pattern.re:match_str(filename)
@@ -56,12 +52,7 @@ local function match(filename)
   end
 end
 
-function M.setup(opts)
-  vim.cmd 'autocmd BufNewFile * TemplateMatch'
-  -- autocommand
-end
-
-command('TemplateMatch', {}, function()
+function M.template_match()
   local template = match(vim.fn.expand '%')
   if template then
     local snippet = (template.value):copy()
@@ -70,28 +61,8 @@ command('TemplateMatch', {}, function()
       Luasnip_current_nodes[vim.api.nvim_get_current_buf()]
     )
   end
-end)
-
-local function alts(patterns, file)
-  for _, pattern in ipairs(patterns) do
-    if file:match(pattern[1]) then
-      return file:gsub(pattern[1], pattern[2])
-    end
-  end
 end
 
-function M.setupAlts(rules)
-  command('AltTest', {}, function()
-    local alt = alts(rules, vim.fn.expand '%')
-    if alt then
-      vim.cmd('e ' .. alt)
-    end
-  end)
-end
-
-M.setupAlts {
-  { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
-  { '(.+)(%.[%w%d]+)$', '%1.test%2' },
-}
+load_templates()
 
 return M

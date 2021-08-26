@@ -48,6 +48,7 @@ case "${MIMETYPE}" in
   ## Image
   image/*)
   imv -n "${FPATH}" "${DNAME}" &
+  # imv-folder "${FPATH}" &
   exit 0
   ;;
 

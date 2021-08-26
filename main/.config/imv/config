@@ -1,5 +1,4 @@
 [binds]
-<Shift+n> = n
-<Shift+p> = p
-<Ctrl+k> = pan 50 0
-<Ctrl+j> = pan 50 100
+m = exec imv-do $imv_current_file
+M = exec imv-do
+

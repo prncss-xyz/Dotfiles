@@ -41,11 +41,11 @@ local help = 'H'
 local browser = 'Y'
 
 local remap = vim.api.nvim_set_keymap
-local npairs = require('nvim-autopairs')
+local npairs = require 'nvim-autopairs'
 
-_G.completion_confirm=function()
-  if vim.fn.pumvisible() ~= 0  then
-      return npairs.esc("<cr>")
+_G.completion_confirm = function()
+  if vim.fn.pumvisible() ~= 0 then
+    return npairs.esc '<cr>'
   else
     return npairs.autopairs_cr()
   end
@@ -139,9 +139,8 @@ function M.setup()
 
   -- auto-pairs
   -- weirdly workds after a few times
-  map('i' , '<cr>', 'v:lua.completion_confirm()', {expr = true})
-  
-  
+  map('i', '<cr>', 'v:lua.completion_confirm()', { expr = true })
+
   -- map('n', 'i', '<nop>')
   -- map('n', 'a', '<nop>')
   -- map('n', 'I', 'i')
@@ -417,8 +416,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     wk.register({
-      ['<a-p>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },
-      ['<a-n>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
+      -- ['<a-p>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },
+      -- ['<a-n>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
       ['<a-h>'] = { "<cmd>lua require('Navigator').left()<cr>", 'window left' },
       ['<a-j>'] = { "<cmd>lua require('Navigator').down()<cr>", 'window down' },
       ['<a-k>'] = { "<cmd>lua require('Navigator').up()<cr>", 'window up' },
@@ -427,6 +426,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>lua require('Navigator').previous()<cr>",
         'window back',
       },
+      ['<a-a>'] = { '<cmd>e#<cr>', 'previous buffer'},
+      ['<a-p>'] = { '<cmd>BufferPick<cr>', 'previous pick'},
+      ['<a-P>'] = { '<cmd>BufferPin<cr>', 'previous pin'},
+
       ['<a-x>'] = { '<cmd>BufferClose!<cr>', 'close buffer' },
       ['<a-X>'] = { '<cmd>tabnew#<cr>', 'close buffer' },
       ['<a-o>'] = {
@@ -452,7 +455,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         'previous occurence',
       },
       ['<c-q>'] = { '<cmd>qa!<cr>', 'quit' },
-      ['<c-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
+      ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       -- ['<c-w>'] = {
       --   L = { '<cmd>vsplit<cr>', 'split left' },
@@ -940,6 +943,38 @@ M.plugins = {
       ['n <leader>hp'] = '<cmd>lua require"gitsigns".preview_hunk()<cr>',
       ['n <leader>hb'] = '<cmd>lua require"gitsigns".blame_line()<cr>',
     },
+  },
+  nvim_tree = {
+    ['<cr>'] = 'edit',
+    ['<C-x>'] = 'split',
+    ['<C-t>'] = 'tabnew',
+    ['<'] = 'prev_sibling',
+    ['>'] = 'next_sibling',
+    h = 'parent_node',
+    ['<BS>'] = 'close_node',
+    ['<S-CR>'] = 'close_node',
+    ['<Tab>'] = 'preview',
+    K = 'first_sibling',
+    J = 'last_sibling',
+    I = 'toggle_ignored',
+    ['.'] = 'toggle_dotfiles',
+    R = 'refresh',
+    a = 'create',
+    d = 'remove',
+    r = 'rename',
+    ['<C-r>'] = 'full_rename',
+    x = 'cut',
+    c = 'copy',
+    p = 'paste',
+    y = 'copy_name',
+    Y = 'copy_path',
+    gy = 'copy_absolute_path',
+    ['[c'] = 'prev_git_item',
+    [']c'] = 'next_git_item',
+    ['-'] = 'dir_up',
+    s = 'system_open',
+    q = 'close',
+    ['g?'] = 'toggle_help',
   },
 }
 

@@ -1,5 +1,4 @@
-local install_path = vim.fn.stdpath 'data'
-  .. '/site/pack/packer/start/packer.nvim'
+local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.fn.system {
@@ -318,7 +317,7 @@ return require('packer').startup(function()
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons',
     config = function()
-      table.insert(_G.pre_save_cmds, 'BufferOrderByDirectory')
+      require 'plugins.nvim-tree'.config()
     end,
   }
   use {
@@ -557,7 +556,6 @@ return require('packer').startup(function()
 
   -- themes
   use 'rafamadriz/neon'
-  -- classics
   use 'ishan9299/nvim-solarized-lua'
   use 'sainnhe/gruvbox-material'
   use { 'rose-pine/neovim', as = 'rose-pine' }
@@ -576,13 +574,6 @@ return require('packer').startup(function()
       })
     end,
   }
-  use {
-    'jghauser/mkdir.nvim',
-    config = function()
-      require 'mkdir'
-    end,
-  }
-  use 'tpope/vim-eunuch'
   use {
     'henriquehbr/nvim-startup.lua',
     config = function()

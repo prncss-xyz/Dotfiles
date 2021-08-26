@@ -75,7 +75,7 @@ focus_on_window_activation smart
 for_window [window_role="pop-up"] floating enable
 for_window [app_id="dmenu.*"] floating enable, sticky enable, resize set width 60ppt height 80ppt
 for_window [title="mv_pictures"] floating enable, sticky enable, resize set width 60ppt height 80ppt
-for_window [app_id="^launcher$"] floating enable, sticky enable, resize set 30 ppt 60 ppt, border pixel 10
+for_window [app_id="^launcher$"] floating enable, sticky enable, resize set width 60ppt height 80ppt
 
 ### Styling
 

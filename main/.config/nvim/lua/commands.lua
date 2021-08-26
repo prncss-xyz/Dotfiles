@@ -108,4 +108,27 @@ command('OnlyBuffer', {}, function()
   end
 end)
 
+
+local function alts(patterns, file)
+  for _, pattern in ipairs(patterns) do
+    if file:match(pattern[1]) then
+      return file:gsub(pattern[1], pattern[2])
+    end
+  end
+end
+
+local function setupAlts(rules)
+  command('AltTest', {}, function()
+    local alt = alts(rules, vim.fn.expand '%')
+    if alt then
+      vim.cmd('e ' .. alt)
+    end
+  end)
+end
+
+setupAlts {
+  { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
+  { '(.+)(%.[%w%d]+)$', '%1.test%2' },
+}
+
 -- require 'telescope/md'

@@ -111,4 +111,3 @@ ls.snippets = {
     }),
   },
 }
-require('templates').setup()

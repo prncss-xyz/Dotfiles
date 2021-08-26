@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+echo "1" > /tmp/imv-do
+comm="kitty --class=launcher -e mvf \"$1\""
+swaymsg exec "$comm"
+
+

@@ -1,14 +1,6 @@
 local augroup = require('utils').augroup
 local dotfiles = os.getenv 'DOTFILES'
 
-augroup('MakeExecutable', {
-  {
-    events = { 'BufWritePost' },
-    targets = { dotfiles .. '*/.local/bin/*' },
-    command = 'Chmod +x',
-  },
-})
-
 -- TODO: make executable
 
 --- automatically clear commandline messages after a few seconds delay

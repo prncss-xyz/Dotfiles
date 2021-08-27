@@ -162,7 +162,7 @@ local function get_current_file_name()
   return file .. ' '
 end
 
-local function lift(val)
+local function constant(val)
   return function()
     return val
   end
@@ -199,7 +199,7 @@ end
 gls.left = {
   {
     Spacer2 = {
-      provider = lift ' ',
+      provider = constant ' ',
       highlight = { text, background2 },
     },
   },
@@ -230,7 +230,7 @@ gls.left = {
   },
   {
     Spacer3 = {
-      provider = lift ' ',
+      provider = constant ' ',
       highlight = { text, background },
     }
   },
@@ -305,26 +305,20 @@ gls.right = {
 gls.short_line_left = {
   {
     Spacer2B = {
-      provider = lift ' ',
+      provider = constant ' ',
       highlight = { text, background },
     },
   },
   {
     FileIconB = {
-      provider = lift '   ',
+      provider = constant '   ',
       separarator_highlight = { text, background },
       highlight = { text, background },
     },
   },
   {
     FileNameB = {
-      provider = function()
-        local name = vim.api.nvim_eval '@%'
-        if name == 'Trouble' then
-          return trouble_mode()
-        end
-        return name
-      end,
+      provider = getDisplayname,
       separator = ' ',
       separator_highlight = { background, background },
       highlight = { text, background },
@@ -332,7 +326,7 @@ gls.short_line_left = {
   },
   {
     Spacer3B = {
-      provider = lift ' ',
+      provider = constant ' ',
       highlight = { text, background },
     },
   },

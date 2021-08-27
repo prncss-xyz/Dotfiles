@@ -1,4 +1,3 @@
-local ac = require 'anywise_compat'
 
 -- anywise-reg + cutlass
 local function map(modes, lhs, rhs, opts)
@@ -21,8 +20,10 @@ local textobjects = {
 }
 
 local anywise = false
-local opt = 'anywise'
+-- local opt = 'anywise'
+local opt = 'caca'
 if opt == 'anywise' then
+  local ac = require 'anywise_compat'
   ac.setup(textobjects)
   require('anywise_reg').setup {
     operators = {},

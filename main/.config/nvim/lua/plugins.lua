@@ -316,6 +316,9 @@ return require('packer').startup(function()
   use {
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons',
+    setup = function()
+      require 'plugins.nvim-tree'.setup()
+    end,
     config = function()
       require 'plugins.nvim-tree'.config()
     end,

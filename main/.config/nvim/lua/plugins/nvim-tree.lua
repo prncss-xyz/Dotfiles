@@ -34,11 +34,14 @@ M.config = function()
     })
   end
   vim.g.nvim_tree_bindings = bindings
+
   require('nvim-tree.events').on_file_created(function(ev)
     local fname = ev.fname
+    -- makes relevant files executables
     if fname:match '/%.local/bin/' or fname:match '^%.local/bin/' then
       os.execute(string.format('chmod +x %q', fname))
     end
+    -- when new file belongs to an active stow package, stow it
     local dots = os.getenv 'DOTFILES'
     if vim.fn.getcwd() == dots then
       local stow_package = fname:match('^(.-)/', #dots + 2)
@@ -51,6 +54,7 @@ M.config = function()
       end
     end
     vim.cmd(string.format('e %s', fname))
+    -- applies template if relevant
     require('templates').template_match()
   end)
 end

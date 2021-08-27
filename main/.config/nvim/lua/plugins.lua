@@ -1,4 +1,5 @@
-local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
+local install_path = vim.fn.stdpath 'data'
+  .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.fn.system {
@@ -12,7 +13,7 @@ end
 
 return require('packer').startup(function()
   use 'wbthomason/packer.nvim'
-  use_rocks 'iconv'
+  -- use_rocks 'iconv'
   use 'tami5/sql.nvim'
   use {
     'nvim-lua/plenary.nvim',
@@ -69,7 +70,7 @@ return require('packer').startup(function()
           table.insert(_G.pre_save_cmds, 'NvimTreeClose')
         end,
       },
-      'haringsrob/nvim_context_vt',
+      -- 'haringsrob/nvim_context_vt',
     },
   }
 
@@ -239,7 +240,7 @@ return require('packer').startup(function()
       require('plugins.telescope').setup()
     end,
     requires = {
-      'nvim-telescope/telescope-fzy-native.nvim',
+      {'nvim-telescope/telescope-fzf-native.nvim', run='make'},
       'nvim-telescope/telescope-symbols.nvim',
       'crispgm/telescope-heading.nvim',
       '~/Media/Projects/telescope-bookmarks.nvim',
@@ -317,10 +318,10 @@ return require('packer').startup(function()
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons',
     setup = function()
-      require 'plugins.nvim-tree'.setup()
+      require('plugins.nvim-tree').setup()
     end,
     config = function()
-      require 'plugins.nvim-tree'.config()
+      require('plugins.nvim-tree').config()
     end,
   }
   use {
@@ -536,12 +537,18 @@ return require('packer').startup(function()
       }
     end,
   }
-  use {
-    'folke/persistence.nvim',
-    config = function()
-      require('persistence').setup()
-    end,
-  }
+  -- use {
+  --   'folke/persistence.nvim',
+  --   config = function()
+  --     require('persistence').setup()
+  --   end,
+  -- }
+  -- use {
+  --   'ahmedkhalf/project.nvim',
+  --   config = function()
+  --     require('project_nvim').setup {}
+  --   end,
+  -- }
   use {
     'rmagatti/auto-session',
     config = function()
@@ -552,10 +559,6 @@ return require('packer').startup(function()
       module = 'session-lens',
     },
   }
-  -- use {
-  --   'ahmedkhalf/project.nvim',
-  --   require('project_nvim').setup {},
-  -- }
 
   -- themes
   use 'rafamadriz/neon'

@@ -1,6 +1,4 @@
 #!/usr/bin/env sh
-echo "1" > /tmp/imv-do
-comm="kitty --class=launcher -e mvf \"$1\""
+comm=$(printf "kitty --class=launcher -e mvf %q" "$1")
+echo "$comm"
 swaymsg exec "$comm"
-
-

@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
 name="$1"
+export DEST="$DOTFILES/_templates"
 
 step() {
 	# dir dir/name.ext dir/name.ext.esh
-	mkdir -p ~/"$1"
+	mkdir -p "$DEST/$1"
   echo $1 $2 $3
-  echo "envsubst" '< ' "$HOME/.config/theming/$3/$2" ">" ~/"$2"
-  envsubst < "$HOME/.config/theming/$3/$2" > ~/"$2"
+  echo "envsubst" '< ' "$HOME/.config/theming/$3/$2" ">" "$DEST"/"$2"
+  envsubst < "$HOME/.config/theming/$3/$2" > "$DEST"/"$2"
 }
 export -f step
 
@@ -18,11 +19,13 @@ export accent="$color6"
 export primary="$color12"
 export font="Montserrat"
 
-source ~/.config/theming/extra/"$name".sh
+source "$HOME/.config/theming/extra/$name".sh
 
+stow -D _templates
 fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {} skeleton'
 echo 'bis'
 if [ -d "$HOME/.config/theming/$name" ]; then
   echo 'ter'
 	fd -H --type l --base-directory "$HOME/.config/theming/specific/$name" -x sh -c "step {//} {} specific/$name"
 fi
+stow _templates

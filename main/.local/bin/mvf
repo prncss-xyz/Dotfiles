@@ -1,9 +1,6 @@
-#!/usr/bin/env sh
+#!/bin/env sh
 
 inp="$1"
-if [ -z "$inp" ]; then
-  inp="$(cat /tmp/mvf)"
-fi
 source=$(realpath "$inp")
 FPATH="$inp"
 FNAME=$(basename "$inp")

@@ -1,4 +1,4 @@
 [binds]
-m = exec imv-do $imv_current_file
+m = exec imv-do "$imv_current_file"
 M = exec imv-do
 

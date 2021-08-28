@@ -28,4 +28,3 @@ if [ -d "$HOME/.config/theming/$name" ]; then
   echo 'ter'
 	fd -H --type l --base-directory "$HOME/.config/theming/specific/$name" -x sh -c "step {//} {} specific/$name"
 fi
-stow _templates

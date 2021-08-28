@@ -240,7 +240,7 @@ return require('packer').startup(function()
       require('plugins.telescope').setup()
     end,
     requires = {
-      {'nvim-telescope/telescope-fzf-native.nvim', run='make'},
+      { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
       'nvim-telescope/telescope-symbols.nvim',
       'crispgm/telescope-heading.nvim',
       '~/Media/Projects/telescope-bookmarks.nvim',
@@ -358,12 +358,6 @@ return require('packer').startup(function()
     setup = function()
       local deep_merge = require('utils').deep_merge
       deep_merge(vim, require('bindings').plugins.signature)
-    end,
-  }
-  use {
-    'haya14busa/vim-asterisk',
-    setup = function()
-      vim.g['asterisk#keeppos'] = 1
     end,
   }
   use {
@@ -526,6 +520,13 @@ return require('packer').startup(function()
       require('nvim-projectconfig').load_project_config {
         project_dir = '~/Media/Projects/projects-config/',
       }
+      require('utils').augroup('NvimProjectConfig', {
+        {
+          events = { 'DirChanged' },
+          targets = { '*' },
+          command = require('nvim-projectconfig').load_project_config,
+        },
+      })
     end,
   }
   use {

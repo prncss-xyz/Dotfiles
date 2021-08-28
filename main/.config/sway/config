@@ -22,6 +22,8 @@ exec pactl set-sink-volume @DEFAULT_SINK@ 30%
 exec pactl set-sink-mute @DEFAULT_SINK@ 0
 for_window [title="^scratchpad$"] move scratchpad
 exec $term --title=scratchpad
+for_window [title="^ddgr$"] move scratchpad
+exec $term --title=ddgr -e ddgr
 exec ~/.local/bin/setbg-sway
 exec sleep 1; ~/.local/bin/browser
 exec mako

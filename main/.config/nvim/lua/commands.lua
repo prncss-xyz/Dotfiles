@@ -13,10 +13,6 @@ command('LaunchOSV', {}, function()
   end
 end)
 
-command('CheatDetect', {}, function()
-  vim.cmd('Cheat ' .. vim.bo.filetype .. ' ')
-end)
-
 command('EditSnippet', {}, function()
   vim.cmd(
     string.format(
@@ -108,27 +104,33 @@ command('OnlyBuffer', {}, function()
   end
 end)
 
+command('Conceal', {}, function()
+  vim.cmd [[
+syntax match True "true" conceal cchar=⊤
+syntax match False "false" conceal cchar=⊥
+      ]]
+end)
 
-local function alts(patterns, file)
-  for _, pattern in ipairs(patterns) do
+local alt_patterns = {
+  { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
+  { '(.+)(%.[%w%d]+)$', '%1.test%2' },
+}
+
+local function get_alt(file)
+  for _, pattern in ipairs(alt_patterns) do
     if file:match(pattern[1]) then
       return file:gsub(pattern[1], pattern[2])
     end
   end
 end
 
-local function setupAlts(rules)
-  command('AltTest', {}, function()
-    local alt = alts(rules, vim.fn.expand '%')
-    if alt then
-      vim.cmd('e ' .. alt)
-    end
-  end)
+local function edit_alt()
+  local alt = get_alt(vim.fn.expand '%')
+  if alt then
+    vim.cmd('e ' .. alt)
+  end
 end
 
-setupAlts {
-  { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
-  { '(.+)(%.[%w%d]+)$', '%1.test%2' },
-}
+command('EAlt', {}, edit_alt)
 
 -- require 'telescope/md'

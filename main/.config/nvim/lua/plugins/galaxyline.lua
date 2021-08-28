@@ -25,6 +25,9 @@ local trouble_mode = function()
 end
 
 local getDisplayname = function()
+  if vim.bo.filetype == 'Trouble' then
+    return trouble_mode()
+  end
   local file = vim.fn.expand '%:p'
   local cwd = vim.fn.getcwd()
   if file:find(cwd, 1, true) then
@@ -43,6 +46,9 @@ local line_column = function()
   return string.format('%3d:%02d ', line, column)
 end
 
+-- no fundamental raison to hack status bar for doing this
+-- yet status bar is not refreshed too often, so it's convenient
+-- also semantically related, as status bar takes care of not repeating this info
 local function set_title()
   -- git branch --show-current
   local branch
@@ -56,6 +62,7 @@ local function set_title()
     })
     :sync()
   -- local titlestring = ''
+  -- local titlestring = 'nvim — '
   local titlestring = ''
   local home = vim.loop.os_homedir()
   local dir = vim.fn.getcwd()
@@ -105,9 +112,6 @@ local background2 = colors.background2
 local warn = colors.warn
 local err = colors.error
 
-local separator = ' '
--- local separator = ''
-
 local function get_nvim_lsp_diagnostic(diag_type)
   if next(lsp.buf_get_clients(0)) == nil then
     return false
@@ -154,46 +158,14 @@ local function readonly()
   return ''
 end
 
-local function get_current_file_name()
-  local file = vim.fn.expand '%:t'
-  if vim.fn.empty(file) == 1 then
-    return ' '
-  end
-  return file .. ' '
-end
-
 local function constant(val)
   return function()
     return val
   end
 end
 
-local buffer_not_empty = function()
-  if vim.fn.empty(vim.fn.expand '%:t') ~= 1 then
-    return true
-  end
-  return false
-end
-
 local function line_count()
   return vim.fn.line '$'
-end
-
-local function current_line_tenth()
-  local current_line = vim.fn.line '.'
-  local total_line = vim.fn.line '$'
-  if current_line == 1 then
-    return '⊤ '
-  elseif current_line == vim.fn.line '$' then
-    return '⊥ '
-  end
-  local result = math.floor((current_line / total_line) * 10)
-  return result .. ' '
-end
-
-local function pwd()
-  return vim.api.nvim_eval 'b:pwd' .. ' '
-  --return vim.bo.pwd
 end
 
 gls.left = {
@@ -272,12 +244,6 @@ gls.left = {
 }
 
 gls.right = {
-  --  {
-  --    Pwd = {
-  --      provider = pwd,
-  --      highlight = {text, background}
-  --    }
-  --  },
   {
     LineColumn = {
       provider = line_column,
@@ -355,68 +321,3 @@ gls.short_line_left = {
     },
   },
 }
-
-gls.short_line_right = {
-  -- {
-  --   LineColumnB = {
-  --     provider = 'LineColumn',
-  --     separator = ' ',
-  --     separator_highlight = { background, background },
-  --     highlight = { text, background },
-  --   },
-  -- },
-  -- {
-  --   TeenthB = {
-  --     provider = current_line_tenth,
-  --     separator_highlight = { background, background },
-  --     highlight = { text, background },
-  --   },
-  -- },
-}
-
--- local zen = {}
--- local backgroundGoyo = vim.g.terminal_color_10
--- zen.left = {
--- 	{
--- 		Spacer2C = {
--- 			provider = lift(" "),
--- 			highlight = { text, backgroundGoyo },
--- 		},
--- 	},
--- 	{
--- 		FileNameC = {
--- 			provider = function()
--- 				return vim.fn.expand("%:t") .. " "
--- 			end,
--- 			highlight = { text, backgroundGoyo },
--- 		},
--- 	},
--- 	{
--- 		DiagnosticErrorC = {
--- 			provider = diagnostic_errors,
--- 			highlight = { text, backgroundGoyo },
--- 		},
--- 	},
--- 	{
--- 		DiagnosticWarnC = {
--- 			provider = diagnostic_warnings,
--- 			highlight = { text, backgroundGoyo },
--- 		},
--- 	},
--- }
--- zen.right = {
--- 	{
--- 		LineColumnC = {
--- 			provider = "LineColumn",
--- 			separator = " ",
--- 			separator_highlight = { background, backgroundGoyo },
--- 			highlight = { text, backgroundGoyo },
--- 		},
--- 		TeenthC = {
--- 			provider = current_line_tenth,
--- 			highlight = { text, backgroundGoyo },
--- 		},
--- 	},
--- }
-
--- return zen

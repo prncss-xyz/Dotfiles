@@ -50,11 +50,14 @@ deep_merge(vim, {
     wrap = true,
     grepprg = [[rg --glob "!.git" --no-heading --vimgrep --follow $*]],
     -- bufhidden = "wipe", -- this option seams to crash auto_session
-    title=true,
+    title = true,
   },
   g = {
     autosave = 1,
-    vim_markdown_folding_disabled = 0,
+    -- plasticboy/vim-markdown
+    -- vim_markdown_folding_disabled = 0,
+    vim_markdown_folding_level = 6,
+    vim_markdown_no_default_key_mappings = 1,
     vim_markdown_conceal_code_blocks = 0,
     vim_markodwn_frontmatter = 1,
     vim_markdown_toc_autofit = 1,
@@ -87,11 +90,13 @@ deep_merge(vim, {
     -- spelloptions = "camel",
     fillchars = 'eob: ',
     sessionoptions = 'curdir,folds',
+    foldlevel=20,
+    -- foldlevelstart=20,
   },
   env = {
     GIT_EDITOR = 'nvr',
     EDITOR = 'nvr',
   },
 })
-deep_merge(vim, require'bindings'.plugins.vim)
+deep_merge(vim, require('bindings').plugins.vim)
 -- deep_merge(vim, require('bindings').plugins.vim)

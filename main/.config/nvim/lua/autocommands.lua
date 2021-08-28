@@ -18,44 +18,6 @@ local dotfiles = os.getenv 'DOTFILES'
 --     end,
 --   },
 -- })
--- create symlink when new dotfile is created in active package
--- NB: DOTFILES must NOT end with '/'
--- local dotfiles = os.getenv 'DOTFILES'
--- local packages = os.getenv 'STOW_ACTIVE_PACKAGES' or ''
--- for package in packages:gmatch '%S+' do
---   local pkgdir = dotfiles .. '/' .. package
---   local pattern = pkgdir .. '/*'
---   augroup('Dotfiles_' .. package, {
---     {
---       events = { 'BufWritePost' },
---       targets = { pattern },
---       command = function()
---         local src = vim.fn.expand '%:p'
---         local dst = vim.fn.expand '~' .. src:sub(#pkgdir + 1)
---         Job
---           :new({
---             command = 'ln',
---             args = { '-s', src, dst },
---           })
---           :start()
---       end,
---     },
---   })
--- end
-
--- not working
--- augroup('Illuminate', {
---   events = {'BufReadPost'},
---   targets = '*',
---   -- command = 'hi illuminatedWord cterm=underline gui=underline'
---   command = 'hi link illuminatedWord IncSearch'
--- })
--- vim.cmd[[
--- augroup illuminate_augroup
---     autocmd!
---     autocmd VimEnter * hi link illuminatedWord IncSearch
--- augroup END
--- ]]
 
 augroup('TerminalNonumbers', {
   {
@@ -100,18 +62,9 @@ augroup('PackerCompile', {
   },
 })
 
--- augroup('NvimProjectConfig', {
---   {
---     events = { 'DirChanged' },
---     targets = { '*' },
---     command = require('nvim-projectconfig').load_project_config,
---   },
--- })
+
 -- vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
 
--- vim.cmd "autocmd cursorhold,cursorholdi * lua require'nvim-lightbulb'.update_lightbulb()"
-
--- vim.cmd"au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}"
 augroup('Autosave', {
   {
     events = { 'TabLeave', 'FocusLost', 'BufLeave' },

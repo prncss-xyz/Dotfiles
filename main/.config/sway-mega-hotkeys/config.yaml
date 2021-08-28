@@ -10,4 +10,4 @@ matcher:
     value: "Chromium"
 runner:
   terminal: "new_term"
-  browser: "browser ~/html/sampler.html"
+  browser: "browser --new-window"

@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-chromium --disk-cache-dir="$XDG_RUNTIME_DIR/chromium-cache" --enable-features=UseOzonePlatform --ozone-platform=wayland --remote-debugging-port=9222 --new-window "$@"
+chromium --disk-cache-dir="$XDG_RUNTIME_DIR/chromium-cache" --enable-features=UseOzonePlatform --ozone-platform=wayland --remote-debugging-port=9222 "$@"
 
 # case "$(realpath --relative-to=$HOME/Personal/Projects/ .)" in
 #   ..*)

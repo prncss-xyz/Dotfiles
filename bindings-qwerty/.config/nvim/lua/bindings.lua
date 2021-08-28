@@ -358,53 +358,22 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     'v:lua.s_tab_complete()',
     { expr = true, silent = true, noremap = false }
   )
+
+  -- searching
+  require 'auto_unhl'
+  map('', '*', '<nop>')
+  map('', '#', '<nop>')
+  map('', 'n', "n<cmd>lua require'auto_unhl'.post()<cr>")
+  map('', 'N', "N<cmd>lua require'auto_unhl'.post()<cr>")
+  map('n', jump .. 'q', "*N<cmd>lua require'auto_unhl'.post()<cr>")
+  map('n', jump .. 'Q', "g*N<cmd>lua require'auto_unhl'.post()<cr>")
   map(
-    '',
-    'n',
-    "<cmd>execute('normal! ' . v:count1 . 'nzz')<cr><cmd>lua require('hlslens').start()<cr>"
-  )
-  map(
-    '',
-    'N',
-    "<cmd>execute('normal! ' . v:count1 . 'Nzzt')<cr><cmd>lua require('hlslens').start()<cr>"
-  )
-  -- map(
-  --   '',
-  --   '*',
-  --   '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
-  --   { noremap = false }
-  -- )
-  -- map(
-  --   '',
-  --   '#',
-  --   '<plug>(asterisk-z#)<cmd>lua require"hlslens".start()<cr>',
-  --   { noremap = false }
-  -- )
-  -- map(
-  --   '',
-  --   'g*',
-  --   '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
-  --   { noremap = false }
-  -- )
-  -- map(
-  --   '',
-  --   'g#',
-  --   '<plug>(asterisk-gz#)<cmd>lua require"hlslens".start()<cr>',
-  --   { noremap = false }
-  -- )
-  map(
-    '',
+    'x',
     jump .. 'q',
-    '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
-    { noremap = false }
-  )
-  map(
-    '',
-    jump .. 'Q',
-    '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
-    { noremap = false }
+    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR>N<cmd>lua require'auto_unhl'.post()<cr>"
   )
 
+  -- matchup
   map('', jump .. 'c', '%', { noremap = false })
   map('', jump .. 'C', 'g%', { noremap = false })
   map('', jump .. 'y', '[%', { noremap = false })
@@ -422,11 +391,12 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       -- ['<a-j>'] = { "<cmd>lua require('Navigator').down()<cr>", 'window down' },
       -- ['<a-k>'] = { "<cmd>lua require('Navigator').up()<cr>", 'window up' },
       -- ['<a-l>'] = { "<cmd>lua require('Navigator').right()<cr>", 'window right' },
+      ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
       ['<a-h>'] = { '<cmd>wincmd h<cr>', 'window left' },
       ['<a-j>'] = { '<cmd>wincmd j<cr>', 'window down' },
       ['<a-k>'] = { '<cmd>wincmd k<cr>', 'window up' },
       ['<a-l>'] = { '<cmd>wincmd l<cr>', 'window right' },
-      ['<a-b>'] = { '<cmd>wincmd p<cr>', 'window back', },
+      ['<a-b>'] = { '<cmd>wincmd p<cr>', 'window back' },
       ['<a-a>'] = { '<cmd>e#<cr>', 'previous buffer' },
       ['<a-p>'] = { '<cmd>BufferPick<cr>', 'previous pick' },
       ['<a-P>'] = { '<cmd>BufferPin<cr>', 'previous pin' },
@@ -946,11 +916,12 @@ M.plugins = {
     },
   },
   nvim_tree = {
+    -- still use ijkl, gG, G
     ['<cr>'] = 'edit',
     ['<C-x>'] = 'split',
     ['<C-t>'] = 'tabnew',
-    N = 'prev_sibling',
-    n = 'next_sibling',
+    T = 'prev_sibling',
+    t = 'next_sibling',
     h = 'parent_node',
     ['<BS>'] = 'close_node',
     ['<S-CR>'] = 'close_node',
@@ -962,7 +933,7 @@ M.plugins = {
     R = 'refresh',
     a = 'create',
     d = 'remove',
-    r = 'rename',
+    s = 'rename',
     ['<C-r>'] = 'full_rename',
     x = 'cut',
     y = 'copy',
@@ -970,11 +941,11 @@ M.plugins = {
     ll = 'copy_name',
     lp = 'copy_path',
     lP = 'copy_absolute_path',
-    G = 'prev_git_item',
-    g = 'next_git_item',
+    V = 'prev_git_item',
+    v = 'next_git_item',
     H = 'dir_up',
     o = 'system_open',
-    f = 'close',
+    -- f = 'close',
     ['?'] = 'toggle_help',
   },
 }

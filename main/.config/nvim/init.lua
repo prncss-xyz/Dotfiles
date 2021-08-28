@@ -24,9 +24,6 @@ end
 
 require 'options'
 
-vim.cmd 'cabbrev help tab help'
-vim.cmd 'cabbrev h tab help'
-
 _G.post_restore_cmds = {}
 _G.pre_save_cmds = {}
 

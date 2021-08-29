@@ -4,8 +4,6 @@ if pr then
   vim.cmd('cd ' .. pr)
 end
 
-local isHome = (os.getenv 'HOME' == os.getenv 'PWD')
-
 require('auto-session').setup {
   log_level = 'error',
   auto_save_enabled = true,
@@ -14,3 +12,4 @@ require('auto-session').setup {
   post_restore_cmds = _G.post_restore_cmds,
   pre_save_cmds = _G.pre_save_cmds,
 }
+

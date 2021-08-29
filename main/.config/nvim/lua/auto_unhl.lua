@@ -22,15 +22,10 @@ function m.post()
     augroup END]]
 end
 
--- local map = require('utils').map
--- map( '', 'n', "n<cmd>lua require'auto_unhl'.post()<cr>")
--- map( '', 'N', "N<cmd>lua require'auto_unhl'.post()<cr>")
--- map('n', '*', "*N<cmd>lua require'auto_unhl'.post()<cr>")
--- map('n', 'g*', "g*N<cmd>lua require'auto_unhl'.post()<cr>")
--- map(
---   'x',
---   '*',
---   "y/\\V<C-R>=escape(@\",'/\\')<CR><CR>N<cr><cmd>lua require'auto_unhl'.post()<cr>"
--- )
+function _G.unhl_n()
+  local res = vim.o.hlsearch and 'n' or ''
+  res = res .. "\\<cmd>require'auto_unhl'.post()\\<cr>"
+  return res
+end
 
 return m

@@ -5,6 +5,7 @@ M.setup = function()
     nvim_tree_ignore = { '.git' },
     nvim_tree_gitignore = 1,
     nvim_tree_auto_open = 1,
+    nvim_tree_auto_close = 1,
     nvim_tree_ignore_ft = {},
     nvim_tree_quit_on_open = 1,
     nvim_tree_follow = 1,

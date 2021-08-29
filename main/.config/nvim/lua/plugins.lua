@@ -99,7 +99,6 @@ return require('packer').startup(function()
     config = function()
       require('plugins.lsp').setup()
     end,
-    -- needs to load early for trouble can integrate with telescope
     requires = {
       {
         'jose-elias-alvarez/null-ls.nvim',
@@ -234,12 +233,15 @@ return require('packer').startup(function()
   }
   use {
     'nvim-telescope/telescope.nvim',
-    event = 'CursorHold',
-    module_pattern = 'telescope.*',
     config = function()
       require('plugins.telescope').setup()
     end,
+    module = 'telescope',
+    module_pattern = 'telescope.*',
     requires = {
+      {
+        'cljoly/telescope-repo.nvim',
+      },
       { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
       'nvim-telescope/telescope-symbols.nvim',
       'crispgm/telescope-heading.nvim',
@@ -557,7 +559,6 @@ return require('packer').startup(function()
     end,
     requires = {
       'rmagatti/session-lens',
-      module = 'session-lens',
     },
   }
 

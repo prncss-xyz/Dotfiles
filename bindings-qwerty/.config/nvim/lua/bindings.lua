@@ -340,7 +340,14 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     'wilder#in_context() ? wilder#previous() : "\\<up>"',
     { expr = true }
   )
-
+  map(
+    'c',
+    '<tab>',
+    -- cannot make "autoselect" work
+    'wilder#can_accept_completion() ? wilder#accept_completion() : wilder#next()+"\\<cr>"',
+    { expr = true }
+  )
+  -- map('c', '<tab>', 'wilder#accept_completion(1)', {expr = true})
   map('c', '<c-a>', '<up>')
   map('c', '<c-x>', '<down>')
   -- map('c', '<tab>', '<tab><space>')
@@ -413,10 +420,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       ['<a-s-n>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
       ['<a-s-p>'] = { '<cmd>BufferMovePrevious<cr>', 'move buffer previous' },
 
-      ['<c-l>'] = {
-        "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
-        'nohlsearch',
-      },
+      -- ['<c-l>'] = {
+      --   "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
+      --   'nohlsearch',
+      -- },
       ['<c-n>'] = {
         '<cmd>lua require"illuminate".next_reference{wrap=true}<cr>',
         'next occurence',
@@ -425,7 +432,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>',
         'previous occurence',
       },
-      ['<c-q>'] = { '<cmd>xall!<cr>', 'quit' },
+      ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       -- ['<c-w>'] = {
@@ -627,7 +634,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
     },
     ['<leader>'] = {
-      i = { '<cmd>SearchSession<cr>', 'sessions' },
+      p = { '<cmd>SearchSession<cr>', 'sessions' },
+      P = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
       [';'] = {
         "<cmd>lua require('telescope.builtin').commands()<cr>",
         'commands',

@@ -62,14 +62,28 @@ augroup('PackerCompile', {
   },
 })
 
-
 -- vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
+
+augroup('SessionAsk', {
+  {
+    events = { 'VimEnter' },
+    targets = { '*' },
+    modifiers = { 'silent!' },
+    command = function () 
+      if (os.getenv 'HOME' == os.getenv 'PWD') then
+        require('session-lens').search_session()
+        -- require'telescope'.extensions.repo.list()
+      end
+    end,
+  },
+})
 
 augroup('Autosave', {
   {
-    events = { 'TabLeave', 'FocusLost', 'BufLeave' },
+    events = { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
     targets = { '*' },
     modifiers = { 'silent!' },
-    command = ':wa',
+    command = ':update',
   },
 })
+

@@ -27,7 +27,7 @@ local function setup_scheme()
     if type(package.scripts) == 'table' then
       if package.scripts.start == 'gatsby develop' then
         scheme.type = 'gatsty'
-        scheme.develop = { 'gatsby', 'develop' }
+        scheme.develop = 'gatsby develop'
         scheme.port = get_new_port()
       end
     end
@@ -48,27 +48,22 @@ require('utils').augroup('SetupSession', {
 })
 
 function m.launch()
-  local job = require 'plenary.job'
   if scheme.port then
-    -- launch browser
-    job
+    require('plenary.job')
       :new({
         command = browser,
-        args = { string.format('http://localhost:$d', scheme.port) },
+        args = { string.format('http://localhost:%d', scheme.port) },
       })
       :start()
   end
 end
 
 function m.develop()
-  -- launch command
-  local job = require 'plenary.job'
   if scheme.develop then
-    job
+    require('plenary.job')
       :new({
         command = 'setup-session',
-        args = scheme.develop,
-        env = { PORT = scheme.port },
+        args = { scheme.port, scheme.develop },
       })
       :start()
   end
@@ -77,5 +72,9 @@ function m.develop()
     m.launch()
   end
 end
+
+require('utils').command('SetupSessionInfo', {}, function()
+  print(Dump(scheme))
+end)
 
 return m

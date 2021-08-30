@@ -392,7 +392,6 @@ return require('packer').startup(function()
     end,
   }
   use {
-    -- "/Volumes/Data SSD/repos/nvim/tabout.nvim",
     'abecodes/tabout.nvim',
     config = function()
       require('tabout').setup {

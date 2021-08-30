@@ -28,14 +28,11 @@ _G.post_restore_cmds = {}
 _G.pre_save_cmds = {}
 
 require('signs').setup()
-
 require 'plugins'
+require('bindings').setup()
 require 'signs'
 require 'commands'
 require 'autocommands'
 require('theme').setup()
 require 'theme-exporter'
-
-if vim.fn.isdirectory(vim.o.directory) == 0 then
-  vim.fn.mkdir(vim.o.directory, 'p')
-end
+require 'setup-session'

@@ -1,28 +1,7 @@
 local M = {}
 local invert = require('utils').invert
 
--- local register0
--- local desc = ''
--- register0 = function (t, mode, prefix)
---   for key,value in pairs(t) do
---     if key == 'name' then
---       desc = desc .. prefix .. key .. ' -> +' .. value .. '\n'
---     else
---       if value[1] then
---       print(prefix..key,value[1], mode)
---       require'utils'.map(mode, prefix..key,value[1])
---       desc = desc .. prefix .. key .. ' -> ' .. value[2] .. '\n'
---       else
---         register0(value, mode, prefix..key)
---       end
---     end
---   end
--- end
--- local register = function (t, opts)
---   opts = opts or {}
---   register0(t, opts.mode or '', opts.prefix or '')
--- end
--- local wk = { register = register }
+-- mapclear
 
 M.plugins = {}
 
@@ -30,15 +9,39 @@ local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-local edit = 'm'
-local jump = 'g'
--- local mark = 'z'
-local move = 'q'
-local mark = 'M'
-local macro = 'Q'
-local editor = 'L'
-local help = 'H'
-local browser = 'Y'
+local a = invert {
+  m = 'edit',
+  g = 'jump',
+  q = 'move',
+  M = 'mark',
+  Q = 'macro',
+  L = 'editor',
+  H = 'help',
+  Y = 'browser',
+}
+
+local function s(char)
+  return '<s-' .. char .. '>'
+end
+
+local d = invert {
+  h = 'left',
+  l = 'right',
+  j = 'down',
+  k = 'up',
+  a = 'diagnostic',
+  s = 'symbol',
+  z = 'spell',
+  ['é'] = 'search',
+  [s 'É'] = 'searchBack',
+  L = 'loclist',
+  K = 'selection',
+}
+
+local r = invert {
+  a = 'outer',
+  i = 'inner',
+}
 
 local remap = vim.api.nvim_set_keymap
 local npairs = require 'nvim-autopairs'
@@ -78,17 +81,16 @@ function _G.s_tab_complete()
   -- emmet#moveNextPrev(1)
 end
 
-local function mapBrowserSearch(prefix, help0, mappings)
-  local wk = require 'which-key'
-  wk.register { [prefix] = { name = help0 } }
+local function mapBrowserSearch(register, prefix, help0, mappings)
+  register { [prefix] = { name = help0 } }
   for abbr, value in pairs(mappings) do
     local url, help = unpack(value)
-    wk.register({
+    register({
       [abbr] = { string.format('<cmd>BrowserSearchCword %s<cr>', url), help },
     }, {
       prefix = prefix,
     })
-    wk.register({
+    register({
       [abbr] = {
         string.format('"zy<cmd>BrowserSearchZ %s<cr>', url),
         help,
@@ -100,24 +102,21 @@ local function mapBrowserSearch(prefix, help0, mappings)
   end
 end
 
-local function up(str)
-  return string.upper(str)
-end
-
 function M.setup()
+  -- function M.setup(register)
+  local register = require 'which-key-fallback'
   local map = require('utils').map
-  local wk = require 'which-key'
 
   map('nx', '<leader><leader>', ':')
 
-  map('', edit, '<nop>')
-  map('', jump, '<nop>')
-  map('', move, '<nop>')
-  map('', mark, '<nop>')
-  map('', macro, '<nop>')
-  map('', editor, '<nop>')
-  map('', help, '<nop>')
-  map('', browser, '<nop>')
+  map('', a.edit, '<nop>')
+  map('', a.jump, '<nop>')
+  map('', a.move, '<nop>')
+  map('', a.mark, '<nop>')
+  map('', a.macro, '<nop>')
+  map('', a.editor, '<nop>')
+  map('', a.help, '<nop>')
+  map('', a.browser, '<nop>')
   map('', 'gg', '<nop>')
   map('', "g'", '<nop>')
   map('', 'g`', '<nop>')
@@ -126,8 +125,8 @@ function M.setup()
   map('', 'gg', '<nop>')
   map('n', '<c-h>', 'v:lua.edit_rel()', { expr = true })
   local function remark(new, old)
-    map('', mark .. new, '`' .. old)
-    map('', mark .. new, "'" .. old)
+    map('', a.mark .. new, '`' .. old)
+    map('', a.mark .. new, "'" .. old)
   end
   remark('V', '<')
   remark('v', '>')
@@ -135,10 +134,12 @@ function M.setup()
   remark('p', ']')
   map('n', 's', 'm')
   map('n', 'm', "'")
-  map('n', mark .. 'm', '`') -- not working ?? whichkwey
+  map('n', a.mark .. 'm', '`') -- not working ?? whichkwey
+
+  map('', 's', '<Plug>Lightspeed_s', { noremap = false })
+  map('', s's', '<Plug>Lightspeed_S', { noremap = false })
 
   -- auto-pairs
-  -- weirdly workds after a few times
   map('i', '<cr>', 'v:lua.completion_confirm()', { expr = true })
 
   -- map('n', 'i', '<nop>')
@@ -171,49 +172,49 @@ function M.setup()
 
   -- macrobatics
   -- map('n', macro .. macro, '<plug>(Mac_Play)', { noremap = false })
-  map('n', macro .. 'r', '<plug>(Mac_RecordNew)', { noremap = false })
-  map('n', macro .. 'n', '<plug>(Mac_RotateBack)', { noremap = false })
-  map('n', macro .. 'N', '<plug>(Mac_RotateForward)', { noremap = false })
-  map('n', macro .. 'a', '<plug>(Mac_Append)', { noremap = false })
-  map('n', macro .. 'A', '<plug>(Mac_Prepend)', { noremap = false })
-  map('n', macro .. 'w', '<plug>(Mac_NameCurrentMacro)', { noremap = false })
+  map('n', a.macro .. 'r', '<plug>(Mac_RecordNew)', { noremap = false })
+  map('n', a.macro .. 'n', '<plug>(Mac_RotateBack)', { noremap = false })
+  map('n', a.macro .. 'N', '<plug>(Mac_RotateForward)', { noremap = false })
+  map('n', a.macro .. 'a', '<plug>(Mac_Append)', { noremap = false })
+  map('n', a.macro .. 'A', '<plug>(Mac_Prepend)', { noremap = false })
+  map('n', a.macro .. 'w', '<plug>(Mac_NameCurrentMacro)', { noremap = false })
   map(
     'n',
-    macro .. 'fw',
+    a.macro .. 'fw',
     '<plug>(Mac_NameCurrentMacroForFileType)',
     { noremap = false }
   )
   map(
     'n',
-    macro .. 'sw',
+    a.macro .. 'sw',
     '<plug>(Mac_NameCurrentMacroForCurrentSession)',
     { noremap = false }
   )
   map(
     'n',
-    macro .. 'ér',
+    a.macro .. d.search .. 'r',
     '<plug>(Mac_SearchForNamedMacroAndOverwrite)',
     { noremap = false }
   )
   map(
     'n',
-    macro .. 'én',
+    a.macro .. d.search .. 'n',
     '<plug>(Mac_SearchForNamedMacroAndRename)',
     { noremap = false }
   )
   map(
     'n',
-    macro .. 'éd',
+    a.macro .. d.search .. 'd',
     '<plug>(Mac_SearchForNamedMacroAndDelete)',
     { noremap = false }
   )
   map(
     'n',
-    macro .. 'éq',
+    a.macro .. d.search .. 'q',
     '<plug>(Mac_SearchForNamedMacroAndPlay)',
     { noremap = false }
   )
-  map('n', macro .. 'l', 'DisplayMacroHistory')
+  map('n', a.macro .. 'l', 'DisplayMacroHistory')
 
   -- matze move
   vim.cmd [[
@@ -223,46 +224,71 @@ call submode#map('move', 'n', 'r', 'j', '<Plug>MoveLineDown')
 call submode#map('move', 'n', 'r', 'k', '<Plug>MoveLineUp')
 call submode#leave_with('move', 'n', '', '<Esc>')
 ]]
-  map('v', edit .. 'j', '<Plug>MoveBlockDown', { noremap = false })
-  map('v', edit .. 'k', '<Plug>MoveBlockUp', { noremap = false })
-  map('v', edit .. 'h', '<Plug>MoveBlockLeft', { noremap = false })
-  map('v', edit .. 'l', '<Plug>MoveBlockRight', { noremap = false })
-  map('n', edit .. 'l', '<Plug>MoveCharRight', { noremap = false })
-  map('n', edit .. 'h', '<Plug>MoveCharLeft', { noremap = false })
+  -- map('v', a.edit .. 'j', '<Plug>MoveBlockDown', { noremap = false })
+  -- map('v', a.edit .. 'k', '<Plug>MoveBlockUp', { noremap = false })
+  map('v', a.edit .. d.left, '<Plug>MoveBlockLeft', { noremap = false })
+  map('v', a.edit .. d.right, '<Plug>MoveBlockRight', { noremap = false })
+  map('n', a.edit .. d.left, '<Plug>MoveCharLeft', { noremap = false })
+  map('n', a.edit .. d.right, '<Plug>MoveCharRight', { noremap = false })
 
   -- exchange (repeat)
-  map('nx', edit .. 'x', '<Plug>(Exchange)', { noremap = false })
-  map('nx', edit .. edit .. 'x', '<Plug>(ExchangeLine)', { noremap = false })
-  map('nx', edit .. 'xc', '<Plug>(ExchangeClear)', { noremap = false })
+  map('nx', a.edit .. 'x', '<Plug>(Exchange)', { noremap = false })
+  map(
+    'nx',
+    a.edit .. a.edit .. 'x',
+    '<Plug>(ExchangeLine)',
+    { noremap = false }
+  )
+  map('nx', a.edit .. 'xc', '<Plug>(ExchangeClear)', { noremap = false })
 
   -- sandwich
-  map('', edit .. 'y', '<Plug>(operator-sandwich-add)', { noremap = false })
-  map('', edit .. 'r', '<Plug>(operator-sandwich-replace)', { noremap = false })
-  map('', edit .. 'Y', '<Plug>(operator-sandwich-delete)', { noremap = false })
+  map('', a.edit .. 'y', '<Plug>(operator-sandwich-add)', { noremap = false })
+  map(
+    '',
+    a.edit .. 'r',
+    '<Plug>(operator-sandwich-replace)',
+    { noremap = false }
+  )
+  map(
+    '',
+    a.edit .. 'Y',
+    '<Plug>(operator-sandwich-delete)',
+    { noremap = false }
+  )
   map('ox', 'ir', '<Plug>(textobj-sandwich-auto-i)', { noremap = false })
   map('ox', 'ar', '<Plug>(textobj-sandwich-auto-a)', { noremap = false })
   map('ox', 'iy', '<Plug>(textobj-sandwich-query-i)', { noremap = false })
   map('ox', 'ay', '<Plug>(textobj-sandwich-query-a)', { noremap = false })
 
   -- ninja feet
-  map('o', edit .. 'ni', '<Plug>(ninja-left-foot-inner)', { noremap = false })
-  map('o', edit .. 'na', '<Plug>(ninja-left-foot-a)', { noremap = false })
-  map('o', edit .. 'Ni', '<Plug>(ninja-right-foot-inner)', { noremap = false })
-  map('o', edit .. 'Na', '<Plug>(ninja-right-foot-a)', { noremap = false })
-  map('n', jump .. 'n', '<Plug>(ninja-insert)', { noremap = false })
-  map('n', jump .. 'N', '<Plug>(ninja-append)', { noremap = false })
+  map('o', a.edit .. 'ni', '<Plug>(ninja-left-foot-inner)', { noremap = false })
+  map('o', a.edit .. 'na', '<Plug>(ninja-left-foot-a)', { noremap = false })
+  map(
+    'o',
+    a.edit .. 'Ni',
+    '<Plug>(ninja-right-foot-inner)',
+    { noremap = false }
+  )
+  map('o', a.edit .. 'Na', '<Plug>(ninja-right-foot-a)', { noremap = false })
+  map('n', a.jump .. 'n', '<Plug>(ninja-insert)', { noremap = false })
+  map('n', a.jump .. 'N', '<Plug>(ninja-append)', { noremap = false })
 
   -- kommentary
   map(
     'n',
-    edit .. edit .. 'c',
+    a.edit .. a.edit .. 'c',
     '<Plug>kommentary_line_default',
     { noremap = false }
   )
-  map('n', edit .. 'c', '<Plug>kommentary_motion_default', { noremap = false })
+  map(
+    'n',
+    a.edit .. 'c',
+    '<Plug>kommentary_motion_default',
+    { noremap = false }
+  )
   map(
     'x',
-    edit .. 'c',
+    a.edit .. 'c',
     '<Plug>kommentary_visual_default<esc>',
     { noremap = false }
   )
@@ -277,9 +303,9 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   -- eft
   map('nx', ';', '<plug>(eft-repeat)', { noremap = false })
   map('nxo', 'f', '<plug>(eft-f)', { noremap = false })
-  map('nxo', 'F', '<plug>(eft-F)', { noremap = false })
+  map('nxo', '<s-f>', '<plug>(eft-F)', { noremap = false })
   map('nxo', 't', '<plug>(eft-t)', { noremap = false })
-  map('nxo', 'T', '<plug>(eft-T)', { noremap = false })
+  map('nxo', '<s-t>', '<plug>(eft-T)', { noremap = false })
 
   -- -- nohl on insert
   -- -- https://vi.stackexchange.com/questions/10407/stop-highlighting-when-entering-insert-mode
@@ -372,26 +398,26 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   map('', '#', '<nop>')
   map('', 'n', "n<cmd>lua require'auto_unhl'.post()<cr>")
   map('', 'N', "N<cmd>lua require'auto_unhl'.post()<cr>")
-  map('n', jump .. 'q', "*N<cmd>lua require'auto_unhl'.post()<cr>")
-  map('n', jump .. 'Q', "g*N<cmd>lua require'auto_unhl'.post()<cr>")
+  map('n', a.jump .. 'q', "*N<cmd>lua require'auto_unhl'.post()<cr>")
+  map('n', a.jump .. 'Q', "g*N<cmd>lua require'auto_unhl'.post()<cr>")
   map(
     'x',
-    jump .. 'q',
+    a.jump .. 'q',
     "y/\\V<C-R>=escape(@\",'/\\')<CR><CR>N<cmd>lua require'auto_unhl'.post()<cr>"
   )
 
   -- matchup
-  map('', jump .. 'c', '%', { noremap = false })
-  map('', jump .. 'C', 'g%', { noremap = false })
-  map('', jump .. 'y', '[%', { noremap = false })
-  map('', jump .. 'Y', ']%', { noremap = false })
-  map('', jump .. 'i', 'z%', { noremap = false })
+  map('', a.jump .. 'c', '%', { noremap = false })
+  map('', a.jump .. 'C', 'g%', { noremap = false })
+  map('', a.jump .. 'y', '[%', { noremap = false })
+  map('', a.jump .. 'Y', ']%', { noremap = false })
+  map('', a.jump .. 'i', 'z%', { noremap = false })
   map('o', 'ic', 'i%', { noremap = false })
   map('o', 'ac', 'a%', { noremap = false })
 
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
-    wk.register({
+    register({
       -- ['<a-p>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },
       -- ['<a-n>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
       -- ['<a-h>'] = { "<cmd>lua require('Navigator').left()<cr>", 'window left' },
@@ -420,10 +446,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       ['<a-s-n>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
       ['<a-s-p>'] = { '<cmd>BufferMovePrevious<cr>', 'move buffer previous' },
 
-      -- ['<c-l>'] = {
-      --   "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
-      --   'nohlsearch',
-      -- },
+      ['<c-l>'] = {
+        "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
+        'nohlsearch',
+      },
       ['<c-n>'] = {
         '<cmd>lua require"illuminate".next_reference{wrap=true}<cr>',
         'next occurence',
@@ -443,7 +469,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       mode = mode,
     })
     for i = 1, 9 do
-      wk.register({
+      register({
         [string.format('<a-%d>', i)] = {
           string.format('<cmd>BufferGoto %i<cr>', i),
           string.format('focus buffer %d', i),
@@ -455,14 +481,14 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   end
 
   -- for mode in string.gmatch('nx', '.') do
-  --   wk.register({}, {mode = mode})
+  --   register({}, {mode = mode})
   -- end
 
   -- nvo mappings
   for mode in string.gmatch('nvo', '.') do
-    wk.register({
+    register({
       -- local movements
-      [jump] = {
+      [a.jump] = {
         name = '+local movements',
         ['é'] = {
           "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
@@ -482,7 +508,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 
   -- visual selection
   for mode in string.gmatch('nx', '.') do
-    wk.register({
+    register({
       ['é'] = { '/', 'search' },
       ['É'] = { '?', 'backward' },
       K = {
@@ -490,7 +516,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         s = { '<c-v>', 'square selection' },
         K = { 'gv', 'reselect' },
       },
-      [edit] = {
+      [a.edit] = {
         name = '+edit',
         -- J = { 'gJ', 'join' },
         s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
@@ -522,8 +548,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   end
 
   -- n mappings
-  wk.register {
-    [editor] = {
+  register {
+    [a.editor] = {
       name = '+editor state',
       n = {
         "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
@@ -552,20 +578,27 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         'symbols',
       },
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
+      p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
     },
-    Y = {
+    [a.browser] = {
+      p = { "<cmd>lua require'setup-session'.launch()<cr>", 'session lauch' },
       b = {
         "<cmd>lua require('telescope').extensions.bookmarks.bookmarks()<cr>",
         'bookmarks',
       },
       u = {
+        '<Cmd>call jobstart(["opener, expand("<cfile>")], {"detach": v:true})<cr>',
+        'open current file',
+      },
+      o = {
         '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<cr>',
-        'open current url',
+        'open current file',
       },
       gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
       man = { '<cmd>BrowserMan<cr>', 'man page' },
     },
-    [jump] = {
+    [a.jump] = {
+      name = '+jump',
       a = { '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'go next diagnostic' },
       A = {
         '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
@@ -573,14 +606,14 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
       z = { ']s', 'next misspelled' },
       Z = { '[s', 'next misspelled' },
-      d = { ']c', 'jump to next change' },
-      D = { '[c', 'jump to previous change' },
-      r = { 'g,', 'jump to newer change' },
-      R = { 'g;', 'jump to older change' },
-      o = { '`.', 'jump to last change' },
-      O = { '``', 'jump to before last jump' },
+      d = { ']c', 'next change' },
+      D = { '[c', 'previous change' },
+      r = { 'g,', 'newer change' },
+      R = { 'g;', 'older change' },
+      o = { '`.', 'last change' },
+      O = { '``', 'before last jump' },
     },
-    [move] = {
+    [a.move] = {
       name = '+global movements',
       -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
       D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
@@ -756,7 +789,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     },
   }
 
-  mapBrowserSearch('Y', '+browser search', {
+  mapBrowserSearch(register, a.browser, '+browser search', {
     go = { 'https://google.ca/search?q=', 'google' },
     d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
     y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
@@ -789,25 +822,25 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 end
 
 local SignatureMap = invert {
-  [mark .. 'y'] = 'PlaceNextMark',
-  [mark .. 't'] = 'ToggleMarkAtLine',
-  [mark .. 'da'] = 'PurgeMarksAtLine',
-  [mark .. 'xa'] = 'DeleteMark',
-  [mark .. 'dA'] = 'PurgeMarks',
-  [mark .. 'sa'] = 'PurgeMarkers',
-  [mark .. 'ha'] = 'ListBufferMarkers',
-  [jump .. jump .. 'm'] = 'GotoNextLineAlpha',
-  [jump .. jump .. 'M'] = 'GotoPrevLineAlpha',
-  [jump .. 'm'] = 'GotoNextSpotAlpha',
-  [jump .. 'M'] = 'GotoPrevSpotAlpha',
-  [jump .. jump .. 'b'] = 'GotoNextLineByPos',
-  [jump .. jump .. 'B'] = 'GotoPrevLineByPos',
-  [jump .. 'b'] = 'GotoNextSpotByPos',
-  [jump .. 'B'] = 'GotoPrevSpotByPos',
-  [jump .. 'x'] = 'GotoNextMarker',
-  [jump .. 'X'] = 'GotoPrevMarker',
-  [jump .. 'e'] = 'GotoNextMarkerAny',
-  [jump .. 'E'] = 'GotoPrevMarkerAny',
+  [a.mark .. 'y'] = 'PlaceNextMark',
+  [a.mark .. 't'] = 'ToggleMarkAtLine',
+  [a.mark .. 'da'] = 'PurgeMarksAtLine',
+  [a.mark .. 'xa'] = 'DeleteMark',
+  [a.mark .. 'dA'] = 'PurgeMarks',
+  [a.mark .. 'sa'] = 'PurgeMarkers',
+  [a.mark .. 'ha'] = 'ListBufferMarkers',
+  [a.jump .. a.jump .. 'm'] = 'GotoNextLineAlpha',
+  [a.jump .. a.jump .. 'M'] = 'GotoPrevLineAlpha',
+  [a.jump .. 'm'] = 'GotoNextSpotAlpha',
+  [a.jump .. 'M'] = 'GotoPrevSpotAlpha',
+  [a.jump .. a.jump .. 'b'] = 'GotoNextLineByPos',
+  [a.jump .. a.jump .. 'B'] = 'GotoPrevLineByPos',
+  [a.jump .. 'b'] = 'GotoNextSpotByPos',
+  [a.jump .. 'B'] = 'GotoPrevSpotByPos',
+  [a.jump .. 'x'] = 'GotoNextMarker',
+  [a.jump .. 'X'] = 'GotoPrevMarker',
+  [a.jump .. 'e'] = 'GotoNextMarkerAny',
+  [a.jump .. 'E'] = 'GotoPrevMarkerAny',
 }
 SignatureMap.Leader = 'M'
 
@@ -822,9 +855,9 @@ M.plugins = {
     },
   },
   revJ = {
-    operator = edit .. 'j', -- for operator (+motion)
-    line = edit .. edit .. 'j', -- for formatting current line
-    visual = edit .. 'j', -- for formatting visual selection
+    operator = a.edit .. 'j', -- for operator (+motion)
+    line = a.edit .. a.edit .. 'j', -- for formatting current line
+    visual = a.edit .. 'j', -- for formatting visual selection
   },
   textobj = {
     g = {
@@ -953,7 +986,7 @@ M.plugins = {
     v = 'next_git_item',
     H = 'dir_up',
     o = 'system_open',
-    -- f = 'close',
+    q = 'close',
     ['?'] = 'toggle_help',
   },
 }

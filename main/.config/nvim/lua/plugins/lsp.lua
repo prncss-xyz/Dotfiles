@@ -1,5 +1,10 @@
 local M = {}
 
+-- Old signature:
+-- function(err, method, result, client_id, bufnr, config)
+-- New signature:
+-- function(err, result, ctx, config)
+
 local servers = {
   'bashls',
   'cssls',

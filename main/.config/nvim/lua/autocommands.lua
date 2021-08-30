@@ -1,24 +1,6 @@
 local augroup = require('utils').augroup
 local dotfiles = os.getenv 'DOTFILES'
 
--- TODO: make executable
-
---- automatically clear commandline messages after a few seconds delay
---- source: http//unix.stackexchange.com/a/613645
--- augroup('ClearCommandMessages', {
---   {
---     events = { 'CmdlineLeave', 'CmdlineChanged' },
---     targets = { ':' },
---     command = function()
---       vim.defer_fn(function()
---         if vim.fn.mode() == 'n' then
---           vim.cmd [[echon '']]
---         end
---       end, 10000)
---     end,
---   },
--- })
-
 augroup('TerminalNonumbers', {
   {
     events = { 'TermOpen' },
@@ -62,22 +44,6 @@ augroup('PackerCompile', {
   },
 })
 
--- vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
-
-augroup('SessionAsk', {
-  {
-    events = { 'VimEnter' },
-    targets = { '*' },
-    modifiers = { 'silent!' },
-    command = function () 
-      if (os.getenv 'HOME' == os.getenv 'PWD') then
-        require('session-lens').search_session()
-        -- require'telescope'.extensions.repo.list()
-      end
-    end,
-  },
-})
-
 augroup('Autosave', {
   {
     events = { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
@@ -87,3 +53,67 @@ augroup('Autosave', {
   },
 })
 
+local function set_title(branch)
+  -- local titlestring = ''
+  -- local titlestring = 'nvim — '
+
+  local titlestring = ''
+  local home = vim.loop.os_homedir()
+  local dir = vim.fn.getcwd()
+  if dir == home then
+    dir = '~'
+  else
+    local _, i = dir:find(home .. '/', 1, true)
+    if i then
+      dir = dir:sub(i + 1)
+    end
+  end
+  titlestring = titlestring .. dir
+  if branch then
+    titlestring = titlestring .. ' — ' .. branch
+    -- titlestring = titlestring .. ' ' .. branch .. ' — '
+  end
+  vim.cmd(string.format('let &titlestring=%q', titlestring))
+end
+
+local function set_title_plenary()
+  local job = require 'plenary.job'
+  local branch
+  job
+    :new({
+      command = 'git',
+      args = { 'branch', '--show-current' },
+      on_exit = function(j)
+        branch = j:result()[1]
+        vim.schedule(function()
+          set_title(branch)
+        end)
+      end,
+    })
+    :start()
+end
+
+local function set_title_gitsigns()
+  local branch = vim.b.gitsigns_head
+  if branch then
+    set_title(branch)
+  end
+end
+
+augroup('SetTitlePlenary', {
+  {
+    events = { 'DirChanged' },
+    targets = { '*' },
+    -- modifiers = { 'silent!' },
+    command = set_title_plenary,
+  },
+})
+
+augroup('SetTitleGitsigns', {
+  {
+    events = { 'DirChanged' },
+    targets = { '*' },
+    -- modifiers = { 'silent!' },
+    command = set_title_gitsigns,
+  },
+})

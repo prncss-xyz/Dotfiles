@@ -78,9 +78,7 @@ deep_merge(vim, {
     relativenumber = false,
     signcolumn = 'yes',
   },
-  -- vim.opt.{option}: behaves like :set
-  -- vim.opt_global.{option}: behaves like :setglobal
-  -- vim.opt_local.{option}: behaves like :setlocal
+  -- like set
   opt = {
     conceallevel = 2,
     secure = true, -- disable autocmd etc for project local vimrc files
@@ -93,10 +91,14 @@ deep_merge(vim, {
     foldlevel = 20,
     -- foldlevelstart=20,
   },
+  -- like setglobal
+  opt_global = {},
+  -- like setlocal
+  opt_local = {},
   env = {
     GIT_EDITOR = 'nvr',
     EDITOR = 'nvr',
   },
 })
+
 deep_merge(vim, require('bindings').plugins.vim)
--- deep_merge(vim, require('bindings').plugins.vim)

@@ -46,42 +46,6 @@ local line_column = function()
   return string.format('%3d:%02d ', line, column)
 end
 
--- no fundamental raison to hack status bar for doing this
--- yet status bar is not refreshed too often, so it's convenient
--- also semantically related, as status bar takes care of not repeating this info
-local function set_title()
-  -- git branch --show-current
-  local branch
-  Job
-    :new({
-      command = 'git',
-      args = { 'branch', '--show-current' },
-      on_exit = function(j)
-        branch = j:result()[1]
-      end,
-    })
-    :sync()
-  -- local titlestring = ''
-  -- local titlestring = 'nvim — '
-  local titlestring = ''
-  local home = vim.loop.os_homedir()
-  local dir = vim.fn.getcwd()
-  if dir == home then
-    dir = '~'
-  else
-    local _, i = dir:find(home .. '/', 1, true)
-    if i then
-      dir = dir:sub(i + 1)
-    end
-  end
-  titlestring = titlestring .. dir
-  if branch then
-    titlestring = titlestring .. ' — ' .. branch
-    -- titlestring = titlestring .. ' ' .. branch .. ' — '
-  end
-  vim.cmd(string.format('let &titlestring=%q', titlestring))
-end
-
 -- get current file name
 local function modified()
   local file = vim.fn.expand '%:t'
@@ -191,10 +155,7 @@ gls.left = {
   },
   {
     FileName = {
-      provider = function()
-        set_title()
-        return getDisplayname() .. ' '
-      end,
+      provider = getDisplayname,
       -- separator = separator,
       separator_highlight = { background, background2 },
       highlight = { text, background2 },

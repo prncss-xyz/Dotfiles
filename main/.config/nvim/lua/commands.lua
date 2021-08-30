@@ -61,6 +61,20 @@ command('BrowserSearchCword', { nargs = 1 }, function(base)
     :start()
 end)
 
+command('BrowserOpenCfile', {}, function ()
+  local word = vim.fn.expand '<cfile>'
+  if word:match('^[^.]+/[^.]+$') then
+    word = 'www.github.com/' .. word
+  end
+  print(word)
+  require('plenary.job')
+    :new({
+      command = browser,
+      args = { word },
+    })
+    :start()
+end)
+
 command('BrowserSearchZ', { nargs = 1 }, function(base)
   local word = vim.fn.getreg 'z'
   local qs = require('utils').encode_uri(word)
@@ -73,17 +87,17 @@ command('BrowserSearchZ', { nargs = 1 }, function(base)
     :start()
 end)
 
-command('BrowserSearchGh', {}, function()
-  local word = vim.fn.expand '<cWORD>'
-  local qs = word:match '[%w%d-_.]+/[%w%d-_.]+'
-  local url = 'https://github.com/' .. qs
-  require('plenary.job')
-    :new({
-      command = browser,
-      args = { url },
-    })
-    :start()
-end)
+-- command('BrowserSearchGh', {}, function()
+--   local word = vim.fn.expand '<cWORD>'
+--   local qs = word:match '[%w%d-_.]+/[%w%d-_.]+'
+--   local url = 'https://github.com/' .. qs
+--   require('plenary.job')
+--     :new({
+--       command = browser,
+--       args = { url },
+--     })
+--     :start()
+-- end)
 
 command('BrowserMan', {}, function()
   local word = vim.fn.expand '<cword>'

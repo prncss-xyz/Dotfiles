@@ -178,6 +178,7 @@ bindsym $mod+r mode "resize"
 #
 
 # Print screen
+# screenshot
 bindsym $mod+q exec GRIM_DEFAULT_DIR="$(xdg-user-dir PICTURES)/Captures" grim
 
 # Gaps tweaking

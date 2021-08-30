@@ -12,6 +12,8 @@ vim.cmd [[
   augroup END
 ]]
 
+-- TODO when leaveing buffer
+
 function m.post()
   vim.o.hlsearch = true
   require('hlslens').start()

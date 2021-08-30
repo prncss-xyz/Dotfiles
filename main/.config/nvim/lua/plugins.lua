@@ -325,6 +325,18 @@ return require('packer').startup(function()
     config = function()
       require('plugins.nvim-tree').config()
     end,
+    -- session manager destroys nvim-tree buffer which prevents nvim-tree from working
+    -- nvim-tree so needs to be loaded after the session is restored
+    cmd = {
+      'NvimTreeClipboard',
+      'NvimTreeClose',
+      'NvimTreeFindFile',
+      'NvimTreeFocus',
+      'NvimTreeOpen',
+      'NvimTreeRefresh',
+      'NvimTreeResize',
+      'NvimTreeToggle',
+    },
   }
   use {
     'mbbill/undotree', -- FIXME
@@ -350,7 +362,6 @@ return require('packer').startup(function()
           },
         },
       }
-      require('bindings').setup()
     end,
   }
 
@@ -377,7 +388,6 @@ return require('packer').startup(function()
   use {
     'ggandor/lightspeed.nvim',
     config = function()
-      vim.cmd 'unmap s'
       require('lightspeed').setup {}
     end,
   }
@@ -558,9 +568,21 @@ return require('packer').startup(function()
       require 'plugins.auto-session'
     end,
     requires = {
+      disabled = true,
       'rmagatti/session-lens',
     },
   }
+  -- use {
+  --   'Shatur/neovim-session-manager',
+  --   setup = function()
+  --     require('utils').deep_merge(vim.g, {
+  --       session_dir = os.getenv 'HOME' .. 'Media/sessions',
+  --     })
+  --   end,
+  --   config = function()
+  --     require('telescope').load_extension 'session_manager'
+  --   end,
+  -- }
 
   -- themes
   use 'rafamadriz/neon'
@@ -580,6 +602,9 @@ return require('packer').startup(function()
           ['.'] = { language = 'auto' },
         },
       })
+    end,
+    config = function()
+      vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
     end,
   }
   use {

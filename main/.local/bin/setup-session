@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+dirname=$(realpath --relative-base="$PROJECTS" "$PWD")
+# source <(pass show "session/$dirname") 2>/dev/null
+pass show "session/$dirname"|. 2>/dev/null
+
+uuid=$(uuidgen)
+mkfifo "/tmp/$uuid"
+
+exec $TERMINAL -e bash "/tmp/$uuid"&
+echo "$@" >"/tmp/$uuid"

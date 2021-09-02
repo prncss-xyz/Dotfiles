@@ -1,4 +1,6 @@
 local ls = require 'luasnip'
+require('luasnip/loaders/from_vscode').lazy_load()
+
 local s = ls.snippet
 local sn = ls.snippet_node
 local t = ls.text_node
@@ -7,14 +9,15 @@ local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 
-require('luasnip/loaders/from_vscode').lazy_load {
-  paths = os.getenv 'PROJECTS' .. '/closet',
-}
+-- require('luasnip/loaders/from_vscode').lazy_load {
+--   paths = os.getenv 'PROJECTS' .. '/closet',
+-- }
 
 local p = require('luasnip.extras').partial
 --
 -- not succeding to access system clipboard through LSP protocol
 -- using vim api instead
+
 local function clip_to_snip()
   local clip = vim.fn.getreg '+'
   local lines = {}
@@ -63,6 +66,13 @@ ls.snippets = {
       { trig = '*.lua' },
       { t { 'local m = {}', '', '' }, i(0), t { '', '', 'return m' } }
     ),
+    s({ trig = '*/.local/bin/*.*' }, {}),
+    s({
+      trig = '*/.local/bin/*',
+    }, {
+      t '#!/usr/bin/env sh',
+      t { '', '' },
+    }),
   },
   lua = {
     s({ trig = 'snippet' }, {
@@ -111,3 +121,5 @@ ls.snippets = {
     }),
   },
 }
+
+require 'templates'

@@ -96,3 +96,4 @@ if [ -n "$result" ]; then
 	mv "$source" "$result"
 	echo "$PWD/$result/$FNAME" >/tmp/mvf
 fi
+

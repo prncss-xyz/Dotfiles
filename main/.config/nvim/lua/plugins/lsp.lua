@@ -90,7 +90,7 @@ function M.setup()
       augroup END
       ]]
     end
-    require('illuminate').on_attach(client)
+    -- require('illuminate').on_attach(client)
   end
 
   local function on_attach_ts(client, buffnr)

@@ -157,6 +157,7 @@ gls.left = {
     FileName = {
       provider = getDisplayname,
       -- separator = separator,
+      separator = ' ',
       separator_highlight = { background, background2 },
       highlight = { text, background2 },
     },

@@ -9,6 +9,36 @@ local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
+local function s(char)
+  return '<s-' .. char .. '>'
+end
+
+local function safe_merge(inv, dir, new)
+  for key, value in pairs(new) do
+    if dir[key] then
+      print(
+        string.format(
+          'key %q in conflict, %q is declared, trying to add %q',
+          key,
+          dir[key],
+          value
+        )
+      )
+    elseif inv[value] then
+      print(
+        string.format(
+          'trying to add value %q to %q, while it is already attached to %q',
+          value,
+          key,
+          inv[value]
+        )
+      )
+    else
+      inv[value] = key
+    end
+  end
+end
+
 local a = invert {
   m = 'edit',
   g = 'jump',
@@ -19,12 +49,7 @@ local a = invert {
   H = 'help',
   Y = 'browser',
 }
-
-local function s(char)
-  return '<s-' .. char .. '>'
-end
-
-local d = invert {
+local d0 = {
   h = 'left',
   l = 'right',
   j = 'down',
@@ -38,40 +63,102 @@ local d = invert {
   K = 'selection',
 }
 
+-- map('é', 'search', {
+--   jump = {'/', '?'},
+--   d'jump' = 'k',
+--   move = '<cmd><cr>',
+-- }, {expr=true})
+
+local function append(word)
+  return function(str)
+    return str .. word
+  end
+end
+
+local function prepend(word)
+  return function(str)
+    return str .. word
+  end
+end
+
+local adapters = {
+  default = { append ' next', append ' previous' },
+  un = { prepend '', prepend 'un' },
+  time = { append ' forward', append 'back' },
+}
+
+local function d(key)
+  return {
+    type = 'doubler',
+    adapter = function(str)
+      return 'line ' .. str
+    end,
+  }
+end
+
+local function id(x)
+  return x
+end
+
+local function allmap(key, name, maps, opts)
+  local register = require 'which-key-fallback'
+  for domain, lhs in pairs(maps) do
+    local adapter2 = id
+    local k = key
+    if type(domain) == 'table' then
+      adapter2 = domain.adapter
+      k = key .. key
+    end
+    if type(lhs == 'table') then
+      local adapter = adapters[lhs.typ or 'default']
+      register({ a[domain] .. k, lhs[1], adapter2(adapter[1](name)) }, opts)
+      register({ a[domain] .. s(k), lhs[2], adapter2(adapter[2](name)) }, opts)
+    else
+      register({ a[domain] .. k, lhs, name }, opts)
+    end
+  end
+end
+
+local d = invert(d0)
+
+safe_merge(d, d0, {})
+
 local r = invert {
   a = 'outer',
   i = 'inner',
 }
 
-local remap = vim.api.nvim_set_keymap
-local npairs = require 'nvim-autopairs'
+-- _G.completion_confirm = function()
+--   local npairs = require 'nvim-autopairs'
+--   if vim.fn.pumvisible() ~= 0 then
+--     return npairs.esc '<cr>'
+--   else
+--     return npairs.autopairs_cr()
+--   end
+-- end
 
-_G.completion_confirm = function()
-  if vim.fn.pumvisible() ~= 0 then
-    return npairs.esc '<cr>'
-  else
-    return npairs.autopairs_cr()
-  end
-end
-
-function _G.edit_rel()
-  return (':e ' .. vim.fn.expand '%:h' .. '/')
-end
-
--- https://github.com/folke/dot/blob/master/config/nvim/lua/config/compe.lua
-function _G.confirm()
+function _G.toggle_cmp()
+  local cmp = require 'cmp'
   if vim.fn.pumvisible() == 1 then
-    return vim.fn['compe#confirm'] { keys = '<cr>', select = true }
+    cmp.close()
   else
-    return require('nvim-autopairs').autopairs_cr()
+    cmp.complete() -- not working
   end
 end
 
 function _G.tab_complete()
+  local cmp = require 'cmp'
   if vim.fn.pumvisible() == 1 then
-    return (vim.fn['compe#confirm'] { keys = '<cr>', select = true })
+    cmp.confirm {
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    }
   end
-  return require('luasnip').jump(1) and '' or t '<Plug>(TaboutMulti)'
+  local r = require('luasnip').jump(1)
+  if r then
+    return
+  end
+  vim.fn.feedkeys(t '<Plug>(TaboutMulti)', '')
   -- emmet#moveNextPrev(0)
 end
 
@@ -123,7 +210,6 @@ function M.setup()
   map('', 'g~', '<nop>')
   map('', 'gg', '<nop>')
   map('', 'gg', '<nop>')
-  map('n', '<c-h>', 'v:lua.edit_rel()', { expr = true })
   local function remark(new, old)
     map('', a.mark .. new, '`' .. old)
     map('', a.mark .. new, "'" .. old)
@@ -137,10 +223,10 @@ function M.setup()
   map('n', a.mark .. 'm', '`') -- not working ?? whichkwey
 
   map('', 's', '<Plug>Lightspeed_s', { noremap = false })
-  map('', s's', '<Plug>Lightspeed_S', { noremap = false })
+  map('', s 's', '<Plug>Lightspeed_S', { noremap = false })
 
   -- auto-pairs
-  map('i', '<cr>', 'v:lua.completion_confirm()', { expr = true })
+  -- map('i', '<cr>', 'v:lua.completion_confirm()', { expr = true })
 
   -- map('n', 'i', '<nop>')
   -- map('n', 'a', '<nop>')
@@ -261,23 +347,26 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   map('ox', 'ay', '<Plug>(textobj-sandwich-query-a)', { noremap = false })
 
   -- ninja feet
-  map('o', a.edit .. 'ni', '<Plug>(ninja-left-foot-inner)', { noremap = false })
-  map('o', a.edit .. 'na', '<Plug>(ninja-left-foot-a)', { noremap = false })
+  map('o', a.edit .. 'Ni', '<Plug>(ninja-left-foot-inner)', { noremap = false })
+  map('o', a.edit .. 'Na', '<Plug>(ninja-left-foot-a)', { noremap = false })
   map(
     'o',
-    a.edit .. 'Ni',
+    a.edit .. 'ni',
     '<Plug>(ninja-right-foot-inner)',
     { noremap = false }
   )
-  map('o', a.edit .. 'Na', '<Plug>(ninja-right-foot-a)', { noremap = false })
-  map('n', a.jump .. 'n', '<Plug>(ninja-insert)', { noremap = false })
-  map('n', a.jump .. 'N', '<Plug>(ninja-append)', { noremap = false })
+  map('o', a.edit .. 'na', '<Plug>(ninja-right-foot-a)', { noremap = false })
+  map('n', a.jump .. 'N', '<Plug>(ninja-insert)', { noremap = false })
+  map('n', a.jump .. 'n', '<Plug>(ninja-append)', { noremap = false })
+
+  -- case-change
+  map('v', 'mU', [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']])
 
   -- kommentary
   map(
     'n',
     a.edit .. a.edit .. 'c',
-    '<Plug>kommentary_line_default',
+    '<plug>kommentary_line_default',
     { noremap = false }
   )
   map(
@@ -346,13 +435,37 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     { expr = true, silent = true, noremap = false }
   )
 
-  -- compe
   map(
     'i',
-    '<c-space>',
-    "pumvisible() ? compe#close('<c-e>') : compe#complete()",
-    { expr = true, silent = true }
+    '<cr>',
+    'v:lua.MPairs.autopairs_cr()',
+    { expr = true, noremap = true }
   )
+  map('is', '<tab>', '<cmd>lua _G.tab_complete()<cr>')
+  map('is', '<c-space>', '<cmd>lua_G.toggle_cmp()<cr>')
+
+  -- -- compe
+  -- map(
+  --   'i',
+  --   '<c-space>',
+  --   "pumvisible() ? compe#close('<c-e>') : compe#complete()",
+  --   { expr = true, silent = true }
+  -- )
+  -- -- "pumvisible() ? compe#confirm({ 'keys': '<tab>', 'select': v:true }) : v:lua.tab_complete()",
+  -- map(
+  --   'is',
+  --   '<tab>',
+  --   'v:lua.tab_complete()',
+  --   { expr = true, silent = true, noremap = false }
+  -- )
+  map(
+    'is',
+    '<s-tab>',
+    'v:lua.s_tab_complete()',
+    { expr = true, silent = true, noremap = false }
+  )
+
+  -- wildmenu
   -- needed for tab-completion
   map(
     'c',
@@ -366,10 +479,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     'wilder#in_context() ? wilder#previous() : "\\<up>"',
     { expr = true }
   )
+  -- cannot make "autoselect" work
   map(
     'c',
     '<tab>',
-    -- cannot make "autoselect" work
     'wilder#can_accept_completion() ? wilder#accept_completion() : wilder#next()+"\\<cr>"',
     { expr = true }
   )
@@ -378,19 +491,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   map('c', '<c-x>', '<down>')
   -- map('c', '<tab>', '<tab><space>')
   -- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
-  map(
-    'is',
-    '<tab>',
-    'v:lua.tab_complete()',
-    -- "pumvisible() ? compe#confirm({ 'keys': '<tab>', 'select': v:true }) : v:lua.tab_complete()",
-    { expr = true, silent = true, noremap = false }
-  )
-  map(
-    'is',
-    '<s-tab>',
-    'v:lua.s_tab_complete()',
-    { expr = true, silent = true, noremap = false }
-  )
 
   -- searching
   require 'auto_unhl'
@@ -570,7 +670,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       S = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
       u = { '<cmd>UndotreeToggle<cr>', 'undo tree' },
       f = { '<cmd>NvimTreeFindFile<cr>', 'file tree' },
-      F = { '<cmd>NvimTreeClose<cr>', 'file tree' },
+      F = { "<cmd>lua os.execute('kitty -e xplr')<cr>", 'xplr' }, -- TODO: use $TERM
+      -- F = { '<cmd>NvimTreeClose<cr>', 'file tree' },
       d = { '<cmd>DiffviewOpen<cr>', 'diffview open' },
       D = { '<cmd>DiffviewClose<cr>', 'diffview close' },
       s = {
@@ -578,7 +679,12 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         'symbols',
       },
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
-      p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
+      p = {
+        "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
+        'session develop',
+      },
+      -- p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
+      g = { '<cmd>Neogit<cr>', 'neogit' },
     },
     [a.browser] = {
       p = { "<cmd>lua require'setup-session'.launch()<cr>", 'session lauch' },
@@ -587,11 +693,11 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         'bookmarks',
       },
       u = {
-        '<Cmd>call jobstart(["opener, expand("<cfile>")], {"detach": v:true})<cr>',
+        '<cmd>BrowserOpenCfile<cr>',
         'open current file',
       },
       o = {
-        '<Cmd>call jobstart(["opener", expand("<cfile>")], {"detach": v:true})<cr>',
+        '<cmd>call jobstart(["opener", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
         'open current file',
       },
       gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
@@ -800,7 +906,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     pac = { 'https://archlinux.org/packages/?q=', 'arch packages' },
     aur = { 'https://aur.archlinux.org/packages/?K=', 'aur packages' },
     sea = { 'https://www.seriouseats.com/search?q=', 'seriouseats' },
-    p = { 'https://www.persee.fr/search?ta=article&q=', 'persée' },
+    sp = { 'https://www.persee.fr/search?ta=article&q=', 'persée' },
     sep = { 'https://plato.stanford.edu/search/searcher.py?query=', 'sep' },
     cn = { 'https://www.cnrtl.fr/definition/', 'cnrtl' },
     usi = { 'https://usito.usherbrooke.ca/d%C3%A9finitions/', 'usito' },

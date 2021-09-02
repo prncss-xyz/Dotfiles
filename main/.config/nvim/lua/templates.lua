@@ -1,7 +1,4 @@
-local command = require('utils').command
 -- TODO - try to use regex captures
-
-local M = {}
 
 local templates
 
@@ -52,7 +49,7 @@ local function match(filename)
   end
 end
 
-function M.template_match()
+local function template_match()
   local template = match(vim.fn.expand '%')
   if template then
     local snippet = (template.value):copy()
@@ -65,4 +62,12 @@ end
 
 load_templates()
 
-return M
+require('utils').augroup('Templates', {
+  {
+    events = { 'BufNewFile' },
+    targets = { '*' },
+    command = function()
+      template_match()
+    end,
+  },
+})

@@ -40,6 +40,7 @@ function M.executable(e)
   return vim.fn.executable(e) > 0
 end
 
+-- ?? vim.tbl_deep_extend instead ??
 function M.deep_merge(t1, t2)
   for k, v in pairs(t2) do
     if (type(v) == 'table') and (type(t1[k] or false) == 'table') then

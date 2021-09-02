@@ -53,6 +53,7 @@ augroup('Autosave', {
   },
 })
 
+
 local function set_title(branch)
   -- local titlestring = ''
   -- local titlestring = 'nvim — '
@@ -104,7 +105,6 @@ augroup('SetTitlePlenary', {
   {
     events = { 'DirChanged' },
     targets = { '*' },
-    -- modifiers = { 'silent!' },
     command = set_title_plenary,
   },
 })
@@ -113,7 +113,6 @@ augroup('SetTitleGitsigns', {
   {
     events = { 'DirChanged' },
     targets = { '*' },
-    -- modifiers = { 'silent!' },
     command = set_title_gitsigns,
   },
 })

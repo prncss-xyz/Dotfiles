@@ -72,6 +72,8 @@ deep_merge(vim, {
       'bash=sh',
     },
     -- vim_markdown_conceal_code_blocks = 0,
+    -- vim-case-chage
+    casechange_nomap = 1,
   },
   wo = {
     number = false,
@@ -87,7 +89,7 @@ deep_merge(vim, {
     lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
     -- spelloptions = "camel",
     fillchars = 'eob: ',
-    sessionoptions = 'curdir,folds',
+    sessionoptions = 'curdir,folds,tabpages,winsize',
     foldlevel = 20,
     -- foldlevelstart=20,
   },

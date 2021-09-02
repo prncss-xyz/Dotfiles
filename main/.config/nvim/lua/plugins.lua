@@ -8,7 +8,7 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
     'https://github.com/wbthomason/packer.nvim',
     install_path,
   }
-  vim.api.nvim_command 'packadd packer.nvim'
+  vim.cmd 'packadd packer.nvim'
 end
 
 return require('packer').startup(function()
@@ -67,7 +67,6 @@ return require('packer').startup(function()
         'romgrk/nvim-treesitter-context',
         config = function()
           require('treesitter-context.config').setup {}
-          table.insert(_G.pre_save_cmds, 'NvimTreeClose')
         end,
       },
       -- 'haringsrob/nvim_context_vt',
@@ -75,7 +74,6 @@ return require('packer').startup(function()
   }
 
   -- extra syntax
-  use 'blankname/vim-fish'
   use 'potatoesmaster/i3-vim-syntax'
   use 'fladson/vim-kitty'
   use {
@@ -109,21 +107,13 @@ return require('packer').startup(function()
       {
         'folke/lua-dev.nvim',
       },
-      {
-        'RRethy/vim-illuminate',
-      },
+      -- {
+      --   'RRethy/vim-illuminate',
+      -- },
       {
         'kosayoda/nvim-lightbulb',
         config = function()
-          require('utils').augroup('NvimLightbulb', {
-            {
-              events = { 'CursorHold', 'CursorHoldI' },
-              targets = { '*' },
-              command = function()
-                require('nvim-lightbulb').update_lightbulb()
-              end,
-            },
-          })
+          vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
         end,
       },
       {
@@ -148,31 +138,32 @@ return require('packer').startup(function()
     },
   }
 
-  -- completion
   use {
-    'hrsh7th/nvim-compe',
-    config = function()
-      require 'plugins.compe'
-    end,
-
+    'hrsh7th/nvim-cmp',
     requires = {
-      {
-        'L3MON4D3/LuaSnip',
-        config = function()
-          require 'plugins.luasnip'
-        end,
-      },
-      {
-        'rafamadriz/friendly-snippets',
-      },
-      {
-        -- insert or delete brackets, parens, quotes in pair
-        'windwp/nvim-autopairs',
-        config = function()
-          require 'plugins.autopairs'
-        end,
-      },
+      'hrsh7th/cmp-buffer',
+      'f3fora/cmp-spell',
+      'hrsh7th/cmp-buffer',
+      'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/cmp-path',
+      'hrsh7th/cmp-nvim-lua',
+      'saadparwaiz1/cmp_luasnip',
+      'rafamadriz/friendly-snippets',
+      'L3MON4D3/LuaSnip',
     },
+    config = function()
+      require 'plugins.cmp'
+    end,
+  }
+  use {
+    -- insert or delete brackets, parens, quotes in pair
+    'windwp/nvim-autopairs',
+    after = 'nvim-cmp',
+    config = function()
+      require 'plugins.autopairs'
+    end,
+    -- config = function()
+    -- end,
   }
 
   -- command line
@@ -238,6 +229,7 @@ return require('packer').startup(function()
     end,
     module = 'telescope',
     module_pattern = 'telescope.*',
+    cmd = 'Telescope',
     requires = {
       {
         'cljoly/telescope-repo.nvim',
@@ -246,6 +238,7 @@ return require('packer').startup(function()
       'nvim-telescope/telescope-symbols.nvim',
       'crispgm/telescope-heading.nvim',
       '~/Media/Projects/telescope-bookmarks.nvim',
+      'nvim-telescope/telescope-project.nvim',
       -- not compatible with pnpm
       -- 'nvim-telescope/telescope-node-modules.nvim',
       -- 'nvim-telescope/telescope-dap.nvim',
@@ -265,11 +258,9 @@ return require('packer').startup(function()
           },
         },
       })
-      table.insert(_G.post_restore_cmds, 'BufferOrderByDirectory')
     end,
   }
   use {
-    after = 'telescope.nvim',
     '~/Media/Projects/nononotes-nvim',
     config = function()
       require('plugins.nononotes').setup()
@@ -294,6 +285,16 @@ return require('packer').startup(function()
       'DiffViewRefresh',
     },
   }
+  use {
+    'TimUntersberger/neogit',
+    config = function()
+      require('neogit').setup {
+        integrations = {
+          diffview = true,
+        },
+      }
+    end,
+  }
 
   use {
     'folke/zen-mode.nvim',
@@ -314,8 +315,6 @@ return require('packer').startup(function()
     cmd = { 'Codi', 'Codi!', 'Codi!!' },
   }
   use 'wellle/visual-split.vim'
-
-  -- UI-side
   use {
     'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons',
@@ -346,7 +345,7 @@ return require('packer').startup(function()
         undotree_TreeVertShape = '│',
       })
     end,
-    command = { 'UndotreeToggle' },
+    cmd = { 'UndotreeToggle' },
   }
 
   -- bindings
@@ -428,6 +427,12 @@ return require('packer').startup(function()
   -- }
 
   -- edition
+  use {
+    'JoseConseco/vim-case-change',
+    setup = function()
+      vim.g.casechange_nomap = 1
+    end,
+  }
   use {
     'matze/vim-move',
     setup = function()
@@ -525,21 +530,21 @@ return require('packer').startup(function()
   }
 
   -- session
-  use {
-    'windwp/nvim-projectconfig',
-    config = function()
-      require('nvim-projectconfig').load_project_config {
-        project_dir = '~/Media/Projects/projects-config/',
-      }
-      require('utils').augroup('NvimProjectConfig', {
-        {
-          events = { 'DirChanged' },
-          targets = { '*' },
-          command = require('nvim-projectconfig').load_project_config,
-        },
-      })
-    end,
-  }
+  -- use {
+  --   'windwp/nvim-projectconfig',
+  --   config = function()
+  --     require('nvim-projectconfig').load_project_config {
+  --       project_dir = '~/Media/Projects/projects-config/',
+  --     }
+  --     require('utils').augroup('NvimProjectConfig', {
+  --       {
+  --         events = { 'DirChanged' },
+  --         targets = { '*' },
+  --         cmd = require('nvim-projectconfig').load_project_config,
+  --       },
+  --     })
+  --   end,
+  -- }
   use {
     'ethanholz/nvim-lastplace',
     config = function()
@@ -549,28 +554,28 @@ return require('packer').startup(function()
       }
     end,
   }
-  -- use {
-  --   'folke/persistence.nvim',
-  --   config = function()
-  --     require('persistence').setup()
-  --   end,
-  -- }
+  use {
+    'folke/persistence.nvim',
+    config = function()
+      require('persistence').setup()
+    end,
+  }
   -- use {
   --   'ahmedkhalf/project.nvim',
   --   config = function()
   --     require('project_nvim').setup {}
   --   end,
   -- }
-  use {
-    'rmagatti/auto-session',
-    config = function()
-      require 'plugins.auto-session'
-    end,
-    requires = {
-      disabled = true,
-      'rmagatti/session-lens',
-    },
-  }
+  -- use {
+  --   'rmagatti/auto-session',
+  --   config = function()
+  --     -- require 'plugins.auto-session'
+  --   end,
+  --   -- requires = {
+  --   --   disabled = true,
+  --   --   'rmagatti/session-lens',
+  --   -- },
+  -- }
   -- use {
   --   'Shatur/neovim-session-manager',
   --   setup = function()
@@ -590,6 +595,7 @@ return require('packer').startup(function()
   use { 'rose-pine/neovim', as = 'rose-pine' }
 
   -- various
+  use 'tpope/vim-eunuch'
   use {
     'vigoux/LanguageTool.nvim',
     cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },

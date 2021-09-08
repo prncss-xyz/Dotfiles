@@ -6,6 +6,7 @@
   gpgsign = true
 [diff]
 	tool = nvim
+	algorithm = histogram
 [difftool "nvim"]
   cmd = nvim -s -d $LOCAL $REMOTE
 [difftool "kitty"]

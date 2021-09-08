@@ -1,8 +1,0 @@
-node_modules
-qmk_firmware
-*.log
-.cache
-dist
-lib
-es
-converage

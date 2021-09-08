@@ -49,6 +49,17 @@ mode jump {
   bindsym return mode default
 }
 
+bindsym $mod+z mode mouse
+mode mouse {
+  bindsym $left seat - cursor move -10 0
+  bindsym $right seat - cursor move +10 0
+  bindsym $up seat - cursor move 0 -10
+  bindsym $down seat - cursor move 0 +10
+  bindsym Escape mode default
+  bindsym return mode default
+}
+ # xdotool needed for click
+
 # Kill focused window
 bindsym $mod+Ctrl+q kill
 bindsym $mod+Ctrl+r reload

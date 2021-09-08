@@ -53,6 +53,20 @@ augroup('Autosave', {
   },
 })
 
+augroup('NoUndoFile', {
+  {
+    events = { 'BufWritePre' },
+    targets = {
+      '/dev/shm/pass.*',
+      '/tmp/*',
+      'COMMIT_EDITMSG',
+      '*.tmp',
+      '*.bak',
+      '*~',
+    },
+    command = 'setlocal noundofile',
+  },
+})
 
 local function set_title(branch)
   -- local titlestring = ''

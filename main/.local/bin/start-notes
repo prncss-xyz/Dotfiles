@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-cd $HOME/Personal/neuron
-
-echo -ne "\e]0;"
-echo -n "notes"
-echo -ne "\a"
-
-nvim

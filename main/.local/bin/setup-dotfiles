@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-sleep 1
-kitty -e --directory=~/Dotfiles nvim &
-sleep 1
-swaymsg '[title="^ .* — Dotfiles$"] move workspace 8'
-# swaymsg '[title="Dotfiles"] move workspace 8'

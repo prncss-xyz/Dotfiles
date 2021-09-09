@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-mkdir -p "$YTDL"
-youtube-dl -x --metadata-from-title "%(artist)s - %(title)s" --output "$YTDL/%(title)s.%(ext)s" "$@"
-

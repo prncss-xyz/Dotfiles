@@ -48,15 +48,13 @@ M.config = function()
       local stow_package = fname:match('^(.-)/', #dots + 2)
       if
         file_exists(
-          string.format('%s/.config/stow/%s', os.getenv 'HOME', stow_package)
+          string.format('%s/.config/stow/active/%s', os.getenv 'HOME', stow_package)
         )
       then
         os.execute(string.format('stow %q', stow_package))
       end
     end
     vim.cmd(string.format('e %s', fname))
-    -- applies template if relevant
-    require('templates').template_match()
   end)
 end
 

@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-stow main bindings-qwerty perso host-$HOSTNAME

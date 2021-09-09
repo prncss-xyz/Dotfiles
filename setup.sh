@@ -1,12 +1,11 @@
-dir=$(mktemp -d)
-cd $dir
-git clone --depth=1 https://aur.archlinx.org/yay.git
-cd yay
-makepkg -si
-rm -rf $dir
-cat yay | xargs yay --needed --noconfirm -S
+# shellcheck shell=sh
+cd ~/Dotfiles/stow || exit 1
+stow stow host-"$(hostname)" main perso bindings-qwerty
 
-cd "$HOME/Stow"
-main/.local/bin/stow-all
-main/.local/bin/update-sysfiles
-main/.local/bin/post-install
+dir=$(mktemp -d)
+cd "$dir" || exit 1
+git clone --depth=1 https://aur.archlinx.org/yay.git
+cd yay || exit 1
+makepkg -si
+cat ~/.config/stow/arch/*|xargs yay --needed --noconfirm -S
+rm -rf "$dir"

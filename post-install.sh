@@ -7,5 +7,6 @@ cd "$dir" || exit 1
 git clone --depth=1 https://aur.archlinx.org/yay.git
 cd yay || exit 1
 makepkg -si
-cat ~/.config/stow/arch/*|xargs yay --needed --noconfirm -S
+cat ~/.config/stow/arch/* | xargs yay --needed --noconfirm -S
 rm -rf "$dir"
+cat ~/.config/stow/post-install/* | sh

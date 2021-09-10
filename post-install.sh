@@ -4,7 +4,7 @@ stow stow host-"$(hostname)" main perso bindings-qwerty
 
 dir=$(mktemp -d)
 cd "$dir" || exit 1
-git clone --depth=1 https://aur.archlinx.org/yay.git
+git clone --depth=1 https://aur.archlinux.org/yay.git
 cd yay || exit 1
 makepkg -si
 cat ~/.config/stow/arch/* | xargs yay --needed --noconfirm -S

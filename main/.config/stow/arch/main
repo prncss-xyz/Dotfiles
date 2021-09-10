@@ -37,8 +37,6 @@ kde-cli-tools
 kdeconnect
 keepassxc
 khal
-khal
-kitty
 kitty
 koreader-appimage
 languagetool
@@ -48,10 +46,9 @@ lolcat
 lsd
 lua-language-server
 mako
-map
+nmap
 montserrat-font-otf
 mpc
-mpd
 mpd
 mpdris2
 mpv
@@ -64,11 +61,10 @@ mythes-fr
 neofetch
 neovim-remote
 nextcloud-client
-nnodejs
-nodemon
+nodejs
 notmuch
 npm
-nvim
+neovim
 otf-fira-mono
 otf-nerd-fonts-fira-code
 pam-gnupg
@@ -93,7 +89,6 @@ stylua-bin
 sway
 swayidle
 swaylock
-swaylock
 swaynagmode
 syncthing
 syncthing-gtk
@@ -109,13 +104,11 @@ vale-bin
 vdirsyncer
 w3m
 waybar
-waybar
 wdiff
 webp-pixbuf-loader
 wev
 wget
 wl-clipboard
-wl-clipboard-manager
 wlroots
 wlsunset
 wtype
@@ -126,5 +119,5 @@ xplr
 xsel
 yay-bin
 youtube-dl
-zoxide-bin
+zoxide
 zsa-wally-bin

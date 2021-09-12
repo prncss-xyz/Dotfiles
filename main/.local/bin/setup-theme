@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-name="$1"
+name="${1-rose-pine}"
 export DEST="$DOTFILES/_template"
 
 step() {
@@ -13,6 +13,7 @@ step() {
 export -f step
 
 source ~/.config/theming/generated/"$name".sh
+export HOSTNAME="${HOSTNAME-$hostname}"
 
 export text="$foreground"
 export accent="$color6"
@@ -21,7 +22,7 @@ export font="Montserrat"
 
 source "$HOME/.config/theming/extra/$name".sh
 
-stow -D _templates
+stow -D _template
 fd -H --type l --base-directory ~/.config/theming/skeleton -x sh -c 'step {//} {} skeleton'
 echo 'bis'
 if [ -d "$HOME/.config/theming/$name" ]; then

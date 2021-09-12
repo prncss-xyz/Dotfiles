@@ -7,9 +7,9 @@
 }
 
 window#waybar {
-  background: #9ccfd8;
+  background: #5699af;
   opacity: 0.9;
-  color: #6e6a86;
+  color: #c5cdd9;
 }
 
 #window {
@@ -24,24 +24,24 @@ window#waybar {
   padding-left: 5px;
   padding-right: 5px;
   background: transparent;
-  color: #ebbcba;
+  color: #6cb6eb;
 }
 
 #workspaces button.focused {
-  background-color: #ebbcba;
-  color: #9ccfd8;
+  background-color: #6cb6eb;
+  color: #5699af;
 }
 
 #mode {
   padding-top: 1px;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: #ebbcba;
-  color: #6e6a86;
+  background-color: #6cb6eb;
+  color: #c5cdd9;
 }
 
 #clock {
-  color: #e0def4;
+  color: #c5cdd9;
   padding-top: 1px;
   padding-left: 5px;
   padding-right: 5px;
@@ -50,20 +50,20 @@ window#waybar {
 /* not themed the battery yet */
 
 #battery {
-  background-color: #6e6a86;
-  color: #6e6a86;
+  background-color: #c5cdd9;
+  color: #c5cdd9;
 }
 
 @keyframes blink {
   to {
-    background-color: #26233a;
+    background-color: #363a49;
     color: black;
   }
 }
 
 #battery.warning:not(.charging) {
-  background: #26233a;
-  color: #9ccfd8;
+  background: #363a49;
+  color: #5699af;
   animation-name: blink;
   animation-duration: 0.5s;
   animation-timing-function: linear;

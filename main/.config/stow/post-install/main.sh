@@ -1,8 +1,22 @@
 # shellcheck shell=sh
 
-systemctl --user start syncthing
-# systemctl --user start psd
-# systemctl --user start ssh-agent
+sudo systemctl enable greetd
+sudo systemctl enable bluetooth
+sudo systemctl enable networkmanager
+sudo systemctl enable avahi
+sudo systemctl enable sshd
+
+# gnome kept rewriting that file, which blocked stow
+# cat > ~/.config/user-dirs.dirs << EOF
+# XDG_DOWNLOAD_DIR="$HOME/Downloads"
+# XDG_PICTURES_DIR="$HOME/Media/Pictures"
+# XDG_TEMPLATES_DIR="$HOME/Templates"
+# XDG_DESKTOP_DIR="$HOME/Desktop"
+# XDG_PUBLICSHARE_DIR="$HOME/Public"
+# XDG_DOCUMENTS_DIR="$HOME/Media/Documents"
+# XDG_MUSIC_DIR="$HOME/Music"
+# XDG_VIDEOS_DIR="$HOME/Videos"
+# EOF
 
 dir=$(mktemp -d)
 cd "$dir" || exit 1
@@ -12,17 +26,13 @@ rm -rf "$dir"
 
 #/usr/share/qutebrowser/scripts/dictcli.py install en-US
 #/usr/share/qutebrowser/scripts/dictcli.py install fr-CA
+  
+gh completion -s fish > ~/.config/fish/completions/gh.fish
 
-systemctl --user enable ssh-agent.service
-systemctl --user enable syncthing.service
-systemctl --user enable udiskie.service
-
-## pnpm
-# none seem to work :-(, will retry on fresh install
-
-# pnpm config set global-dir ~/.pnpm-packages
-# pnpm config set set pnpm-prefix ~/.pnpm-packages
-# pnpm config set set npm-prefix ~/.pnpm-packages
+systemctl --user enable psd
+systemctl --user enable ssh-agent
+systemctl --user enable syncthing
+systemctl --user enable udiskie
 
 #set NPM_PACKAGES "$HOME/.npm-packages"
 #set PATH $PATH $NPM_PACKAGES/bin
@@ -41,7 +51,6 @@ pnpm --global -i\
   jest\
   mathjs\
   nodemon\
-  plop\
   serve\
   snowpack\
   typescript\
@@ -49,10 +58,12 @@ pnpm --global -i\
   vim-language-server\
   vscode-langservers-extracted\
   yaml-language-server\
-
 # emmet-ls
 # hbs-cli
 # remark
+# plop
 
 fisher update
+
+# install nvim language files
 nvim --headless +PackerInstall +qall

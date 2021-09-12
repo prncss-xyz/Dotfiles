@@ -118,3 +118,9 @@ xsel
 youtube-dl
 zoxide
 zsa-wally-bin
+rsync
+networkmanager
+avahi
+openssh
+greetd
+intel-ucode 

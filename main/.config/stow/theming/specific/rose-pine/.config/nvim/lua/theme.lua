@@ -7,7 +7,6 @@ M.galaxyline = {
 }
 
 M.setup = function()
-  vim.cmd 'colorscheme neon'
   require('utils').deep_merge(vim.g, {
     rose_pine_variant = 'dawn',
     rose_pine_enable_italics = true,

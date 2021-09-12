@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 name="$1"
-export DEST="$DOTFILES/_templates"
+export DEST="$DOTFILES/_template"
 
 step() {
 	# dir dir/name.ext dir/name.ext.esh

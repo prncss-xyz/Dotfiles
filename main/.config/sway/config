@@ -31,6 +31,8 @@ exec languagetool --http
 exec ~/Media/Projects/sway-mega-hotkeys/cli.js
 exec ~/Media/Projects/nononotes/cli/index serve
 
+# exec blueberry-tray
+
 input type:keyboard {
   ### Bring the escape key home!
   xkb_layout ca

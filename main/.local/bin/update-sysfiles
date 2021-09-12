@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-sudo rsync -Lr ~/sysfiles/* /
+sudo rsync -Lr ~/.config/stow/sysfiles/* /

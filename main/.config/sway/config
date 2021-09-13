@@ -7,9 +7,8 @@ set $term kitty
 # on the original workspace that the command was run on.
 # set $menu dmenu_path | dmenu | xargs swaymsg exec --
 
-exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob
-
 exec wlsunset -l 45.5 -L -73.6
+exec wluma
 exec swayidle -w \
  timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
  timeout 330 'swaylock' \
@@ -24,8 +23,6 @@ exec pactl set-sink-volume @DEFAULT_SINK@ 30%
 exec pactl set-sink-mute @DEFAULT_SINK@ 0
 for_window [title="^scratchpad$"] move scratchpad
 exec $term --title=scratchpad
-for_window [title="^ddgr$"] move scratchpad
-exec $term --title=ddgr -e ddgr
 exec ~/.local/bin/setbg-sway
 exec sleep 1; ~/.local/bin/browser
 exec mako
@@ -34,17 +31,15 @@ exec ~/Media/Projects/sway-mega-hotkeys/cli.js
 exec ~/Media/Projects/nononotes/cli/index serve
 
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
-# exec blueberry-tray
 
 input type:keyboard {
-  ### Bring the escape key home!
   xkb_layout ca
   xkb_variant multi
+  xkb_options caps:swapescape
 }
 
 input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {
   ### Bring the escape key home!
-  xkb_options caps:swapescape
 }
 
 # input "12951:18804:ZSA_Technology_Labs_ErgoDox_EZ" {

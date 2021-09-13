@@ -126,3 +126,5 @@ greetd
 intel-ucode 
 curl
 brightnessctl
+wluma
+vulkan-intel

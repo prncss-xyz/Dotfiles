@@ -8,7 +8,7 @@ exec "sleep 2; wtype prncss"
 exec blueberry-tray
 
 bindsym Alt+Ctrl+delete exec "reboot"
-bindsym $mod+Ctrl+p exec "poweroff"
+bindsym Alt+Ctrl+p exec "poweroff"
  
  
 include /etc/sway/config.d/*

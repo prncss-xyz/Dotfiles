@@ -273,11 +273,26 @@ mode audio {
   bindsym space exec playerctl --player playerctld play-pause; mode default
   bindsym $left exec playerctl --player playerctld next; mode default
   bindsym $right exec playerctl --player playerctld previous; mode default
-  bindsym m exec pactl set-sink-mute @DEFAULT_SINK@ toggle; mode default
-  bindsym $up exec pactl set-sink-volume @DEFAULT_SINK@ +4%
-  bindsym $down exec pactl set-sink-volume @DEFAULT_SINK@ -4%
-  bindsym shift+$up exec pactl set-sink-volume @DEFAULT_SINK@ +12%
-  bindsym shift+$down exec pactl set-sink-volume @DEFAULT_SINK@ -12%
+  # bindsym m exec pactl set-sink-mute @DEFAULT_SINK@ toggle; mode default
+  # bindsym $up exec pactl set-sink-volume @DEFAULT_SINK@ +4% 
+  # bindsym $down exec pactl set-sink-volume @DEFAULT_SINK@ -4%
+  # bindsym shift+$up exec pactl set-sink-volume @DEFAULT_SINK@ +12%
+  # bindsym shift+$down exec pactl set-sink-volume @DEFAULT_SINK@ -12%
+  bindsym m exec pamixer --toggle-mute && ( pamixer --get-mute && echo 0 > $WOBSOCK ) || pamixer --get-volume > $WOBSOCK
+  bindsym $up exec pamixer -ui 2 && pamixer --get-volume > $WOBSOCK
+  bindsym $down exec pamixer -ud 2 && pamixer --get-volume > $WOBSOCK
+  bindsym shift+$up exec pamixer -ui 12 && pamixer --get-volume > $WOBSOCK
+  bindsym shift+$down exec pamixer -ud 12 && pamixer --get-volume > $WOBSOCK
+  bindsym Escape mode default
+  bindsym return mode default
+}
+
+bindsym $mod+shift+o mode lumino
+mode audio {
+  bindsym $up exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+  bindsym $down exec brightnessctl set 2%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+  bindsym shift+$up exec brightnessctl set 12%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+  bindsym shift+$down exec brightnessctl set 12%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym Escape mode default
   bindsym return mode default
 }

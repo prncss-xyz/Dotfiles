@@ -18,6 +18,7 @@ sudo systemctl enable sshd
 # XDG_VIDEOS_DIR="$HOME/Videos"
 # EOF
 
+
 dir=$(mktemp -d)
 cd "$dir" || exit 1
 git clone https://github.com/rose-pine/Rose-Pine-GTK-3-Theme.git
@@ -33,6 +34,7 @@ systemctl --user enable psd
 systemctl --user enable ssh-agent
 systemctl --user enable syncthing
 systemctl --user enable udiskie
+systemctl --user enable wob.socket
 
 #set NPM_PACKAGES "$HOME/.npm-packages"
 #set PATH $PATH $NPM_PACKAGES/bin

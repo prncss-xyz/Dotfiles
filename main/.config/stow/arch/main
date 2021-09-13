@@ -125,3 +125,4 @@ openssh
 greetd
 intel-ucode 
 curl
+brightnessctl

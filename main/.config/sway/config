@@ -31,6 +31,7 @@ exec languagetool --http
 exec ~/Media/Projects/sway-mega-hotkeys/cli.js
 exec ~/Media/Projects/nononotes/cli/index serve
 
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 # exec blueberry-tray
 
 input type:keyboard {

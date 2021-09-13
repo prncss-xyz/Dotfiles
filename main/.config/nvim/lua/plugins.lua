@@ -516,7 +516,7 @@ return require('packer').startup(function()
           vim.g.textobj_line_no_default_key_mappings = 1
         end,
       },
-      'kana/vim-textobj-entire',
+      -- 'kana/vim-textobj-entire',
       'michaeljsmith/vim-indent-object',
       'sgur/vim-textobj-parameter',
     },

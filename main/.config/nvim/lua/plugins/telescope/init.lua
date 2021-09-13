@@ -65,7 +65,7 @@ M.project_files = function()
   end
 end
 
-M.md = require 'plugins.telescope.md'
+-- M.md = require 'plugins.telescope.md'
 
 return M
 -- finders.new_oneshot_job

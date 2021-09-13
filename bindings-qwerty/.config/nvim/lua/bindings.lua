@@ -153,6 +153,7 @@ function _G.tab_complete()
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     }
+    return
   end
   local r = require('luasnip').jump(1)
   if r then

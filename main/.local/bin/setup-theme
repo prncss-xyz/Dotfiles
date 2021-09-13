@@ -5,8 +5,8 @@ set -e
 name="${1-rose-pine}"
 export DEST="$DOTFILES/_template"
 
+# dir dir/name.ext dir/name.ext.esh
 step() {
-	# dir dir/name.ext dir/name.ext.esh
 	mkdir -p "$DEST-new/$1"
   envsubst < "$HOME/.config/stow/theming/$3/$2" > "$DEST-new"/"$2"
 }
@@ -29,7 +29,9 @@ fi
 
 stow -D _template
 rm -rf "$DEST"-old
-mv "$DEST" "$DEST"-old
+if [ -d "$DEST" ]; then
+  mv "$DEST" "$DEST"-old
+fi
 mv "$DEST"-new "$DEST"
 stow _template
 

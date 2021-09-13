@@ -26,8 +26,8 @@ rm -rf "$dir"
 
 #/usr/share/qutebrowser/scripts/dictcli.py install en-US
 #/usr/share/qutebrowser/scripts/dictcli.py install fr-CA
-  
-gh completion -s fish > ~/.config/fish/completions/gh.fish
+
+gh completion -s fish >~/.config/fish/completions/gh.fish
 
 systemctl --user enable psd
 systemctl --user enable ssh-agent
@@ -41,24 +41,7 @@ systemctl --user enable udiskie
 #broot --install
 
 mkdir ~/.pnpm-global
-pnpm --global -i\
-  @fsouza/prettierd\
-  bash-language-server\
-  create-react-app\
-  eslint_d\
-  gatsby\
-  inliner\
-  jest\
-  mathjs\
-  nodemon\
-  serve\
-  snowpack\
-  typescript\
-  typescript-language-server\
-  vim-language-server\
-  vscode-langservers-extracted\
-  yaml-language-server\
-# emmet-ls
+pnpm --global -i @fsouza/prettierd bash-language-server create-react-app eslint_d gatsby inliner jest mathjs nodemon serve snowpack typescript typescript-language-server vim-language-server vscode-langservers-extracted yaml-language-server# emmet-ls
 # hbs-cli
 # remark
 # plop
@@ -66,4 +49,6 @@ pnpm --global -i\
 fisher update
 
 # install nvim language files
+mkdir -p ~/.local/share/nvim/site/spell/
+curl "https://ftp.nluug.nl/pub/vim/runtime/spell/{en,fr}.utf-8.{spl,sug}" --output "#1.utf-8.#2" --output-dir ~/.local/share/nvim/site/spell
 nvim --headless +PackerInstall +qall

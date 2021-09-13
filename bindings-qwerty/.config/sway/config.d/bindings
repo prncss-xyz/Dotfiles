@@ -288,7 +288,7 @@ mode audio {
 }
 
 bindsym $mod+shift+o mode lumino
-mode audio {
+mode lumino {
   bindsym $up exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym $down exec brightnessctl set 2%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym shift+$up exec brightnessctl set 12%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK

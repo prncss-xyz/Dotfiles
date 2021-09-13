@@ -7,6 +7,8 @@ set $term kitty
 # on the original workspace that the command was run on.
 # set $menu dmenu_path | dmenu | xargs swaymsg exec --
 
+exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob
+
 exec wlsunset -l 45.5 -L -73.6
 exec swayidle -w \
  timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \

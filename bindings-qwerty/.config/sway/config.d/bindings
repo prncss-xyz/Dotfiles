@@ -5,6 +5,7 @@ set $left h
 set $down j
 set $up k
 set $right l
+set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
 
 ### Key bindings
 #

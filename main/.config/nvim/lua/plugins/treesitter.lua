@@ -1,5 +1,14 @@
 local deep_merge = require('utils').deep_merge
--- local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
+local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
+
+parser_configs.norg = {
+    install_info = {
+        url = "https://github.com/nvim-neorg/tree-sitter-norg",
+        files = { "src/parser.c", "src/scanner.cc" },
+        branch = "main"
+    },
+}
+
 -- parser_configs.markdown = {
 --   install_info = {
 --     url = 'https://github.com/ikatyang/tree-sitter-markdown',
@@ -7,7 +16,7 @@ local deep_merge = require('utils').deep_merge
 --   },
 --   filetype = 'markdown',
 -- }
---
+
 local javascript = {
   __default = '// %s',
   jsx_element = '{/* %s */}',
@@ -26,6 +35,7 @@ require('nvim-treesitter.configs').setup(
       enable = true,
     },
     ensure_installed = {
+      'norg',
       -- 'markdown',
       'bash',
       'c',

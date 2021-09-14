@@ -1,0 +1,14 @@
+include "%L"
+# in wayland works with firefox but is bypassed by chromium
+<dead_circumflex> <period>   : "·" 	U00B7		# MIDDLE DOT
+<dead_circumflex> <c>        : "ç"   ccedilla # LATIN SMALL LETTER C WITH CEDILLA
+<dead_circumflex> <C>        : "Ç"   Ccedilla # LATIN CAPITAL LETTER C WITH CEDILLA
+<dead_circumflex> <z>        : "«"   guillemotleft # LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
+<dead_circumflex> <x>        : "»"   guillemotright # RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
+<dead_circumflex> <o>        : "œ"   oe # LATIN SMALL LIGATURE OE
+<dead_circumflex> <O>        : "Œ"   OE # LATIN CAPITAL LIGATURE OE
+<dead_circumflex> <a>        : "æ"   ae # LATIN SMALL LETTER AE
+<dead_circumflex> <A>        : "Æ"   AE # LATIN CAPITAL LETTER AE
+
+# <eacute>
+# <dead_grave> 

@@ -5,9 +5,10 @@ local lspkind = require 'lspkind'
 local sources = {
   { name = 'luasnip' },
   { name = 'nvim_lsp' },
+  { name = 'spell' }, -- not good with fuzzy matching
   { name = 'path' },
   { name = 'buffer' },
-  { name = 'spell' },
+  { name = 'neorg' },
 }
 local lua_sources = require('utils').deep_merge({}, sources)
 table.insert(lua_sources, 4, { name = 'nvim_lua' })
@@ -45,5 +46,4 @@ require('utils').augroup('CmpNvimLua', {
       }
     end,
   },
-  
 })

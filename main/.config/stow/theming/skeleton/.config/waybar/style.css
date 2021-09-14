@@ -41,7 +41,7 @@ window#waybar {
 }
 
 #clock {
-  color: #$foreground;
+  color: #$accent;
   padding-top: 1px;
   padding-left: 5px;
   padding-right: 5px;

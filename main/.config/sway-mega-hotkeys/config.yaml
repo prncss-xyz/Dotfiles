@@ -9,5 +9,5 @@ matcher:
     criteria: "app_id"
     value: "Chromium"
 runner:
-  terminal: "new_term"
+  terminal: "kitty"
   browser: "browser --new-window"

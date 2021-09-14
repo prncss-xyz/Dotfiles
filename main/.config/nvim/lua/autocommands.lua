@@ -112,20 +112,14 @@ local function set_title_gitsigns()
   local branch = vim.b.gitsigns_head
   if branch then
     set_title(branch)
+  else
+    set_title_plenary()
   end
 end
 
-augroup('SetTitlePlenary', {
-  {
-    events = { 'DirChanged' },
-    targets = { '*' },
-    command = set_title_plenary,
-  },
-})
-
 augroup('SetTitleGitsigns', {
   {
-    events = { 'DirChanged' },
+    events = { 'VimEnter', 'DirChanged' , 'CursorHold' },
     targets = { '*' },
     command = set_title_gitsigns,
   },

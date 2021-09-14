@@ -34,7 +34,6 @@ systemctl --user enable psd
 systemctl --user enable ssh-agent
 systemctl --user enable syncthing
 systemctl --user enable udiskie
-systemctl --user enable wob.socket
 
 #set NPM_PACKAGES "$HOME/.npm-packages"
 #set PATH $PATH $NPM_PACKAGES/bin

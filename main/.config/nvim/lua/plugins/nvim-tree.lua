@@ -39,7 +39,10 @@ M.config = function()
   require('nvim-tree.events').on_file_created(function(ev)
     local fname = ev.fname
     -- makes relevant files executables
-    if (fname:match '/%.local/bin/' or fname:match '^%.local/bin/') and not fname:match '%.local/bin/.+%.' then
+    if
+      (fname:match '/%.local/bin/' or fname:match '^%.local/bin/')
+      and not fname:match '%.local/bin/.+%.'
+    then
       os.execute(string.format('chmod +x %q', fname))
     end
     -- when new file belongs to an active stow package, stow it
@@ -48,13 +51,18 @@ M.config = function()
       local stow_package = fname:match('^(.-)/', #dots + 2)
       if
         file_exists(
-          string.format('%s/.config/stow/active/%s', os.getenv 'HOME', stow_package)
+          string.format(
+            '%s/.config/stow/active/%s',
+            os.getenv 'HOME',
+            stow_package
+          )
         )
       then
         os.execute(string.format('stow %q', stow_package))
       end
     end
     vim.cmd(string.format('e %s', fname))
+    require('templates').template_match()
   end)
 end
 

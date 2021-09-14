@@ -42,7 +42,7 @@ deep_merge(vim, {
     tabstop = indent,
     termguicolors = true,
     undofile = true,
-    updatetime = 4000,
+    updatetime = 1000,
     -- timeoutlen = 300,
     wildignorecase = true,
     wildoptions = 'pum',

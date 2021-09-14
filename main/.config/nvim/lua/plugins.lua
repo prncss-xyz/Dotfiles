@@ -41,37 +41,35 @@ return require('packer').startup(function()
     config = function()
       require 'plugins.treesitter'
     end,
-    requires = {
-      'p00f/nvim-ts-rainbow',
-      {
-        'nvim-treesitter/playground',
-        cmd = { 'TSPlaygroundToggle' },
-      },
-      'JoosepAlviste/nvim-ts-context-commentstring',
-      'nvim-treesitter/nvim-treesitter-textobjects',
-      'RRethy/nvim-treesitter-textsubjects',
-      -- "beloglazov/vim-textobj-punctuation", -- au/iu for punctuation
-      'mfussenegger/nvim-ts-hint-textobject',
-      -- Use 'tressitter 'to autoclose and autorename html tag
-      'windwp/nvim-ts-autotag',
-      -- Language support
-      {
-        'lewis6991/spellsitter.nvim',
-        config = function()
-          require('spellsitter').setup()
-        end,
-      },
-      -- shows the context of the currently visible buffer contents
-      --
-      {
-        'romgrk/nvim-treesitter-context',
-        config = function()
-          require('treesitter-context.config').setup {}
-        end,
-      },
-      -- 'haringsrob/nvim_context_vt',
-    },
   }
+  use 'p00f/nvim-ts-rainbow'
+  use {
+    'nvim-treesitter/playground',
+    cmd = { 'TSPlaygroundToggle' },
+  }
+  use 'JoosepAlviste/nvim-ts-context-commentstring'
+  use 'nvim-treesitter/nvim-treesitter-textobjects'
+  use 'RRethy/nvim-treesitter-textsubjects'
+  -- "beloglazov/vim-textobj-punctuation" -- au/iu for punctuation
+  use 'mfussenegger/nvim-ts-hint-textobject'
+  -- Use 'tressitter 'to autoclose and autorename html tag
+  use 'windwp/nvim-ts-autotag'
+  -- Language support
+  use {
+    'lewis6991/spellsitter.nvim',
+    config = function()
+      require('spellsitter').setup()
+    end,
+  }
+  -- shows the context of the currently visible buffer contents
+  --
+  use {
+    'romgrk/nvim-treesitter-context',
+    config = function()
+      require('treesitter-context.config').setup {}
+    end,
+  }
+  -- 'haringsrob/nvim_context_vt',
 
   -- extra syntax
   use 'potatoesmaster/i3-vim-syntax'
@@ -227,7 +225,7 @@ return require('packer').startup(function()
     config = function()
       require('plugins.telescope').setup()
     end,
-    module = 'telescope',
+    -- module = 'telescope',
     module_pattern = 'telescope.*',
     cmd = 'Telescope',
     requires = {
@@ -295,7 +293,6 @@ return require('packer').startup(function()
       }
     end,
   }
-
   use {
     'folke/zen-mode.nvim',
     config = function()
@@ -346,6 +343,13 @@ return require('packer').startup(function()
       })
     end,
     cmd = { 'UndotreeToggle' },
+  }
+  use {
+    'nvim-neorg/neorg',
+    disabled = true,
+    config = function()
+      require 'plugins.neorg'
+    end,
   }
 
   -- bindings

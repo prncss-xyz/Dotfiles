@@ -25,7 +25,7 @@ exec pactl set-sink-mute @DEFAULT_SINK@ 0
 for_window [title="^scratchpad$"] move scratchpad
 exec $term --title=scratchpad
 exec ~/.local/bin/setbg-sway
-exec sleep 1; ~/.local/bin/browser
+exec ~/.local/bin/browser
 exec mako
 exec languagetool --http
 exec ~/Media/Projects/sway-mega-hotkeys/cli.js

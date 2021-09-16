@@ -1,3 +1,8 @@
+set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
+# https://github.com/francma/wob/blob/master/wob.1.scd
+exec mkfifo $WOBSOCK && tail -f  $WOBSOCK | wob
+
+
 # Logo key. Use Mod0 for Alt.
 set $mod Mod4
 # Home row direction keys, like vim
@@ -5,7 +10,6 @@ set $left h
 set $down j
 set $up k
 set $right l
-set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
 
 ### Key bindings
 #
@@ -289,10 +293,10 @@ mode audio {
 
 bindsym $mod+shift+o mode lumino
 mode lumino {
-  bindsym $up exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
-  bindsym $down exec brightnessctl set 2%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
-  bindsym shift+$up exec brightnessctl set 12%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
-  bindsym shift+$down exec brightnessctl set 12%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+  bindsym $up exec brightnessctl set 2%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+  bindsym $down exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+  bindsym shift+$up exec brightnessctl set 12%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+  bindsym shift+$down exec brightnessctl set 12%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym Escape mode default
   bindsym return mode default
 }

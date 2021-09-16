@@ -41,8 +41,8 @@ systemctl --user enable udiskie
 
 #broot --install
 
-mkdir ~/.pnpm-global
-pnpm --global -i @fsouza/prettierd bash-language-server create-react-app eslint_d gatsby inliner jest mathjs nodemon serve snowpack typescript typescript-language-server vim-language-server vscode-langservers-extracted yaml-language-server# emmet-ls
+pnpm --global i @fsouza/prettierd bash-language-server create-react-app eslint_d gatsby inliner jest mathjs nodemon serve snowpack typescript typescript-language-server vim-language-server vscode-langservers-extracted yaml-language-server react react-dom eslint babel-eslint
+# emmet-ls
 # hbs-cli
 # remark
 # plop

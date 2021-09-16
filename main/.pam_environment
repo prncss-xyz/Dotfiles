@@ -1,7 +1,6 @@
 SSH_AUTH_SOCK OVERRIDE=${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh
 MOZ_ENABLE_WAYLAND OVERRIDE=1
 QT_QPA_PLATFORM OVERRIDE=wayland
-# QT_QPA_PLATFORM OVERRIDE=wayland-egl
 CLUTTER_BACKEND OVERRIDE=wayland
 SDL_VIDEODRIVER OVERRIDE=wayland
 BROWSER DEFAULT=${HOME}/.local/bin/browser
@@ -10,15 +9,10 @@ VISUAL OVERRIDE=nvim
 YTDL DEFAULT=${HOME}/Media/Music/ytdl
 PASSWORD_STORE_DIR OVERRIDE=${HOME}/Personal/pass
 GRIM_DEFAULT_DIR OVERRIDE=${HOME}/Media/Pictures/Captures
-vscode_path OVERRIDE=${HOME}/.config/VSCodium
+# vscode_path OVERRIDE=${HOME}/.config/VSCodium
 STARDICT_DATA_DIR OVERRIDE=${HOME}/Media/stardict
-PATH OVERRIDE=${HOME}/.local/bin:${HOME}/.yarn/bin:${HOME}/.pnpm-global:${PATH}
-NNN_OPTS=oc
-NNN_OPENER=opener
-NNN_TRASH OVERRIDE=1
-NNN_FIFO OVERRIDE=/tmp/nnn.fifo
-NNN_BMS OVERRIDE=w:${HOME}/Downloads;p:${HOME}/Media/Pictures;d:${HOME}/Documents;u:/run/media/${USER};r=/run/user/1000/gvfs/mtp:host=Boyue_Likebook-T78D_T78DACT2200300015/Internal storage
-NNN_PLUG OVERRIDE=d:diffs;o:fzopen;O:fzopend;a:preview-tui;k:kdeconnect;c:fzcd;z:autojump;t:-_|kitty
+PATH OVERRIDE=${HOME}/.local/bin:${HOME}/.pnpm-global-bin:${PATH}
+# NNN_BMS OVERRIDE=w:${HOME}/Downloads;p:${HOME}/Media/Pictures;d:${HOME}/Documents;u:/run/media/${USER};r=/run/user/1000/gvfs/mtp:host=Boyue_Likebook-T78D_T78DACT2200300015/Internal storage
 PATHMARKS_FILE OVERRIDE=${HOME}/Personal/xplr_bookmarks
 PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?
 PASSWORD_STORE_GENERATED_LENGTH=20
@@ -30,4 +24,4 @@ NeovideMultigrid=NeovideMultiGrid
 TERMINAL=kitty
 RIPGREP_CONFIG_PATH OVERRIDE=${HOME}/.config/rg/config
 DOTFILES OVERRIDE=${HOME}/Dotfiles
-PROJECTS OVERRIDE=${HOME}/Media/Projects
+PJECTS OVERRIDE=${HOME}/Media/Projects

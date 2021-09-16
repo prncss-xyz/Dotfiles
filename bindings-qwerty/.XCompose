@@ -5,10 +5,16 @@ include "%L"
 <dead_circumflex> <C>        : "Ç"   Ccedilla # LATIN CAPITAL LETTER C WITH CEDILLA
 <dead_circumflex> <z>        : "«"   guillemotleft # LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
 <dead_circumflex> <x>        : "»"   guillemotright # RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
-<dead_circumflex> <o>        : "œ"   oe # LATIN SMALL LIGATURE OE
-<dead_circumflex> <O>        : "Œ"   OE # LATIN CAPITAL LIGATURE OE
-<dead_circumflex> <a>        : "æ"   ae # LATIN SMALL LETTER AE
-<dead_circumflex> <A>        : "Æ"   AE # LATIN CAPITAL LETTER AE
+
+<dead_circumflex> <k>        : Up # working around a broken key
+
+# key at the right of a (s)
+<dead_circumflex> <s>        : "æ"   ae # LATIN SMALL LETTER AE
+<dead_circumflex> <S>        : "Æ"   AE # LATIN CAPITAL LETTER AE
+# key at the right of o (p)
+<dead_circumflex> <p>        : "œ"   oe # LATIN SMALL LIGATURE OE
+<dead_circumflex> <P>        : "Œ"   OE # LATIN CAPITAL LIGATURE OE
+
 
 # <eacute>
 # <dead_grave> 

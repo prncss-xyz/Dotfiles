@@ -20,6 +20,9 @@ export accent="$color6"
 export primary="$color12"
 export font="Montserrat"
 
+# passing these vars unexpended
+export $WOBSOCK='$WOBSOCK'
+
 source "$HOME/.config/stow/theming/extra/$name".sh
 
 fd -H --type l --base-directory ~/.config/stow/theming/skeleton -x sh -c 'step {//} {} skeleton'

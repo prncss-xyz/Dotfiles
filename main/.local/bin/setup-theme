@@ -21,7 +21,7 @@ export primary="$color12"
 export font="Montserrat"
 
 # passing these vars unexpended
-export $WOBSOCK='$WOBSOCK'
+export WOBSOCK='$WOBSOCK'
 
 source "$HOME/.config/stow/theming/extra/$name".sh
 

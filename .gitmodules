@@ -1,3 +1,24 @@
 [submodule "home/src/syncthing-resolve-conflicts"]
 	path = home/src/syncthing-resolve-conflicts
 	url = https://github.com/dschrempf/syncthing-resolve-conflicts
+[submodule "main/.config/xplr/plugins/comex.xplr"]
+	path = main/.config/xplr/plugins/comex.xplr
+	url = https://github.com/sayanarijit/comex.xplr
+[submodule "main/.config/xplr/plugins/dua-cli.xplr"]
+	path = main/.config/xplr/plugins/dua-cli.xplr
+	url = https://github.com/sayanarijit/dua-cli.xplr
+[submodule "main/.config/xplr/plugins/fzf.xplr"]
+	path = main/.config/xplr/plugins/fzf.xplr
+	url = https://github.com/sayanarijit/fzf.xplr
+[submodule "main/.config/xplr/plugins/preview-tabbed.xplr"]
+	path = main/.config/xplr/plugins/preview-tabbed.xplr
+	url = https://github.com/sayanarijit/preview-tabbed.xplr
+[submodule "main/.config/xplr/plugins/trash-cli.xplr"]
+	path = main/.config/xplr/plugins/trash-cli.xplr
+	url = https://github.com/sayanarijit/trash-cli.xplr
+[submodule "main/.config/xplr/plugins/xargs.xplr"]
+	path = main/.config/xplr/plugins/xargs.xplr
+	url = https://github.com/sayanarijit/xargs.xplr
+[submodule "main/.config/xplr/plugins/zoxide.xplr"]
+	path = main/.config/xplr/plugins/zoxide.xplr
+	url = https://github.com/sayanarijit/zoxide.xplr

@@ -1,9 +1,8 @@
-abbr -g ytdl 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
-alias gh-token 'export GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1)'
+alias ght 'export GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1)'
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
-fish_vi_key_bindings
 alias o opener
 # alias e nvr -s
+alias ytdl 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
 alias e 'nvim --startuptime /tmp/nvim-startuptime'
 alias bat 'bat --style=changes,header,rule,snip'
 alias ls lsd
@@ -15,6 +14,10 @@ alias nod 'nodemon --config ~/.config/nodemon/config.json'
 starship init fish | source
 zoxide init fish | source
 kitty + complete setup fish | source
+
+export FZF_DEFAULT_COMMAND='fd --type file --follow --hidden --exclude .git --color=always'
+export FZF_CTRL_T_COMMAND='fd --type file --follow --hidden --exclude .git --color=always $dir'
+export FZF_DEFAULT_OPTS="--ansi"
 
 # pnpm
 # tabtab source for packages

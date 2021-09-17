@@ -9,5 +9,10 @@ client.placeholder	    #$color0	#$color0	#$foreground	#$color4	  #$color0
 
 client.background       #$color0
 
+exec_always {
+  gsettings set org.gnome.desktop.interface gtk-theme '$gtk_theme'
+  gsettings set org.gnome.desktop.interface font-name '$font'
+}
+
 # https://github.com/francma/wob/blob/master/wob.1.scd
 exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --border-color #aa$foreground --bar-color #aa$foreground --background-color #55$color0

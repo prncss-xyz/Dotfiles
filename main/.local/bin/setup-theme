@@ -19,6 +19,7 @@ export text="$foreground"
 export accent="$color6"
 export primary="$color12"
 export font="Montserrat"
+export gtk_theme="Adwaita"
 
 # passing these vars unexpended
 export WOBSOCK='$WOBSOCK'

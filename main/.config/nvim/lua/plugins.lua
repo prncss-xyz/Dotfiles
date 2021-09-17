@@ -149,6 +149,7 @@ return require('packer').startup(function()
       'hrsh7th/cmp-nvim-lua',
       'saadparwaiz1/cmp_luasnip',
       'rafamadriz/friendly-snippets',
+      'DeepInThought/vscode-shell-snippets',
       'L3MON4D3/LuaSnip',
     },
     config = function()

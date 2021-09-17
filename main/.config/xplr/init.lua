@@ -6,7 +6,7 @@ require('preview-tabbed').setup {
   mode = 'action',
   key = 'p',
   fifo_path = '/tmp/xplr.fifo',
-  previewer = os.getenv 'HOME' .. '/.config/nnn/plugins/preview-tui',
+  previewer = 'preview-tui',
 }
 require('xargs').setup()
 require('zoxide').setup()

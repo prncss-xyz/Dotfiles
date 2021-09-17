@@ -24,4 +24,5 @@ NeovideMultigrid=NeovideMultiGrid
 TERMINAL=kitty
 RIPGREP_CONFIG_PATH OVERRIDE=${HOME}/.config/rg/config
 DOTFILES OVERRIDE=${HOME}/Dotfiles
-PJECTS OVERRIDE=${HOME}/Media/Projects
+PROJECTS OVERRIDE=${HOME}/Media/Projects
+

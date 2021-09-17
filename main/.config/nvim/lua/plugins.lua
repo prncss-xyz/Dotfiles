@@ -267,12 +267,6 @@ return require('packer').startup(function()
     end,
   }
   use {
-    'numToStr/Navigator.nvim',
-    config = function()
-      require('Navigator').setup {}
-    end,
-  }
-  use {
     'sindrets/diffview.nvim',
     config = function()
       require('diffview').setup()

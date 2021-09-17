@@ -26,7 +26,7 @@ timedatectl set-ntp true
 hwclock --systohc
 
 echo "wheel ALL=(ALL) ALL">>/etc/sudoers
-useradd -m -G wheel "$USER1"
+useradd -m -G wheel,input,lp,users,prncss "$USER1"
 passwd $USER1
 cd /home/"$USER1" || exit 1
 rm /home/"$USER1"/.*

@@ -56,7 +56,7 @@ command('BrowserSearchCword', { nargs = 1 }, function(base)
   require('plenary.job')
     :new({
       command = browser,
-      args = { url },
+      args = { '--new-window', url },
     })
     :start()
 end)

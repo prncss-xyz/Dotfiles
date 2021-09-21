@@ -11,6 +11,7 @@ alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvr /tmp/tree.json'
 alias copy-last 'history|head -1|wl-copy'
 alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
 alias nod 'nodemon --config ~/.config/nodemon/config.json'
+alias hman 'man -H'
 
 starship init fish | source
 zoxide init fish | source

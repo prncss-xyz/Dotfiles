@@ -1,4 +1,5 @@
 [binds]
 m = exec imv-do "$imv_current_file"
 M = exec imv-do
-
+n = next 1
+p = prev 1

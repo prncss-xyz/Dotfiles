@@ -680,11 +680,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         'symbols',
       },
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
-      p = {
+      P = {
         "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
-        'session develop',
       },
-      -- p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
+      p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
       g = { '<cmd>Neogit<cr>', 'neogit' },
     },
     [a.browser] = {

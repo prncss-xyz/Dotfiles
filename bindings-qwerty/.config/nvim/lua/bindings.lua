@@ -48,6 +48,7 @@ local a = invert {
   L = 'editor',
   H = 'help',
   Y = 'browser',
+  K = 'selection',
 }
 local d0 = {
   h = 'left',
@@ -60,7 +61,6 @@ local d0 = {
   ['é'] = 'search',
   [s 'É'] = 'searchBack',
   L = 'loclist',
-  K = 'selection',
 }
 
 -- map('é', 'search', {
@@ -119,9 +119,9 @@ local function allmap(key, name, maps, opts)
   end
 end
 
-local d = invert(d0)
+local dd = invert(d0)
 
-safe_merge(d, d0, {})
+safe_merge(dd, d0, {})
 
 local r = invert {
   a = 'outer',
@@ -279,25 +279,25 @@ function M.setup()
   )
   map(
     'n',
-    a.macro .. d.search .. 'r',
+    a.macro .. dd.search .. 'r',
     '<plug>(Mac_SearchForNamedMacroAndOverwrite)',
     { noremap = false }
   )
   map(
     'n',
-    a.macro .. d.search .. 'n',
+    a.macro .. dd.search .. 'n',
     '<plug>(Mac_SearchForNamedMacroAndRename)',
     { noremap = false }
   )
   map(
     'n',
-    a.macro .. d.search .. 'd',
+    a.macro .. dd.search .. 'd',
     '<plug>(Mac_SearchForNamedMacroAndDelete)',
     { noremap = false }
   )
   map(
     'n',
-    a.macro .. d.search .. 'q',
+    a.macro .. dd.search .. 'q',
     '<plug>(Mac_SearchForNamedMacroAndPlay)',
     { noremap = false }
   )
@@ -313,10 +313,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 ]]
   -- map('v', a.edit .. 'j', '<Plug>MoveBlockDown', { noremap = false })
   -- map('v', a.edit .. 'k', '<Plug>MoveBlockUp', { noremap = false })
-  map('v', a.edit .. d.left, '<Plug>MoveBlockLeft', { noremap = false })
-  map('v', a.edit .. d.right, '<Plug>MoveBlockRight', { noremap = false })
-  map('n', a.edit .. d.left, '<Plug>MoveCharLeft', { noremap = false })
-  map('n', a.edit .. d.right, '<Plug>MoveCharRight', { noremap = false })
+  map('v', a.edit .. dd.left, '<Plug>MoveBlockLeft', { noremap = false })
+  map('v', a.edit .. dd.right, '<Plug>MoveBlockRight', { noremap = false })
+  map('n', a.edit .. dd.left, '<Plug>MoveCharLeft', { noremap = false })
+  map('n', a.edit .. dd.right, '<Plug>MoveCharRight', { noremap = false })
 
   -- exchange (repeat)
   map('nx', a.edit .. 'x', '<Plug>(Exchange)', { noremap = false })
@@ -612,10 +612,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     register({
       ['é'] = { '/', 'search' },
       ['É'] = { '?', 'backward' },
-      K = {
+      [a.selection] = {
         name = '+visual selection',
         s = { '<c-v>', 'square selection' },
-        K = { 'gv', 'reselect' },
+        [a.selection] = { 'gv', 'reselect' },
       },
       [a.edit] = {
         name = '+edit',
@@ -724,12 +724,12 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       name = '+global movements',
       -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
       D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
-      i = {
-        '<cmd>require("telescope.").builtin.lsp_implementations()<cr>',
+      i = { -- FIXME 
+        '<cmd>lua require("telescope.").builtin.lsp_implementations()<cr>',
         'go implementation',
       },
-      d = {
-        '<cmd>require("telescope.builtin").lsp_definitions()<cr>',
+      d = { -- FIXME
+        '<cmd>lua require("telescope.builtin").lsp_definitions()<cr>',
         'go definition',
       },
       ['é'] = {
@@ -748,10 +748,11 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>lua require("trouble").previous({skip_groups = true, jump = true})<cr>',
         'trouble, previous',
       },
-      ['.'] = {
+      ['.'] = { -- FIXME
         "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<cr>",
         'dofiles',
       },
+      -- TODO filter current project
       o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", 'oldfiles' },
       [' '] = {
         "<cmd>lua require'plugins.telescope'.project_files()<cr>",
@@ -766,7 +767,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>lua require('telescope.builtin').man_pages()<cr>",
         'man pages',
       },
-      c = { '<cmd>Cheatsheet<cr>', 'cheatsheet' },
       p = { '<cmd>Mdhelp<cr>', 'md help' },
       v = {
         "<cmd>lua require('telescope.builtin').help_tags()<cr>",
@@ -774,7 +774,9 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
     },
     ['<leader>'] = {
-      p = { '<cmd>SearchSession<cr>', 'sessions' },
+      r = { '<cmd>lua require("persistence").load()<cr>', 'restore seesion'},
+      R = { '<cmd>lua require("persistence").load({last=true})<cr>', 'restore last seesion'},
+      p = { '<cmd>Telescope projects<cr>', 'sessions' },
       P = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
       [';'] = {
         "<cmd>lua require('telescope.builtin').commands()<cr>",

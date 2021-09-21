@@ -39,26 +39,3 @@ require 'autocommands'
 require('theme').setup()
 require 'theme-exporter'
 require 'setup-session'
-
-require'utils'.augroup('SessionAsk', {
-  {
-    events = { 'VimEnter' },
-    targets = { '*' },
-    modifiers = { 'silent!' },
-    command = function () 
-      -- require'persistence'.load()
-      -- vim.cmd("silent! BufferGoto %i<cr>")
-        -- require("persistence").load()
-      -- local isHome = os.getenv 'HOME' == os.getenv 'PWD'
-      -- if isHome then
-      --   -- require("persistence").load({last=true})
-      --   -- require('session-lens').search_session()
-      --   -- require'telescope'.extensions.repo.list()
-      -- else
-      --   require("persistence").load()
-      --   require'telescope' -- workaround
-      -- end
-    end,
-  },
-})
-

@@ -129,3 +129,4 @@ brightnessctl
 wluma
 vulkan-intel
 dua-cli
+early-oom

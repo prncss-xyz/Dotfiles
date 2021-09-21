@@ -98,6 +98,7 @@ local function set_title_plenary()
     :new({
       command = 'git',
       args = { 'branch', '--show-current' },
+      cwd = os.getenv 'PWD',
       on_exit = function(j)
         branch = j:result()[1]
         vim.schedule(function()
@@ -119,8 +120,47 @@ end
 
 augroup('SetTitleGitsigns', {
   {
-    events = { 'VimEnter', 'DirChanged' , 'CursorHold' },
+    events = { 'DirChanged', 'CursorHold' },
     targets = { '*' },
     command = set_title_gitsigns,
   },
 })
+
+augroup('SelectProject', {
+  {
+    events = { 'VimEnter' },
+    targets = { '*' },
+    command = function()
+      if os.getenv 'HOME' == os.getenv 'PWD' then
+        -- if vim.fn.getcwd() == vim.loop.os_homedir() then
+        vim.cmd 'Telescope projects'
+        -- require('telescope').extensions.repo.list()
+        -- set_title_gitsigns()
+      else
+        set_title_gitsigns()
+      end
+    end,
+  },
+})
+
+-- require'utils'.augroup('SessionAsk', {
+--   {
+--     events = { 'VimEnter' },
+--     targets = { '*' },
+--     modifiers = { 'silent!' },
+--     command = function ()
+-- require'persistence'.load()
+-- vim.cmd("silent! BufferGoto %i<cr>")
+-- require("persistence").load()
+-- local isHome = os.getenv 'HOME' == os.getenv 'PWD'
+-- if isHome then
+--   -- require("persistence").load({last=true})
+--   -- require('session-lens').search_session()
+--   -- require'telescope'.extensions.repo.list()
+-- else
+--   require("persistence").load()
+--   require'telescope' -- workaround
+-- end
+--     end,
+--   },
+-- })

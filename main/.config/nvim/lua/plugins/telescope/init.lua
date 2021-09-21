@@ -53,7 +53,7 @@ function M.setup()
   -- telescope.builtin 'spell_suggest'
   require('telescope').load_extension 'bookmarks'
   require('telescope').load_extension 'project'
-  -- require('telescope').load_extension 'projects'
+  require('telescope').load_extension 'projects'
   -- gitbranches; see https://github.com/awesome-streamers/awesome-streamerrc/blob/master/ThePrimeagen/lua/theprimeagen/telescope.lua
 end
 

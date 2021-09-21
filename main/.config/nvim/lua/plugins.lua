@@ -551,16 +551,19 @@ return require('packer').startup(function()
   }
   use {
     'folke/persistence.nvim',
+    event = "BufReadPre",
+    module = "persistence",
+    dir = os.getenv 'HOME' .. '/Personal/sessions/',
     config = function()
       require('persistence').setup()
     end,
   }
-  -- use {
-  --   'ahmedkhalf/project.nvim',
-  --   config = function()
-  --     require('project_nvim').setup {}
-  --   end,
-  -- }
+  use {
+    'ahmedkhalf/project.nvim',
+    config = function()
+      require('project_nvim').setup {}
+    end,
+  }
   -- use {
   --   'rmagatti/auto-session',
   --   config = function()

@@ -18,23 +18,31 @@ local function setup(port, command)
     :sync()
   local fifo = string.format('/tmp/session-%d', port)
   job:new({ command = 'mkfifo', args = { fifo } }):sync()
-  os.execute(string.format ([[
+  os.execute(string.format(
+    [[
     export PORT=%q
     pass show %q|. 2>/dev/null
     exec %q -e sh %q&
-  ]], port, 'session/' .. dirname, os.getenv'TERMINAL', fifo ))
+  ]],
+    port,
+    'session/' .. dirname,
+    os.getenv 'TERMINAL',
+    fifo
+  ))
   local file = io.open(fifo, 'a')
   file:write(command)
   file:close()
 end
 
 local function get_new_port()
+  local port = 3000
   local file = io.open('/tmp/PORT', 'r')
-  local ctn = file:read("*a")
-  file:close()
-  local port = ctn and tonumber(ctn) or 3000
+  if file then
+    port = tonumber(file:read '*a')
+    file:close()
+  end
   file = io.open('/tmp/PORT', 'w')
-  file:write(tostring(port+1))
+  file:write(tostring(port + 1))
   file:close()
   return port
 end

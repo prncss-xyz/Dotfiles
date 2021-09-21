@@ -10,6 +10,7 @@ gpg-connect-agent updatestartuptty /bye >/dev/null
 
 PS1='[\u@\h \W]\$ '
 
+
 # export GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1)
 
 if [[ $(ps --no-header --pid=$PPID --format=cmd) != "fish" ]]; then

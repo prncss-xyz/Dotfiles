@@ -74,6 +74,19 @@ deep_merge(vim, {
     -- vim_markdown_conceal_code_blocks = 0,
     -- vim-case-chage
     casechange_nomap = 1,
+    -- neovide_refresh_rate = 60,
+    -- -- neovide_transparency = 0.30
+    -- neovide_cursor_animation_length = 0.3,
+    -- neovide_cursor_trail_length = 0.5,
+    -- neovide_remember_window_size = false,
+    -- neovide_cursor_antialiasing = true,
+    -- neovide_cursor_vfx_mode = 'railgun',
+    -- neovide_cursor_vfx_opacity = 200.0,
+    -- neovide_cursor_vfx_particle_lifetime = 1.2,
+    -- neovide_cursor_vfx_particle_density = 7.0,
+    -- neovide_cursor_vfx_particle_speed = 10.0,
+    -- neovide_cursor_vfx_particle_phase = 1.5,
+    -- neovide_cursor_vfx_particle_curl = 1.0,
   },
   wo = {
     number = false,

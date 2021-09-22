@@ -22,11 +22,12 @@ local function setup(port, command)
     [[
     export PORT=%q
     pass show %q|. 2>/dev/null
-    exec %q -e sh %q&
+    exec %q --title=%q -e sh %q&
   ]],
     port,
     'session/' .. dirname,
     os.getenv 'TERMINAL',
+    dirname .. ' — ' .. command,
     fifo
   ))
   local file = io.open(fifo, 'a')
@@ -56,7 +57,7 @@ local function setup_scheme()
     if type(package.scripts) == 'table' then
       if package.scripts.start == 'gatsby develop' then
         scheme.type = 'gatsty'
-        scheme.develop = 'gatsby develop'
+        scheme.develop = 'npx gatsby develop'
         scheme.port = get_new_port()
       end
     end
@@ -69,10 +70,10 @@ require('utils').augroup('SetupSession', {
   {
     events = { 'DirChanged' },
     targets = { '*' },
-    -- command = setup_scheme,
-    command = function()
-      setup_scheme()
-    end,
+    command = setup_scheme,
+    -- command = function()
+    --   setup_scheme()
+    -- end,
   },
 })
 

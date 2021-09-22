@@ -12,6 +12,7 @@ GRIM_DEFAULT_DIR OVERRIDE=${HOME}/Media/Pictures/Captures
 # vscode_path OVERRIDE=${HOME}/.config/VSCodium
 STARDICT_DATA_DIR OVERRIDE=${HOME}/Media/stardict
 PATH OVERRIDE=${HOME}/.local/bin:${HOME}/.pnpm-global-bin:${PATH}
+MANPATH OVERRIDE=${NPM_PACKAGES}/share/man ${MANPATH}
 # NNN_BMS OVERRIDE=w:${HOME}/Downloads;p:${HOME}/Media/Pictures;d:${HOME}/Documents;u:/run/media/${USER};r=/run/user/1000/gvfs/mtp:host=Boyue_Likebook-T78D_T78DACT2200300015/Internal storage
 PATHMARKS_FILE OVERRIDE=${HOME}/Personal/xplr_bookmarks
 PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?

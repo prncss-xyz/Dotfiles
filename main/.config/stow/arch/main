@@ -41,7 +41,6 @@ languagetool
 libreoffice-extension-languagetool
 libreoffice-fresh
 lolcat
-lsd
 lua-language-server
 mako
 nmap
@@ -130,3 +129,4 @@ wluma
 vulkan-intel
 dua-cli
 early-oom
+exa

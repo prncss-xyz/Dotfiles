@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=khal
+Comment=Calender editor
+Exec=khal interactive
+Terminal=true

@@ -9,13 +9,15 @@ set $term kitty
 
 set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
 # https://github.com/francma/wob/blob/master/wob.1.scd
+exec wl-paste -t text --watch clipman store
 exec flashfocus
 exec wlsunset -l 45.5 -L -73.6
-exec wluma
+# exec wluma
 exec swayidle -w \
  timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
  timeout 330 'swaylock' \
  before-sleep 'swaylock'
+ exec aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
 
 mouse_warping none
 focus_follows_mouse no

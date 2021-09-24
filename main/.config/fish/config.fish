@@ -5,11 +5,11 @@ alias o opener
 # alias e nvr -s
 alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
 alias e 'nvim --startuptime /tmp/nvim-startuptime'
-alias s 'search-ext'
+alias s search-ext
 alias bat 'bat --style=changes,header,rule,snip'
 alias ls 'exa --icons --git'
 alias t 'exa --icons --git --tree'
-alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvr /tmp/tree.json'
+alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvim /tmp/sway-tree.json'
 alias copy-last 'history|head -1|wl-copy'
 alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
 alias nod 'nodemon --config ~/.config/nodemon/config.json'

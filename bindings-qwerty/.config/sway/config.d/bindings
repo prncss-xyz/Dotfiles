@@ -27,7 +27,8 @@ bindsym $mod+shift+m exec makoctl dismiss --all
 bindsym $mod+Return [title="^scratchpad$"] scratchpad show
 bindsym $mod+p exec rofi-pass
 bindsym $mod+d exec rofi -show drun
-bindsym $mod+shift+p exec rofi -show ss
+bindsym $mod+shift+p exec rofi -show ssh
+bindsym $mod+i exec clipman pick -t rofi
 # bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
 # bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p pass; wl-clipboard-manager unlock"
 bindsym $mod+equal exec 'kitty -e ~/.local/bin/edit_mathjs'

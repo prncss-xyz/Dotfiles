@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=nmtui
+Comment=terminal network manager
+Exec=nmtui
+Terminal=true

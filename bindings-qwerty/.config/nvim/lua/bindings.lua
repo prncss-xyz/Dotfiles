@@ -128,68 +128,6 @@ local r = invert {
   i = 'inner',
 }
 
--- _G.completion_confirm = function()
---   local npairs = require 'nvim-autopairs'
---   if vim.fn.pumvisible() ~= 0 then
---     return npairs.esc '<cr>'
---   else
---     return npairs.autopairs_cr()
---   end
--- end
-
-function _G.toggle_cmp()
-  local cmp = require 'cmp'
-  if vim.fn.pumvisible() == 1 then
-    cmp.close()
-  else
-    cmp.complete() -- not working
-  end
-end
-
-function _G.tab_complete()
-  local cmp = require 'cmp'
-  if vim.fn.pumvisible() == 1 then
-    cmp.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    }
-    return
-  end
-  local r = require('luasnip').jump(1)
-  if r then
-    return
-  end
-  vim.fn.feedkeys(t '<Plug>(TaboutMulti)', '')
-  -- emmet#moveNextPrev(0)
-end
-
---- <s-tab> to jump to next snippet's placeholder
-function _G.s_tab_complete()
-  return require('luasnip').jump(-1) and '' or t '<Plug>(TaboutBackMulti)'
-  -- emmet#moveNextPrev(1)
-end
-
-local function mapBrowserSearch(register, prefix, help0, mappings)
-  register { [prefix] = { name = help0 } }
-  for abbr, value in pairs(mappings) do
-    local url, help = unpack(value)
-    register({
-      [abbr] = { string.format('<cmd>BrowserSearchCword %s<cr>', url), help },
-    }, {
-      prefix = prefix,
-    })
-    register({
-      [abbr] = {
-        string.format('"zy<cmd>BrowserSearchZ %s<cr>', url),
-        help,
-      },
-    }, {
-      prefix = prefix,
-      mode = 'v',
-    })
-  end
-end
-
 function M.setup()
   -- function M.setup(register)
   local register = require 'which-key-fallback'
@@ -442,29 +380,9 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     'v:lua.MPairs.autopairs_cr()',
     { expr = true, noremap = true }
   )
-  map('is', '<tab>', '<cmd>lua _G.tab_complete()<cr>')
-  map('is', '<c-space>', '<cmd>lua_G.toggle_cmp()<cr>')
-
-  -- -- compe
-  -- map(
-  --   'i',
-  --   '<c-space>',
-  --   "pumvisible() ? compe#close('<c-e>') : compe#complete()",
-  --   { expr = true, silent = true }
-  -- )
-  -- -- "pumvisible() ? compe#confirm({ 'keys': '<tab>', 'select': v:true }) : v:lua.tab_complete()",
-  -- map(
-  --   'is',
-  --   '<tab>',
-  --   'v:lua.tab_complete()',
-  --   { expr = true, silent = true, noremap = false }
-  -- )
-  map(
-    'is',
-    '<s-tab>',
-    'v:lua.s_tab_complete()',
-    { expr = true, silent = true, noremap = false }
-  )
+  map('is', '<tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
+  map('is', '<s-tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
+  map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
 
   -- wildmenu
   -- needed for tab-completion
@@ -652,11 +570,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   register {
     [a.editor] = {
       name = '+editor state',
-      n = {
-        "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
-        'pick note',
-      },
-      N = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
       a = {
         '<cmd>TroubleToggle lsp_workspace_diagnostics<cr>',
         'lsp diagnostics',
@@ -665,43 +578,48 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>TroubleToggle lsp_document_diagnostics<cr>',
         'lsp document diagnostics',
       },
-      t = { '<cmd>Term<cr>', 'new terminal' },
-      q = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
-      L = { '<cmd>TroubleToggle loclist<cr>', 'loclist' },
-      S = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
-      u = { '<cmd>UndotreeToggle<cr>', 'undo tree' },
-      f = { '<cmd>NvimTreeFindFile<cr>', 'file tree' },
-      F = { "<cmd>lua os.execute('kitty -e xplr')<cr>", 'xplr' }, -- TODO: use $TERM
-      -- F = { '<cmd>NvimTreeClose<cr>', 'file tree' },
       d = { '<cmd>DiffviewOpen<cr>', 'diffview open' },
       D = { '<cmd>DiffviewClose<cr>', 'diffview close' },
+      f = { '<cmd>NvimTreeFindFile<cr>', 'file tree' },
+      F = { '<cmd>NvimTreeClose<cr>', 'file tree' },
+      g = { '<cmd>Neogit<cr>', 'neogit' },
+      L = { '<cmd>TroubleToggle loclist<cr>', 'loclist' },
+      n = {
+        "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
+        'pick note',
+      },
+      N = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
+      p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
+      P = {
+        "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
+      },
+      q = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
+      r = { '<cmd>update luafile %<cmd>', 'reload'},
       s = {
         '<cmd>SymbolsOutline<cr>',
         'symbols',
       },
+      S = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
+      t = { '<cmd>lua require"bindutils".term()<cr>', 'new terminal' },
+      u = { '<cmd>UndotreeToggle<cr>', 'undo tree' },
+      x = { "<cmd>lua os.execute('kitty -e xplr')<cr>", 'xplr' }, -- TODO: use $TERM
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
-      P = {
-        "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
-      },
-      p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
-      g = { '<cmd>Neogit<cr>', 'neogit' },
     },
     [a.browser] = {
-      p = { "<cmd>lua require'setup-session'.launch()<cr>", 'session lauch' },
       b = {
         "<cmd>lua require('telescope').extensions.bookmarks.bookmarks()<cr>",
         'bookmarks',
       },
-      u = {
-        '<cmd>BrowserOpenCfile<cr>',
-        'open current file',
-      },
+      man = { '<cmd>lua require"browser".man()<cr>', 'man page' },
       o = {
         '<cmd>call jobstart(["opener", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
         'open current file',
       },
-      gr = { '<cmd>BrowserSearchGh<cr>', 'github repo' },
-      man = { '<cmd>BrowserMan<cr>', 'man page' },
+      p = { "<cmd>lua require'setup-session'.launch()<cr>", 'session lauch' },
+      u = {
+        '<cmd>lua require"browser".openCfile()<cr>',
+        'open current file',
+      },
     },
     [a.jump] = {
       name = '+jump',
@@ -710,31 +628,29 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
         'go previous diagnostic',
       },
-      z = { ']s', 'next misspelled' },
-      Z = { '[s', 'next misspelled' },
       d = { ']c', 'next change' },
       D = { '[c', 'previous change' },
-      r = { 'g,', 'newer change' },
-      R = { 'g;', 'older change' },
       o = { '`.', 'last change' },
       O = { '``', 'before last jump' },
+      r = { 'g,', 'newer change' },
+      R = { 'g;', 'older change' },
+      z = { ']s', 'next misspelled' },
+      Z = { '[s', 'next misspelled' },
     },
     [a.move] = {
       name = '+global movements',
-      -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
-      D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
-      i = { -- FIXME 
-        '<cmd>lua require("telescope.").builtin.lsp_implementations()<cr>',
-        'go implementation',
-      },
+      b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
       d = { -- FIXME
         '<cmd>lua require("telescope.builtin").lsp_definitions()<cr>',
         'go definition',
       },
-      ['é'] = {
-        "<cmd>lua require('telescope.builtin').live_grep()<cr>",
-        'live grep',
+      D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
+      i = { -- FIXME
+        '<cmd>lua require("telescope.").builtin.lsp_implementations()<cr>',
+        'go implementation',
       },
+      -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
+      o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", 'oldfiles' },
       r = {
         "<cmd>lua require('telescope.builtin').lsp_references()<cr>",
         'lsp references',
@@ -747,18 +663,20 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>lua require("trouble").previous({skip_groups = true, jump = true})<cr>',
         'trouble, previous',
       },
+      --w = { '<cmd>Rg <cword><cr>', 'rg current word' },
+      ['é'] = {
+        "<cmd>lua require('telescope.builtin').live_grep()<cr>",
+        'live grep',
+      },
       ['.'] = { -- FIXME
         "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<cr>",
         'dofiles',
       },
       -- TODO filter current project
-      o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", 'oldfiles' },
       [' '] = {
         "<cmd>lua require'plugins.telescope'.project_files()<cr>",
         'project file',
       },
-      --w = { '<cmd>Rg <cword><cr>', 'rg current word' },
-      b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
     },
     H = {
       name = '+help',
@@ -773,8 +691,11 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
     },
     ['<leader>'] = {
-      r = { '<cmd>lua require("persistence").load()<cr>', 'restore seesion'},
-      R = { '<cmd>lua require("persistence").load({last=true})<cr>', 'restore last seesion'},
+      r = { '<cmd>lua require("persistence").load()<cr>', 'restore seesion' },
+      R = {
+        '<cmd>lua require("persistence").load({last=true})<cr>',
+        'restore last seesion',
+      },
       p = { '<cmd>Telescope projects<cr>', 'sessions' },
       P = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
       [';'] = {
@@ -897,7 +818,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     },
   }
 
-  mapBrowserSearch(register, a.browser, '+browser search', {
+  require('bindutils').mapBrowserSearch(register, a.browser, '+browser search', {
     go = { 'https://google.ca/search?q=', 'google' },
     d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
     y = { 'https://www.youtube.com/results?search_query=', 'youtube' },

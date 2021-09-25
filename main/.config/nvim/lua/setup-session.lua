@@ -89,14 +89,6 @@ function m.launch()
 end
 
 function m.develop()
-  -- if scheme.develop then
-  --   require('plenary.job')
-  --     :new({
-  --       command = 'setup-session',
-  --       args = { scheme.port, scheme.develop },
-  --     })
-  --     :start()
-  -- end
   setup(scheme.port, scheme.develop)
   if first then
     first = false

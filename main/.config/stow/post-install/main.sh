@@ -2,7 +2,7 @@
 
 sudo systemctl enable greetd
 sudo systemctl enable bluetooth
-sudo systemctl enable networkmanager
+sudo systemctl enable NetworkManager
 sudo systemctl enable avahi
 sudo systemctl enable sshd
 sudo systemctl enable earlyoom

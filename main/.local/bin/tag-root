@@ -3,11 +3,12 @@
 while true 
 do
   if [ -d ".tags" ]; then
-    echo $PWD
+    echo "$PWD"
     exit 0
   fi
   if [ "$PWD" = "/" ]; then
-    exit 1
+    echo "'.tags' directory not found" > /dev/stderr
+    exit 1
   fi
   cd ..
 done

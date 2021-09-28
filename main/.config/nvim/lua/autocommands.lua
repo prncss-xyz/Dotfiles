@@ -38,7 +38,7 @@ augroup('PackerCompile', {
   {
     events = { 'BufWritePost' },
     targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
-    command = 'Reload',
+    command = 'update luafile %',
     -- command = 'PackerCompile',
     -- need to fix PackerCompile related bug
   },

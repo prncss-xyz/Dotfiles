@@ -5,4 +5,4 @@ echo -ne "\a"
 cd /tmp || exit 1
 id=$(date "+%Y-%m-%d %H:%M:%S")
 sleep 0.1
-nvim "CODI $id" "+Codi mathjs" +startinsert
+nvim "mathjs $id" "+Codi mathjs" +startinsert

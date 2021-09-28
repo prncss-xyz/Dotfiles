@@ -1,4 +1,5 @@
-#!/usr/bin/env sh
-comm=$(printf "kitty --class=launcher -e mvf %q" "$1")
+#!/usr/bin/env bash
+
+comm=$(printf "kitty --class=launcher -e $1 %q" "$2")
 echo "$comm"
 swaymsg exec "$comm"

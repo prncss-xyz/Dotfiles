@@ -1,5 +1,8 @@
 local m = {}
 
+local function t(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
 
 function m.toggle_cmp()
   local cmp = require 'cmp'
@@ -37,25 +40,17 @@ function m.s_tab_complete()
   -- emmet#moveNextPrev(1)
 end
 
-function m.mapBrowserSearch(register, prefix, help0, mappings)
-  register { [prefix] = { name = help0 } }
-  for abbr, value in pairs(mappings) do
-    local url, help = unpack(value)
-    register({
-      [abbr] = { string.format('<cmd>lua require"browser".searchCword(%q)<cr>', url), help },
-    }, {
-      prefix = prefix,
-    })
-    register({
-      [abbr] = {
-        string.format('"zy<cmd>lua require"browser".searchZ(%q)<cr>', url),
-        help,
-      },
-    }, {
-      prefix = prefix,
-      mode = 'v',
-    })
+function m.spell_next(dir)
+  local word = vim.fn.expand '<cword>'
+  local res = vim.fn.spellbadword(word)
+  if dir == -1 then
+    vim.cmd 'normal! [s'
+  elseif res[1]:len() == 0 then
+    vim.cmd 'normal! ]s'
   end
+  require('telescope.builtin').spell_suggest(
+    require('telescope.themes').get_cursor {}
+  )
 end
 
 function m.onlyBuffer()
@@ -94,6 +89,22 @@ function m.term()
       args = {},
     })
     :start()
+end
+
+function m.term_launch(args)
+  local args = { '-e', unpack(args) }
+  require('plenary.job')
+    :new({
+      command = vim.env.TERMINAL,
+      args = args,
+    })
+    :start()
+end
+
+function m.searchCword(base)
+  local word = vim.fn.expand '<cword>'
+  local qs = require('utils').encode_uri(word)
+  m.open(base .. qs)
 end
 
 return m

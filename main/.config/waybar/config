@@ -9,7 +9,7 @@
     },
     "cpu": {
       "interval": 10,
-      "format": "{load:0.01f} · {usage} · {avg_frequency:0.01f}",
+      "format": "{usage} · {load:0.01f} · {avg_frequency:0.01f}",
       "max-length": 10
     },
     "memory": {

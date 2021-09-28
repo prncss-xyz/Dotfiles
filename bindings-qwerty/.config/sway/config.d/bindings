@@ -31,7 +31,7 @@ bindsym $mod+shift+p exec rofi -show ssh
 bindsym $mod+i exec clipman pick -t rofi
 # bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
 # bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p pass; wl-clipboard-manager unlock"
-bindsym $mod+equal exec 'kitty -e ~/.local/bin/edit_mathjs'
+bindsym $mod+equal exec 'kitty -e ~/.local/bin/codi_mathjs'
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
 # Despite the name, also works for non-floating windows.
@@ -102,7 +102,7 @@ mode mouse3 {
 }
 
 # Kill focused window
-bindsym $mod+Ctrl+q kill
+bindsym $mod+q kill
 bindsym $mod+Ctrl+r reload
 bindsym $mod+Ctrl+e exit
 bindsym $mod+Ctrl+l exec "swaylock"
@@ -171,7 +171,7 @@ bindsym $mod+v splitv
 
 # Switch the current container between different layout styles
 bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
+bindsym $mod+shift+s layout tabbed
 bindsym $mod+e layout toggle split
 
 # Make the current focus fullscreen
@@ -228,10 +228,6 @@ bindsym $mod+r mode "resize"
 # XF86MonBrightnessDown       exec light -U 1%
 # Shift+XF86MonBrightnessUp   exec light -A 5%
 #
-
-# Print screen
-# screenshot
-bindsym $mod+q exec GRIM_DEFAULT_DIR="$(xdg-user-dir PICTURES)/Captures" grim
 
 # Gaps tweaking
 # Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.

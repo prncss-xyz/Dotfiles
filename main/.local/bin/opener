@@ -87,7 +87,7 @@ case "${MIMETYPE}" in
   application/vnd.openxmlformats-officedocument.wordprocessingml.document| \
     application/x-mobipocket-ebook| \
     application/epub+zip)
-      ebook-viewer "${FPATH}" &
+      com.github.johnfactotum.Foliate "${FPATH}" &
       exit 0
       ;;
 

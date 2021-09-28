@@ -41,6 +41,7 @@ function M.executable(e)
 end
 
 -- ?? vim.tbl_deep_extend instead ??
+-- TODO merge arrays
 function M.deep_merge(t1, t2)
   for k, v in pairs(t2) do
     if (type(v) == 'table') and (type(t1[k] or false) == 'table') then

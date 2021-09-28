@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+source=$(realpath "$1")
+
+dir=$(dirname "$1")
+cd "$dir" || exit 1
+root="$(tag-root)"
+if [ -z "$root" ]; then
+	exit 2
+fi
+cd "$root/.tags" || exit
+
+rpath=$(realpath --relative-to=.. "$source")
+ls ./*/"$rpath" | cut -d/ -f2

@@ -1,7 +1,20 @@
 #!/bin/env sh
 
-inp="$1"
+if [ "$1" = "--last" ]; then
+	if [ ! -f /tmp/ttt-last ]; then
+    echo "no last file" > /dev/stderr
+		exit 1
+	fi
+	inp="$(cat /tmp/ttt-last)"
+else
+	inp="$1"
+fi
 source=$(realpath "$inp")
+if [ ! -e "$source" ]; then
+  echo "'$1' doest not exists"  > /dev/stderr
+  exit 1
+fi
+
 FPATH="$inp"
 FNAME=$(basename "$inp")
 ext="${FNAME##*.}"
@@ -92,13 +105,12 @@ fi
 
 mkdir -p "$HOME"/.histories/
 if [ ! -f "$HOME"/.histories/$history ]; then
-  touch "$HOME"/.histories/$history
+	touch "$HOME"/.histories/$history
 fi
 echo $PWD
 result="$(fd -t d -x echo '{}' | fzf --history="$HOME"/.histories/$history --print-query | tail -1)"
 if [ -n "$result" ]; then
 	mkdir -p "$result"
 	mv "$source" "$result"
-	echo "$PWD/$result/$FNAME" >/tmp/mvf
+	echo "$PWD/$result/$FNAME" >/tmp/ttt-last
 fi
-

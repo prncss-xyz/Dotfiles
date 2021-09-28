@@ -11,7 +11,7 @@ alias ls 'exa --icons --git'
 alias t 'exa --icons --git --tree'
 alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvim /tmp/sway-tree.json'
 alias copy-last 'history|head -1|wl-copy'
-alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
+# alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
 alias nod 'nodemon --config ~/.config/nodemon/config.json'
 abbr hm 'man -H'
 

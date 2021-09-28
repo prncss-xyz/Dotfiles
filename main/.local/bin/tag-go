@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+source=$(realpath "$1")
+root="$(tag-root)"
+if [ -z "$root" ]; then
+	echo "no '.tag' directory" >/dev/stderr
+	exit 3
+fi
+cd "$root/.tags" || exit
+rpath=$(realpath --relative-to=.. "$source")
+
+if [ -n "$2" ]; then
+	tag="$2"
+else
+	tag="$(ls -d ./*/"$rpath" | cut -d/ -f2 | fzf --print-query | tail -1)"
+	if [ -z "$tag" ]; then
+		exit 0
+	fi
+fi
+
+realpath "$root/.tags/$tag/$rpath"

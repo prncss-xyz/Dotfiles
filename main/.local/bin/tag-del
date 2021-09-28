@@ -16,29 +16,37 @@ if [ ! -e "$source" ]; then
 fi
 echo "$source" >/tmp/ttt-last
 
-source=$(realpath "$1")
-dir=$(dirname "$1")
+dir=$(dirname "$source")
 
-cd "$dir" || exit 2
+cd "$dir" || exit 1
 root="$(tag-root)"
 if [ -z "$root" ]; then
-  echo "no '.tag' directory" > /dev/stderr
-	exit 3
+	exit 2
 fi
 cd "$root/.tags" || exit
 
 if [ -n "$2" ]; then
 	tag="$2"
 else
-	history=tags-$(printf '%s' "$tag-root" | md5sum | cut -d\  -f1)
-	# touch "$history"
-	tag="$(ls | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
+	tag="$(tag-get "$source" | fzf --print-query | tail -1)"
 	if [ -z "$tag" ]; then
 		exit 0
 	fi
 fi
+
 rpath=$(realpath --relative-to=.. "$source")
-rdir=$(dirname "$rpath")
-mkdir -p "$tag/$rdir"
-ln -srT "$source" "$tag/$rpath"
-echo ln -srT "$source" "$tag/$rpath"
+rm "$tag/$rpath"
+echo rm "$tag/$rpath"
+
+rdir="$tag/$rpath"
+while true; do
+	rdir=$(dirname "$rdir")
+	if [ "$rdir" = "." ]; then
+		break
+	fi
+	if [ -n "$(ls -A "$rdir")" ]; then
+		break
+	fi
+	rmdir "$rdir"
+	echo rm "$rdir"
+done

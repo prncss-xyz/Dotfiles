@@ -31,7 +31,7 @@ local function setup(port, command)
     fifo
   ))
   local file = io.open(fifo, 'a')
-  file:write(command)
+  file:write(command .. '; sleep inf')
   file:close()
 end
 
@@ -79,12 +79,7 @@ require('utils').augroup('SetupSession', {
 
 function m.launch()
   if scheme.port then
-    require('plenary.job')
-      :new({
-        command = browser,
-        args = { string.format('http://localhost:%d', scheme.port) },
-      })
-      :start()
+    require('browser').open(string.format('http://localhost:%d', scheme.port))
   end
 end
 

@@ -206,6 +206,8 @@ return require('packer').startup(function()
     module = 'trouble.providers.telescope',
     config = function()
       require('trouble').setup {
+        position = 'left',
+        width = 30,
         use_lsp_diagnostic_signs = true,
       }
     end,
@@ -551,8 +553,8 @@ return require('packer').startup(function()
   }
   use {
     'folke/persistence.nvim',
-    event = "BufReadPre",
-    module = "persistence",
+    event = 'BufReadPre',
+    module = 'persistence',
     dir = os.getenv 'HOME' .. '/Personal/sessions/',
     config = function()
       require('persistence').setup()

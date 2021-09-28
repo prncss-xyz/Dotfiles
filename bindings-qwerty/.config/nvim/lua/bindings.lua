@@ -5,10 +5,6 @@ local invert = require('utils').invert
 
 M.plugins = {}
 
-local function t(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
 local function s(char)
   return '<s-' .. char .. '>'
 end
@@ -469,14 +465,14 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
         'nohlsearch',
       },
-      ['<c-n>'] = {
-        '<cmd>lua require"illuminate".next_reference{wrap=true}<cr>',
-        'next occurence',
-      },
-      ['<c-p>'] = {
-        '<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>',
-        'previous occurence',
-      },
+      -- ['<c-n>'] = {
+      --   '<cmd>lua require"illuminate".next_reference{wrap=true}<cr>',
+      --   'next occurence',
+      -- },
+      -- ['<c-p>'] = {
+      --   '<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>',
+      --   'previous occurence',
+      -- },
       ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
@@ -506,6 +502,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   -- nvo mappings
   for mode in string.gmatch('nvo', '.') do
     register({
+      -- G = { 'gg', 'first line'},
       -- local movements
       [a.jump] = {
         name = '+local movements',
@@ -518,7 +515,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
           'symbol or heading',
         }, --
         L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
-        G = { 'gg', 'first line' },
+        e = { 'G', 'last line' },
+        E = { 'gg', 'first line' },
       },
     }, {
       mode = mode,
@@ -578,12 +576,18 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>TroubleToggle lsp_document_diagnostics<cr>',
         'lsp document diagnostics',
       },
+      b = { '<cmd>lua require("persistence").load()<cr>', 'restore seesion' },
+      B = {
+        '<cmd>lua require("persistence").load({last=true})<cr>',
+        'restore last seesion',
+      },
       d = { '<cmd>DiffviewOpen<cr>', 'diffview open' },
       D = { '<cmd>DiffviewClose<cr>', 'diffview close' },
       f = { '<cmd>NvimTreeFindFile<cr>', 'file tree' },
       F = { '<cmd>NvimTreeClose<cr>', 'file tree' },
       g = { '<cmd>Neogit<cr>', 'neogit' },
-      L = { '<cmd>TroubleToggle loclist<cr>', 'loclist' },
+      h = { '<cmd>DiffviewFileHistory .<cr>', 'diffview open' },
+      H = { '<cmd>DiffviewClose<cr>', 'diffview close' },
       n = {
         "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
         'pick note',
@@ -594,7 +598,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
       },
       q = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
-      r = { '<cmd>update luafile %<cmd>', 'reload'},
+      r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload'},
       s = {
         '<cmd>SymbolsOutline<cr>',
         'symbols',
@@ -602,8 +606,14 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       S = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
       t = { '<cmd>lua require"bindutils".term()<cr>', 'new terminal' },
       u = { '<cmd>UndotreeToggle<cr>', 'undo tree' },
-      x = { "<cmd>lua os.execute('kitty -e xplr')<cr>", 'xplr' }, -- TODO: use $TERM
+      w = { '<cmd>Telescope projects<cr>', 'sessions' },
+      W = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
+      x = { "<cmd>lua require'bindutils'.term_launch({'xplr'})<cr>", 'xplr' },
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
+      [';'] = {
+        "<cmd>lua require('telescope.builtin').commands()<cr>",
+        'commands',
+      },
     },
     [a.browser] = {
       b = {
@@ -634,8 +644,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       O = { '``', 'before last jump' },
       r = { 'g,', 'newer change' },
       R = { 'g;', 'older change' },
+      -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
+      -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
       z = { ']s', 'next misspelled' },
-      Z = { '[s', 'next misspelled' },
+      Z = { '[s', 'prevous misspelled' },
     },
     [a.move] = {
       name = '+global movements',
@@ -663,7 +675,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         '<cmd>lua require("trouble").previous({skip_groups = true, jump = true})<cr>',
         'trouble, previous',
       },
-      --w = { '<cmd>Rg <cword><cr>', 'rg current word' },
       ['é'] = {
         "<cmd>lua require('telescope.builtin').live_grep()<cr>",
         'live grep',
@@ -691,72 +702,45 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
     },
     ['<leader>'] = {
-      r = { '<cmd>lua require("persistence").load()<cr>', 'restore seesion' },
-      R = {
-        '<cmd>lua require("persistence").load({last=true})<cr>',
-        'restore last seesion',
-      },
-      p = { '<cmd>Telescope projects<cr>', 'sessions' },
-      P = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
-      [';'] = {
-        "<cmd>lua require('telescope.builtin').commands()<cr>",
-        'commands',
-      },
-      n = {
-        name = '+notes',
-        n = {
-          "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
-          'pick note',
-        },
-        i = {
-          "<cmd>lua require'nononotes'.prompt('insert', false, 'all')<cr>",
-          'insert note id',
-        },
-        N = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
-        s = { "<cmd>lua require'nononotes'.prompt_step()<cr>", 'pick step id' },
-        S = { "<cmd>lua require'nononotes'.new_step()<cr>", 'new step' },
-        t = { "<cmd>lua require'nononotes'.prompt_thread()<cr>", 'prick step id' },
-      },
       s = {
         name = '+LSP',
+        a = {
+          '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>',
+          'show line diagnostics',
+        },
+        c = { '<cmd>ProDoc<cr>', 'prepare doc comment' },
+        d = { '<cmd>lua PeekDefinition()<cr>', 'hover definition' },
         k = { '<cmd>lua vim.lsp.buf.hover()<cr>', 'hover' },
+        r = { '<cmd>lua vim.lsp.buf.references()<cr>', 'references' },
+        s = { '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'signature help' },
         t = {
           '<cmd>lua vim.lsp.buf.type_definition()<cr>',
           'hover type definition',
         },
-        d = { '<cmd>lua PeekDefinition()<cr>', 'hover definition' },
-        s = { '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'signature help' },
         wa = {
           '<cmd>lua vim.lsp.buf.add_workspace_folder()<cr>',
           'add workspace folder',
         },
-        wr = {
-          '<cmd>lua vim.lsp.buf.remove_workspace_folder()<cr>',
-          'rm workspace folder',
-        },
         wl = {
           '<cmd>lua vim.lsp.buf.list_workspace_folder()<cr>',
+          'rm workspace folder',
+        },
+        wd = {
+          '<cmd>lua vim.lsp.buf.remove_workspace_folder()<cr>',
           'rm workspace folder',
         },
         x = {
           '<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>',
           'stop active clients',
         },
-        m = {
-          '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>',
-          'show line diagnostics',
-        },
-        r = { '<cmd>lua vim.lsp.buf.references()<cr>', 'references' },
-        h = { '<cmd>ProDoc<cr>', 'prepare doc comment' },
-        H = { '<cmd>CheatDetect<cr>', 'Cheat' },
       },
       z = {
         name = '+Spell',
+        b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
         e = { '<cmd>setlocal spell spelllang=en_us,cjk<cr>', 'en' },
         f = { '<cmd>setlocal spell spelllang=fr,cjk<cr>', 'fr' },
-        b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
-        x = { '<cmd>setlocal nospell spelllang=<cr>', 'none' },
         g = { '<cmd>LanguageToolCheck<cr>', 'language tools' },
+        x = { '<cmd>setlocal nospell spelllang=<cr>', 'none' },
       },
       d = {
         name = '+DAP',
@@ -818,7 +802,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     },
   }
 
-  require('bindutils').mapBrowserSearch(register, a.browser, '+browser search', {
+  require('browser').mapBrowserSearch(register, a.browser, '+browser search', {
     go = { 'https://google.ca/search?q=', 'google' },
     d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
     y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
@@ -998,8 +982,7 @@ M.plugins = {
     ['<Tab>'] = 'preview',
     K = 'first_sibling',
     J = 'last_sibling',
-    I = 'toggle_ignored',
-    ['.'] = 'toggle_dotfiles',
+    ['.'] = 'toggle_ignored',
     R = 'refresh',
     a = 'create',
     d = 'remove',

@@ -1,0 +1,6 @@
+
+[Desktop Entry]
+Type=Application
+Name=grim
+Comment=Take a screenshot
+Exec=grim

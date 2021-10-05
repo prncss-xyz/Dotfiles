@@ -73,12 +73,23 @@ addSearchAliasX(
   "https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=",
   "s"
 );
-
 addSearchAliasX("c", "cnrtl", "https://www.cnrtl.fr/definition/", "s");
 addSearchAliasX(
   "usi",
   "usito",
   "https://usito.usherbrooke.ca/d%C3%A9finitions/",
+  "s"
+);
+addSearchAliasX(
+  "we",
+  "wikipedia en",
+  "https://en.wikipedia.org/wiki/",
+  "s"
+);
+addSearchAliasX(
+  "wf",
+  "wikipedia fr",
+  "https://fr.wikipedia.org/wiki/",
   "s"
 );
 

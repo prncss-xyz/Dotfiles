@@ -158,7 +158,31 @@ function M.setup()
   map('n', a.mark .. 'm', '`') -- not working ?? whichkwey
 
   map('', 's', '<Plug>Lightspeed_s', { noremap = false })
-  map('', s 's', '<Plug>Lightspeed_S', { noremap = false })
+  map('', 's', '<Plug>Lightspeed_S', { noremap = false })
+  map(
+    '',
+    'f',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
+    { noremap = false, expr = true }
+  )
+  map(
+    '',
+    'F',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_F" : "F"',
+    { noremap = false, expr = true }
+  )
+  map(
+    '',
+    't',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_t" : "t"',
+    { noremap = false, expr = true }
+  )
+  map(
+    '',
+    'T',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_T" : "T"',
+    { noremap = false, expr = true }
+  )
 
   -- auto-pairs
   -- map('i', '<cr>', 'v:lua.completion_confirm()', { expr = true })
@@ -598,7 +622,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
       },
       q = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
-      r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload'},
+      r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
       s = {
         '<cmd>SymbolsOutline<cr>',
         'symbols',
@@ -803,34 +827,36 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   }
 
   require('browser').mapBrowserSearch(register, a.browser, '+browser search', {
-    go = { 'https://google.ca/search?q=', 'google' },
-    d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
-    y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
-    gh = { 'https://github.com/search?q=', 'github' },
-    npm = { 'https://www.npmjs.com/search?q=', 'npm' },
-    lh = { 'https://www.libhunt.com/search?query=', 'libhunt' },
-    mdn = { 'https://developer.mozilla.org/en-US/search?q=', 'mdn' },
-    pac = { 'https://archlinux.org/packages/?q=', 'arch packages' },
-    aur = { 'https://aur.archlinux.org/packages/?K=', 'aur packages' },
-    sea = { 'https://www.seriouseats.com/search?q=', 'seriouseats' },
-    sp = { 'https://www.persee.fr/search?ta=article&q=', 'persée' },
-    sep = { 'https://plato.stanford.edu/search/searcher.py?query=', 'sep' },
-    cn = { 'https://www.cnrtl.fr/definition/', 'cnrtl' },
-    usi = { 'https://usito.usherbrooke.ca/d%C3%A9finitions/', 'usito' },
     arch = { 'https://wiki.archlinux.org/index.php?search=', 'archlinux wiki' },
-    nell = {
-      'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
-      'nelligan',
-    },
+    aur = { 'https://aur.archlinux.org/packages/?K=', 'aur packages' },
     ca = { 'https://www.cairn.info/resultats_recherche.php?searchTerm=', 'cairn' },
-    fr = {
-      'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=',
-      'francis',
-    },
+    cn = { 'https://www.cnrtl.fr/definition/', 'cnrtl' },
+    d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
     eru = {
       'https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=',
       'erudit',
     },
+    fr = {
+      'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=',
+      'francis',
+    },
+    gh = { 'https://github.com/search?q=', 'github' },
+    go = { 'https://google.ca/search?q=', 'google' },
+    lh = { 'https://www.libhunt.com/search?query=', 'libhunt' },
+    mdn = { 'https://developer.mozilla.org/en-US/search?q=', 'mdn' },
+    nell = {
+      'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
+      'nelligan',
+    },
+    npm = { 'https://www.npmjs.com/search?q=', 'npm' },
+    pac = { 'https://archlinux.org/packages/?q=', 'arch packages' },
+    sea = { 'https://www.seriouseats.com/search?q=', 'seriouseats' },
+    sep = { 'https://plato.stanford.edu/search/searcher.py?query=', 'sep' },
+    sp = { 'https://www.persee.fr/search?ta=article&q=', 'persée' },
+    usi = { 'https://usito.usherbrooke.ca/d%C3%A9finitions/', 'usito' },
+    we = {'https://en.wikipedia.org/wiki/', 'wikipidia en'},
+    wf = {'https://fr.wikipedia.org/wiki/', 'wikipidia fr'},
+    y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
   })
 end
 

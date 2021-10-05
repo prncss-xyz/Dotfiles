@@ -1,21 +1,24 @@
 #!/usr/bin/env sh
 
-while true 
-do
-  if [ -d ".git" ]; then
-    echo $PWD
-    exit 0
-  fi
-  if [ -d "node_modules" ]; then
-    echo $PWD
-    exit 0
-  fi
-  if [ -f "stylua.toml" ]; then
-    echo $PWD
-    exit 0
-  fi
-  if [ "$PWD" = "/" ]; then
-    exit 1
-  fi
-  cd ..
+while true; do
+	if [ -d ".git" ]; then
+		echo $PWD
+		exit 0
+	fi
+	if [ -d "node_modules" ]; then
+		echo $PWD
+		exit 0
+	fi
+	if [ -f "stylua.toml" ]; then
+		echo $PWD
+		exit 0
+	fi
+	if [ -d ".tags" ]; then
+		echo $PWD
+		exit 0
+	fi
+	if [ "$PWD" = "/" ]; then
+		exit 1
+	fi
+	cd ..
 done

@@ -11,13 +11,11 @@ else
 fi
 source=$(realpath "$inp")
 if [ ! -e "$source" ]; then
-  echo "'$1' doest not exists"  > /dev/stderr
+  echo "'$inp' doest not exists"  > /dev/stderr
   exit 1
 fi
 echo "$source" >/tmp/ttt-last
-
-source=$(realpath "$1")
-dir=$(dirname "$1")
+dir=$(dirname "$source")
 
 cd "$dir" || exit 2
 root="$(tag-root)"

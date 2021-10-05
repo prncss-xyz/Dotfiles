@@ -273,6 +273,21 @@ deep_merge(xplr, {
                   },
                 },
               },
+              -- TODO: use lua
+              -- TODO: prevent accumulation of trailing slashes
+              ['alt-a'] = {
+                help = 'back',
+                messages = {
+                  {
+                    ['BashExec'] = [[
+                      PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}"|tail -2|head -1)
+                      if [ "$PTH" ]; then
+                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                },
+              },
               ['ctrl-v'] = {
                 help = 'fzf open',
                 messages = {

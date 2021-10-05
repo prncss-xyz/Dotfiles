@@ -1,10 +1,6 @@
 #!/usr/bin/env sh
 
-echo "TODO" > /dev/stderr
-exit 1
-
-if [ ! -e "$1" ]; then
-  echo "'$1' doest not exists" > /dev/stderr
-  exit 1
-fi
-
+src="$1"
+tag-get "$src" | while read -r tag ; do
+  tag-del "$src" "$tag"
+done

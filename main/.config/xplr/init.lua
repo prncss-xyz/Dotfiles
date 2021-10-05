@@ -63,6 +63,16 @@ deep_merge(xplr, {
                   },
                 },
               },
+              t = {
+                help = 'mvf last',
+                messages = {
+                  {
+                    ['BashExec'] = [[
+                      tag-put "$XPLR_FOCUS_PATH" --repeat
+                    ]],
+                  },
+                },
+              },
               w = {
                 help = 'tag put last',
                 messages = {
@@ -227,9 +237,7 @@ deep_merge(xplr, {
                 messages = {
                   {
                     ['BashExec'] = [[
-                      if [ -f "$XPLR_FOCUS_PATH" ]; then
-                        tag-put "$XPLR_FOCUS_PATH"
-                      fi
+                      tag-put "$XPLR_FOCUS_PATH"
                     ]],
                   },
                 },
@@ -239,15 +247,13 @@ deep_merge(xplr, {
                 messages = {
                   {
                     ['BashExec'] = [[
-                      if [ -f "$XPLR_FOCUS_PATH" ]; then
-                        tag-del "$XPLR_FOCUS_PATH"
-                      fi
+                      tag-del "$XPLR_FOCUS_PATH"
                     ]],
                   },
                 },
               },
               u = register 'dua_cli',
-              ['z'] = register 'zoxide',
+              z = register 'zoxide',
               ['!'] = {
                 help = 'shell',
                 messages = shell,
@@ -307,7 +313,7 @@ deep_merge(xplr, {
         go_to = {
           key_bindings = {
             on_key = {
-              ['b'] = {
+              b = {
                 help = 'bookmarks',
                 messages = {
                   {
@@ -322,7 +328,22 @@ deep_merge(xplr, {
                   { SwitchModeBuiltin = 'default' },
                 },
               },
-              ['w'] = {
+              p = {
+                help = 'project root',
+                messages = {
+                  {
+                    ['BashExec'] = [[
+                      PTH="$(project_root)" 
+                      if [ "$PTH" ]; then
+                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                  'PopMode',
+                  { SwitchModeBuiltin = 'default' },
+                },
+              },
+              w = {
                 help = 'visit tag',
                 messages = {
                   {
@@ -343,9 +364,22 @@ deep_merge(xplr, {
         selection_ops = {
           key_bindings = {
             on_key = {
-              ['p'] = {
+              p = {
                 help = 'copy here',
                 messages = copy_here.messages,
+              },
+              w = {
+                help = 'tag selection',
+                messages = {{ BashExec = [[
+                cat "$XPLR_PIPE_SELECTION_OUT" | while read -r line ; do
+                  if [ -z "$succ" ]; then
+                    succ=succ
+                    tag-put "$line"
+                  else
+                    tag-put "$line" --repeat
+                  fi
+                done
+                ]] }},
               },
             },
           },

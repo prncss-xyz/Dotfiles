@@ -349,11 +349,11 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   map('x', 'Kj', '<Plug>(Visual-Split-VSSplitBelow)', { noremap = false })
   --
   -- eft
-  map('nx', ';', '<plug>(eft-repeat)', { noremap = false })
-  map('nxo', 'f', '<plug>(eft-f)', { noremap = false })
-  map('nxo', '<s-f>', '<plug>(eft-F)', { noremap = false })
-  map('nxo', 't', '<plug>(eft-t)', { noremap = false })
-  map('nxo', '<s-t>', '<plug>(eft-T)', { noremap = false })
+  -- map('nx', ';', '<plug>(eft-repeat)', { noremap = false })
+  -- map('nxo', 'f', '<plug>(eft-f)', { noremap = false })
+  -- map('nxo', '<s-f>', '<plug>(eft-F)', { noremap = false })
+  -- map('nxo', 't', '<plug>(eft-t)', { noremap = false })
+  -- map('nxo', '<s-t>', '<plug>(eft-T)', { noremap = false })
 
   -- -- nohl on insert
   -- -- https://vi.stackexchange.com/questions/10407/stop-highlighting-when-entering-insert-mode
@@ -400,6 +400,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     'v:lua.MPairs.autopairs_cr()',
     { expr = true, noremap = true }
   )
+  
   map('is', '<tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
   map('is', '<s-tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
   map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
@@ -497,8 +498,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       --   '<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>',
       --   'previous occurence',
       -- },
-      ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
+      ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       -- ['<c-w>'] = {
       --   L = { '<cmd>vsplit<cr>', 'split left' },
@@ -530,17 +531,17 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       -- local movements
       [a.jump] = {
         name = '+local movements',
-        ['é'] = {
-          "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
-          'current buffer fuzzy find',
-        },
+        e = { 'G', 'last line' },
+        E = { 'gg', 'first line' },
+        L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
         s = {
           "<cmd>lua require('telescope.builtin').treesitter()<cr>",
           'symbol or heading',
         }, --
-        L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
-        e = { 'G', 'last line' },
-        E = { 'gg', 'first line' },
+        ['é'] = {
+          "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
+          'current buffer fuzzy find',
+        },
       },
     }, {
       mode = mode,
@@ -559,17 +560,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
       [a.edit] = {
         name = '+edit',
-        -- J = { 'gJ', 'join' },
-        s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
-        z = {
-          "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
-          'spell suggest',
-        },
-        u = { 'gu', 'lowercase' },
-        U = { 'gU', 'uppercase' },
-        v = { 'g~', 'toggle case' },
-        t = { '>>', 'indent' },
-        T = { '<<', 'dedent' },
         a = {
           "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
           'code actions',
@@ -578,9 +568,20 @@ call submode#leave_with('move', 'n', '', '<Esc>')
           "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
           'range code actions',
         },
+        -- J = { 'gJ', 'join' },
+        s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
+        t = { '>>', 'indent' },
+        T = { '<<', 'dedent' },
+        u = { 'gu', 'lowercase' },
+        U = { 'gU', 'uppercase' },
+        v = { 'g~', 'toggle case' },
         w = {
           "<cmd>lua require'telescope.builtin'.symbols{ sources = {'math', 'emoji'} }<cr>",
           'symbols',
+        },
+        z = {
+          "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
+          'spell suggest',
         },
       },
     }, {
@@ -825,7 +826,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
     },
   }
-
   require('browser').mapBrowserSearch(register, a.browser, '+browser search', {
     arch = { 'https://wiki.archlinux.org/index.php?search=', 'archlinux wiki' },
     aur = { 'https://aur.archlinux.org/packages/?K=', 'aur packages' },
@@ -861,25 +861,25 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 end
 
 local SignatureMap = invert {
-  [a.mark .. 'y'] = 'PlaceNextMark',
-  [a.mark .. 't'] = 'ToggleMarkAtLine',
-  [a.mark .. 'da'] = 'PurgeMarksAtLine',
-  [a.mark .. 'xa'] = 'DeleteMark',
-  [a.mark .. 'dA'] = 'PurgeMarks',
-  [a.mark .. 'sa'] = 'PurgeMarkers',
-  [a.mark .. 'ha'] = 'ListBufferMarkers',
-  [a.jump .. a.jump .. 'm'] = 'GotoNextLineAlpha',
-  [a.jump .. a.jump .. 'M'] = 'GotoPrevLineAlpha',
-  [a.jump .. 'm'] = 'GotoNextSpotAlpha',
-  [a.jump .. 'M'] = 'GotoPrevSpotAlpha',
-  [a.jump .. a.jump .. 'b'] = 'GotoNextLineByPos',
-  [a.jump .. a.jump .. 'B'] = 'GotoPrevLineByPos',
   [a.jump .. 'b'] = 'GotoNextSpotByPos',
+  [a.jump .. a.jump .. 'b'] = 'GotoNextLineByPos',
   [a.jump .. 'B'] = 'GotoPrevSpotByPos',
-  [a.jump .. 'x'] = 'GotoNextMarker',
-  [a.jump .. 'X'] = 'GotoPrevMarker',
+  [a.jump .. a.jump .. 'B'] = 'GotoPrevLineByPos',
+  [a.mark .. 'da'] = 'PurgeMarksAtLine',
+  [a.mark .. 'dA'] = 'PurgeMarks',
   [a.jump .. 'e'] = 'GotoNextMarkerAny',
   [a.jump .. 'E'] = 'GotoPrevMarkerAny',
+  [a.mark .. 'ha'] = 'ListBufferMarkers',
+  [a.jump .. 'm'] = 'GotoNextSpotAlpha',
+  [a.jump .. a.jump .. 'm'] = 'GotoNextLineAlpha',
+  [a.jump .. 'M'] = 'GotoPrevSpotAlpha',
+  [a.jump .. a.jump .. 'M'] = 'GotoPrevLineAlpha',
+  [a.mark .. 'sa'] = 'PurgeMarkers',
+  [a.mark .. 't'] = 'ToggleMarkAtLine',
+  [a.jump .. 'x'] = 'GotoNextMarker',
+  [a.jump .. 'X'] = 'GotoPrevMarker',
+  [a.mark .. 'xa'] = 'DeleteMark',
+  [a.mark .. 'y'] = 'PlaceNextMark',
 }
 SignatureMap.Leader = 'M'
 
@@ -988,44 +988,45 @@ M.plugins = {
         expr = true,
         "&diff ? '[c' : '<cmd>lua require\"gitsigns\".prev_hunk()<cr>'",
       },
+      ['n <leader>hb'] = '<cmd>lua require"gitsigns".blame_line()<cr>',
+      ['n <leader>hp'] = '<cmd>lua require"gitsigns".preview_hunk()<cr>',
+      ['n <leader>hr'] = '<cmd>lua require"gitsigns".reset_hunk()<cr>',
       ['n <leader>hs'] = '<cmd>lua require"gitsigns".stage_hunk()<cr>',
       ['n <leader>hu'] = '<cmd>lua require"gitsigns".undo_stage_hunk()<cr>',
-      ['n <leader>hr'] = '<cmd>lua require"gitsigns".reset_hunk()<cr>',
-      ['n <leader>hp'] = '<cmd>lua require"gitsigns".preview_hunk()<cr>',
-      ['n <leader>hb'] = '<cmd>lua require"gitsigns".blame_line()<cr>',
     },
   },
   nvim_tree = {
-    -- still use ijkl, gG, G
-    ['<cr>'] = 'edit',
-    ['<C-x>'] = 'split',
-    ['<C-t>'] = 'tabnew',
-    T = 'prev_sibling',
-    t = 'next_sibling',
-    h = 'parent_node',
-    ['<BS>'] = 'close_node',
-    ['<S-CR>'] = 'close_node',
-    ['<Tab>'] = 'preview',
-    K = 'first_sibling',
-    J = 'last_sibling',
-    ['.'] = 'toggle_ignored',
-    R = 'refresh',
+    -- still use jks
+    -- TODO gg G -> e E
     a = 'create',
     d = 'remove',
-    r = 'rename',
-    ['<C-r>'] = 'full_rename',
-    x = 'cut',
-    y = 'copy',
-    p = 'paste',
-    ll = 'copy_name',
-    lp = 'copy_path',
-    lP = 'copy_absolute_path',
-    V = 'prev_git_item',
-    v = 'next_git_item',
+    h = 'parent_node',
     H = 'dir_up',
+    J = 'last_sibling',
+    K = 'first_sibling',
+    l = 'edit',
     o = 'system_open',
+    p = 'paste',
     q = 'close',
+    r = 'rename',
+    R = 'refresh',
+    t = 'next_sibling',
+    T = 'prev_sibling',
+    v = 'next_git_item',
+    V = 'prev_git_item',
+    x = 'cut',
+    yl = 'copy_name',
+    yp = 'copy_path',
+    ya = 'copy_absolute_path',
+    yy = 'copy',
+    ['.'] = 'toggle_ignored',
     ['?'] = 'toggle_help',
+    ['<bs>'] = 'close_node',
+    ['<tab>'] = 'preview',
+    ['<s-c>'] = 'close_node',
+    ['<c-r>'] = 'full_rename',
+    ['<c-t>'] = 'tabnew',
+    ['<c-x>'] = 'split',
   },
 }
 

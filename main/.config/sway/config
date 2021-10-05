@@ -18,6 +18,7 @@ exec swayidle -w \
  timeout 330 'swaylock' \
  before-sleep 'swaylock'
  exec aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
+exec blueberry-tray
 
 mouse_warping none
 focus_follows_mouse no

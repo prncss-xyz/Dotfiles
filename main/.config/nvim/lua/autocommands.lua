@@ -13,17 +13,17 @@ augroup('TerminalNonumbers', {
     end,
   },
 })
-augroup('TerminalEnter', {
-  {
-    events = { 'BufEnter' },
-    target = { '*' },
-    command = function()
-      if vim.bo.bt == 'terminal' then
-        vim.cmd 'startinsert'
-      end
-    end,
-  },
-})
+-- augroup('TerminalEnter', {
+--   {
+--     events = { 'BufEnter' },
+--     target = { '*' },
+--     command = function()
+--       if vim.bo.bt == 'terminal' then
+--         vim.cmd 'startinsert'
+--       end
+--     end,
+--   },
+-- })
 -- augroup('TmpFiles', {
 --   {
 --     events = { 'FileType' },
@@ -126,22 +126,22 @@ augroup('SetTitleGitsigns', {
   },
 })
 
-augroup('SelectProject', {
-  {
-    events = { 'VimEnter' },
-    targets = { '*' },
-    command = function()
-      if os.getenv 'HOME' == os.getenv 'PWD' then
-        -- if vim.fn.getcwd() == vim.loop.os_homedir() then
-        vim.cmd 'Telescope projects'
-        -- require('telescope').extensions.repo.list()
-        -- set_title_gitsigns()
-      else
-        set_title_gitsigns()
-      end
-    end,
-  },
-})
+-- augroup('SelectProject', {
+--   {
+--     events = { 'VimEnter' },
+--     targets = { '*' },
+--     command = function()
+--       if os.getenv 'HOME' == os.getenv 'PWD' then
+--         -- if vim.fn.getcwd() == vim.loop.os_homedir() then
+--         vim.cmd 'Telescope projects'
+--         -- require('telescope').extensions.repo.list()
+--         -- set_title_gitsigns()
+--       else
+--         set_title_gitsigns()
+--       end
+--     end,
+--   },
+-- })
 
 -- require'utils'.augroup('SessionAsk', {
 --   {

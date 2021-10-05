@@ -168,12 +168,13 @@ return require('packer').startup(function()
   }
 
   -- command line
-  use { 'vim-scripts/conomode.vim' }
+  -- use { 'vim-scripts/conomode.vim' }
   use { 'gelguy/wilder.nvim' }
 
   -- UI
   use {
     'lukas-reineke/indent-blankline.nvim',
+    event = 'ColorschemePre',
     config = function()
       local highlitght_list = { 'CursorLine', 'Function' }
       require('indent_blankline').setup {
@@ -284,6 +285,7 @@ return require('packer').startup(function()
   }
   use {
     'TimUntersberger/neogit',
+    cmd = 'Neogit',
     config = function()
       require('neogit').setup {
         integrations = {
@@ -323,16 +325,16 @@ return require('packer').startup(function()
     end,
     -- session manager destroys nvim-tree buffer which prevents nvim-tree from working
     -- nvim-tree so needs to be loaded after the session is restored
-    cmd = {
-      'NvimTreeClipboard',
-      'NvimTreeClose',
-      'NvimTreeFindFile',
-      'NvimTreeFocus',
-      'NvimTreeOpen',
-      'NvimTreeRefresh',
-      'NvimTreeResize',
-      'NvimTreeToggle',
-    },
+    -- cmd = {
+    --   'NvimTreeClipboard',
+    --   'NvimTreeClose',
+    --   'NvimTreeFindFile',
+    --   'NvimTreeFocus',
+    --   'NvimTreeOpen',
+    --   'NvimTreeRefresh',
+    --   'NvimTreeResize',
+    --   'NvimTreeToggle',
+    -- },
   }
   use {
     'mbbill/undotree', -- FIXME
@@ -380,7 +382,7 @@ return require('packer').startup(function()
       })
     end,
   }
-  use 'hrsh7th/vim-eft'
+  -- use 'hrsh7th/vim-eft'
   use {
     'ggandor/lightspeed.nvim',
     config = function()
@@ -470,7 +472,7 @@ return require('packer').startup(function()
     end,
     requires = 'tpope/vim-repeat',
   }
-  use 'mattn/emmet-vim'
+  -- use 'mattn/emmet-vim'
   use {
     'b3nj5m1n/kommentary',
     setup = function()
@@ -595,7 +597,24 @@ return require('packer').startup(function()
   use { 'rose-pine/neovim', as = 'rose-pine' }
 
   -- various
-  use 'tpope/vim-eunuch'
+  use {
+    'tpope/vim-eunuch',
+    cmd = {
+      'Cfind',
+      'Chmod',
+      'Clocate',
+      'Delete',
+      'Lfind',
+      'Llocate',
+      'Mkdir',
+      'Move',
+      'Rename',
+      'SudoEdit',
+      'SudoWrite',
+      'Unlink',
+      'Wall',
+    },
+  }
   use {
     'vigoux/LanguageTool.nvim',
     cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
@@ -612,10 +631,10 @@ return require('packer').startup(function()
       vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
     end,
   }
-  use {
-    'henriquehbr/nvim-startup.lua',
-    config = function()
-      require('nvim-startup').setup {}
-    end,
-  }
+  -- use {
+  --   'henriquehbr/nvim-startup.lua',
+  --   config = function()
+  --     require('nvim-startup').setup {}
+  --   end,
+  -- }
 end)

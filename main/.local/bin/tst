@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+dir=$(dirname "$XPLR_FOCUS_PATH")
+echo "$dir"
+echo "$XPLR_PIPE_SELECTION_OUT"
+cat "$XPLR_PIPE_SELECTION_OUT" | while read -r file ; do
+  mv "$file" "$dir"
+  tag-mv "$file" "$dir/$(basename "$file")"
+done

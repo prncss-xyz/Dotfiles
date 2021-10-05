@@ -1,14 +1,15 @@
 #!/usr/bin/env sh
 
 if [ "$1" = "--last" ]; then
-	if [ ! -f /tmp/ttt-last ]; then
-    echo "no last file" > /dev/stderr
+	inp="$(cat /tmp/ttt-last)"
+	if [ -z "$inp" ]; then
+		echo "no last file" >/dev/stderr
 		exit 1
 	fi
-	inp="$(cat /tmp/ttt-last)"
 else
 	inp="$1"
 fi
+
 source=$(realpath "$inp")
 if [ ! -e "$source" ]; then
   echo "'$inp' doest not exists"  > /dev/stderr
@@ -20,23 +21,28 @@ dir=$(dirname "$source")
 cd "$dir" || exit 2
 root="$(tag-root)"
 if [ -z "$root" ]; then
-  echo "no '.tag' directory" > /dev/stderr
+	echo "no '.tag' directory" >/dev/stderr
 	exit 3
 fi
 cd "$root/.tags" || exit
-
-if [ -n "$2" ]; then
+if [ "$2" = "--repeat" ]; then
+	tag="$(cat /tmp/ttt-repeat)"
+elif [ -n "$2" ]; then
 	tag="$2"
+	if [ -z "$tag" ]; then
+    echo "no tag to repeat" >/dev/stderr
+		exit 4
+	fi
 else
-	history=tags-$(printf '%s' "$tag-root" | md5sum | cut -d\  -f1)
-	# touch "$history"
+	history=tags-"$(printf '%s' "$tag-root" | md5sum | cut -d\  -f1)"
 	tag="$(ls | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
 	if [ -z "$tag" ]; then
 		exit 0
 	fi
 fi
-rpath=$(realpath --relative-to=.. "$source")
-rdir=$(dirname "$rpath")
+echo "$tag" >/tmp/ttt-repeat
+rpath="$(realpath --relative-to=.. "$source")"
+rdir="$(dirname "$rpath")"
+echo ln -srT "$source" "$tag/$rpath"
 mkdir -p "$tag/$rdir"
 ln -srT "$source" "$tag/$rpath"
-echo ln -srT "$source" "$tag/$rpath"

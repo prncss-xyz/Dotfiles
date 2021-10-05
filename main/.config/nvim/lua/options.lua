@@ -1,3 +1,4 @@
+-- vim.cmd 'set shada="NONE"'
 local deep_merge = require('utils').deep_merge
 local indent = 2
 deep_merge(vim, {
@@ -95,6 +96,7 @@ deep_merge(vim, {
   },
   -- like set
   opt = {
+    -- shada = 'NONE',
     conceallevel = 2,
     secure = true, -- disable autocmd etc for project local vimrc files
     exrc = false, -- allow project local vimrc files example .nvimrc see :h exrc

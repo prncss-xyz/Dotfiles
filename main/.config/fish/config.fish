@@ -4,7 +4,8 @@ abbr -g gncc 'commit -a --allow-empty-message -m ""'
 alias o opener
 # alias e nvr -s
 alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
-alias e 'nvim --startuptime /tmp/nvim-startuptime'
+alias e 'nvim'
+# alias e 'nvim --startuptime /tmp/nvim-startuptime'
 alias s search-ext
 alias bat 'bat --style=changes,header,rule,snip'
 alias ls 'exa --icons --git'

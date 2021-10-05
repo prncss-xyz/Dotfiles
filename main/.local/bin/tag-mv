@@ -1,9 +1,12 @@
 #!/usr/bin/env sh
 
-echo "TODO" > /dev/stderr
-exit 1
-
-if [ ! -e "$1" ]; then
-  echo "'$1' doest not exists" > /dev/stderr
-  exit 1
-fi
+src="$1"
+dst="$2"
+tags="$(tag-get "$src")"
+echo "$tags" | while read -r tag ; do
+  tag-del "$src" "$tag"
+done
+mv "$src" "$dst"
+echo "$tags" | while read -r tag ; do
+  tag-put "$dst" "$tag"
+done

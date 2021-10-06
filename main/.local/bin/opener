@@ -1,126 +1,119 @@
 #!/usr/bin/env sh
 
-# TODO http://
+launch() {
 
-FPATH="$1"
+	FPATH="$1"
 
-case "${FPATH}" in
-http://* | https://*)
-	browser "${FPATH}" &
-	exit 0
-	;;
-esac
+	case "${FPATH}" in
+	http://* | https://*)
+		browser "${FPATH}" &
+		return
+		;;
+	esac
 
-#TODO: epub, office
+	#TODO: epub, office
 
-FNAME=$(basename "$1")
-DNAME=$(dirname "$1")
-EDITOR="${VISUAL:-${EDITOR:-vi}}"
-PAGER="${PAGER:-less -R}"
-ext="${FNAME##*.}"
-if [ -n "$ext" ]; then
-	ext="$(printf "%s" "${ext}" | tr '[:upper:]' '[:lower:]')"
-fi
-
-case "${ext}" in
-md | markdown)
-	mdopen "${FPATH}" &
-	exit 0
-	;;
-htm | html)
-	browser "${FPATH}" &
-	exit 0
-	;;
-	## text
-txt | jsx | tsx)
-	nvr --remote-silent "${FPATH}"
-	exit 0
-	;;
-	## Ebook
-azw3)
-	# com.github.johnfactotum.Foliate "${FPATH}" &
-	ebook-reader "${FPATH}" &
-	exit 0
-	;;
-esac
-
-MIMETYPE="$(file -bL --mime-type -- "${FPATH}")"
-case "${MIMETYPE}" in
-inode/x-empty)
-	nvr --remote-silent "${FPATH}"
-	exit 0
-	;;
-
-## Image
-image/*)
-	imv -n "${FPATH}" "${DNAME}" &
-	# imv-folder "${FPATH}" &
-	exit 0
-	;;
-
-## Manpages
-text/troff)
-	hman -l "${FPATH}"
-	exit 0
-	;;
-
-## Text/html
-text/html)
-	browser "${FPATH}" &
-	exit 0
-	;;
-
-## PDF
-application/pdf)
-	browser "${FPATH}" &
-	# evince "${FPATH}" &
-	exit 0
-	;;
-
-## Audio
-audio/*)
-	celluloid "${FPATH}" &
-	exit 0
-	;;
-
-## Video
-video/*)
-	celluloid "${FPATH}" &
-	exit 0
-	;;
-
-## Libreoffice
-application/vnd.oasis.opendocument.* | \
-	application/vnd.openxmlformats-officedocument.*)
-	libreoffice "${FPATH}" &
-	exit 0
-	;;
-
-	## Ebook
-application/x-mobipocket-ebook | \
-	application/epub+zip)
-	com.github.johnfactotum.Foliate "${FPATH}" &
-	exit 0
-	;;
-
-## Text
-## TODO new kitty if no remote
-text/* | */xml | */json)
-	nvr --remote-silent "${FPATH}"
-	exit 0
-	;;
-
-## DjVu
-image/vnd.djvu)
-	if which djvutxt >/dev/null 2>&1; then
-		## Preview as text conversion (requires djvulibre)
-		djvutxt "${FPATH}" | eval "$PAGER"
-		exit 0
-	elif which exiftool >/dev/null 2>&1; then
-		exiftool "${FPATH}" | eval "$PAGER"
-		exit 0
+	FNAME=$(basename "$1")
+	DNAME=$(dirname "$1")
+	EDITOR="${VISUAL:-${EDITOR:-vi}}"
+	PAGER="${PAGER:-less -R}"
+	ext="${FNAME##*.}"
+	if [ -n "$ext" ]; then
+		ext="$(printf "%s" "${ext}" | tr '[:upper:]' '[:lower:]')"
 	fi
-	exit 1
-	;;
-esac
-echo unknown mimetype $MIMETYPE
+
+	case "${ext}" in
+	md | markdown)
+		mdopen "${FPATH}" &
+		return
+		;;
+	htm | html)
+		browser "${FPATH}" &
+		return
+		;;
+		## text
+	txt | jsx | tsx)
+		nvr --remote-silent "${FPATH}"
+		return
+		;;
+		## Ebook
+	azw3)
+		# com.github.johnfactotum.Foliate "${FPATH}" &
+		ebook-reader "${FPATH}" &
+		return
+		;;
+	esac
+
+	MIMETYPE="$(file -bL --mime-type -- "${FPATH}")"
+	case "${MIMETYPE}" in
+	inode/x-empty)
+		nvr --remote-silent "${FPATH}"
+		return
+		;;
+
+	## Image
+	image/*)
+		imv -n "${FPATH}" "${DNAME}" &
+		# imv-folder "${FPATH}" &
+		return
+		;;
+
+	## Manpages
+	text/troff)
+		hman -l "${FPATH}"
+		return
+		;;
+
+	## Text/html
+	text/html)
+		browser "${FPATH}" &
+		return
+		;;
+
+	## PDF
+	application/pdf)
+		browser "${FPATH}" &
+		# evince "${FPATH}" &
+		return
+		;;
+
+	## Audio
+	audio/*)
+		celluloid "${FPATH}" &
+		return
+		;;
+
+	## Video
+	video/*)
+		celluloid "${FPATH}" &
+		return
+		;;
+
+	## Libreoffice
+	application/vnd.oasis.opendocument.* | \
+		application/vnd.openxmlformats-officedocument.*)
+		libreoffice "${FPATH}" &
+		return
+		;;
+
+		## Ebook
+	application/x-mobipocket-ebook | \
+		application/epub+zip)
+		com.github.johnfactotum.Foliate "${FPATH}" &
+		return
+		;;
+
+	## Text
+	## TODO new kitty if no remote
+	text/* | */xml | */json)
+		nvr remote-silent "${FPATH}"
+		return
+		;;
+	esac
+	echo unknown mimetype "$MIMETYPE" >/dev/stderr
+  exit 1
+}
+
+launch "$1"
+echo "$!"
+# swaymsg [pid="$!"] focus

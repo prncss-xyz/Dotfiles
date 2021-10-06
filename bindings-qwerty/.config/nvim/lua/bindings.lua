@@ -158,7 +158,7 @@ function M.setup()
   map('n', a.mark .. 'm', '`') -- not working ?? whichkwey
 
   map('', 's', '<Plug>Lightspeed_s', { noremap = false })
-  map('', 's', '<Plug>Lightspeed_S', { noremap = false })
+  map('', 'S', '<Plug>Lightspeed_S', { noremap = false })
   map(
     '',
     'f',
@@ -400,7 +400,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     'v:lua.MPairs.autopairs_cr()',
     { expr = true, noremap = true }
   )
-  
+
   map('is', '<tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
   map('is', '<s-tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
   map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
@@ -431,6 +431,9 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   map('c', '<c-x>', '<down>')
   -- map('c', '<tab>', '<tab><space>')
   -- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
+  --
+  map('ci', '<c-e>', '<c-right>')
+  map('ci', '<c-b>', '<c-left>')
 
   -- searching
   require 'auto_unhl'
@@ -548,7 +551,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     })
   end
 
-  -- visual selection
+  -- nx mappings
   for mode in string.gmatch('nx', '.') do
     register({
       ['é'] = { '/', 'search' },
@@ -560,6 +563,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
       [a.edit] = {
         name = '+edit',
+        -- J = { 'gJ', 'join' },
         a = {
           "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
           'code actions',
@@ -568,7 +572,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
           "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
           'range code actions',
         },
-        -- J = { 'gJ', 'join' },
         s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
         t = { '>>', 'indent' },
         T = { '<<', 'dedent' },
@@ -608,16 +611,17 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
       d = { '<cmd>DiffviewOpen<cr>', 'diffview open' },
       D = { '<cmd>DiffviewClose<cr>', 'diffview close' },
+      e = { '<cmd>lua require"bindutils".edit_current()<cr>', 'edit current' },
       f = { '<cmd>NvimTreeFindFile<cr>', 'file tree' },
       F = { '<cmd>NvimTreeClose<cr>', 'file tree' },
       g = { '<cmd>Neogit<cr>', 'neogit' },
       h = { '<cmd>DiffviewFileHistory .<cr>', 'diffview open' },
       H = { '<cmd>DiffviewClose<cr>', 'diffview close' },
-      n = {
-        "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
-        'pick note',
-      },
-      N = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
+      -- n = {
+      --   "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
+      --   'pick note',
+      -- },
+      n = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
       p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
       P = {
         "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
@@ -709,8 +713,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         'dofiles',
       },
       -- TODO filter current project
-      [' '] = {
-        "<cmd>lua require'plugins.telescope'.project_files()<cr>",
+      [a.move] = {
+        '<cmd>lua require"bindutils".open_file()<cr>',
         'project file',
       },
     },
@@ -854,8 +858,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     sep = { 'https://plato.stanford.edu/search/searcher.py?query=', 'sep' },
     sp = { 'https://www.persee.fr/search?ta=article&q=', 'persée' },
     usi = { 'https://usito.usherbrooke.ca/d%C3%A9finitions/', 'usito' },
-    we = {'https://en.wikipedia.org/wiki/', 'wikipidia en'},
-    wf = {'https://fr.wikipedia.org/wiki/', 'wikipidia fr'},
+    we = { 'https://en.wikipedia.org/wiki/', 'wikipidia en' },
+    wf = { 'https://fr.wikipedia.org/wiki/', 'wikipidia fr' },
     y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
   })
 end
@@ -996,8 +1000,7 @@ M.plugins = {
     },
   },
   nvim_tree = {
-    -- still use jks
-    -- TODO gg G -> e E
+    -- still use ijkl, gG, G
     a = 'create',
     d = 'remove',
     h = 'parent_node',
@@ -1005,6 +1008,9 @@ M.plugins = {
     J = 'last_sibling',
     K = 'first_sibling',
     l = 'edit',
+    ll = 'copy_name',
+    lp = 'copy_path',
+    lP = 'copy_absolute_path',
     o = 'system_open',
     p = 'paste',
     q = 'close',

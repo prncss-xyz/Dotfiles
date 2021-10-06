@@ -101,10 +101,24 @@ function m.term_launch(args)
     :start()
 end
 
+function m.edit_current()
+  local current = vim.fn.expand '%'
+  m.term_launch { 'nvim', current }
+end
+
 function m.searchCword(base)
   local word = vim.fn.expand '<cword>'
   local qs = require('utils').encode_uri(word)
   m.open(base .. qs)
+end
+
+function m.open_file()
+  local cwd = vim.fn.getcwd()
+  if cwd == os.getenv'HOME' .. '/Personal/neuron' then
+    require'nononotes'.prompt('edit', false, 'all')
+    return
+  end
+  require'plugins.telescope'.project_files()
 end
 
 return m

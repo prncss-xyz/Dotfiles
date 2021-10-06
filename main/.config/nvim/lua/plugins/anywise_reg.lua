@@ -63,7 +63,7 @@ end
 -- select mode missing
 map('nx', 'x', '"+d')
 map('n', 'xx', '"+dd')
-map('nx', 'X', '"+c')
+map('nx', 'X', '"+d$')
 
 map('nx', 'c', '"_c')
 map('n', 'cc', '"_S')

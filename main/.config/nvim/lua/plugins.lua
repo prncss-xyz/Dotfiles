@@ -365,6 +365,19 @@ return require('packer').startup(function()
 
   -- navigation
   use {
+    'kwkarlwang/bufjump.nvim',
+    config = function()
+      require('bufjump').setup {
+        forward = '<C-n>',
+        backward = '<C-p>',
+        on_success = function()
+          vim.cmd [[execute "normal! g`\"zz"]]
+        end,
+      }
+    end,
+  }
+
+  use {
     'kshenoy/vim-signature',
     setup = function()
       local deep_merge = require('utils').deep_merge

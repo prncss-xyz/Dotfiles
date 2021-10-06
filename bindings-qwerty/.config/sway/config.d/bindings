@@ -1,6 +1,6 @@
 # use wev to find keys' names
 
-# Logo key. Use Mod0 for Alt.
+# Logo key. Use mod0 for alt.
 set $mod Mod4
 # Home row direction keys, like vim
 set $left h
@@ -8,30 +8,6 @@ set $down j
 set $up k
 set $right l
 
-### Key bindings
-#
-# Basics:
-#
-bindsym $mod+t exec echo next terminal > /tmp/sway-mega-hotkeys
-bindsym $mod+shift+e exec swaymsg -t get_tree > /tmp/sway-tree.json
-bindsym $mod+n exec kitty -e nvim "+Telescope projects"
-bindsym $mod+shift+n exec kitty -e nvim +"cd ~/Personal/neuron" +"lua require'nononotes'.prompt('edit', false, 'all')"
-# Start a terminal
-bindsym $mod+shift+t exec echo previous terminal > /tmp/sway-mega-hotkeys
-bindsym $mod+y exec echo next browser > /tmp/sway-mega-hotkeys
-bindsym $mod+shift+y exec echo previous browser > /tmp/sway-mega-hotkeys
-bindsym $mod+u exec echo next default > /tmp/sway-mega-hotkeys
-bindsym $mod+shift+u exec echo previous default > /tmp/sway-mega-hotkeys
-bindsym $mod+m exec makoctl dismiss
-bindsym $mod+shift+m exec makoctl dismiss --all
-bindsym $mod+Return [title="^scratchpad$"] scratchpad show
-bindsym $mod+p exec rofi-pass
-bindsym $mod+d exec rofi -show drun
-bindsym $mod+shift+p exec rofi -show ssh
-bindsym $mod+i exec clipman pick -t rofi
-# bindsym $mod+i fullscreen disable, exec wl-clipboard-manager dmenu
-# bindsym $mod+p fullscreen disable, exec "wl-clipboard-manager lock; passmenu -p pass; wl-clipboard-manager unlock"
-bindsym $mod+equal exec 'kitty -e ~/.local/bin/codi_mathjs'
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
 # Despite the name, also works for non-floating windows.
@@ -39,236 +15,134 @@ bindsym $mod+equal exec 'kitty -e ~/.local/bin/codi_mathjs'
 # mouse button for dragging.
 floating_modifier $mod normal
 
-bindsym $mod+semicolon mode jump
-mode jump {
-  bindsym a exec echo go 0 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym s exec echo go 1 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym d exec echo go 2 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym f exec echo go 3 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym j exec echo go 4 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym k exec echo go 5 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym l exec echo go 6 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym semicolon exec echo go 7 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym g exec echo back all > /tmp/sway-mega-hotkeys; mode default
-  bindsym h exec echo last all > /tmp/sway-mega-hotkeys; mode default
-  bindsym Escape mode default
-  bindsym return mode default
-}
-
-# yay -S ydotool
-
-set $speed1 5
-set $speed2 10
-set $speed3 25
-bindsym $mod+z mode mouse2
-mode mouse1 {
-  bindsym 2 mode mouse2
-  bindsym 3 mode mouse3
-  bindsym $left seat - cursor move -$speed1 0
-  bindsym $right seat - cursor move +$speed1 0
-  bindsym $up seat - cursor move 0 -$speed1
-  bindsym $down seat - cursor move 0 +$speed1
-  bindsym f exec ydotool click left
-  bindsym d exec ydotool click right
-  bindsym s exec ydotool click middle
-  bindsym Escape mode default
-  bindsym return mode default
-}
-mode mouse2 {
-  bindsym 1 mode mouse1
-  bindsym 3 mode mouse3
-  bindsym $left seat - cursor move -$speed2 0
-  bindsym $right seat - cursor move +$speed2 0
-  bindsym $up seat - cursor move 0 -$speed2
-  bindsym $down seat - cursor move 0 +$speed2
-  bindsym f exec ydotool click left
-  bindsym d exec ydotool click right
-  bindsym s exec ydotool click middle
-  bindsym Escape mode default
-  bindsym return mode default
-}
-mode mouse3 {
-  bindsym 1 mode mouse1
-  bindsym 2 mode mouse2
-  bindsym $left seat - cursor move -$speed3 0
-  bindsym $right seat - cursor move +$speed3 0
-  bindsym $up seat - cursor move 0 -$speed3
-  bindsym $down seat - cursor move 0 +$speed3
-  bindsym f exec ydotool click left
-  bindsym d exec ydotool click right
-  bindsym s exec ydotool click middle
-  bindsym Escape mode default
-  bindsym return mode default
-}
-
-# Kill focused window
+bindsym $mod+b mode audio
+bindsym $mod+shift+b mode lumino
+bindsym $mod+e exec kitty -e nvim
+bindsym $mod+shift+e exec kitty -e nvim +"cd ~/Personal/neuron" +"lua require'nononotes'.prompt('edit', false, 'all')"
+bindsym $mod+g mode launch
+bindsym $mod+i workspace prev
+bindsym $mod+shift+i move container to workspace prev, workspace prev
+bindsym $mod+n exec makoctl dismiss
+bindsym $mod+shift+n exec makoctl dismiss --all
+bindsym $mod+m fullscreen
+bindsym $mod+o workspace next
+bindsym $mod+shift+o move container to workspace next, workspace next
+bindsym $mod+p workspace back_and_forth
 bindsym $mod+q kill
-bindsym $mod+Ctrl+r reload
-bindsym $mod+Ctrl+e exit
-bindsym $mod+Ctrl+l exec "swaylock"
-bindsym Alt+Ctrl+delete exec "reboot"
-bindsym $mod+Ctrl+p exec "poweroff"
-# bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
-#
-# Moving around:
-#
-# Move your focus around
+bindsym $mod+r mode "resize"
+bindsym $mod+t exec echo next terminal > /tmp/sway-mega-hotkeys
+bindsym $mod+shift+t exec echo previous terminal > /tmp/sway-mega-hotkeys
+bindsym $mod+u exec echo next default > /tmp/sway-mega-hotkeys
+bindsym $mod+shift+u exec echo previous default > /tmp/sway-mega-hotkeys
+bindsym $mod+v exec echo back > /tmp/sway-mega-hotkeys
+bindsym $mod+w mode workspace
+bindsym $mod+x exec echo last > /tmp/sway-mega-hotkeys
+bindsym $mod+y exec echo next browser > /tmp/sway-mega-hotkeys
+bindsym $mod+shift+y exec echo previous browser > /tmp/sway-mega-hotkeys
+bindsym $mod+z mode mouse3
+
+bindsym $mod+a workspace number 0, mode default
+bindsym $mod+shift+a move container to workspace number 0 
+bindsym $mod+s workspace number 2, mode default
+bindsym $mod+shift+s move container to workspace number 2 
+bindsym $mod+d workspace number 4, mode default
+bindsym $mod+shift+d move container to workspace number 4 
+bindsym $mod+f workspace number 6, mode default
+bindsym $mod+shift+f move container to workspace number 6 
+
+bindsym $mod+return [title="^scratchpad$"] scratchpad show
+bindsym $mod+semicolon mode jump
+bindsym $mod+space focus mode_toggle
+bindsym $mod+shift+space floating toggle
+bindsym $mod+minus scratchpad show
+bindsym $mod+shift+minus move scratchpad
+bindsym $mod+ctrl+g mode "$mode_gaps"
+bindsym $mod+ctrl+period mark __mark
+bindsym $mod+period [con_mark=__mark] move to workspace current; [con_mark=__mark] focus
+bindsym $mod+shift+period [con_mark=__mark] move to workspace next
+
+bindsym XF86MonBrightnessUp exec brightnessctl set 2%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+bindsym XF86MonBrightnessDown exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
+bindsym XF86AudioPlay exec playerctl --player playerctld play-pause
+bindsym XF86AudioNext exec playerctl --player playerctld next
+bindsym XF86AudioPrev exec playerctl --player playerctld previous
+bindsym XF86AudioMute exec pamixer --toggle-mute && ( pamixer --get-mute && echo 0 > $WOBSOCK ) || pamixer --get-volume > $WOBSOCK
+bindsym XF86AudioRaiseVolume exec pamixer -ui 2 && pamixer --get-volume > $WOBSOCK
+bindsym XF86AudioLowerVolume exec pamixer -ud 2 && pamixer --get-volume > $WOBSOCK
+bindsym XF86AudioStop exec playerctl --player playerctld stop
+
+bindsym $mod+ctrl+r reload
+bindsym $mod+ctrl+e exit
+bindsym $mod+ctrl+l exec "swaylock"
+bindsym ctrl+alt+delete exec "reboot"
+bindsym $mod+ctrl+p exec "poweroff"
+
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
 bindsym $mod+$up focus up
 bindsym $mod+$right focus right
-# Or use $mod+[up|down|left|right]
-bindsym $mod+Left focus left
-bindsym $mod+Down fous down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
+bindsym $mod+shift+$left move left, mode default
+bindsym $mod+shift+$down move down, mode default
+bindsym $mod+shift+$up move up, mode default
+bindsym $mod+shift+$right move right, mode default
 
-# Move the focused window with the same, but add Shift
-bindsym $mod+Shift+$left move left
-bindsym $mod+Shift+$down move down
-bindsym $mod+Shift+$up move up
-bindsym $mod+Shift+$right move right
-# Ditto, with arrow keys
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
-bindsym $mod+Shift+Right move right
-#
-# Workspaces:
-#
-# Switch to workspace
-bindsym $mod+1 workspace number 1
-bindsym $mod+2 workspace number 2
-bindsym $mod+3 workspace number 3
-bindsym $mod+4 workspace number 4
-bindsym $mod+5 workspace number 5
-bindsym $mod+6 workspace number 6
-bindsym $mod+7 workspace number 7
-bindsym $mod+8 workspace number 8
-bindsym $mod+9 workspace number 9
-bindsym $mod+0 workspace number 10
-# Move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace number 1
-bindsym $mod+Shift+2 move container to workspace number 2
-bindsym $mod+Shift+3 move container to workspace number 3
-bindsym $mod+Shift+4 move container to workspace number 4
-bindsym $mod+Shift+5 move container to workspace number 5
-bindsym $mod+Shift+6 move container to workspace number 6
-bindsym $mod+Shift+7 move container to workspace number 7
-bindsym $mod+Shift+8 move container to workspace number 8
-bindsym $mod+Shift+9 move container to workspace number 9
-bindsym $mod+Shift+0 move container to workspace number 10
-# Note: workspaces can have any name you want, not just numbers.
-# We just use 1-10 as the default.
-#
-# Layout stuff:
-#
-# You can "split" the current object of your focus with
-# $mod+b or $mod+v, for horizontal and vertical splits
-# respectively.
-bindsym $mod+b splith
-bindsym $mod+v splitv
+mode launch {
+  bindsym y exec "kitty --class=launcher -e fbookmark", mode default
+  bindsym p exec "rofi-pass", mode default
+  bindsym s exec "rofi -show ssh", mode default
+  bindsym c exec "clipman pick -t rofi", mode default
+  bindsym m exec "kitty -e ~/.local/bin/nvim_codi_mathjs", mode default
+  bindsym e exec "kitty -e nvim", mode default
+  bindsym x exec "kitty -e xplr", mode default
+  bindsym t exec "kitty -e nvim", mode default
+  bindsym n exec kitty -e nvim +"cd ~/Personal/neuron" +"lua require'nononotes'.prompt('edit', false, 'all')"
 
-# Switch the current container between different layout styles
-bindsym $mod+s layout stacking
-bindsym $mod+shift+s layout tabbed
-bindsym $mod+e layout toggle split
-
-# Make the current focus fullscreen
-bindsym $mod+f fullscreen
-
-# Toggle the current focus between tiling and floating mode
-bindsym $mod+Shift+space floating toggle
-
-# Swap focus between the tiling area and the floating area
-bindsym $mod+space focus mode_toggle
-
-# Move focus to the parent container
-bindsym $mod+a focus parent
-#
-# Scratchpad:
-#
-# Sway has a "scratchpad", which is a bag of holding for windows.
-# You can send windows there and get them back later.
-
-# Move the currently focused window to the scratchpad
-bindsym $mod+Shift+minus move scratchpad
-
-# Show the next scratchpad window or hide the focused scratchpad window.
-# If there are multiple scratchpad windows, this command cycles through them.
-bindsym $mod+minus scratchpad show
-#
-# Resizing containers:
-#
-mode "resize" {
-  # left will shrink the containers width
-  # right will grow the containers width
-  # up will shrink the containers height
-  # down will grow the containers height
-  bindsym $left resize shrink width 10px
-  bindsym $down resize grow height 10px
-  bindsym $up resize shrink height 10px
-  bindsym $right resize grow width 10px
-
-  # Ditto, with arrow keys
-  bindsym Left resize shrink width 10px
-  bindsym Down resize grow height 10px
-  bindsym Up resize shrink height 10px
-  bindsym Right resize grow width 10px
-
-  # Return to default mode
-  bindsym Return mode "default"
-  bindsym Escape mode "default"
-}
-bindsym $mod+r mode "resize"
-
-# Brightness control
-# XF86MonBrightnessUp         exec light -A 1%
-# bindsym $mod+o [app_id="org.keepassxc.KeePassXC"] focus
-# XF86MonBrightnessDown       exec light -U 1%
-# Shift+XF86MonBrightnessUp   exec light -A 5%
-#
-
-# Gaps tweaking
-# Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
-set $mode_gaps Gaps: (o) outer, (i) inner
-set $mode_gaps_outer Outer Gaps: k|j|0 (local), Shift + k|j|0 (global)
-set $mode_gaps_inner Inner Gaps: k|j|0 (local), Shift + k|j|0 (global)
-bindsym $mod+ctrl+g mode "$mode_gaps"
-
-mode "$mode_gaps" {
-  bindsym o      mode "$mode_gaps_outer"
-  bindsym i      mode "$mode_gaps_inner"
-  bindsym Return mode default
-  bindsym Escape mode default
-}
-mode "$mode_gaps_inner" {
-  bindsym $up   gaps inner current plus 5
-  bindsym $down gaps inner current minus 5
-  bindsym 0     gaps inner current set 0; mode default
-
-  bindsym shift+$up   gaps inner all plus 5
-  bindsym shift+$down gaps inner all minus 5
-  bindsym shift+0     gaps inner all set 0; mode default
-
-  bindsym return mode default
   bindsym escape mode default
-}
-mode "$mode_gaps_outer" {
-  bindsym $up   gaps outer current plus 5
-  bindsym $down gaps outer current minus 5
-  bindsym 0     gaps outer current set 0; mode default
-
-  bindsym shift+$up   gaps outer all plus 5
-  bindsym shift+$down gaps outer all minus 5
-  bindsym shift+0     gaps outer all set 0; mode default
-
   bindsym return mode default
-  bindsym escape mode default
 }
 
-# Media control
-bindsym $mod+o mode audio
+# TODO rename workspace numver 0 to q
+mode workspace {
+  bindsym q workspace number 1, mode default
+  bindsym w workspace number 3, mode default
+  bindsym e workspace number 5, mode default
+  bindsym r workspace number 7, mode default
+
+  # redundant
+  bindsym a workspace number 0, mode default
+  bindsym s workspace number 2, mode default
+  bindsym d workspace number 4, mode default
+  bindsym f workspace number 6, mode default
+
+  bindsym shift+q move container to workspace number 1
+  bindsym shift+w move container to workspace number 3
+  bindsym shift+e move container to workspace number 5 
+  bindsym shift+r move container to workspace number 7 
+
+  # redundant
+  bindsym shift+a move container to workspace number 0 
+  bindsym shift+s move container to workspace number 2 
+  bindsym shift+d move container to workspace number 4 
+  bindsym shift+f move container to workspace number 6 
+
+  bindsym h toggle split, mode default
+  bindsym j layout stacking, mode default
+  bindsym k layout tabbed, mode default
+  bindsym l splitv, mode default
+  bindsym shift+l layout splitv, mode default
+  bindsym semicolon splith, mode default
+  bindsym shift+semicolon splith, mode default
+
+  # redundant
+  bindsym i workspace prev
+  bindsym shift+i move container to workspace prev, workspace prev
+  bindsym o workspace next
+  bindsym shift+o move container to workspace next, workspace next
+
+  bindsym escape mode default
+  bindsym return mode default
+}
+
 mode audio {
   bindsym space exec playerctl --player playerctld play-pause; mode default
   bindsym $left exec playerctl --player playerctld next; mode default
@@ -283,31 +157,133 @@ mode audio {
   bindsym $down exec pamixer -ud 2 && pamixer --get-volume > $WOBSOCK
   bindsym shift+$up exec pamixer -ui 12 && pamixer --get-volume > $WOBSOCK
   bindsym shift+$down exec pamixer -ud 12 && pamixer --get-volume > $WOBSOCK
-  bindsym Escape mode default
+  bindsym escape mode default
   bindsym return mode default
 }
 
-# XF86AudioPause
-bindsym XF86AudioPlay exec playerctl --player playerctld play-pause
-bindsym XF86AudioNext exec playerctl --player playerctld next
-bindsym XF86AudioPrev exec playerctl --player playerctld previous
-bindsym XF86AudioMute exec pamixer --toggle-mute && ( pamixer --get-mute && echo 0 > $WOBSOCK ) || pamixer --get-volume > $WOBSOCK
-bindsym XF86AudioRaiseVolume exec pamixer -ui 2 && pamixer --get-volume > $WOBSOCK
-bindsym XF86AudioLowerVolume exec pamixer -ud 2 && pamixer --get-volume > $WOBSOCK
-bindsym XF86AudioStop exec playerctl --player playerctld stop
+mode jump {
+  bindsym a exec echo go 0 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym s exec echo go 1 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym d exec echo go 2 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym f exec echo go 3 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym j exec echo go 4 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym k exec echo go 5 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym l exec echo go 6 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym semicolon exec echo go 7 current > /tmp/sway-mega-hotkeys; mode default
+  bindsym g exec echo back all > /tmp/sway-mega-hotkeys; mode default
+  bindsym h exec echo last all > /tmp/sway-mega-hotkeys; mode default
+  bindsym escape mode default
+  bindsym return mode default
+}
 
-bindsym $mod+shift+o mode lumino
+set $speed1 5
+set $speed2 10
+set $speed3 25
+mode mouse1 {
+  bindsym 2 mode mouse2
+  bindsym 3 mode mouse3
+  bindsym $left seat - cursor move -$speed1 0
+  bindsym $right seat - cursor move +$speed1 0
+  bindsym $up seat - cursor move 0 -$speed1
+  bindsym $down seat - cursor move 0 +$speed1
+  bindsym f exec ydotool click left
+  bindsym d exec ydotool click right
+  bindsym s exec ydotool click middle
+  bindsym escape mode default
+  bindsym return mode default
+}
+mode mouse2 {
+  bindsym 1 mode mouse1
+  bindsym 3 mode mouse3
+  bindsym $left seat - cursor move -$speed2 0
+  bindsym $right seat - cursor move +$speed2 0
+  bindsym $up seat - cursor move 0 -$speed2
+  bindsym $down seat - cursor move 0 +$speed2
+  bindsym f exec ydotool click left
+  bindsym d exec ydotool click right
+  bindsym s exec ydotool click middle
+  bindsym escape mode default
+  bindsym return mode default
+}
+mode mouse3 {
+  bindsym 1 mode mouse1
+  bindsym 2 mode mouse2
+  bindsym $left seat - cursor move -$speed3 0
+  bindsym $right seat - cursor move +$speed3 0
+  bindsym $up seat - cursor move 0 -$speed3
+  bindsym $down seat - cursor move 0 +$speed3
+  bindsym f exec ydotool click left
+  bindsym d exec ydotool click right
+  bindsym s exec ydotool click middle
+  bindsym escape mode default
+  bindsym return mode default
+}
+
 mode lumino {
   bindsym $up exec brightnessctl set 2%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym $down exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym shift+$up exec brightnessctl set 12%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym shift+$down exec brightnessctl set 12%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
-  bindsym Escape mode default
+  bindsym escape mode default
   bindsym return mode default
 }
-bindsym XF86MonBrightnessUp exec brightnessctl set 2%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
-bindsym XF86MonBrightnessDown exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
 
-bindsym $mod+ctrl+period mark __mark
-bindsym $mod+period [con_mark=__mark] move to workspace current; [con_mark=__mark] focus
-bindsym $mod+shift+period [con_mark=__mark] move to workspace next
+mode "resize" {
+  # left will shrink the containers width
+  # right will grow the containers width
+  # up will shrink the containers height
+  # down will grow the containers height
+  bindsym $left resize shrink width 10px
+  bindsym $down resize grow height 10px
+  bindsym $up resize shrink height 10px
+  bindsym $right resize grow width 10px
+
+  # Ditto, with arrow keys
+  bindsym left resize shrink width 10px
+  bindsym down resize grow height 10px
+  bindsym up resize shrink height 10px
+  bindsym right resize grow width 10px
+
+  # return to default mode
+  bindsym return mode "default"
+  bindsym escape mode "default"
+}
+
+# Gaps tweaking
+# Press $mod+shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: k|j|0 (local), shift + k|j|0 (global)
+set $mode_gaps_inner Inner Gaps: k|j|0 (local), shift + k|j|0 (global)
+
+mode "$mode_gaps" {
+  bindsym o      mode "$mode_gaps_outer"
+  bindsym i      mode "$mode_gaps_inner"
+  bindsym return mode default
+  bindsym escape mode default
+}
+
+mode "$mode_gaps_inner" {
+  bindsym $up   gaps inner current plus 5
+  bindsym $down gaps inner current minus 5
+  bindsym 0     gaps inner current set 0; mode default
+
+  bindsym shift+$up   gaps inner all plus 5
+  bindsym shift+$down gaps inner all minus 5
+  bindsym shift+0     gaps inner all set 0; mode default
+
+  bindsym return mode default
+  bindsym escape mode default
+}
+
+mode "$mode_gaps_outer" {
+  bindsym $up   gaps outer current plus 5
+  bindsym $down gaps outer current minus 5
+  bindsym 0     gaps outer current set 0; mode default
+
+  bindsym shift+$up   gaps outer all plus 5
+  bindsym shift+$down gaps outer all minus 5
+  bindsym shift+0     gaps outer all set 0; mode default
+
+  bindsym return mode default
+  bindsym escape mode default
+}

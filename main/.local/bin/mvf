@@ -24,23 +24,30 @@ fi
 
 case "${ext}" in
 md | markdown)
-	cd "$(xdg-user-dir DOCUMENTS)"
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
 htm | html)
-	cd "$(xdg-user-dir DOCUMENTS)"
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
 ## text
 pdf | doc | docx | epub)
-	cd "$(xdg-user-dir DOCUMENTS)"
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
+	history=text
+	;;
+
+
+## Ebook
+azw3)
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
 jpg | jpeg)
-	cd "$(xdg-user-dir PICTURES)"
+	cd "$(xdg-user-dir PICTURES)" || exit 1
 	history=pictures
 	;;
 esac
@@ -53,25 +60,25 @@ inode/x-empty)
 
 ## DjVu
 image/vnd.djvu)
-	cd "$(xdg-user-dir DOCUMENTS)"
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
 ## Image
 image/*)
-	cd "$(xdg-user-dir PICTURES)"
+	cd "$(xdg-user-dir PICTURES)" || exit 1
 	history=pictures
 	;;
 
 ## Text/html
 text/html)
-	cd "$(xdg-user-dir DOCUMENTS)"
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
 ## PDF
 application/pdf)
-	cd "$(xdg-user-dir DOCUMENTS)"
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
@@ -79,24 +86,26 @@ application/pdf)
 application/vnd.openxmlformats-officedocument.wordprocessingml.document | \
 	application/x-mobipocket-ebook | \
 	application/epub+zip)
-	cd "$(xdg-user-dir DOCUMENTS)"
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
 ## Text
 text/*)
-	cd "$(xdg-user-dir DOCUMENTS)"
+	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
 ## Audio
 audio/*)
-	exit 3
+	cd "$(xdg-user-dir MUSIC)" || exit 1
+	history=audio
 	;;
 
 ## Video
 video/*)
-	exit 4
+	cd "$(xdg-user-dir VIDEOS)" || exit 1
+	history=videos
 	;;
 esac
 if [ -z "$history" ]; then
@@ -107,7 +116,6 @@ mkdir -p "$HOME"/.histories/
 if [ ! -f "$HOME"/.histories/$history ]; then
 	touch "$HOME"/.histories/$history
 fi
-echo $PWD
 result="$(fd -t d -x echo '{}' | fzf --history="$HOME"/.histories/$history --print-query | tail -1)"
 if [ -n "$result" ]; then
 	mkdir -p "$result"

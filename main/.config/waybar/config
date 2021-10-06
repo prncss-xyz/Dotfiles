@@ -1,8 +1,8 @@
 {
     "layer": "top",
     "position": "bottom",
-    "modules-left": ["sway/workspaces", "sway/window",],
-    "modules-center": [],
+    "modules-left": ["sway/workspaces",],
+    "modules-center": [ "sway/window",],
     "modules-right": [ "sway/mode","cpu", "memory", "battery", "clock"],
     "sway/window": {
       "max-length": 100,
@@ -20,6 +20,6 @@
       "format-time": "{H}:{M}"
     },
     "clock": {
-        "format": "{:%Y-%m-%d  %H:%M}"
+        "format": "{:%m-%d  %H:%M}"
     }
 }

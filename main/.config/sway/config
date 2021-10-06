@@ -1,13 +1,20 @@
 output * scale 2
 
 set $term kitty
+set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
+
+smart_gaps on
+smart_borders on
+default_border pixel 3
+workspace 0
+
+include ~/.config/sway/config.d/*
 
 # output DP-1 scale 2
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
 # set $menu dmenu_path | dmenu | xargs swaymsg exec --
 
-set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
 # https://github.com/francma/wob/blob/master/wob.1.scd
 exec wl-paste -t text --watch clipman store
 exec flashfocus
@@ -22,7 +29,7 @@ exec blueberry-tray
 
 mouse_warping none
 focus_follows_mouse no
-for_window [workspace=1] layout stacking
+for_window [workspace=0] layout stacking
 
 ### Autoexec
 exec pactl set-sink-volume @DEFAULT_SINK@ 30%
@@ -61,11 +68,11 @@ input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {
 # assign [title="^Dotfiles$"] workspace 8
 # exec "sleep 1; $term --directory=~/Dotfiles -e nvim"
 
-for_window [workspace=9] layout stacking
-assign [app_id="^org\.kde\.kdeconnect"] workspace 9
+for_window [workspace=6] layout stacking
+assign [app_id="^org\.kde\.kdeconnect"] workspace 6
 exec kdeconnect-sms
 exec kdeconnect-app
-assign [app_id="^com\.github\.wwmm\.easyeffects"] workspace 9
+assign [app_id="^com\.github\.wwmm\.easyeffects"] workspace 6
 exec easyeffects
 
 ### Idle
@@ -79,16 +86,9 @@ focus_on_window_activation smart
 
 for_window [window_role="pop-up"] floating enable
 # for_window [app_id="dmenu.*"] floating enable, sticky enable, resize set width 60ppt height 80ppt
-for_window [title="mv_pictures"] floating enable, sticky enable, resize set width 60ppt height 80ppt
 for_window [app_id="^launcher$"] floating enable, sticky enable, resize set width 60ppt height 80ppt
 
 ### Styling
-
-smart_gaps on
-smart_borders on
-default_border pixel 3
-
-include ~/.config/sway/config.d/*
 
 exec waybar
 include /etc/sway/config.d/*

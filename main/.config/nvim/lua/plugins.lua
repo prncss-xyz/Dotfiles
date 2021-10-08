@@ -13,6 +13,14 @@ end
 
 return require('packer').startup(function()
   use 'wbthomason/packer.nvim'
+  use {
+    'lewis6991/impatient.nvim',
+    config = {
+      -- Move to lua dir so impatient.nvim can cache it
+      compile_path = vim.fn.stdpath 'config' .. '/lua/packer_compiled.lua',
+    },
+  }
+
   -- use_rocks 'iconv'
   use 'tami5/sql.nvim'
   use {
@@ -74,7 +82,7 @@ return require('packer').startup(function()
   }
 
   -- extra syntax
-  use 'potatoesmaster/i3-vim-syntax'
+  use 'ajouellette/sway-vim-syntax'
   use 'fladson/vim-kitty'
   use {
     -- weirdly seems required to format yaml frontmatter
@@ -223,7 +231,15 @@ return require('packer').startup(function()
   use {
     'karb94/neoscroll.nvim',
     config = function()
-      require('neoscroll').setup {}
+      require('neoscroll').setup {
+        mappings = {
+          '<C-u>',
+          '<C-d>',
+          'zt',
+          'zz',
+          'zb',
+        },
+      }
     end,
   }
   use {
@@ -248,22 +264,22 @@ return require('packer').startup(function()
       -- 'nvim-telescope/telescope-dap.nvim',
     },
   }
-  use {
-    'romgrk/barbar.nvim',
-    setup = function()
-      require('utils').deep_merge(vim, {
-        g = {
-          bufferline = {
-            auto_hide = true,
-            icon_separator_active = '',
-            icon_separator_inactive = '',
-            icon_close_tab = '',
-            icon_close_tab_modified = '',
-          },
-        },
-      })
-    end,
-  }
+  -- use {
+  --   'romgrk/barbar.nvim',
+  --   setup = function()
+  --     require('utils').deep_merge(vim, {
+  --       g = {
+  --         bufferline = {
+  --           auto_hide = true,
+  --           icon_separator_active = '',
+  --           icon_separator_inactive = '',
+  --           icon_close_tab = '',
+  --           icon_close_tab_modified = '',
+  --         },
+  --       },
+  --     })
+  --   end,
+  -- }
   use {
     '~/Media/Projects/nononotes-nvim',
     config = function()

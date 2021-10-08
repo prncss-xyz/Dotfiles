@@ -4,16 +4,20 @@
 function fish_user_key_bindings
     # fish_vi_key_bindings
     fzf_key_bindings
-    bind -M insert \ca history-search-backward
-    bind -M insert \cx history-search-forward
-    bind -M insert \eo accept-autosuggestion
-    bind -M insert \cf edit_command_buffer
-    bind -M insert \ci nextd-or-forward-word
-    bind -M insert \co prevd-or-backward-word
-    bind -M insert \cn up-or-search
-    bind -M insert \cp down-or-search
-    bind -M insert \cb backward-word
-    bind -M insert \ce forward-word
+    # bind \eb accept-autosuggestion
+    bind \ci nextd-or-forward-word
+    bind \co prevd-or-backward-word
+    bind \ca up-or-search
+    bind \cx down-or-search
+    bind \eb backward-word
+    bind \ef forward-word
+    bind \ct transpose-chars
+    bind \ee fzf-file-widget
+    bind \cy fish_clipboard_copy
+    bind \ch beginning-of-line
     # bind --preset $argv -k sright forward-bigword
     # bind --preset $argv -k sleft backward-bigword
 end
+
+  # bind \cr fzf-history-widget
+  # bind \ec fzf-cd-widget

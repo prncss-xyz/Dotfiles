@@ -6,6 +6,10 @@ command('ExportTheme', { nargs = 1 }, function(name)
   require('theme-exporter').export_theme(name)
 end)
 
+command('Lua', { nargs = 1 }, function(name)
+  vim.cmd(string.format('lua require"utils".dump(%s)', name))
+end)
+
 command('LaunchOSV', {}, function()
   local filetype = vim.bo.filetype
   if filetype == 'lua' then
@@ -25,8 +29,8 @@ end)
 
 command('Conceal', {}, function()
   vim.cmd [[
-syntax match True "true" conceal cchar=⊤
-syntax match False "false" conceal cchar=⊥
+    syntax match True "true" conceal cchar=⊤
+    syntax match False "false" conceal cchar=⊥
       ]]
 end)
 

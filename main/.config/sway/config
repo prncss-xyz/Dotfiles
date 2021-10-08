@@ -65,8 +65,10 @@ input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {
 #   xkb_variant multi
 # }
 
-# assign [title="^Dotfiles$"] workspace 8
-# exec "sleep 1; $term --directory=~/Dotfiles -e nvim"
+# FIXME
+for_window [app_id=^chromium$] inhibit_idle fullscreen
+for_window [app_id=^firefox$] inhibit_idle fullscreen
+for_window [app_id=^celluloid$] inhibit_idle fullscreen
 
 for_window [workspace=6] layout stacking
 assign [app_id="^org\.kde\.kdeconnect"] workspace 6

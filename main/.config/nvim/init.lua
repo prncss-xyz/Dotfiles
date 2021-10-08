@@ -1,9 +1,3 @@
-function _G.Dump(...)
-  local objects = vim.tbl_map(vim.inspect, { ... })
-  print(unpack(objects))
-  return ...
-end
-
 local disabled_built_ins = {
   'netrw',
   'netrwPlugin',

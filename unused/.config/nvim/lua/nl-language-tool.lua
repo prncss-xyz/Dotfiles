@@ -10,8 +10,6 @@ local sample = {
   '',
 }
 
--- Dump(parse(sample))
-
 function parse(lines)
   local next, l, i = ipairs(lines)
   local line
@@ -71,10 +69,6 @@ end
 local results = {}
 
 local m = {}
-
-m.dump = function()
-  Dump(results)
-end
 
 m.refresh = function()
   local bufname = vim.fn.expand '%:p'

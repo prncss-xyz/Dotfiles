@@ -1,5 +1,7 @@
 local m = {}
 
+-- TODO lua realpath
+
 local browser = os.getenv 'BROWSER'
 local scheme = { type = 'unknown' }
 local first = true
@@ -16,6 +18,7 @@ local function setup(port, command)
       end,
     })
     :sync()
+  scheme.pass = 'session/' .. dirname
   local fifo = string.format('/tmp/session-%d', port)
   job:new({ command = 'mkfifo', args = { fifo } }):sync()
   os.execute(string.format(
@@ -25,7 +28,7 @@ local function setup(port, command)
     exec %q --title=%q -e sh %q&
   ]],
     port,
-    'session/' .. dirname,
+    scheme.pass,
     os.getenv 'TERMINAL',
     dirname .. ' — ' .. command,
     fifo
@@ -71,9 +74,6 @@ require('utils').augroup('SetupSession', {
     events = { 'DirChanged' },
     targets = { '*' },
     command = setup_scheme,
-    -- command = function()
-    --   setup_scheme()
-    -- end,
   },
 })
 
@@ -92,7 +92,7 @@ function m.develop()
 end
 
 require('utils').command('SetupSessionInfo', {}, function()
-  print(Dump(scheme))
+  print(require'utils'.dump(scheme))
 end)
 
 return m

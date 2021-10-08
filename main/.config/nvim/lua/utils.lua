@@ -1,5 +1,12 @@
 local M = {}
 
+function M.dump(...)
+  local objects = vim.tbl_map(vim.inspect, { ... })
+  print(unpack(objects))
+  return ...
+end
+
+
 function M.buf_map(modes, lhs, rhs, opts)
   local bufnr = vim.fn.bufnr()
   local options = { noremap = true }

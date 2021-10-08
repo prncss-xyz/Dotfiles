@@ -369,6 +369,14 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 
   -- luasnip + dial
   -- FIXME
+  --
+
+
+  map('i', '<c-a>', '<up>')
+  map('i', '<c-x>', '<down>')
+
+  -- TODO: use dial-* and luasnip-*-choice in insert mode
+  -- map('i', '<c-x>', 'pumvisible() ? "\\<down>" : 1', { expr = true })
   map(
     'nv',
     '<c-a>',
@@ -383,13 +391,13 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   )
   map(
     'v',
-    'm<c-a>',
+    '<c-s-a>',
     '<Plug>(dial-increment-additional)',
     { expr = true, silent = true, noremap = false }
   )
   map(
     'v',
-    'm<c-x>',
+    '<c-s-x>',
     '<Plug>(dial-decrement-additional)',
     { expr = true, silent = true, noremap = false }
   )
@@ -407,18 +415,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 
   -- wildmenu
   -- needed for tab-completion
-  map(
-    'c',
-    '<c-n>',
-    'wilder#in_context() ? wilder#next() : "\\<down>"',
-    { expr = true }
-  )
-  map(
-    'c',
-    '<c-p>',
-    'wilder#in_context() ? wilder#previous() : "\\<up>"',
-    { expr = true }
-  )
+  map('c', '<c-a>', 'wilder#previous()', { expr = true })
+  map('c', '<c-x>', 'wilder#next()', { expr = true })
   -- cannot make "autoselect" work
   map(
     'c',
@@ -427,13 +425,19 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     { expr = true }
   )
   -- map('c', '<tab>', 'wilder#accept_completion(1)', {expr = true})
-  map('c', '<c-a>', '<up>')
-  map('c', '<c-x>', '<down>')
   -- map('c', '<tab>', '<tab><space>')
   -- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
-  --
-  map('ci', '<c-e>', '<c-right>')
-  map('ci', '<c-b>', '<c-left>')
+
+  -- fish-emacs compat
+  map('', '<c-b>', '^')
+  map('', '<c-e>', '$')
+  map('c', '<c-e>', '<home>')
+  map('c', '<c-b>', '<end>')
+  map('n', '<a-t>', '"zdh"zp') -- transpose
+  map('i', '<a-t>', '<esc>"zdh"zpa') -- transpose
+  map('c', '<c-p>', '<up>')
+  map('c', '<c-n>', '<down>')
+  map('c', '<a-v>', '<c-f>')
 
   -- searching
   require 'auto_unhl'
@@ -467,28 +471,25 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       -- ['<a-j>'] = { "<cmd>lua require('Navigator').down()<cr>", 'window down' },
       -- ['<a-k>'] = { "<cmd>lua require('Navigator').up()<cr>", 'window up' },
       -- ['<a-l>'] = { "<cmd>lua require('Navigator').right()<cr>", 'window right' },
-      ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
       ['<a-h>'] = { '<cmd>wincmd h<cr>', 'window left' },
       ['<a-j>'] = { '<cmd>wincmd j<cr>', 'window down' },
       ['<a-k>'] = { '<cmd>wincmd k<cr>', 'window up' },
       ['<a-l>'] = { '<cmd>wincmd l<cr>', 'window right' },
       ['<a-b>'] = { '<cmd>wincmd p<cr>', 'window back' },
       ['<a-a>'] = { '<cmd>e#<cr>', 'previous buffer' },
-      ['<a-p>'] = { '<cmd>BufferPick<cr>', 'previous pick' },
-      ['<a-P>'] = { '<cmd>BufferPin<cr>', 'previous pin' },
+      -- ['<a-p>'] = { '<cmd>BufferPick<cr>', 'previous pick' },
+      -- ['<a-P>'] = { '<cmd>BufferPin<cr>', 'previous pin' },
 
-      ['<a-x>'] = { '<cmd>BufferClose!<cr>', 'close buffer' },
-      ['<a-X>'] = { '<cmd>tabnew#<cr>', 'close buffer' },
-      ['<a-o>'] = {
-        '<cmd>BufferCloseBuffersRight<cr><cmd>BufferCloseBuffersLeft<cr><c-w>o',
-        'buffer only',
-      },
+      -- ['<a-x>'] = { '<cmd>BufferClose!<cr>', 'close buffer' },
+      -- ['<a-X>'] = { '<cmd>tabnew#<cr>', 'close buffer' },
+      -- ['<a-o>'] = {
+      --   '<cmd>BufferCloseBuffersRight<cr><cmd>BufferCloseBuffersLeft<cr><c-w>o',
+      --   'buffer only',
+      -- },
       ['<a-w>'] = { '<cmd>q<cr>', 'close window' },
 
-      ['<a-z>'] = { '<cmd>ZenMode<cr>', 'zen mode' },
-      ['<a-s-n>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
-      ['<a-s-p>'] = { '<cmd>BufferMovePrevious<cr>', 'move buffer previous' },
-
+      -- ['<a-s-n>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
+      -- ['<a-s-p>'] = { '<cmd>BufferMovePrevious<cr>', 'move buffer previous' },
       ['<c-l>'] = {
         "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
         'nohlsearch',
@@ -501,6 +502,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       --   '<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>',
       --   'previous occurence',
       -- },
+      ['<c-a>'] = {'<esc>``', 'jump before last jump'},
       ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
       ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
@@ -511,16 +513,16 @@ call submode#leave_with('move', 'n', '', '<Esc>')
     }, {
       mode = mode,
     })
-    for i = 1, 9 do
-      register({
-        [string.format('<a-%d>', i)] = {
-          string.format('<cmd>BufferGoto %i<cr>', i),
-          string.format('focus buffer %d', i),
-        },
-      }, {
-        mode = mode,
-      })
-    end
+    -- for i = 1, 9 do
+    --   register({
+    --     [string.format('<a-%d>', i)] = {
+    --       string.format('<cmd>BufferGoto %i<cr>', i),
+    --       string.format('focus buffer %d', i),
+    --     },
+    --   }, {
+    --     mode = mode,
+    --   })
+    -- end
   end
 
   -- for mode in string.gmatch('nx', '.') do
@@ -545,6 +547,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
           "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
           'current buffer fuzzy find',
         },
+        -- ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
       },
     }, {
       mode = mode,
@@ -670,13 +673,11 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       d = { ']c', 'next change' },
       D = { '[c', 'previous change' },
       o = { '`.', 'last change' },
-      O = { '``', 'before last jump' },
-      r = { 'g,', 'newer change' },
-      R = { 'g;', 'older change' },
       -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
       -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
       z = { ']s', 'next misspelled' },
       Z = { '[s', 'prevous misspelled' },
+      [':'] = { 'g,', 'newer change' }, -- cf  'g;', 'older change' },
     },
     [a.move] = {
       name = '+global movements',
@@ -830,6 +831,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
     },
   }
+
   require('browser').mapBrowserSearch(register, a.browser, '+browser search', {
     arch = { 'https://wiki.archlinux.org/index.php?search=', 'archlinux wiki' },
     aur = { 'https://aur.archlinux.org/packages/?K=', 'aur packages' },

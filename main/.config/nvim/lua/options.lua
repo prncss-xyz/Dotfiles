@@ -32,7 +32,7 @@ deep_merge(vim, {
     shortmess = vim.o.shortmess .. 'c',
     showmode = false,
     sidescrolloff = 5,
-    scrolloff = 30,
+    scrolloff = 10,
     smartcase = true,
     smarttab = true,
     softtabstop = 0,

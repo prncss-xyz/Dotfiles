@@ -1,0 +1,3 @@
+#!/bin/sh
+swaymsg -t get_tree > /tmp/sway-tree.json
+exec $TERMINAL -e nvim /tmp/sway-tree.json &

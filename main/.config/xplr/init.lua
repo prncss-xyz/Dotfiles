@@ -41,6 +41,8 @@ local xplr = xplr
 
 -- TODO find actual message
 local shell = xplr.config.modes.builtin.action.key_bindings.on_key['!'].messages
+local search =
+  xplr.config.modes.builtin.default.key_bindings.on_key['/'].messages
 local copy_here =
   xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages
 
@@ -138,6 +140,31 @@ deep_merge(xplr, {
                   { SwitchModeCustom = 'last' },
                 },
               },
+              e = {
+                help = 'open editor',
+                messages = {
+                  {
+                    ['BashExecSilently'] = [[
+                    exec $TERMINAL -e nvim &
+                    ]],
+                  },
+                },
+              },
+              i = {
+                help = 'images',
+                messages = {
+                  {
+                    ['BashExecSilently'] = [[
+                      if [ -d "$XPLR_FOCUS_PATH" ]; then
+                        PTH="$XPLR_FOCUS_PATH"
+                      else
+                        PTH=$(basedir "$XPLR_FOCUS_PATH")
+                      fi
+                      fd -tl . "$PTH"|imv&
+                    ]],
+                  },
+                },
+              },
               K = {
                 help = 'selection mode',
                 messages = {
@@ -185,17 +212,6 @@ deep_merge(xplr, {
                   },
                 },
               },
-              n = {
-                help = 'open editor',
-                messages = {
-                  {
-                    ['BashExecSilently'] = [[
-                    exec $TERMINAL -e nvim &
-                    ]],
-                  },
-                },
-              },
-              -- TODO n - open editor
               o = {
                 help = 'fzf open',
                 messages = {
@@ -254,6 +270,11 @@ deep_merge(xplr, {
               },
               u = register 'dua_cli',
               z = register 'zoxide',
+              ['/'] = nop,
+              ['é'] = {
+                help = 'search',
+                messages = search,
+              },
               ['!'] = {
                 help = 'shell',
                 messages = shell,

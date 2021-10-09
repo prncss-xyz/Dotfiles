@@ -1,30 +1,30 @@
-SSH_AUTH_SOCK OVERRIDE=${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh
-MOZ_ENABLE_WAYLAND OVERRIDE=1
-QT_QPA_PLATFORM OVERRIDE=wayland
-CLUTTER_BACKEND OVERRIDE=wayland
-SDL_VIDEODRIVER OVERRIDE=wayland
 BROWSER DEFAULT=${HOME}/.local/bin/browser
-EDITOR OVERRIDE=nvim
-VISUAL OVERRIDE=nvim
-YTDL DEFAULT=${HOME}/Media/Music/ytdl
-PASSWORD_STORE_DIR OVERRIDE=${HOME}/Personal/pass
-GRIM_DEFAULT_DIR OVERRIDE=${HOME}/Media/Pictures/Captures
-# vscode_path OVERRIDE=${HOME}/.config/VSCodium
-STARDICT_DATA_DIR OVERRIDE=${HOME}/Media/stardict
-PATH OVERRIDE=${HOME}/.local/bin:${HOME}/.pnpm-global-bin:${PATH}
-MANPATH OVERRIDE=${NPM_PACKAGES}/share/man ${MANPATH}
-# NNN_BMS OVERRIDE=w:${HOME}/Downloads;p:${HOME}/Media/Pictures;d:${HOME}/Documents;u:/run/media/${USER};r=/run/user/1000/gvfs/mtp:host=Boyue_Likebook-T78D_T78DACT2200300015/Internal storage
-PATHMARKS_FILE OVERRIDE=${HOME}/Personal/xplr_bookmarks
-PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?
-PASSWORD_STORE_GENERATED_LENGTH=20
-MBSYNC_CONFIG OVERRIDE=${HOME}/.config/mbsync/config
-NOTMUCH_CONFIG OVERRIDE=${HOME}/.config/notmuch/config
-GUI OVERRIDE=${HOME}/.local/bin/newterm
-NeovideMultigrid=NeovideMultiGrid
-# PAGER=nvimpager
-TERMINAL=kitty
-RIPGREP_CONFIG_PATH OVERRIDE=${HOME}/.config/rg/config
+CLUTTER_BACKEND OVERRIDE=wayland
 DOTFILES OVERRIDE=${HOME}/Dotfiles
-PROJECTS OVERRIDE=${HOME}/Media/Projects
-XDG_CURRENT_DESKTOP OVERRIDE=sway
+EDITOR OVERRIDE=nvim
+FZF_CTRL_T_COMMAND OVERRIDE="fd --type file --follow --hidden --exclude .git --color=always $dir"
+FZF_DEFAULT_COMMAND OVERRIDE="fd --type file --follow --hidden --exclude .git --color=always"
+FZF_DEFAULT_OPTS OVERRIDE="--bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)'"
 GRIM_DEFAULT_DIR OVERRIDE=${HOME}/Media/Pictures/Captures
+GUI OVERRIDE=${HOME}/.local/bin/newterm
+MANPAGER OVERRIDE="sh -c 'col -bx | bat -l man -p --paging always'"
+MANPATH OVERRIDE=${NPM_PACKAGES}/share/man:${MANPATH}
+MBSYNC_CONFIG OVERRIDE=${HOME}/.config/mbsync/config
+MOZ_ENABLE_WAYLAND OVERRIDE=1
+NOTMUCH_CONFIG OVERRIDE=${HOME}/.config/notmuch/config
+PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?
+PASSWORD_STORE_DIR OVERRIDE=${HOME}/Personal/pass
+PASSWORD_STORE_ENABLE_EXTENSIONS OVERRIDE=true
+PASSWORD_STORE_GENERATED_LENGTH=20
+PATH OVERRIDE=${HOME}/.local/bin:${HOME}/.pnpm-global-bin:${PATH}
+PATHMARKS_FILE OVERRIDE=${HOME}/Personal/xplr_bookmarks
+PROJECTS OVERRIDE=${HOME}/Media/Projects
+QT_QPA_PLATFORM OVERRIDE=wayland
+RIPGREP_CONFIG_PATH OVERRIDE=${HOME}/.config/rg/config
+SDL_VIDEODRIVER OVERRIDE=wayland
+SSH_AUTH_SOCK OVERRIDE=${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh
+STARDICT_DATA_DIR OVERRIDE=${HOME}/Media/stardict
+TERMINAL=kitty
+VISUAL OVERRIDE=nvim
+XDG_CURRENT_DESKTOP OVERRIDE=sway
+YTDL DEFAULT=${HOME}/Media/Music/ytdl

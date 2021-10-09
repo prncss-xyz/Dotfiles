@@ -343,6 +343,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
 
   -- VSSPlit
   -- maybe not K... if visual only
+  map('x', 'v', 'V')
   map('x', 'Kr', '<Plug>(Visual-Split-VSResize)', { noremap = false })
   map('x', 'KS', '<Plug>(Visual-Split-VSSplit)', { noremap = false })
   map('x', 'Kk', '<Plug>(Visual-Split-VSSplitAbove)', { noremap = false })
@@ -549,6 +550,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         },
         -- ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
       },
+      ['<c-n>'] = {'<cmd>bnext<cr>', 'next buffer'},
+      ['<c-p>'] = {'<cmd>bprevious<cr>', 'previous buffer'},
     }, {
       mode = mode,
     })
@@ -641,6 +644,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       w = { '<cmd>Telescope projects<cr>', 'sessions' },
       W = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
       x = { "<cmd>lua require'bindutils'.term_launch({'xplr'})<cr>", 'xplr' },
+      X = { "<cmd>lua require'bindutils'.term_launch({'xplr', vim.fn.expand'%'})<cr>", 'xplr' },
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
       [';'] = {
         "<cmd>lua require('telescope.builtin').commands()<cr>",

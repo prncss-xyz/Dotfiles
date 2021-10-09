@@ -380,18 +380,18 @@ return require('packer').startup(function()
   }
 
   -- navigation
-  use {
-    'kwkarlwang/bufjump.nvim',
-    config = function()
-      require('bufjump').setup {
-        forward = '<C-n>',
-        backward = '<C-p>',
-        on_success = function()
-          vim.cmd [[execute "normal! g`\"zz"]]
-        end,
-      }
-    end,
-  }
+  -- use {
+  --   'kwkarlwang/bufjump.nvim',
+  --   config = function()
+  --     require('bufjump').setup {
+  --       forward = '<C-n>',
+  --       backward = '<C-p>',
+  --       on_success = function()
+  --         vim.cmd [[execute "normal! g`\"zz"]]
+  --       end,
+  --     }
+  --   end,
+  -- }
 
   use {
     'kshenoy/vim-signature',
@@ -660,10 +660,4 @@ return require('packer').startup(function()
       vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
     end,
   }
-  -- use {
-  --   'henriquehbr/nvim-startup.lua',
-  --   config = function()
-  --     require('nvim-startup').setup {}
-  --   end,
-  -- }
 end)

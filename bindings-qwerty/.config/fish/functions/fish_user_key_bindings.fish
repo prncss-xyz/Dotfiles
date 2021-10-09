@@ -15,9 +15,11 @@ function fish_user_key_bindings
     bind \ee fzf-file-widget
     bind \cy fish_clipboard_copy
     bind \ch beginning-of-line
+    bind \cs 'pet-select --layout=bottom-up'
+    bind \eh fish_man_page_html
     # bind --preset $argv -k sright forward-bigword
     # bind --preset $argv -k sleft backward-bigword
 end
 
-  # bind \cr fzf-history-widget
-  # bind \ec fzf-cd-widget
+# bind \cr fzf-history-widget
+# bind \ec fzf-cd-widget

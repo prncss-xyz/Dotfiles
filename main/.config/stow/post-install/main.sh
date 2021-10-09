@@ -11,6 +11,10 @@ systemctl --user enable psd
 systemctl --user enable syncthing
 systemctl --user enable udiskie
 
+mkdir -p "$PASSWORD_STORE_DIR/.extensions/"
+wget https://raw.githubusercontent.com/ficoos/pass-fzf/master/fzf.bash -O "$PASSWORD_STORE_DIR/.extensions/fzf.bash"
+chmod +x "$PASSWORD_STORE_DIR/.extensions/fzf.bash"
+
 # apps keep rewriting that file, which blocked stow
 cat > ~/.config/user-dirs.dirs << EOF
 XDG_DOWNLOAD_DIR="$HOME/Downloads"

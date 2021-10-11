@@ -17,16 +17,12 @@ floating_modifier $mod normal
 
 bindsym $mod+b mode audio
 bindsym $mod+shift+b mode lumino
-bindsym $mod+e exec kitty -e nvim
+bindsym $mod+e exec kitty -e nvim +"Telescope projects"
 bindsym $mod+shift+e exec kitty -e nvim +"cd ~/Personal/neuron" +"lua require'nononotes'.prompt('edit', false, 'all')"
 bindsym $mod+g mode launch
-bindsym $mod+i workspace prev
-bindsym $mod+shift+i move container to workspace prev, workspace prev
 bindsym $mod+n exec makoctl dismiss
 bindsym $mod+shift+n exec makoctl dismiss --all
 bindsym $mod+m fullscreen
-bindsym $mod+o workspace next
-bindsym $mod+shift+o move container to workspace next, workspace next
 bindsym $mod+p workspace back_and_forth
 bindsym $mod+q kill
 bindsym $mod+r mode "resize"
@@ -43,12 +39,12 @@ bindsym $mod+z mode mouse3
 
 bindsym $mod+a workspace number 0, mode default
 bindsym $mod+shift+a move container to workspace number 0 
-bindsym $mod+s workspace number 2, mode default
-bindsym $mod+shift+s move container to workspace number 2 
-bindsym $mod+d workspace number 4, mode default
-bindsym $mod+shift+d move container to workspace number 4 
-bindsym $mod+f workspace number 6, mode default
-bindsym $mod+shift+f move container to workspace number 6 
+bindsym $mod+s workspace number 1, mode default
+bindsym $mod+shift+s move container to workspace number 1 
+bindsym $mod+d workspace number 2, mode default
+bindsym $mod+shift+d move container to workspace number 2 
+bindsym $mod+f workspace number 3, mode default
+bindsym $mod+shift+f move container to workspace number 3 
 
 bindsym $mod+return [title="^scratchpad$"] scratchpad show
 bindsym $mod+semicolon mode jump
@@ -88,14 +84,16 @@ bindsym $mod+shift+$right move right, mode default
 
 mode launch {
   bindsym y exec "kitty --class=launcher -e fbookmark", mode default
+  bindsym shift+y exec "kitty -e nvim ~/Personal/bookmarks.csv", mode default
+  bindsym h exec "kitty --class=launcher -e fman", mode default
   bindsym p exec "rofi-pass", mode default
   bindsym s exec "rofi -show ssh", mode default
   bindsym c exec "clipman pick -t rofi", mode default
   bindsym m exec "kitty -e ~/.local/bin/nvim_codi_mathjs", mode default
   bindsym e exec "kitty -e nvim", mode default
   bindsym x exec "kitty -e xplr", mode default
-  bindsym t exec "kitty -e nvim", mode default
-  bindsym n exec kitty -e nvim +"cd ~/Personal/neuron" +"lua require'nononotes'.prompt('edit', false, 'all')"
+  bindsym t exec "kitty", mode default
+  bindsym n exec "kitty -e ~/.local/bin/nvim_nonono", mode default
 
   bindsym escape mode default
   bindsym return mode default
@@ -103,27 +101,27 @@ mode launch {
 
 # TODO rename workspace numver 0 to q
 mode workspace {
-  bindsym q workspace number 1, mode default
-  bindsym w workspace number 3, mode default
-  bindsym e workspace number 5, mode default
-  bindsym r workspace number 7, mode default
+  bindsym q workspace number 0, mode default
+  bindsym w workspace number 1, mode default
+  bindsym e workspace number 2, mode default
+  bindsym r workspace number 3, mode default
 
   # redundant
   bindsym a workspace number 0, mode default
-  bindsym s workspace number 2, mode default
-  bindsym d workspace number 4, mode default
-  bindsym f workspace number 6, mode default
+  bindsym s workspace number 1, mode default
+  bindsym d workspace number 2, mode default
+  bindsym f workspace number 3, mode default
 
-  bindsym shift+q move container to workspace number 1
-  bindsym shift+w move container to workspace number 3
-  bindsym shift+e move container to workspace number 5 
-  bindsym shift+r move container to workspace number 7 
+  bindsym shift+q move container to workspace number 0
+  bindsym shift+w move container to workspace number 1
+  bindsym shift+e move container to workspace number 2 
+  bindsym shift+r move container to workspace number 3 
 
   # redundant
   bindsym shift+a move container to workspace number 0 
-  bindsym shift+s move container to workspace number 2 
-  bindsym shift+d move container to workspace number 4 
-  bindsym shift+f move container to workspace number 6 
+  bindsym shift+s move container to workspace number 1 
+  bindsym shift+d move container to workspace number 2 
+  bindsym shift+f move container to workspace number 3 
 
   bindsym h toggle split, mode default
   bindsym j layout stacking, mode default
@@ -228,7 +226,7 @@ mode lumino {
   bindsym return mode default
 }
 
-mode "resize" {
+mode resize {
   # left will shrink the containers width
   # right will grow the containers width
   # up will shrink the containers height

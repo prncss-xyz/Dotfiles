@@ -15,8 +15,6 @@ alias t 'exa --icons --git --tree'
 alias nod 'nodemon --config ~/.config/nodemon/config.json'
 abbr hm 'man -H'
 
-# export MANPAGER="nvim -c 'set ft=man' -"
-
 starship init fish | source
 zoxide init fish | source
 kitty + complete setup fish | source

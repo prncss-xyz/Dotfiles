@@ -36,17 +36,19 @@ fi
 
 rpath=$(realpath --relative-to=.. "$source")
 rm "$tag/$rpath"
+echo "$PWD"
 echo rm "$tag/$rpath"
 
+# remove tag if it contains no more nodes
 rdir="$tag/$rpath"
 while true; do
 	rdir=$(dirname "$rdir")
+  echo "$rdir"
 	if [ "$rdir" = "." ]; then
 		break
 	fi
-	if [ -n "$(ls -A "$rdir")" ]; then
-		break
-	fi
-	rmdir "$rdir"
-	echo rm "$rdir"
+  echo "..."
+	echo rmdir "$rdir"
+	rmdir "$rdir" 2>/dev/null || break
+  echo "!"
 done

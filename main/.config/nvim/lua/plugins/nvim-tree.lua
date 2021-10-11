@@ -4,14 +4,9 @@ M.setup = function()
   require('utils').deep_merge(vim.g, {
     nvim_tree_ignore = { '.git' },
     nvim_tree_gitignore = 1,
-    nvim_tree_auto_open = 1,
-    -- nvim_tree_auto_close = 1,
     nvim_tree_ignore_ft = {},
     -- nvim_tree_quit_on_open = 1,
-    nvim_tree_follow = 1,
     nvim_tree_highlight_opened_files = 1,
-    nvim_tree_system_open_command = 'opener',
-    nvim_tree_disable_default_keybindings = 1,
   })
 end
 
@@ -35,7 +30,12 @@ M.config = function()
     })
   end
   vim.g.nvim_tree_bindings = bindings
-
+  require('nvim-tree').setup {
+    tree_auto_open = 1,
+    tree_system_open_command = 'opener',
+    tree_follow = 1,
+    tree_disable_default_keybindings = 1,
+  }
   require('nvim-tree.events').on_file_created(function(ev)
     local fname = ev.fname
     -- makes relevant files executables

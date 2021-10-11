@@ -1,4 +1,6 @@
-# https://fishshell.com/docs/current/cmds/bind.html
+# file:///usr/share/doc/fish/interactive.html
+# file:///usr/share/doc/fish/cmds/bind.html
+# https://github.com/fish-shell/fish-shell/tree/master/share/functions
 # fish_key_reader -- to get binding code
 
 function fish_user_key_bindings
@@ -17,9 +19,23 @@ function fish_user_key_bindings
     bind \ch beginning-of-line
     bind \cs 'pet-select --layout=bottom-up'
     bind \eh fish_man_page_html
+    bind \el fish_list_current_token
     # bind --preset $argv -k sright forward-bigword
     # bind --preset $argv -k sleft backward-bigword
 end
+
+# \eo open in pager
+# \ev edit command line
+# \es prepend sudo
+# \cc cancel line
+# \cu
+# \cw
+# \cr search history
+
+# home \ca
+# end  \e
+# left \b
+# right \f
 
 # bind \cr fzf-history-widget
 # bind \ec fzf-cd-widget

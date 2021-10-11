@@ -2,7 +2,6 @@
 echo -ne "\e]0;"
 echo -n "notes"
 echo -ne "\a"
-cd /tmp || exit 1
-id=$(date "+%Y-%m-%d %H:%M:%S")
 sleep 0.1
-nvim "mathjs $id" "+Codi mathjs" +startinsert
+cd ~/Personal/neuron || exit
+nvim +"lua require'nononotes'.prompt('edit', false, 'all')"

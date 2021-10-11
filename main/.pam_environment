@@ -2,8 +2,8 @@ BROWSER DEFAULT=${HOME}/.local/bin/browser
 CLUTTER_BACKEND OVERRIDE=wayland
 DOTFILES OVERRIDE=${HOME}/Dotfiles
 EDITOR OVERRIDE=nvim
-FZF_CTRL_T_COMMAND OVERRIDE="fd --type file --follow --hidden --exclude .git --color=always $dir"
-FZF_DEFAULT_COMMAND OVERRIDE="fd --type file --follow --hidden --exclude .git --color=always"
+FZF_CTRL_T_COMMAND OVERRIDE="fd --type file --follow --hidden --exclude .git $dir"
+FZF_DEFAULT_COMMAND OVERRIDE="fd --type file --follow --hidden --exclude .git"
 FZF_DEFAULT_OPTS OVERRIDE="--bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)'"
 GRIM_DEFAULT_DIR OVERRIDE=${HOME}/Media/Pictures/Captures
 GUI OVERRIDE=${HOME}/.local/bin/newterm

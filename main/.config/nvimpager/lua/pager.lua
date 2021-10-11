@@ -25,13 +25,5 @@ for _, plugin in pairs(disabled_built_ins) do
   vim.g['loaded_' .. plugin] = 1
 end
 
-require('signs').setup()
 require 'options'
-require 'plugins'
-require('bindings').setup()
-require 'signs'
-require 'commands'
-require 'autocommands'
-require('theme').setup()
-require 'theme-exporter'
-require 'setup-session'
+require 'bindings'

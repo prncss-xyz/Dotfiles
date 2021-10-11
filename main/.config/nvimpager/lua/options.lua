@@ -1,4 +1,4 @@
--- vim.cmd 'set shada="NONE"'
+vim.cmd 'set shada="NONE"'
 local deep_merge = require('utils').deep_merge
 local indent = 2
 deep_merge(vim, {
@@ -17,7 +17,7 @@ deep_merge(vim, {
     clipboard = 'unnamedplus',
     cmdheight = 1,
     completeopt = 'menuone,noselect',
-    cursorline = true,
+    cursorline = false,
     expandtab = true,
     foldexpr = '[[<cmd>lua require("nvim_treesitter").foldexpr()<cr>]]',
     foldmethod = 'expr',
@@ -43,7 +43,6 @@ deep_merge(vim, {
     termguicolors = true,
     undofile = false,
     updatetime = 1000,
-    -- timeoutlen = 300,
     wildignorecase = true,
     wildoptions = 'pum',
     pumblend = 20,
@@ -71,27 +70,11 @@ deep_merge(vim, {
       'tsx=typescriptreact',
       'bash=sh',
     },
-    -- vim_markdown_conceal_code_blocks = 0,
-    -- vim-case-chage
-    casechange_nomap = 1,
-    -- neovide_refresh_rate = 60,
-    -- -- neovide_transparency = 0.30
-    -- neovide_cursor_animation_length = 0.3,
-    -- neovide_cursor_trail_length = 0.5,
-    -- neovide_remember_window_size = false,
-    -- neovide_cursor_antialiasing = true,
-    -- neovide_cursor_vfx_mode = 'railgun',
-    -- neovide_cursor_vfx_opacity = 200.0,
-    -- neovide_cursor_vfx_particle_lifetime = 1.2,
-    -- neovide_cursor_vfx_particle_density = 7.0,
-    -- neovide_cursor_vfx_particle_speed = 10.0,
-    -- neovide_cursor_vfx_particle_phase = 1.5,
-    -- neovide_cursor_vfx_particle_curl = 1.0,
   },
   wo = {
     number = false,
     relativenumber = false,
-    signcolumn = 'yes',
+    signcolumn = 'no',
   },
   -- like set
   opt = {
@@ -106,7 +89,6 @@ deep_merge(vim, {
     sessionoptions = 'curdir,folds,tabpages,winsize',
     foldlevel = 20,
     -- foldlevelstart=20,
-    undofile = false,
   },
   -- like setglobal
   opt_global = {},
@@ -118,4 +100,4 @@ deep_merge(vim, {
   },
 })
 
-deep_merge(vim, require('bindings').plugins.vim)
+nvimpager.maps = false

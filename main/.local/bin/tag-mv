@@ -1,12 +1,42 @@
 #!/usr/bin/env sh
 
+# TODO: when source is a dir
+
 src="$1"
+if [ ! -f "$src" ]; then
+  echo tag-mv: \'"$src"\' is not a file >/dev/err
+  exit 1
+fi
 dst="$2"
-tags="$(tag-get "$src")"
+if [ -d "$dst" ]; then
+  dst_dir="$dst"
+  dst_file="$dst/$(basename "$src")"
+else
+  dst_dir="$(dirname "$dst")"
+  dst_file="$dst"
+fi
+if [ ! -d "$dst_dir" ]; then
+  echo tag-mv: \'"$dst_dir"\' is not a directory >/dev/err
+  exit 1
+fi
+if [ -e "$dst_file" ]; then
+  echo tag-mv: \'"$dst_file"\' already exists >/dev/err
+  exit 1
+fi
+
+tags="$(tag-get "$src" 2>/dev/null)"
 echo "$tags" | while read -r tag ; do
-  tag-del "$src" "$tag"
+  tag-del "$src" "$tag" 2>/dev/null
+  echo tag-del "$src" "$tag"
 done
-mv "$src" "$dst"
+echo a
+echo mv "$src" "$dst_file"
+mv "$src" "$dst_file"
+echo b
 echo "$tags" | while read -r tag ; do
-  tag-put "$dst" "$tag"
+  if [ -z "$tag" ]; then
+    break
+  fi
+  tag-put "$dst_file" "$tag"
+  echo tag-put "$dst_file" "$tag"
 done

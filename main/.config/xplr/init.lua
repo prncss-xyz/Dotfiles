@@ -2,6 +2,7 @@ version = '0.14.4'
 package.path = os.getenv 'HOME' .. '/.config/xplr/plugins/?.xplr/src/init.lua'
 require('fzf').setup()
 require('comex').setup { compress_key = 'c', extract_key = 'x' }
+require('type-to-nav').setup()
 require('preview-tabbed').setup {
   mode = 'action',
   key = 'p',
@@ -40,13 +41,22 @@ end
 local xplr = xplr
 
 -- TODO find actual message
-local shell = xplr.config.modes.builtin.action.key_bindings.on_key['!'].messages
-local search =
-  xplr.config.modes.builtin.default.key_bindings.on_key['/'].messages
-local copy_here =
-  xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages
+local shell = {
+  unpack(xplr.config.modes.builtin.action.key_bindings.on_key['!'].messages),
+}
+local follow_symlink = {
+  unpack(xplr.config.modes.builtin.go_to.key_bindings.on_key.f.messages),
+}
+local search = {
+  unpack(xplr.config.modes.builtin.default.key_bindings.on_key['/'].messages),
+}
+local copy_here = {
+  unpack(xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages),
+}
 
--- TODO: search, help, editoe
+-- TODO go top, go bottom (Ee)
+-- TODO bash to lua
+-- TODO create in editor
 
 deep_merge(xplr, {
   config = {
@@ -59,9 +69,7 @@ deep_merge(xplr, {
                 help = 'mvf last',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      mvf --last
-                    ]],
+                    BashExec = [[ mvf --last ]],
                   },
                 },
               },
@@ -69,9 +77,7 @@ deep_merge(xplr, {
                 help = 'mvf last',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      tag-put "$XPLR_FOCUS_PATH" --repeat
-                    ]],
+                    BashExec = [[ tag-put "$XPLR_FOCUS_PATH" --repeat ]],
                   },
                 },
               },
@@ -79,9 +85,7 @@ deep_merge(xplr, {
                 help = 'tag put last',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      tag-put --last
-                    ]],
+                    BashExec = [[ tag-put --last ]],
                   },
                 },
               },
@@ -89,9 +93,7 @@ deep_merge(xplr, {
                 help = 'tag del last',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      tag-del --last
-                    ]],
+                    BashExec = [[ tag-del --last ]],
                   },
                 },
               },
@@ -144,17 +146,16 @@ deep_merge(xplr, {
                 help = 'open editor',
                 messages = {
                   {
-                    ['BashExecSilently'] = [[
-                    exec $TERMINAL -e nvim &
-                    ]],
+                    BashExecSilently = [[ exec $TERMINAL -e nvim & ]],
                   },
                 },
               },
+              -- TODO: respect filters
               i = {
                 help = 'images',
                 messages = {
                   {
-                    ['BashExecSilently'] = [[
+                    BashExecSilently = [[
                       if [ -d "$XPLR_FOCUS_PATH" ]; then
                         PTH="$XPLR_FOCUS_PATH"
                       else
@@ -177,7 +178,7 @@ deep_merge(xplr, {
                 -- TODO: follow symbolic link
                 messages = {
                   {
-                    ['BashExecSilently'] = [[
+                    BashExecSilently = [[
                       if [ -d "$XPLR_FOCUS_PATH" ]; then
                         echo "ChangeDirectory: $XPLR_FOCUS_PATH" >> $XPLR_PIPE_MSG_IN
                       else
@@ -188,10 +189,10 @@ deep_merge(xplr, {
                 },
               },
               L = {
-                help = 'fzf open',
+                help = 'fzf open dir',
                 messages = {
                   {
-                    ['BashExec'] = [[
+                    BashExec = [[
                       res="$(fd --type directory --follow --hidden --exclude .git | fzf)"
                       if [ -n "$res" ]; then
                         echo ChangeDirectory: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
@@ -204,7 +205,7 @@ deep_merge(xplr, {
                 help = 'mvf current',
                 messages = {
                   {
-                    ['BashExec'] = [[
+                    BashExec = [[
                       if [ -f "$XPLR_FOCUS_PATH" ]; then
                         mvf "$XPLR_FOCUS_PATH"
                       fi
@@ -216,11 +217,12 @@ deep_merge(xplr, {
                 help = 'fzf open',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      res="$(fd --type file --follow --hidden --exclude .git | fzf)"
-                        if [ -n "$res" ]; then
-                          opener "$res"
-                        fi
+                    --  --preview 'echo {} >/tmp/xplr.fifo' --preview-window 0
+                    BashExec = [[
+                      res="$(fd --type file --follow --hidden --exclude .git | fzf --preview 'echo {} >/tmp/xplr.fifo' --preview-window 0)" -- FIXME
+                      if [ -n "$res" ]; then
+                        opener "$res"
+                      fi
                     ]],
                   },
                 },
@@ -242,9 +244,7 @@ deep_merge(xplr, {
                 help = 'terminal',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      exec $TERMINAL &
-                    ]],
+                    BashExecSilently = [[ exec $TERMINAL & ]],
                   },
                 },
               },
@@ -252,9 +252,7 @@ deep_merge(xplr, {
                 help = 'tag put current',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      tag-put "$XPLR_FOCUS_PATH"
-                    ]],
+                    BashExec = [[ tag-put "$XPLR_FOCUS_PATH" ]],
                   },
                 },
               },
@@ -262,9 +260,7 @@ deep_merge(xplr, {
                 help = 'tag del current',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      tag-del "$XPLR_FOCUS_PATH"
-                    ]],
+                    BashExec = [[ tag-del "$XPLR_FOCUS_PATH" ]],
                   },
                 },
               },
@@ -275,6 +271,7 @@ deep_merge(xplr, {
                 help = 'search',
                 messages = search,
               },
+              ['?'] = nop,
               ['!'] = {
                 help = 'shell',
                 messages = shell,
@@ -291,36 +288,52 @@ deep_merge(xplr, {
                 help = 'history',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}" | sort -u | fzf --no-sort)
+                    BashExec = [[
+                      PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}" | head -n -1 | tac | fzf --no-sort)
                       if [ "$PTH" ]; then
+                        PTH="${PTH%/}" # remove trailing slash
                         echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
                       fi
                     ]],
                   },
                 },
               },
-              -- TODO: use lua
-              -- TODO: prevent accumulation of trailing slashes
-              ['alt-a'] = {
-                help = 'back',
+              ['ctrl-j'] = {
+                help = 'pane-swap',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}"|tail -2|head -1)
-                      if [ "$PTH" ]; then
-                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                    BashExec = [[ 
+                      LOC="$(cat "/tmp/XPLR_PANE_$XPLR_PID")"
+                      if [ -n "$LOC" ]; then
+                        echo "$PWD" > "/tmp/XPLR_PANE_$XPLR_PID" 
+                        echo ChangeDirectory: "'"${LOC:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
                       fi
+                    ]],
+                  },
+                  'PopMode',
+                  { SwitchModeBuiltin = 'default' },
+                },
+              },
+              -- TODO: use lua
+              -- TODO: prevent accumulation of trailing slashes
+              ['alt-h'] = {
+                help = 'help',
+                messages = {
+                  {
+                    -- TODO: position to active mode
+                    BashExec = [[
+                      # PAGER=${PAGER-less}
+                      "$PAGER" "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"
                     ]],
                   },
                 },
               },
               ['ctrl-v'] = {
-                help = 'fzf open',
+                help = 'fzf toggle selection',
                 messages = {
                   {
-                    ['BashExec'] = [[
-                      res="$(fd --type directory --follow --hidden --exclude .git | fzf)"
+                    BashExec = [[
+                      res="$(ls | sort | fzf)"
                       if [ -n "$res" ]; then
                         echo ToggleSelectionByPath: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
                       fi
@@ -338,7 +351,7 @@ deep_merge(xplr, {
                 help = 'bookmarks',
                 messages = {
                   {
-                    ['BashExec'] = [[
+                    BashExec = [[
                       PTH="$(cat "$HOME/.config/xplr/bookmarks" | fzf)" 
                       if [ "$PTH" ]; then
                         echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
@@ -349,11 +362,47 @@ deep_merge(xplr, {
                   { SwitchModeBuiltin = 'default' },
                 },
               },
+              f = {
+                help = 'fzf focus',
+                messages = {
+                  {
+                    BashExec = [[
+                      res="$(ls -A | fzf)"
+                      if [ -n "$res" ]; then
+                        echo FocusPath: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                },
+              },
+              F = {
+                help = 'fzf focus recursive',
+                messages = {
+                  {
+                    BashExec = [[
+                      res="$(fd . . | fzf)"
+                      if [ -n "$res" ]; then
+                        echo FocusPath: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                },
+              },
+              j = {
+                help = 'pane-set',
+                messages = {
+                  {
+                    BashExecSilently = [[ echo "$PWD" > "/tmp/XPLR_PANE_$XPLR_PID" ]],
+                  },
+                  'PopMode',
+                  { SwitchModeBuiltin = 'default' },
+                },
+              },
               p = {
                 help = 'project root',
                 messages = {
                   {
-                    ['BashExec'] = [[
+                    BashExecSilently = [[
                       PTH="$(project_root)" 
                       if [ "$PTH" ]; then
                         echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
@@ -364,11 +413,31 @@ deep_merge(xplr, {
                   { SwitchModeBuiltin = 'default' },
                 },
               },
-              w = {
-                help = 'visit tag',
+              r = {
+                help = 'random',
                 messages = {
                   {
-                    ['BashExec'] = [[
+                    BashExecSilently = [[
+                      PTH=$(fd --type file .|shuf -n1) 
+                      if [ "$PTH" ]; then
+                        echo FocusPath: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                      echo "$PTH"
+                    ]],
+                  },
+                  'PopMode',
+                  { SwitchModeBuiltin = 'default' },
+                },
+              },
+              s = {
+                help = 'follow symlink',
+                messages = follow_symlink,
+              },
+              t = {
+                help = 'tag',
+                messages = {
+                  {
+                    BashExecSilently = [[
                       PTH="$(tag-go "$PWD")"  
                       if [ "$PTH" ]; then
                         echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
@@ -385,22 +454,39 @@ deep_merge(xplr, {
         selection_ops = {
           key_bindings = {
             on_key = {
+              m = {
+                -- TODO: revert to builtin when there is not .tags
+                help = 'move with tags here',
+                messages = {
+                  {
+                    BashExec = [[
+                      cat "$XPLR_PIPE_SELECTION_OUT" | while read -r line ; do
+                        tag-mv "$line" "$PWD"
+                      done
+                    ]],
+                  },
+                },
+              },
               p = {
                 help = 'copy here',
                 messages = copy_here.messages,
               },
               w = {
                 help = 'tag selection',
-                messages = {{ BashExec = [[
-                cat "$XPLR_PIPE_SELECTION_OUT" | while read -r line ; do
-                  if [ -z "$succ" ]; then
-                    succ=succ
-                    tag-put "$line"
-                  else
-                    tag-put "$line" --repeat
-                  fi
-                done
-                ]] }},
+                messages = {
+                  {
+                    BashExec = [[
+                      cat "$XPLR_PIPE_SELECTION_OUT" | while read -r line ; do
+                        if [ -z "$succ" ]; then
+                          succ=succ
+                          tag-put "$line"
+                        else
+                          tag-put "$line" --repeat
+                        fi
+                      done
+                    ]],
+                  },
+                },
               },
             },
           },

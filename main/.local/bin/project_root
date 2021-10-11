@@ -2,23 +2,32 @@
 
 while true; do
 	if [ -d ".git" ]; then
-		echo $PWD
+		echo "$PWD"
+		exit 0
+	fi
+	if [ -d ".stfolder" ]; then
+		echo "$PWD"
 		exit 0
 	fi
 	if [ -d "node_modules" ]; then
-		echo $PWD
+		echo "$PWD"
 		exit 0
 	fi
 	if [ -f "stylua.toml" ]; then
-		echo $PWD
+		echo "$PWD"
 		exit 0
 	fi
 	if [ -d ".tags" ]; then
-		echo $PWD
+		echo "$PWD"
+		exit 0
+	fi
+	if [ "$PWD" = "$HOME" ]; then
+		echo "$PWD"
 		exit 0
 	fi
 	if [ "$PWD" = "/" ]; then
-		exit 1
+		echo "$PWD"
+		exit 0
 	fi
 	cd ..
 done

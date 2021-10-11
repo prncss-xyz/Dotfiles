@@ -153,9 +153,8 @@ function M.setup()
   remark('v', '>')
   remark('P', '[')
   remark('p', ']')
-  map('n', 's', 'm')
-  map('n', 'm', "'")
-  map('n', a.mark .. 'm', '`') -- not working ?? whichkwey
+  map('n', a.mark, "'")
+  map('n', a.mark .. a.mark, '`') -- not working ?? whichkwey
 
   map('', 's', '<Plug>Lightspeed_s', { noremap = false })
   map('', 'S', '<Plug>Lightspeed_S', { noremap = false })
@@ -216,7 +215,7 @@ function M.setup()
   -- " Use <nowait> to override the default bindings which wait for another key press
 
   -- macrobatics
-  -- map('n', macro .. macro, '<plug>(Mac_Play)', { noremap = false })
+  -- map('n', a.macro .. a.macro, '<plug>(Mac_Play)', { noremap = false })
   map('n', a.macro .. 'r', '<plug>(Mac_RecordNew)', { noremap = false })
   map('n', a.macro .. 'n', '<plug>(Mac_RotateBack)', { noremap = false })
   map('n', a.macro .. 'N', '<plug>(Mac_RotateForward)', { noremap = false })
@@ -429,6 +428,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   -- map('c', '<tab>', '<tab><space>')
   -- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
 
+  map('nvi', '<c-c>', 'esc')
+
   -- fish-emacs compat
   map('', '<c-b>', '^')
   map('', '<c-e>', '$')
@@ -439,6 +440,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   map('c', '<c-p>', '<up>')
   map('c', '<c-n>', '<down>')
   map('c', '<a-v>', '<c-f>')
+  map('c', '<c-v>', '<c-r>+')
+
 
   -- searching
   require 'auto_unhl'
@@ -495,16 +498,9 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
         'nohlsearch',
       },
-      -- ['<c-n>'] = {
-      --   '<cmd>lua require"illuminate".next_reference{wrap=true}<cr>',
-      --   'next occurence',
-      -- },
-      -- ['<c-p>'] = {
-      --   '<cmd>lua require"illuminate".next_reference{reverse=true,wrap=true}<cr>',
-      --   'previous occurence',
-      -- },
       ['<c-a>'] = {'<esc>``', 'jump before last jump'},
-      ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
+      -- ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
+      ['<c-j>'] = {'<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump toggle'},
       ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       -- ['<c-w>'] = {
@@ -550,8 +546,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         },
         -- ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
       },
-      ['<c-n>'] = {'<cmd>bnext<cr>', 'next buffer'},
-      ['<c-p>'] = {'<cmd>bprevious<cr>', 'previous buffer'},
+      -- ['<c-n>'] = {'<cmd>bnext<cr>', 'next buffer'},
+      -- ['<c-p>'] = {'<cmd>bprevious<cr>', 'previous buffer'},
     }, {
       mode = mode,
     })
@@ -643,8 +639,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       u = { '<cmd>UndotreeToggle<cr>', 'undo tree' },
       w = { '<cmd>Telescope projects<cr>', 'sessions' },
       W = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
-      x = { "<cmd>lua require'bindutils'.term_launch({'xplr'})<cr>", 'xplr' },
-      X = { "<cmd>lua require'bindutils'.term_launch({'xplr', vim.fn.expand'%'})<cr>", 'xplr' },
+      x = { "<cmd>lua require'bindutils'.term_launch({'xplr', vim.fn.expand'%'})<cr>", 'xplr' },
+      X = { "<cmd>lua require'bindutils'.term_launch({'xplr'})<cr>", 'xplr' },
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
       [';'] = {
         "<cmd>lua require('telescope.builtin').commands()<cr>",
@@ -676,6 +672,8 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
       d = { ']c', 'next change' },
       D = { '[c', 'previous change' },
+      -- j = {'mXmY', 'alt-jump reset'},
+      j = {'<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset'},
       o = { '`.', 'last change' },
       -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
       -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
@@ -749,7 +747,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         s = { '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'signature help' },
         t = {
           '<cmd>lua vim.lsp.buf.type_definition()<cr>',
-          'hover type definition',
+          'go to type definition', -- ??
         },
         wa = {
           '<cmd>lua vim.lsp.buf.add_workspace_folder()<cr>',

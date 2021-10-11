@@ -81,7 +81,7 @@ return require('packer').startup(function()
     },
   }
 
-  -- extra syntax
+  -- syntax
   use 'ajouellette/sway-vim-syntax'
   use 'fladson/vim-kitty'
   use {
@@ -380,19 +380,18 @@ return require('packer').startup(function()
   }
 
   -- navigation
-  -- use {
-  --   'kwkarlwang/bufjump.nvim',
-  --   config = function()
-  --     require('bufjump').setup {
-  --       forward = '<C-n>',
-  --       backward = '<C-p>',
-  --       on_success = function()
-  --         vim.cmd [[execute "normal! g`\"zz"]]
-  --       end,
-  --     }
-  --   end,
-  -- }
-
+  use {
+    'kwkarlwang/bufjump.nvim',
+    config = function()
+      require('bufjump').setup {
+        forward = '<c-n>',
+        backward = '<c-p>',
+        on_success = function()
+          vim.cmd [[execute "normal! g`\"zz"]]
+        end,
+      }
+    end,
+  }
   use {
     'kshenoy/vim-signature',
     setup = function()
@@ -501,7 +500,6 @@ return require('packer').startup(function()
     end,
     requires = 'tpope/vim-repeat',
   }
-  -- use 'mattn/emmet-vim'
   use {
     'b3nj5m1n/kommentary',
     setup = function()
@@ -582,15 +580,15 @@ return require('packer').startup(function()
       }
     end,
   }
-  use {
-    'folke/persistence.nvim',
-    event = 'BufReadPre',
-    module = 'persistence',
-    dir = os.getenv 'HOME' .. '/Personal/sessions/',
-    config = function()
-      require('persistence').setup()
-    end,
-  }
+  -- use {
+  --   'folke/persistence.nvim',
+  --   event = 'BufReadPre',
+  --   module = 'persistence',
+  --   dir = os.getenv 'HOME' .. '/Personal/sessions/',
+  --   config = function()
+  --     require('persistence').setup()
+  --   end,
+  -- }
   use {
     'ahmedkhalf/project.nvim',
     config = function()
@@ -644,20 +642,20 @@ return require('packer').startup(function()
       'Wall',
     },
   }
-  use {
-    'vigoux/LanguageTool.nvim',
-    cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
-    setup = function()
-      require('utils').deep_merge(vim.g, {
-        -- see https://languagetool.org/http-api/swagger-ui/#!/default/post_check
-        languagetool_server_command = 'echo "Server Started"',
-        languagetool = {
-          ['.'] = { language = 'auto' },
-        },
-      })
-    end,
-    config = function()
-      vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
-    end,
-  }
+  -- use {
+  --   'vigoux/LanguageTool.nvim',
+  --   cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
+  --   setup = function()
+  --     require('utils').deep_merge(vim.g, {
+  --       -- see https://languagetool.org/http-api/swagger-ui/#!/default/post_check
+  --       languagetool_server_command = 'echo "Server Started"',
+  --       languagetool = {
+  --         ['.'] = { language = 'auto' },
+  --       },
+  --     })
+  --   end,
+  --   config = function()
+  --     vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
+  --   end,
+  -- }
 end)

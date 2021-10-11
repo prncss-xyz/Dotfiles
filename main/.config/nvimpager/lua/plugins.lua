@@ -1,0 +1,28 @@
+return require('packer').startup(function()
+  -- use 'wbthomason/packer.nvim'
+  -- use {
+  --   'lewis6991/impatient.nvim',
+  --   config = {
+  --     -- Move to lua dir so impatient.nvim can cache it
+  --     compile_path = vim.fn.stdpath 'config' .. '/lua/packer_compiled.lua',
+  --   },
+  -- }
+  -- use 'nvim-treesitter/nvim-treesitter'
+  -- use 'ajouellette/sway-vim-syntax'
+  -- use 'fladson/vim-kitty'
+  -- use {
+  --   -- weirdly seems required to format yaml frontmatter
+  --   'godlygeek/tabular',
+  --   requires = {
+  --     'plasticboy/vim-markdown',
+  --     ft = 'markdown',
+  --     -- unsuccessful setting options here
+  --   },
+  -- }
+  -- use {
+  --   'ggandor/lightspeed.nvim',
+  --   config = function()
+  --     require('lightspeed').setup {}
+  --   end,
+  -- }
+end)

@@ -160,6 +160,7 @@ function M.setup()
         Lua = {
           diagnostics = {
             globals = {
+              'nvimpager',
               'use', -- packer
               'xplr', -- xplr
             },

@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+root="$(tag-root)"
+if [ -z "$root" ]; then
+	echo "no '.tag' directory" >/dev/stderr
+	exit 3
+fi
+rpath=$(realpath --relative-to="$root" .)
+cd "$root/.tags" || exit 1
+ls -d ./*/"$rpath" | cut -d/ -f2

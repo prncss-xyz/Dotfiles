@@ -83,12 +83,15 @@ bindsym $mod+shift+$up move up, mode default
 bindsym $mod+shift+$right move right, mode default
 
 mode launch {
-  bindsym y exec "kitty --class=launcher -e fbookmark", mode default
-  bindsym shift+y exec "kitty -e nvim ~/Personal/bookmarks.csv", mode default
+  bindsym c exec "clipman pick -t rofi", mode default
+  bindsym d exec "kitty --class=launcher -e fdocu", mode default
+  bindsym shift+d exec "kitty --class=launcher -e fdocu \*", mode default
   bindsym h exec "kitty --class=launcher -e fman", mode default
   bindsym p exec "rofi-pass", mode default
   bindsym s exec "rofi -show ssh", mode default
-  bindsym c exec "clipman pick -t rofi", mode default
+  bindsym y exec "kitty --class=launcher -e fbookmark", mode default
+  bindsym shift+y exec "kitty -e nvim ~/Personal/bookmarks.csv", mode default
+
   bindsym m exec "kitty -e ~/.local/bin/nvim_codi_mathjs", mode default
   bindsym e exec "kitty -e nvim", mode default
   bindsym x exec "kitty -e xplr", mode default

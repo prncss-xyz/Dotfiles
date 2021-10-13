@@ -11,4 +11,4 @@ fi
 cd "$root/.tags" || exit
 
 rpath=$(realpath --relative-to=.. "$source")
-ls ./*/"$rpath" | cut -d/ -f2
+ls ./*/"$rpath" 2>/dev/null | cut -d/ -f2

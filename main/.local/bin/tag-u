@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+root="$(tag-root)"
+if [ -z "$root" ]; then
+	exit 2
+fi
+
+if [ "$1" = \* ]; then
+	fd -L . -t f -x realpath --relative-to=. {}
+  exit 0
+fi
+
+rpath=$(realpath --relative-to="$root" .)
+for tag in "$@"; do
+	fd -L . -t f "$root/.tags/$tag/$rpath" -x realpath --relative-to=.
+	if [ -f "$root/.tags/$tag/__sub" ]; then
+		cat "$root/.tags/$tag/__sub" | while read -r subtag; do
+      tag-u "$subtag"
+		done
+	fi
+done

@@ -10,6 +10,9 @@ command('Lua', { nargs = 1 }, function(name)
   vim.cmd(string.format('lua require"utils".dump(%s)', name))
 end)
 
+command('Editor', {}, function()
+end)
+
 command('LaunchOSV', {}, function()
   local filetype = vim.bo.filetype
   if filetype == 'lua' then

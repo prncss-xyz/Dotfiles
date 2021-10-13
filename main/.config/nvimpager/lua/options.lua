@@ -12,7 +12,7 @@ deep_merge(vim, {
     compatible = false,
     autoindent = true,
     autoread = true,
-    autowriteall = true,
+    autowriteall = false,
     backup = false,
     clipboard = 'unnamedplus',
     cmdheight = 1,
@@ -52,7 +52,7 @@ deep_merge(vim, {
     title = true,
   },
   g = {
-    autosave = 1,
+    autosave = 0,
     -- plasticboy/vim-markdown
     -- vim_markdown_folding_disabled = 0,
     vim_markdown_folding_level = 6,
@@ -78,7 +78,8 @@ deep_merge(vim, {
   },
   -- like set
   opt = {
-    -- shada = 'NONE',
+    shada = 'NONE',
+    laststatus = 0,
     conceallevel = 2,
     secure = true, -- disable autocmd etc for project local vimrc files
     exrc = false, -- allow project local vimrc files example .nvimrc see :h exrc
@@ -86,7 +87,6 @@ deep_merge(vim, {
     lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
     -- spelloptions = "camel",
     fillchars = 'eob: ',
-    sessionoptions = 'curdir,folds,tabpages,winsize',
     foldlevel = 20,
     -- foldlevelstart=20,
   },
@@ -94,10 +94,7 @@ deep_merge(vim, {
   opt_global = {},
   -- like setlocal
   opt_local = {},
-  env = {
-    GIT_EDITOR = 'nvr',
-    EDITOR = 'nvr',
-  },
+  env = { },
 })
 
-nvimpager.maps = false
+-- nvimpager.maps = false

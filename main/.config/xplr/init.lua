@@ -142,6 +142,12 @@ deep_merge(xplr, {
                   { SwitchModeCustom = 'last' },
                 },
               },
+              c = {
+                help = 'selection mode',
+                messages = {
+                  { SwitchModeBuiltin = 'selection_ops' },
+                },
+              },
               e = {
                 help = 'open editor',
                 messages = {
@@ -150,32 +156,27 @@ deep_merge(xplr, {
                   },
                 },
               },
-              -- TODO: respect filters
               i = {
-                help = 'images',
+                help = 'view images',
                 messages = {
                   {
-                    BashExecSilently = [[
-                      if [ -d "$XPLR_FOCUS_PATH" ]; then
+                    BashExec = [[
+                      if [ -n "$XPLR_PIPE_SELECTION_OUT" ]; then
+                        imv <"$XPLR_PIPE_SELECTION_OUT" &
+                      elif [ -d "$XPLR_FOCUS_PATH" ]; then
+                        # TODO: respect filters ??
                         PTH="$XPLR_FOCUS_PATH"
+                        fd -tl . "$PTH"|imv&
                       else
                         PTH=$(basedir "$XPLR_FOCUS_PATH")
+                        fd -tl . "$PTH"|imv&
                       fi
-                      fd -tl . "$PTH"|imv&
                     ]],
                   },
                 },
               },
-              K = {
-                help = 'selection mode',
-                messages = {
-                  { SwitchModeBuiltin = 'selection_ops' },
-                },
-              },
               l = {
                 help = 'open',
-                -- TODO: make builtin
-                -- TODO: follow symbolic link
                 messages = {
                   {
                     BashExecSilently = [[
@@ -234,11 +235,6 @@ deep_merge(xplr, {
               Q = {
                 help = 'quit',
                 messages = { 'Quit' },
-              },
-              S = {
-                help = 'back',
-                -- TODO
-                -- messages = { '' },
               },
               t = {
                 help = 'terminal',
@@ -303,9 +299,9 @@ deep_merge(xplr, {
                 messages = {
                   {
                     BashExec = [[ 
-                      LOC="$(cat "/tmp/XPLR_PANE_$XPLR_PID")"
+                      LOC="$(cat "$XPLR_SESSION_PATH/pane")"
                       if [ -n "$LOC" ]; then
-                        echo "$PWD" > "/tmp/XPLR_PANE_$XPLR_PID" 
+                        echo "$PWD" > "$XPLR_SESSION_PATH/pane" 
                         echo ChangeDirectory: "'"${LOC:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
                       fi
                     ]],
@@ -314,15 +310,13 @@ deep_merge(xplr, {
                   { SwitchModeBuiltin = 'default' },
                 },
               },
-              -- TODO: use lua
-              -- TODO: prevent accumulation of trailing slashes
               ['alt-h'] = {
                 help = 'help',
                 messages = {
                   {
                     -- TODO: position to active mode
                     BashExec = [[
-                      # PAGER=${PAGER-less}
+                      PAGER=${PAGER-less}
                       "$PAGER" "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"
                     ]],
                   },
@@ -392,7 +386,7 @@ deep_merge(xplr, {
                 help = 'pane-set',
                 messages = {
                   {
-                    BashExecSilently = [[ echo "$PWD" > "/tmp/XPLR_PANE_$XPLR_PID" ]],
+                    BashExecSilently = [[ echo "$PWD" > "$XPLR_SESSION_PATH/pane" ]],
                   },
                   'PopMode',
                   { SwitchModeBuiltin = 'default' },
@@ -454,6 +448,62 @@ deep_merge(xplr, {
         selection_ops = {
           key_bindings = {
             on_key = {
+              u = {
+                help = 'add tag to selection',
+                messages = {
+                  {
+                    BashExec = [[
+                    tag="$(tag-ls | fzf --print-query | tail -1)"  
+                    if [ -n "$tag" ]; then
+                      tag-u "$tag" | sort -u /dev/stdin | while read -r PTH ; do
+                        ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
+                        echo "SelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
+                      done
+                    fi
+                  ]],
+                  },
+                },
+              },
+              U = {
+                help = 'intersect tag with selection',
+                messages = {
+                  {
+                    BashExec = [[
+                    tag="$(tag-ls | fzf --print-query | tail -1)"  
+                    if [ -n "$tag" ]; then
+                      echo > "$XPLR_SESSION_PATH/raw"
+                      tag-u "$tag" | while read -r PTH ; do
+                        echo "$(realpath "$PTH")" >> "$XPLR_SESSION_PATH/raw"
+                      done
+                      sort "$XPLR_SESSION_PATH/raw" > "$XPLR_SESSION_PATH/operand"
+                      cat "$XPLR_PIPE_SELECTION_OUT" | while read -r PTH ; do
+                        if [ -z "$(look "$PTH" "$XPLR_SESSION_PATH/operand")" ]; then
+                          ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
+                          echo "UnSelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
+                        fi
+                      done
+                    fi
+                    ]],
+                  },
+                },
+              },
+              d = {
+                help = 'remove tag from selection',
+                messages = {
+                  {
+                    BashExec = [[
+                    tag="$(tag-ls | fzf --print-query | tail -1)"  
+                    if [ -n "$tag" ]; then
+                      tag-u "$tag" | sort -u /dev/stdin | while read -r PTH ; do
+                        ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
+                        echo "UnSelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
+                      done
+                    fi
+                  ]],
+                  },
+                },
+              },
+              -- TODO: cycle selected
               m = {
                 -- TODO: revert to builtin when there is not .tags
                 help = 'move with tags here',
@@ -467,12 +517,39 @@ deep_merge(xplr, {
                   },
                 },
               },
+              a = {
+                help = 'select untagged from current dir',
+                messages = {
+                  {
+                    BashExecSilently = [[
+                      for PTH in *; do
+                        if [ -z "$(tag-get "$PTH")" ]; then
+                          ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
+                          echo "SelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
+                        fi
+                      done
+                    ]]
+                  }
+              }},
+              o = {
+                help = 'open from selection',
+                messages = {
+                  {
+                    BashExec = [[
+                      PTH=$(fzf <"$XPLR_PIPE_SELECTION_OUT")
+                      if [ -n "$PTH" ]; then
+                        opener "$PTH"
+                      fi
+                    ]],
+                  },
+                },
+              },
               p = {
                 help = 'copy here',
                 messages = copy_here.messages,
               },
               w = {
-                help = 'tag selection',
+                help = 'assign tag to selection',
                 messages = {
                   {
                     BashExec = [[

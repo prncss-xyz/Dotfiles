@@ -55,7 +55,7 @@ function M.template_match()
     local snippet = (template.value):copy()
     snippet.trigger = ''
     snippet:trigger_expand(
-      Luasnip_current_nodes[vim.api.nvim_get_current_buf()]
+      require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
     )
   end
 end

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/sh
 
 chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --remote-debugging-port=9222 "$@"
 # chromium --disk-cache-dir="$XDG_RUNTIME_DIR/chromium-cache" --enable-features=UseOzonePlatform --ozone-platform=wayland --remote-debugging-port=9222 "$@"

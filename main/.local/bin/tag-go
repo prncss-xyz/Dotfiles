@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# TODO: use tag-ls
+
 source=$(realpath "$1")
 root="$(tag-root)"
 if [ -z "$root" ]; then

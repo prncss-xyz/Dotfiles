@@ -1,4 +1,4 @@
-#!/bin/env sh
+#!/usr/bin/env sh
 
 res=$(tr ',' '\t' <~/Personal/bookmarks.csv|fzf --delimiter='\t' --nth=1,2 --with-nth=1|cut  -f2)
 if [ -n "$res" ]; then

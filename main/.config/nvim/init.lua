@@ -1,24 +1,27 @@
--- require'impatient'.enable_profile()
+pcall(function() -- needed to enable first installation
+  -- require('impatient').enable_profile()
+end)
 
 local disabled_built_ins = {
-  'netrw',
-  'netrwPlugin',
-  'netrwSettings',
-  'netrwFileHandlers',
-  'gzip',
-  'zip',
-  'zipPlugin',
-  'tar',
-  'tarPlugin',
+  '2html_plugin',
+  'filetypes', -- nathom/filetype.nvim
   'getscript',
   'getscriptPlugin',
-  'vimball',
-  'vimballPlugin',
-  '2html_plugin',
+  'gzip',
   'logipat',
+  'matchit',
+  'netrw',
+  'netrwFileHandlers',
+  'netrwPlugin',
+  'netrwSettings',
   'rrhelper',
   'spellfile_plugin',
-  'matchit',
+  'tar',
+  'tarPlugin',
+  'vimball',
+  'vimballPlugin',
+  'zip',
+  'zipPlugin',
 }
 
 for _, plugin in pairs(disabled_built_ins) do

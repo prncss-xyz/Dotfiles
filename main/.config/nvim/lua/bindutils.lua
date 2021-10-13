@@ -6,7 +6,7 @@ end
 
 function m.toggle_cmp()
   local cmp = require 'cmp'
-  if vim.fn.pumvisible() == 1 then
+  if cmp.visible() then
     cmp.close()
   else
     cmp.complete() -- not working
@@ -15,7 +15,7 @@ end
 
 function m.tab_complete()
   local cmp = require 'cmp'
-  if vim.fn.pumvisible() == 1 then
+  if cmp.visible() then
     cmp.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
@@ -27,7 +27,6 @@ function m.tab_complete()
     return
   end
   vim.fn.feedkeys(t '<Plug>(TaboutMulti)', '')
-  -- emmet#moveNextPrev(0)
 end
 
 --- <s-tab> to jump to next snippet's placeholder
@@ -101,6 +100,21 @@ function m.term_launch(args)
     :start()
 end
 
+function m.docu_current()
+  require('plenary.job')
+    :new({
+      command = vim.env.TERMINAL,
+      args = {
+        '--class',
+        'launcher',
+        '-e',
+        'fdocu',
+        vim.bo.filetype,
+      },
+    })
+    :start()
+end
+
 function m.edit_current()
   local current = vim.fn.expand '%'
   m.term_launch { 'nvim', current }
@@ -110,15 +124,6 @@ function m.searchCword(base)
   local word = vim.fn.expand '<cword>'
   local qs = require('utils').encode_uri(word)
   m.open(base .. qs)
-end
-
-function m.open_file()
-  local cwd = vim.fn.getcwd()
-  if cwd == os.getenv'HOME' .. '/Personal/neuron' then
-    require'nononotes'.prompt('edit', false, 'all')
-    return
-  end
-  require'plugins.telescope'.project_files()
 end
 
 return m

@@ -29,8 +29,8 @@ M.config = function()
       cb = cb(value),
     })
   end
-  vim.g.nvim_tree_bindings = bindings
   require('nvim-tree').setup {
+    nvim_tree_bindings = bindings,
     tree_auto_open = 1,
     tree_system_open_command = 'opener',
     tree_follow = 1,

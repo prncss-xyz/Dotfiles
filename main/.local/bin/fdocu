@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+cd "$HOME/Media/Documents/"||exit
+if [ -z "$1" ]; then
+	tag="$(ls .tags|fzf)"
+else
+  tag="$1"
+fi
+if [ -z "$tag" ]; then
+  exit 0
+fi
+ftag-u "$tag"

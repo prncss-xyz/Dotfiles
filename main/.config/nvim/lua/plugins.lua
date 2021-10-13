@@ -1,3 +1,6 @@
+local full = require'pager'.is_full
+-- local full = function() return true end
+
 local install_path = vim.fn.stdpath 'data'
   .. '/site/pack/packer/start/packer.nvim'
 
@@ -20,6 +23,12 @@ return require('packer').startup(function()
       compile_path = vim.fn.stdpath 'config' .. '/lua/packer_compiled.lua',
     },
   }
+  use {
+    'nathom/filetype.nvim',
+    config = function()
+      require 'plugins.filetype'
+    end,
+  }
 
   -- use_rocks 'iconv'
   use 'tami5/sql.nvim'
@@ -40,7 +49,7 @@ return require('packer').startup(function()
       }
     end,
   }
-  use 'kyazdani42/nvim-web-devicons'
+  use { 'kyazdani42/nvim-web-devicons', cond = full }
 
   -- tree sitter
   use {
@@ -55,16 +64,17 @@ return require('packer').startup(function()
         'nvim-treesitter/playground',
         cmd = { 'TSPlaygroundToggle' },
       },
-      'JoosepAlviste/nvim-ts-context-commentstring',
-      'nvim-treesitter/nvim-treesitter-textobjects',
-      'RRethy/nvim-treesitter-textsubjects',
+      { 'JoosepAlviste/nvim-ts-context-commentstring', cond = full },
+      { 'nvim-treesitter/nvim-treesitter-textobjects', cond = full },
+      { 'RRethy/nvim-treesitter-textsubjects' },
       -- "beloglazov/vim-textobj-punctuation", -- au/iu for punctuation
-      'mfussenegger/nvim-ts-hint-textobject',
+      { 'mfussenegger/nvim-ts-hint-textobject', cond = full },
       -- Use 'tressitter 'to autoclose and autorename html tag
-      'windwp/nvim-ts-autotag',
+      { 'windwp/nvim-ts-autotag', cond = full },
       -- Language support
       {
         'lewis6991/spellsitter.nvim',
+        cond = full,
         config = function()
           require('spellsitter').setup()
         end,
@@ -73,6 +83,7 @@ return require('packer').startup(function()
       --
       {
         'romgrk/nvim-treesitter-context',
+        cond = full,
         config = function()
           require('treesitter-context.config').setup {}
         end,
@@ -95,13 +106,14 @@ return require('packer').startup(function()
   }
 
   -- lua dev
-  use 'nanotee/luv-vimdocs'
-  use 'milisims/nvim-luaref'
-  use 'glepnir/prodoc.nvim'
+  use { 'nanotee/luv-vimdocs', cond = full }
+  use { 'milisims/nvim-luaref', cond = full }
+  use { 'glepnir/prodoc.nvim', cond = full }
 
   -- LSP
   use {
     'neovim/nvim-lspconfig',
+    cond = full,
     config = function()
       require('plugins.lsp').setup()
     end,
@@ -111,21 +123,22 @@ return require('packer').startup(function()
       },
       {
         'jose-elias-alvarez/nvim-lsp-ts-utils',
+        cond = full,
       },
       {
         'folke/lua-dev.nvim',
+        cond = full,
       },
-      -- {
-      --   'RRethy/vim-illuminate',
-      -- },
       {
         'kosayoda/nvim-lightbulb',
+        cond = full,
         config = function()
           vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
         end,
       },
       {
         'simrat39/symbols-outline.nvim',
+        cond = full,
         setup = function()
           vim.g.symbols_outline = {
             width = 30,
@@ -149,16 +162,15 @@ return require('packer').startup(function()
   use {
     'hrsh7th/nvim-cmp',
     requires = {
-      'hrsh7th/cmp-buffer',
-      'f3fora/cmp-spell',
-      'hrsh7th/cmp-buffer',
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-path',
-      'hrsh7th/cmp-nvim-lua',
-      'saadparwaiz1/cmp_luasnip',
-      'rafamadriz/friendly-snippets',
-      'DeepInThought/vscode-shell-snippets',
-      'L3MON4D3/LuaSnip',
+      { 'hrsh7th/cmp-buffer' },
+      { 'f3fora/cmp-spell' },
+      { 'hrsh7th/cmp-buffer' },
+      { 'hrsh7th/cmp-nvim-lsp' },
+      { 'hrsh7th/cmp-path' },
+      { 'hrsh7th/cmp-nvim-lua' },
+      { 'saadparwaiz1/cmp_luasnip' },
+      { 'rafamadriz/friendly-snippets' },
+      { 'L3MON4D3/LuaSnip' },
     },
     config = function()
       require 'plugins.cmp'
@@ -167,19 +179,15 @@ return require('packer').startup(function()
   use {
     -- insert or delete brackets, parens, quotes in pair
     'windwp/nvim-autopairs',
+    cond = full,
     after = 'nvim-cmp',
     config = function()
       require 'plugins.autopairs'
     end,
-    -- config = function()
-    -- end,
   }
 
-  -- command line
-  -- use { 'vim-scripts/conomode.vim' }
-  use { 'gelguy/wilder.nvim' }
-
   -- UI
+  use { 'gelguy/wilder.nvim' }
   use {
     'lukas-reineke/indent-blankline.nvim',
     event = 'ColorschemePre',
@@ -198,12 +206,14 @@ return require('packer').startup(function()
   }
   use {
     'glepnir/galaxyline.nvim',
+    cond = full,
     config = function()
       require 'plugins.galaxyline'
     end,
     requires = {
       {
         'SmiteshP/nvim-gps',
+        cond = full,
         config = function()
           require('nvim-gps').setup {}
         end,
@@ -212,6 +222,7 @@ return require('packer').startup(function()
   }
   use {
     'folke/trouble.nvim',
+    cond = full,
     module = 'trouble.providers.telescope',
     config = function()
       require('trouble').setup {
@@ -223,6 +234,7 @@ return require('packer').startup(function()
   }
   use {
     'lewis6991/gitsigns.nvim',
+    cond = full,
     config = function()
       require('plugins.gitsigns').setup()
     end,
@@ -282,6 +294,7 @@ return require('packer').startup(function()
   -- }
   use {
     '~/Media/Projects/nononotes-nvim',
+    cond = full,
     config = function()
       require('plugins.nononotes').setup()
     end,
@@ -354,6 +367,7 @@ return require('packer').startup(function()
   }
   use {
     'mbbill/undotree', -- FIXME
+    cond = full,
     setup = function()
       require('utils').deep_merge(vim.g, {
         undotree_SplitWidth = 30,
@@ -365,8 +379,10 @@ return require('packer').startup(function()
 
   -- bindings
   use 'kana/vim-submode'
+
   use {
     'folke/which-key.nvim',
+    -- cond = full,
     config = function()
       require('which-key').setup {
         plugins = {
@@ -382,6 +398,7 @@ return require('packer').startup(function()
   -- navigation
   use {
     'kwkarlwang/bufjump.nvim',
+    cond = full,
     config = function()
       require('bufjump').setup {
         forward = '<c-n>',
@@ -394,6 +411,7 @@ return require('packer').startup(function()
   }
   use {
     'kshenoy/vim-signature',
+    cond = full,
     setup = function()
       local deep_merge = require('utils').deep_merge
       deep_merge(vim, require('bindings').plugins.signature)
@@ -419,6 +437,7 @@ return require('packer').startup(function()
   }
   use {
     'abecodes/tabout.nvim',
+    cond = full,
     config = function()
       require('tabout').setup {
         tabkey = '',
@@ -430,12 +449,14 @@ return require('packer').startup(function()
   -- clipboard
   use {
     'kevinhwang91/nvim-hclipboard',
+    cond = full,
     config = function()
       require 'plugins.hclipboard'
     end,
   }
   use {
     'AckslD/nvim-anywise-reg.lua',
+    cond = full,
     config = function()
       require 'plugins.anywise_reg'
     end,
@@ -456,30 +477,35 @@ return require('packer').startup(function()
   -- edition
   use {
     'JoseConseco/vim-case-change',
+    cond = full,
     setup = function()
       vim.g.casechange_nomap = 1
     end,
   }
   use {
     'matze/vim-move',
+    cond = full,
     setup = function()
       vim.g.move_map_keys = 0
     end,
   }
   use {
     'monaqa/dial.nvim',
+    cond = full,
     config = function()
       require 'plugins.dial'
     end,
   }
   use {
     'tommcdo/vim-exchange',
+    cond = full,
     setup = function()
       vim.g.exchange_no_mappings = 1
     end,
   }
   use {
     'machakann/vim-sandwich',
+    cond = full,
     setup = function()
       require('utils').deep_merge(vim, {
         g = {
@@ -493,6 +519,7 @@ return require('packer').startup(function()
   }
   use {
     'svermeulen/vim-macrobatics',
+    cond = full,
     setup = function()
       require('utils').deep_merge(vim.g, {
         Mac_NamedMacrosDirectory = '~/Media/Projects/macrobatics',
@@ -502,6 +529,7 @@ return require('packer').startup(function()
   }
   use {
     'b3nj5m1n/kommentary',
+    cond = full,
     setup = function()
       vim.g.kommentary_create_default_mappings = false
     end,
@@ -516,6 +544,7 @@ return require('packer').startup(function()
   }
   use {
     'AckslD/nvim-revJ.lua',
+    cond = full,
     config = function()
       require('revj').setup {
         keymaps = require('bindings').plugins.revJ,
@@ -550,6 +579,7 @@ return require('packer').startup(function()
   use 'wellle/targets.vim'
   use {
     'tommcdo/vim-ninja-feet',
+    cond = full,
     setup = function()
       vim.g.ninja_feet_no_mappings = 1
     end,
@@ -591,6 +621,7 @@ return require('packer').startup(function()
   -- }
   use {
     'ahmedkhalf/project.nvim',
+    cond = full,
     config = function()
       require('project_nvim').setup {}
     end,

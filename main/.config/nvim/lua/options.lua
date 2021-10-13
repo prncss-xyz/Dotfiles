@@ -1,4 +1,8 @@
--- vim.cmd 'set shada="NONE"'
+local full = require'pager'.is_full()
+
+if not full then
+  vim.cmd 'set shada="NONE"'
+end
 local deep_merge = require('utils').deep_merge
 local indent = 2
 deep_merge(vim, {
@@ -12,7 +16,7 @@ deep_merge(vim, {
     compatible = false,
     autoindent = true,
     autoread = true,
-    autowriteall = true,
+    autowriteall = full,
     backup = false,
     clipboard = 'unnamedplus',
     cmdheight = 1,
@@ -53,7 +57,7 @@ deep_merge(vim, {
     title = true,
   },
   g = {
-    autosave = 1,
+    autosave = full and 1 or 0,
     -- plasticboy/vim-markdown
     -- vim_markdown_folding_disabled = 0,
     vim_markdown_folding_level = 6,
@@ -91,12 +95,13 @@ deep_merge(vim, {
   wo = {
     number = false,
     relativenumber = false,
-    signcolumn = 'yes',
+    signcolumn = full and 'yes' or 'no',
   },
   -- like set
   opt = {
     -- shada = 'NONE',
     conceallevel = 2,
+    laststatus = full and 2 or 0,
     secure = true, -- disable autocmd etc for project local vimrc files
     exrc = false, -- allow project local vimrc files example .nvimrc see :h exrc
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
@@ -106,16 +111,13 @@ deep_merge(vim, {
     sessionoptions = 'curdir,folds,tabpages,winsize',
     foldlevel = 20,
     -- foldlevelstart=20,
-    undofile = false,
+    undofile =full,
   },
   -- like setglobal
   opt_global = {},
   -- like setlocal
   opt_local = {},
-  env = {
-    GIT_EDITOR = 'nvr',
-    EDITOR = 'nvr',
-  },
+  env = {},
 })
 
 deep_merge(vim, require('bindings').plugins.vim)

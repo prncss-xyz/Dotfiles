@@ -262,12 +262,12 @@ function M.setup()
 
   -- matze move
   vim.cmd [[
-call submode#enter_with('move', 'n', 'r', 'mj', '<Plug>MoveLineDown')
-call submode#enter_with('move', 'n', 'r', 'mk', '<Plug>MoveLineUp')
-call submode#map('move', 'n', 'r', 'j', '<Plug>MoveLineDown')
-call submode#map('move', 'n', 'r', 'k', '<Plug>MoveLineUp')
-call submode#leave_with('move', 'n', '', '<Esc>')
-]]
+    call submode#enter_with('move', 'n', 'r', 'mj', '<Plug>MoveLineDown')
+    call submode#enter_with('move', 'n', 'r', 'mk', '<Plug>MoveLineUp')
+    call submode#map('move', 'n', 'r', 'j', '<Plug>MoveLineDown')
+    call submode#map('move', 'n', 'r', 'k', '<Plug>MoveLineUp')
+    call submode#leave_with('move', 'n', '', '<Esc>')
+  ]]
   -- map('v', a.edit .. 'j', '<Plug>MoveBlockDown', { noremap = false })
   -- map('v', a.edit .. 'k', '<Plug>MoveBlockUp', { noremap = false })
   map('v', a.edit .. dd.left, '<Plug>MoveBlockLeft', { noremap = false })
@@ -371,7 +371,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   -- FIXME
   --
 
-
   map('i', '<c-a>', '<up>')
   map('i', '<c-x>', '<down>')
 
@@ -442,7 +441,6 @@ call submode#leave_with('move', 'n', '', '<Esc>')
   map('c', '<a-v>', '<c-f>')
   map('c', '<c-v>', '<c-r>+')
 
-
   -- searching
   require 'auto_unhl'
   map('', '*', '<nop>')
@@ -498,9 +496,9 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
         'nohlsearch',
       },
-      ['<c-a>'] = {'<esc>``', 'jump before last jump'},
+      ['<c-a>'] = { '<esc>``', 'jump before last jump' },
       -- ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
-      ['<c-j>'] = {'<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump toggle'},
+      ['<c-j>'] = { '<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump toggle' },
       ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       -- ['<c-w>'] = {
@@ -639,7 +637,10 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       u = { '<cmd>UndotreeToggle<cr>', 'undo tree' },
       w = { '<cmd>Telescope projects<cr>', 'sessions' },
       W = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
-      x = { "<cmd>lua require'bindutils'.term_launch({'xplr', vim.fn.expand'%'})<cr>", 'xplr' },
+      x = {
+        "<cmd>lua require'bindutils'.term_launch({'xplr', vim.fn.expand'%'})<cr>",
+        'xplr',
+      },
       X = { "<cmd>lua require'bindutils'.term_launch({'xplr'})<cr>", 'xplr' },
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
       [';'] = {
@@ -652,6 +653,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
         "<cmd>lua require('telescope').extensions.bookmarks.bookmarks()<cr>",
         'bookmarks',
       },
+      h = { '<cmd>lua require"bindutils".docu_current()<cr>', 'filetype docu' },
       man = { '<cmd>lua require"browser".man()<cr>', 'man page' },
       o = {
         '<cmd>call jobstart(["opener", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
@@ -673,7 +675,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       d = { ']c', 'next change' },
       D = { '[c', 'previous change' },
       -- j = {'mXmY', 'alt-jump reset'},
-      j = {'<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset'},
+      j = { '<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset' },
       o = { '`.', 'last change' },
       -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
       -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
@@ -717,7 +719,7 @@ call submode#leave_with('move', 'n', '', '<Esc>')
       },
       -- TODO filter current project
       [a.move] = {
-        '<cmd>lua require"bindutils".open_file()<cr>',
+        '<cmd>lua require("plugins.telescope").project_files()<cr>',
         'project file',
       },
     },

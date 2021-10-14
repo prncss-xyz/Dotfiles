@@ -40,8 +40,11 @@ function M.setup()
   telescope.load_extension 'heading'
   -- telescope.load_extension 'node_modules'
   -- telescope.builtin 'spell_suggest'
-  require('telescope').load_extension 'project'
-  require('telescope').load_extension 'projects'
+  if require'pager'.full then
+    require('telescope').load_extension 'project'
+    require('telescope').load_extension 'projects'
+    require('telescope').load_extension 'node_modules'
+  end
   -- gitbranches; see https://github.com/awesome-streamers/awesome-streamerrc/blob/master/ThePrimeagen/lua/theprimeagen/telescope.lua
 end
 

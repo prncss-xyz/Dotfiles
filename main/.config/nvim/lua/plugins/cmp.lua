@@ -5,17 +5,13 @@ local lspkind = require 'lspkind'
 local sources = {
   { name = 'luasnip' },
   { name = 'nvim_lsp' },
-  { name = 'spell' }, -- not good with fuzzy matching
+  { name = 'spell' },
   { name = 'path' },
   { name = 'buffer' },
   { name = 'neorg' },
 }
 local lua_sources = require('utils').deep_merge({}, sources)
 table.insert(lua_sources, 4, { name = 'nvim_lua' })
-
-local t = function(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
 
 cmp.setup {
   snippet = {

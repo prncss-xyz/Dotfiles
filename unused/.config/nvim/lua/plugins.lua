@@ -1,15 +1,8 @@
+local full = require('pager').is_full
+-- local full = function() return true end
+
 local install_path = vim.fn.stdpath 'data'
   .. '/site/pack/packer/start/packer.nvim'
-
-local function full()
-  return require('pager').full
-end
-
--- TODO: lazy loading; cf https://github.com/akinsho/dotfiles/blob/main/.config/nvim/lua/as/plugins/init.lua
-
-local function local_repo(name)
-  return os.getenv 'PROJECTS' .. '/' .. name
-end
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.fn.system {
@@ -57,7 +50,7 @@ return require('packer').startup {
         }
       end,
     }
-    use { 'kyazdani42/nvim-web-devicons' }
+    use { 'kyazdani42/nvim-web-devicons', cond = full }
 
     -- tree sitter
     use {
@@ -68,18 +61,34 @@ return require('packer').startup {
       end,
       requires = {
         'p00f/nvim-ts-rainbow',
-        { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } },
-        { 'JoosepAlviste/nvim-ts-context-commentstring' },
-        { 'nvim-treesitter/nvim-treesitter-textobjects' },
+        {
+          'nvim-treesitter/playground',
+          cmd = { 'TSPlaygroundToggle' },
+        },
+        { 'JoosepAlviste/nvim-ts-context-commentstring', cond = full },
+        { 'nvim-treesitter/nvim-treesitter-textobjects', cond = full },
         { 'RRethy/nvim-treesitter-textsubjects' },
         -- "beloglazov/vim-textobj-punctuation", -- au/iu for punctuation
-        { 'mfussenegger/nvim-ts-hint-textobject' },
+        { 'mfussenegger/nvim-ts-hint-textobject', cond = full },
         -- Use 'tressitter 'to autoclose and autorename html tag
-        { 'windwp/nvim-ts-autotag' },
+        { 'windwp/nvim-ts-autotag', cond = full },
         -- Language support
-        { 'lewis6991/spellsitter.nvim' },
+        {
+          'lewis6991/spellsitter.nvim',
+          cond = full,
+          config = function()
+            require('spellsitter').setup()
+          end,
+        },
         -- shows the context of the currently visible buffer contents
-        { 'romgrk/nvim-treesitter-context' },
+        --
+        {
+          'romgrk/nvim-treesitter-context',
+          cond = full,
+          config = function()
+            require('treesitter-context.config').setup {}
+          end,
+        },
         -- 'haringsrob/nvim_context_vt',
       },
     }
@@ -105,25 +114,34 @@ return require('packer').startup {
     -- LSP
     use {
       'neovim/nvim-lspconfig',
+      cond = full,
       config = function()
-        if require('pager').full then
+        if require'pager'.full then
           require('plugins.lsp').setup()
         end
       end,
       requires = {
-        { 'jose-elias-alvarez/null-ls.nvim' },
-        { 'jose-elias-alvarez/nvim-lsp-ts-utils' },
-        { 'folke/lua-dev.nvim' },
+        {
+          'jose-elias-alvarez/null-ls.nvim',
+        },
+        {
+          'jose-elias-alvarez/nvim-lsp-ts-utils',
+          cond = full,
+        },
+        {
+          'folke/lua-dev.nvim',
+          cond = full,
+        },
         {
           'kosayoda/nvim-lightbulb',
+          cond = full,
           config = function()
-            if require('pager').full then
-              vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
-            end
+            vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
           end,
         },
         {
           'simrat39/symbols-outline.nvim',
+          cond = full,
           setup = function()
             vim.g.symbols_outline = {
               width = 30,
@@ -144,28 +162,27 @@ return require('packer').startup {
       },
     }
 
-    use { 'rafamadriz/friendly-snippets' }
     use {
       'hrsh7th/nvim-cmp',
-      module = 'cmp',
-      event = 'InsertEnter',
       requires = {
-        { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' },
-        { 'f3fora/cmp-spell', after = 'nvim-cmp' },
-        { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' },
-        { 'hrsh7th/cmp-nvim-lsp', after = 'nvim-cmp' },
-        { 'hrsh7th/cmp-path', after = 'nvim-cmp' },
-        { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' },
-        { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' },
-        { 'L3MON4D3/LuaSnip', module = 'luasnip' },
+        { 'hrsh7th/cmp-buffer' },
+        { 'f3fora/cmp-spell' },
+        { 'hrsh7th/cmp-buffer' },
+        { 'hrsh7th/cmp-nvim-lsp' },
+        { 'hrsh7th/cmp-path' },
+        { 'hrsh7th/cmp-nvim-lua' },
+        { 'saadparwaiz1/cmp_luasnip' },
+        { 'rafamadriz/friendly-snippets' },
+        { 'L3MON4D3/LuaSnip' },
       },
       config = function()
         require 'plugins.cmp'
       end,
     }
-    -- insert or delete brackets, parentheses, quotes in pair
     use {
+      -- insert or delete brackets, parens, quotes in pair
       'windwp/nvim-autopairs',
+      cond = full,
       after = 'nvim-cmp',
       config = function()
         require 'plugins.autopairs'
@@ -194,18 +211,14 @@ return require('packer').startup {
       'glepnir/galaxyline.nvim',
       cond = full,
       config = function()
-        -- if require('pager').full then
         require 'plugins.galaxyline'
-        -- end
       end,
       requires = {
         {
           'SmiteshP/nvim-gps',
           cond = full,
           config = function()
-            -- if require('pager').full then
             require('nvim-gps').setup {}
-            -- end
           end,
         },
       },
@@ -223,20 +236,10 @@ return require('packer').startup {
       end,
     }
     use {
-      'folke/todo-comments.nvim',
-      cond = full,
-      requires = 'nvim-lua/plenary.nvim',
-      config = function()
-        require('todo-comments').setup {}
-      end,
-    }
-    use {
       'lewis6991/gitsigns.nvim',
       cond = full,
       config = function()
-        if require('pager').full then
-          require('plugins.gitsigns').setup()
-        end
+        require('plugins.gitsigns').setup()
       end,
     }
     use 'kevinhwang91/nvim-hlslens'
@@ -269,12 +272,10 @@ return require('packer').startup {
         { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
         'nvim-telescope/telescope-symbols.nvim',
         'crispgm/telescope-heading.nvim',
+        '~/Media/Projects/telescope-bookmarks.nvim',
         'nvim-telescope/telescope-project.nvim',
         -- not compatible with pnpm
-        {
-          local_repo 'telescope-node-modules.nvim',
-          cond = full,
-        },
+        -- 'nvim-telescope/telescope-node-modules.nvim',
         -- 'nvim-telescope/telescope-dap.nvim',
       },
     }
@@ -295,17 +296,14 @@ return require('packer').startup {
     --   end,
     -- }
     use {
-      local_repo 'nononotes-nvim',
+      '~/Media/Projects/nononotes-nvim',
       cond = full,
       config = function()
-        -- if require('packer').full then
         require('plugins.nononotes').setup()
-        -- end
       end,
     }
     use {
       'sindrets/diffview.nvim',
-      cond = full,
       config = function()
         require('diffview').setup()
       end,
@@ -320,7 +318,6 @@ return require('packer').startup {
     use {
       'TimUntersberger/neogit',
       cmd = 'Neogit',
-      cond = full,
       config = function()
         require('neogit').setup {
           integrations = {
@@ -332,7 +329,6 @@ return require('packer').startup {
 
     use {
       'folke/zen-mode.nvim',
-      cond = full,
       config = function()
         require('plugins.zen-mode').setup()
       end,
@@ -340,7 +336,6 @@ return require('packer').startup {
     }
     use {
       'folke/twilight.nvim',
-      cond = full,
       config = function()
         require('twilight').setup {}
       end,
@@ -362,16 +357,16 @@ return require('packer').startup {
       end,
       -- session manager destroys nvim-tree buffer which prevents nvim-tree from working
       -- nvim-tree so needs to be loaded after the session is restored
-      cmd = {
-        'NvimTreeClipboard',
-        'NvimTreeClose',
-        'NvimTreeFindFile',
-        'NvimTreeFocus',
-        'NvimTreeOpen',
-        'NvimTreeRefresh',
-        'NvimTreeResize',
-        'NvimTreeToggle',
-      },
+      -- cmd = {
+      --   'NvimTreeClipboard',
+      --   'NvimTreeClose',
+      --   'NvimTreeFindFile',
+      --   'NvimTreeFocus',
+      --   'NvimTreeOpen',
+      --   'NvimTreeRefresh',
+      --   'NvimTreeResize',
+      --   'NvimTreeToggle',
+      -- },
     }
     use {
       'mbbill/undotree', -- FIXME
@@ -390,6 +385,7 @@ return require('packer').startup {
 
     use {
       'folke/which-key.nvim',
+      -- cond = full,
       config = function()
         require('which-key').setup {
           plugins = {
@@ -404,7 +400,7 @@ return require('packer').startup {
 
     -- navigation
     use {
-      local_repo 'bufjump.nvim',
+      'kwkarlwang/bufjump.nvim',
       cond = full,
       config = function()
         require('bufjump').setup {
@@ -426,6 +422,14 @@ return require('packer').startup {
     }
     use {
       'andymass/vim-matchup',
+      setup = function()
+        require('utils').deep_merge(vim.g, {
+          -- matchup_matchparen_offscreen = { method = "popup" }
+          -- matchup_matchparen_hi_surround_always = 1,
+          -- matchup_matchparen_deferred = 1,
+          matchup_matchparen_offscreen = { method = 'status' },
+        })
+      end,
     }
     -- use 'hrsh7th/vim-eft'
     use {
@@ -448,6 +452,7 @@ return require('packer').startup {
     -- clipboard
     use {
       'kevinhwang91/nvim-hclipboard',
+      cond = full,
       config = function()
         require 'plugins.hclipboard'
       end,
@@ -475,6 +480,7 @@ return require('packer').startup {
     -- edition
     use {
       'JoseConseco/vim-case-change',
+      cond = full,
       setup = function()
         vim.g.casechange_nomap = 1
       end,
@@ -488,6 +494,7 @@ return require('packer').startup {
     }
     use {
       'monaqa/dial.nvim',
+      cond = full,
       config = function()
         require 'plugins.dial'
       end,
@@ -518,7 +525,7 @@ return require('packer').startup {
       cond = full,
       setup = function()
         require('utils').deep_merge(vim.g, {
-          Mac_NamedMacrosDirectory = local_repo 'macrobatics',
+          Mac_NamedMacrosDirectory = '~/Media/Projects/macrobatics',
         })
       end,
       requires = 'tpope/vim-repeat',
@@ -549,15 +556,13 @@ return require('packer').startup {
     }
     use {
       'kana/vim-textobj-user',
-      cond = full,
       setup = function()
         require('utils').deep_merge(vim, require('bindings').plugins)
       end,
       requires = {
-        { 'Julian/vim-textobj-variable-segment', cond = full },
+        'Julian/vim-textobj-variable-segment',
         {
           'kana/vim-textobj-datetime',
-          cond = full,
           setup = function()
             vim.g.textobj_datetime_no_default_key_mappings = 1
           end,
@@ -565,17 +570,16 @@ return require('packer').startup {
         -- 'preservim/vim-textobj-sentence',
         {
           'kana/vim-textobj-line',
-          cond = full,
           setup = function()
             vim.g.textobj_line_no_default_key_mappings = 1
           end,
         },
-        { 'kana/vim-textobj-entire', cond = full },
-        { 'michaeljsmith/vim-indent-object', cond = full },
-        { 'sgur/vim-textobj-parameter', cond = full },
+        'kana/vim-textobj-entire',
+        'michaeljsmith/vim-indent-object',
+        'sgur/vim-textobj-parameter',
       },
     }
-    use { 'wellle/targets.vim', cond = full }
+    use 'wellle/targets.vim'
     use {
       'tommcdo/vim-ninja-feet',
       cond = full,
@@ -589,7 +593,7 @@ return require('packer').startup {
     --   'windwp/nvim-projectconfig',
     --   config = function()
     --     require('nvim-projectconfig').load_project_config {
-    --       project_dir = local_repo'projects-config/',
+    --       project_dir = '~/Media/Projects/projects-config/',
     --     }
     --     require('utils').augroup('NvimProjectConfig', {
     --       {
@@ -602,7 +606,6 @@ return require('packer').startup {
     -- }
     use {
       'ethanholz/nvim-lastplace',
-      cond = full,
       config = function()
         require('nvim-lastplace').setup {
           lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
@@ -673,18 +676,22 @@ return require('packer').startup {
         'Wall',
       },
     }
-    use {
-      'https://github.com/henriquehbr/nvim-startup.lua',
-      cond = function()
-        return false
-      end,
-      config = function()
-        require('nvim-startup').setup {
-          startup_file = '/tmp/nvim-startuptime',
-          messages = print,
-        }
-      end,
-    }
+    -- use {
+    --   'vigoux/LanguageTool.nvim',
+    --   cmd = { 'LanguageToolSetup', 'LanguageToolCheck' },
+    --   setup = function()
+    --     require('utils').deep_merge(vim.g, {
+    --       -- see https://languagetool.org/http-api/swagger-ui/#!/default/post_check
+    --       languagetool_server_command = 'echo "Server Started"',
+    --       languagetool = {
+    --         ['.'] = { language = 'auto' },
+    --       },
+    --     })
+    --   end,
+    --   config = function()
+    --     vim.cmd 'autocmd User LanguageToolCheckDone LanguageToolSummary'
+    --   end,
+    -- }
   end,
   config = {
     profile = {

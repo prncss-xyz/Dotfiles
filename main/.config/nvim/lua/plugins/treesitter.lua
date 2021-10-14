@@ -2,11 +2,11 @@ local deep_merge = require('utils').deep_merge
 local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
 
 parser_configs.norg = {
-    install_info = {
-        url = "https://github.com/nvim-neorg/tree-sitter-norg",
-        files = { "src/parser.c", "src/scanner.cc" },
-        branch = "main"
-    },
+  install_info = {
+    url = 'https://github.com/nvim-neorg/tree-sitter-norg',
+    files = { 'src/parser.c', 'src/scanner.cc' },
+    branch = 'main',
+  },
 }
 
 -- parser_configs.markdown = {
@@ -24,6 +24,8 @@ local javascript = {
   jsx_attribute = '// %s',
   comment = '// %s',
 }
+
+local full = require('pager').full
 
 require('nvim-treesitter.configs').setup(
   deep_merge(require('bindings').plugins.treesitter, {
@@ -70,37 +72,42 @@ require('nvim-treesitter.configs').setup(
       use_languagetree = true,
     },
     incremental_selection = {
-      enable = true,
+      enable = full,
     },
     indent = {
-      enable = true,
+      enable = full,
     },
     context_commentstring = {
-      enable = true,
+      enable = full,
       config = {
---        javascript = javascript,
-  --      javascriptreact = javascript,
-    --    typescript = javascript,
-      --  typescriptreact = javascript,
+        --        javascript = javascript,
+        --      javascriptreact = javascript,
+        --    typescript = javascript,
+        --  typescriptreact = javascript,
       },
     },
     matchup = {
       enable = true,
     },
     textsubjects = {
-      enable = true,
+      enable = full,
     },
     textobjects = {
       select = {
-        enable = true,
+        enable = full,
       },
       swap = {
-        enable = true,
+        enable = full,
       },
       move = {
-        enable = true,
-        set_jumps = true,
+        enable = full,
+        set_jumps = full,
       },
     },
   })
 )
+
+if full then
+  require('treesitter-context.config').setup {}
+  require('spellsitter').setup()
+end

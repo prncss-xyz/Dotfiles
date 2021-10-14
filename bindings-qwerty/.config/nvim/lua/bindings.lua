@@ -621,7 +621,8 @@ function M.setup()
       --   "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
       --   'pick note',
       -- },
-      n = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
+      -- n = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
+      n = { "<cmd>Telescope node_modules list<cr>", 'new note' },
       p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
       P = {
         "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
@@ -868,6 +869,10 @@ function M.setup()
     wf = { 'https://fr.wikipedia.org/wiki/', 'wikipidia fr' },
     y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
   })
+
+  if not require'pager'.full then
+    map('n', 'Q', '<cmd>q<cr>')
+  end
 end
 
 local SignatureMap = invert {

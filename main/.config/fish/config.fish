@@ -3,11 +3,11 @@ alias ght 'export GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1)'
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
 alias o opener
 # alias e nvr -s
-alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.(ext)s"'
+alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 alias e 'nvim'
 # alias e 'nvim --startuptime /tmp/nvim-startuptime'
 alias s fsearch-ext
-alias b 'bat --style=changes,header,rule,snip --color=always'
+alias c 'bat --style=changes,header,rule,snip --color=always'
 alias l 'exa --icons --git'
 alias t 'exa --icons --git --tree'
 # alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvim /tmp/sway-tree.json'

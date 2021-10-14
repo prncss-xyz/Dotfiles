@@ -1,4 +1,4 @@
-local full = require'pager'.is_full()
+local full = require'pager'.full
 
 if not full then
   vim.cmd 'set shada="NONE"'
@@ -91,6 +91,7 @@ deep_merge(vim, {
     -- neovide_cursor_vfx_particle_speed = 10.0,
     -- neovide_cursor_vfx_particle_phase = 1.5,
     -- neovide_cursor_vfx_particle_curl = 1.0,
+    matchup_matchparen_offscreen = { method = 'status' },
   },
   wo = {
     number = false,

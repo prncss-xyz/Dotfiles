@@ -6,9 +6,9 @@ require('nvim-autopairs').setup {}
 --   auto_select = true,
 -- }
 
+local npairs = require 'nvim-autopairs'
 local Rule = require 'nvim-autopairs.rule'
 local cond = require 'nvim-autopairs.conds'
-local npairs = require 'nvim-autopairs'
 
 npairs.add_rules {
   Rule('*', '*', 'markdown'),

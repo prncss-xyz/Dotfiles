@@ -316,8 +316,7 @@ deep_merge(xplr, {
                   {
                     -- TODO: position to active mode
                     BashExec = [[
-                      PAGER=${PAGER-less}
-                      "$PAGER" "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"
+                      nvim_paging markdown "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"
                     ]],
                   },
                 },

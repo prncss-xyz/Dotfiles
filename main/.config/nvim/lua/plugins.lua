@@ -413,6 +413,7 @@ return require('packer').startup {
           on_success = function()
             vim.cmd [[execute "normal! g`\"zz"]]
           end,
+          cond = require('bufjump').under_cwd,
         }
       end,
     }
@@ -513,12 +514,13 @@ return require('packer').startup {
         })
       end,
     }
+    local mac_repo = local_repo 'macrobatics'
     use {
       'svermeulen/vim-macrobatics',
       cond = full,
       setup = function()
         require('utils').deep_merge(vim.g, {
-          Mac_NamedMacrosDirectory = local_repo 'macrobatics',
+          Mac_NamedMacrosDirectory = mac_rep,
         })
       end,
       requires = 'tpope/vim-repeat',

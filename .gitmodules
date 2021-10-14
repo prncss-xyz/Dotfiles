@@ -7,9 +7,6 @@
 [submodule "main/.config/xplr/plugins/dua-cli.xplr"]
 	path = main/.config/xplr/plugins/dua-cli.xplr
 	url = https://github.com/sayanarijit/dua-cli.xplr
-[submodule "main/.config/xplr/plugins/fzf.xplr"]
-	path = main/.config/xplr/plugins/fzf.xplr
-	url = https://github.com/sayanarijit/fzf.xplr
 [submodule "main/.config/xplr/plugins/preview-tabbed.xplr"]
 	path = main/.config/xplr/plugins/preview-tabbed.xplr
 	url = https://github.com/sayanarijit/preview-tabbed.xplr

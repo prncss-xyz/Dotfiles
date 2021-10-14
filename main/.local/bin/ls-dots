@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-
-cd ~/Dotfiles
-git ls-files

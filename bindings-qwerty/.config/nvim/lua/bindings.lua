@@ -428,6 +428,8 @@ function M.setup()
   -- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
 
   map('nvi', '<c-c>', 'esc')
+  map('nv', '<c-i>', '<cmd>lua require"bufjump".local_backward()<cr>')
+  map('nv', '<c-o>', '<cmd>lua require"bufjump".local_forward()<cr>')
 
   -- fish-emacs compat
   map('', '<c-b>', '^')
@@ -713,10 +715,6 @@ function M.setup()
       ['é'] = {
         "<cmd>lua require('telescope.builtin').live_grep()<cr>",
         'live grep',
-      },
-      ['.'] = { -- FIXME
-        "<cmd>lua require('telescope.builtin').find_files({find_command={'ls-dots'}, })<cr>",
-        'dofiles',
       },
       -- TODO filter current project
       [a.move] = {

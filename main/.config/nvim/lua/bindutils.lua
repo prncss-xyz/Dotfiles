@@ -36,7 +36,6 @@ function m.s_tab_complete()
     return
   end
   vim.fn.feedkeys(t '<Plug>(TaboutBackMulti)', '')
-  -- emmet#moveNextPrev(1)
 end
 
 function m.spell_next(dir)

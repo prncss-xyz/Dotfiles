@@ -1,6 +1,5 @@
 version = '0.14.4'
 package.path = os.getenv 'HOME' .. '/.config/xplr/plugins/?.xplr/src/init.lua'
-require('fzf').setup()
 require('comex').setup { compress_key = 'c', extract_key = 'x' }
 require('type-to-nav').setup()
 require('preview-tabbed').setup {
@@ -40,28 +39,83 @@ end
 
 local xplr = xplr
 
+xplr.config.general.initial_layout = 'no_help_no_selection'
+
 -- TODO find actual message
-local shell = {
-  unpack(xplr.config.modes.builtin.action.key_bindings.on_key['!'].messages),
-}
-local follow_symlink = {
-  unpack(xplr.config.modes.builtin.go_to.key_bindings.on_key.f.messages),
-}
-local search = {
-  unpack(xplr.config.modes.builtin.default.key_bindings.on_key['/'].messages),
-}
+--
 local copy_here = {
   unpack(xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages),
 }
+xplr.config.modes.builtin.default.key_bindings.on_key.space = nil
+xplr.config.modes.builtin.default.key_bindings.on_key.v = nil
+-- xplr.config.modes.builtin.default.key_bindings.on_key['ctrl-i'] = nil
+-- xplr.config.modes.builtin.default.key_bindings.on_key.tab = nil
 
--- TODO go top, go bottom (Ee)
 -- TODO bash to lua
--- TODO create in editor
 
 deep_merge(xplr, {
   config = {
     modes = {
       custom = {
+        create_in_external_editor = {
+          name = 'create in external editor',
+          help = nil,
+          extra_help = nil,
+          key_bindings = {
+            on_key = {
+              backspace = {
+                help = 'remove last character',
+                messages = { 'RemoveInputBufferLastCharacter' },
+              },
+              ['ctrl-c'] = {
+                help = 'terminate',
+                messages = { 'Terminate' },
+              },
+              ['ctrl-u'] = {
+                help = 'remove line',
+                messages = {
+                  {
+                    SetInputBuffer = '',
+                  },
+                },
+              },
+              ['ctrl-w'] = {
+                help = 'remove last word',
+                messages = { 'RemoveInputBufferLastWord' },
+              },
+              enter = {
+                help = 'create file',
+                messages = {
+                  {
+                    BashExecSilently = [===[
+                    PTH="$XPLR_INPUT_BUFFER"
+                    if [ "${PTH}" ]; then
+                      nvr -- "${PTH:?}" \
+                      && echo "SetInputBuffer: ''" >> "${XPLR_PIPE_MSG_IN:?}" \
+                      && echo LogSuccess: $PTH created >> "${XPLR_PIPE_MSG_IN:?}" \
+                      && echo ExplorePwd >> "${XPLR_PIPE_MSG_IN:?}" \
+                      && echo FocusByFileName: "'"$PTH"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                    else
+                      echo PopMode >> "${XPLR_PIPE_MSG_IN:?}"
+                    fi
+                    ]===],
+                  },
+                },
+              },
+              esc = {
+                help = 'cancel',
+                messages = { 'PopMode' },
+              },
+            },
+            on_alphabet = nil,
+            on_number = nil,
+            on_special_character = nil,
+            default = {
+              help = nil,
+              messages = { 'BufferInputFromKey' },
+            },
+          },
+        },
         last = {
           key_bindings = {
             on_key = {
@@ -127,6 +181,18 @@ deep_merge(xplr, {
             },
           },
         },
+        create = {
+          key_bindings = {
+            on_key = {
+              e = {
+                help = 'create in external editor',
+                messages = {
+                  { SwitchModeCustom = 'create_in_external_editor' },
+                },
+              },
+            },
+          },
+        },
         default = {
           key_bindings = {
             on_key = {
@@ -142,19 +208,31 @@ deep_merge(xplr, {
                   { SwitchModeCustom = 'last' },
                 },
               },
-              c = {
+              v = {
+                help = 'toggle selection',
+                messages = { 'ToggleSelection', 'FocusNext' },
+              },
+              V = {
                 help = 'selection mode',
                 messages = {
                   { SwitchModeBuiltin = 'selection_ops' },
                 },
               },
-              e = {
+              O = {
                 help = 'open editor',
                 messages = {
                   {
                     BashExecSilently = [[ exec $TERMINAL -e nvim & ]],
                   },
                 },
+              },
+              E = {
+                help = 'top',
+                messages = { 'FocusFirst', 'PopMode' },
+              },
+              e = {
+                help = 'bottom',
+                messages = { 'FocusLast', 'PopMode' },
               },
               i = {
                 help = 'view images',
@@ -262,24 +340,57 @@ deep_merge(xplr, {
               },
               u = register 'dua_cli',
               z = register 'zoxide',
+              ['~'] = nop,
               ['/'] = nop,
               ['é'] = {
                 help = 'search',
-                messages = search,
+                messages = {
+                  'PopMode',
+                  { SwitchModeBuiltin = 'search' },
+                  { SetInputBuffer = '' },
+                  'ExplorePwdAsync',
+                },
               },
               ['?'] = nop,
               ['!'] = {
                 help = 'shell',
-                messages = shell,
+                messages = {
+                  {
+                    Call = {
+                      command = 'fish',
+                      args = { '-i' },
+                    },
+                  },
+                  'ExplorePwdAsync',
+                  'PopMode',
+                },
               },
               [':'] = nop,
-              [';'] = {
-                help = 'default mode',
+              space = {
+                help = 'action mode',
                 messages = {
                   { SwitchModeBuiltin = 'action' },
                 },
               },
-              ['enter'] = nop,
+              enter = nop,
+              ['ctrl-a'] = nop,
+              ['ctrl-f'] = {
+                help = 'fzf focus/cd',
+                messages = {
+                  {
+                    BashExec = [[
+                      SELECTED=$(cat "${XPLR_PIPE_DIRECTORY_NODES_OUT:?}" | awk -F / '{print $NF}' | fzf --no-sort)
+                      if [ "$SELECTED" ]; then
+                      echo FocusPath: '"'$PWD/$SELECTED'"' >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                      if [ -d "$SELECTED" ]; then
+                      echo Enter >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                  'PopMode',
+                },
+              },
               ['ctrl-h'] = {
                 help = 'history',
                 messages = {
@@ -294,6 +405,10 @@ deep_merge(xplr, {
                   },
                 },
               },
+              -- ['ctrl-i'] = {
+              --   help = "next visited path",
+              --   messages = { "NextVisitedPath" },
+              -- },
               ['ctrl-j'] = {
                 help = 'pane-swap',
                 messages = {
@@ -317,19 +432,6 @@ deep_merge(xplr, {
                     -- TODO: position to active mode
                     BashExec = [[
                       nvim_paging markdown "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"
-                    ]],
-                  },
-                },
-              },
-              ['ctrl-v'] = {
-                help = 'fzf toggle selection',
-                messages = {
-                  {
-                    BashExec = [[
-                      res="$(ls | sort | fzf)"
-                      if [ -n "$res" ]; then
-                        echo ToggleSelectionByPath: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
                     ]],
                   },
                 },
@@ -381,6 +483,17 @@ deep_merge(xplr, {
                   },
                 },
               },
+              g = nop,
+              h = {
+                help = 'home',
+                messages = {
+                  {
+                    BashExecSilently = [===[
+                    echo ChangeDirectory: "'"${HOME:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                    ]===],
+                  },
+                },
+              },
               j = {
                 help = 'pane-set',
                 messages = {
@@ -424,7 +537,7 @@ deep_merge(xplr, {
               },
               s = {
                 help = 'follow symlink',
-                messages = follow_symlink,
+                messages = { 'FollowSymlink', 'PopMode' },
               },
               t = {
                 help = 'tag',
@@ -527,9 +640,10 @@ deep_merge(xplr, {
                           echo "SelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
                         fi
                       done
-                    ]]
-                  }
-              }},
+                    ]],
+                  },
+                },
+              },
               o = {
                 help = 'open from selection',
                 messages = {
@@ -567,6 +681,33 @@ deep_merge(xplr, {
             },
           },
         },
+        switch_layout = {
+          key_bindings = {
+            on_key = {
+              h = {
+                help = 'help',
+                messages = {
+                  { SwitchLayoutBuiltin = 'no_selection' },
+                  'PopMode',
+                },
+              },
+              v = {
+                help = 'selection',
+                messages = {
+                  { SwitchLayoutBuiltin = 'no_help' },
+                  'PopMode',
+                },
+              },
+              w = {
+                help = 'default',
+                messages = {
+                  { SwitchLayoutBuiltin = 'no_help_no_selection' },
+                  'PopMode',
+                },
+              },
+            },
+          },
+        },
       },
     },
   },
@@ -574,3 +715,37 @@ deep_merge(xplr, {
 
 require('zoxide').setup { key = reg.zoxide }
 require('dua-cli').setup { key = reg.dua_cli }
+
+-------- Col widths
+xplr.config.general.table.col_widths = {
+  { Percentage = 100 },
+}
+
+-------- Header
+xplr.config.general.table.header.cols = {
+  {
+    format = '',
+    style = { add_modifiers = nil, bg = nil, fg = nil, sub_modifiers = nil },
+  },
+}
+xplr.config.general.table.header.height = 0
+xplr.config.general.table.header.style.add_modifiers = { 'Bold' }
+xplr.config.general.table.header.style.sub_modifiers = nil
+xplr.config.general.table.header.style.bg = nil
+xplr.config.general.table.header.style.fg = nil
+
+-------- Row
+xplr.config.general.table.row.cols = {
+  {
+    format = 'builtin.fmt_general_table_row_cols_1',
+    style = { add_modifiers = nil, bg = nil, fg = nil, sub_modifiers = nil },
+  },
+}
+xplr.config.general.table.row.height = 0
+xplr.config.general.table.row.style.add_modifiers = nil
+xplr.config.general.table.row.style.bg = nil
+xplr.config.general.table.row.style.fg = nil
+xplr.config.general.table.row.style.sub_modifiers = nil
+
+-------- Tree
+xplr.config.general.table.tree = nil

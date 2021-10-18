@@ -41,18 +41,42 @@ local xplr = xplr
 
 xplr.config.general.initial_layout = 'no_help_no_selection'
 
--- TODO find actual message
---
 local copy_here = {
   unpack(xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages),
 }
 xplr.config.modes.builtin.default.key_bindings.on_key.space = nil
 xplr.config.modes.builtin.default.key_bindings.on_key.v = nil
--- xplr.config.modes.builtin.default.key_bindings.on_key['ctrl-i'] = nil
--- xplr.config.modes.builtin.default.key_bindings.on_key.tab = nil
 
--- TODO bash to lua
+-- TODO: bash to lua
 
+xplr.config.modes.builtin.default.key_bindings.on_key["j"] =
+  xplr.config.modes.builtin.default.key_bindings.on_key.up
+
+xplr.config.modes.builtin.default.key_bindings.on_key["k"] =
+  xplr.config.modes.builtin.default.key_bindings.on_key.down
+
+xplr.config.modes.builtin.default.key_bindings.on_key["l"] =
+  xplr.config.modes.builtin.default.key_bindings.on_key.left
+
+xplr.config.modes.builtin.default.key_bindings.on_key[";"] =
+  xplr.config.modes.builtin.default.key_bindings.on_key.right
+local common = {
+  ['ctrl-c'] = {
+    help = 'cancel',
+    messages = { 'PopMode' },
+  },
+  ['ctrl-q'] = {
+    help = 'terminate',
+    messages = { 'Terminate' },
+  },
+  esc = nop,
+}
+
+for _, mode in pairs(xplr.config.modes.builtin) do
+  deep_merge(mode.key_bindings.on_key, common)
+end
+
+-- xplr.config.modes.builtin.default.key_bindings.on_key['ctrl-c'] = nil
 deep_merge(xplr, {
   config = {
     modes = {
@@ -66,10 +90,6 @@ deep_merge(xplr, {
               backspace = {
                 help = 'remove last character',
                 messages = { 'RemoveInputBufferLastCharacter' },
-              },
-              ['ctrl-c'] = {
-                help = 'terminate',
-                messages = { 'Terminate' },
               },
               ['ctrl-u'] = {
                 help = 'remove line',
@@ -101,10 +121,6 @@ deep_merge(xplr, {
                     ]===],
                   },
                 },
-              },
-              esc = {
-                help = 'cancel',
-                messages = { 'PopMode' },
               },
             },
             on_alphabet = nil,
@@ -234,6 +250,7 @@ deep_merge(xplr, {
                 help = 'bottom',
                 messages = { 'FocusLast', 'PopMode' },
               },
+              h = nop,
               i = {
                 help = 'view images',
                 messages = {
@@ -253,7 +270,7 @@ deep_merge(xplr, {
                   },
                 },
               },
-              l = {
+             [';'] = { -- right
                 help = 'open',
                 messages = {
                   {
@@ -267,7 +284,7 @@ deep_merge(xplr, {
                   },
                 },
               },
-              L = {
+              [':'] = { -- shift right
                 help = 'fzf open dir',
                 messages = {
                   {
@@ -365,7 +382,6 @@ deep_merge(xplr, {
                   'PopMode',
                 },
               },
-              [':'] = nop,
               space = {
                 help = 'action mode',
                 messages = {
@@ -431,7 +447,8 @@ deep_merge(xplr, {
                   {
                     -- TODO: position to active mode
                     BashExec = [[
-                      nvim_paging markdown "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"
+                      export NVIM_PAGING=markdown
+                      nvim -R "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"
                     ]],
                   },
                 },
@@ -463,19 +480,6 @@ deep_merge(xplr, {
                   {
                     BashExec = [[
                       res="$(ls -A | fzf)"
-                      if [ -n "$res" ]; then
-                        echo FocusPath: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                    ]],
-                  },
-                },
-              },
-              F = {
-                help = 'fzf focus recursive',
-                messages = {
-                  {
-                    BashExec = [[
-                      res="$(fd . . | fzf)"
                       if [ -n "$res" ]; then
                         echo FocusPath: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
                       fi
@@ -712,6 +716,15 @@ deep_merge(xplr, {
     },
   },
 })
+
+for _, mode in pairs(xplr.config.modes.custom) do
+  deep_merge(mode.key_bindings.on_key, common)
+end
+
+xplr.config.modes.custom.type_to_nav.key_bindings.on_key['esc'] = {
+  help = 'quit mode',
+  messages = { { CallLuaSilently = 'custom.type_to_nav_quit' } },
+}
 
 require('zoxide').setup { key = reg.zoxide }
 require('dua-cli').setup { key = reg.dua_cli }

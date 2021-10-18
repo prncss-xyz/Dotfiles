@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
-  nvr "$@"
+  nvr "$@" --nostart -s || "$TERMINAL" -e nvim "$@" &
 else
-  exec "$TERMINAL" -e nvim "$@"
+  "$TERMINAL" -e nvim "$@" &
 fi

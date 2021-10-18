@@ -4,6 +4,16 @@ launch() {
 
 	FPATH="$1"
 
+  if [ -z "$FPATH" ]; then
+    nvr_do
+    exit 0
+  fi
+
+  if [ -d "$FPATH" ]; then
+    $TERMINAL -e xplr
+    exit 0
+  fi
+
 	case "${FPATH}" in
 	http://* | https://*)
 		browser "${FPATH}" &
@@ -33,7 +43,7 @@ launch() {
 		;;
 		## text
 	txt | jsx | tsx)
-		nvr --remote-silent "${FPATH}"
+		nvr_do "${FPATH}"
 		return
 		;;
 		## Ebook
@@ -47,7 +57,7 @@ launch() {
 	MIMETYPE="$(file -bL --mime-type -- "${FPATH}")"
 	case "${MIMETYPE}" in
 	inode/x-empty)
-		nvr --remote-silent "${FPATH}"
+		nvr_do "${FPATH}"
 		return
 		;;
 
@@ -104,9 +114,8 @@ launch() {
 		;;
 
 	## Text
-	## TODO new kitty if no remote
 	text/* | */xml | */json)
-		nvr remote-silent "${FPATH}"
+		nvr_do "${FPATH}"
 		return
 		;;
 	esac

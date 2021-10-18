@@ -1,7 +1,25 @@
 local m = {}
 
+-- TODO: toggle side panel
+
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+function m.ro_quit_else(lhs, mode)
+  if vim.bo.readonly then
+    vim.cmd ':q'
+  else
+    vim.feedkeys(lhs, mode)
+  end
+end
+
+function m.repeatable(rhs)
+  return string.format(
+    '%s<cmd>silent! call repeat#set(%q, v:count)<cr>',
+    rhs,
+    t(rhs)
+  )
 end
 
 function m.toggle_cmp()

@@ -3,10 +3,10 @@
 # Logo key. Use mod0 for alt.
 set $mod Mod4
 # Home row direction keys, like vim
-set $left h
-set $down j
-set $up k
-set $right l
+set $left l
+set $down k
+set $up j
+set $right semicolon
 
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
@@ -17,8 +17,8 @@ floating_modifier $mod normal
 
 bindsym $mod+b mode audio
 bindsym $mod+shift+b mode lumino
-bindsym $mod+e exec kitty -e nvim +"Telescope projects"
-bindsym $mod+shift+e exec kitty -e nvim +"cd ~/Personal/neuron" +"lua require'nononotes'.prompt('edit', false, 'all')"
+bindsym $mod+e exec kitty -e nvim_sessions
+bindsym $mod+shift+e exec kitty -e nvim_nonono
 bindsym $mod+g mode launch
 bindsym $mod+n exec makoctl dismiss
 bindsym $mod+shift+n exec makoctl dismiss --all
@@ -47,7 +47,6 @@ bindsym $mod+f workspace number 3, mode default
 bindsym $mod+shift+f move container to workspace number 3 
 
 bindsym $mod+return [title="^scratchpad$"] scratchpad show
-bindsym $mod+semicolon mode jump
 bindsym $mod+space focus mode_toggle
 bindsym $mod+shift+space floating toggle
 bindsym $mod+minus scratchpad show
@@ -71,6 +70,7 @@ bindsym $mod+ctrl+r reload
 bindsym $mod+ctrl+e exit
 bindsym $mod+ctrl+l exec "swaylock"
 bindsym ctrl+alt+delete exec "reboot"
+bindsym $mod+ctrl+backspace exec "reboot"
 bindsym $mod+ctrl+p exec "poweroff"
 
 bindsym $mod+$left focus left
@@ -86,23 +86,24 @@ mode launch {
   bindsym c exec "clipman pick -t rofi", mode default
   bindsym d exec "kitty --class=launcher -e fdocu", mode default
   bindsym shift+d exec "kitty --class=launcher -e fdocu \*", mode default
+  bindsym e exec "kitty -e nvim_sessions", mode default
+  bindsym shift+e exec "kitty -e nvim_nonono", mode default
+  bindsym g exec "kitty -e nvim_ghost", mode default
   bindsym h exec "kitty --class=launcher -e fman", mode default
+  bindsym k exec "kitty --class=launcher -e fkill", mode default
+  bindsym m exec "kitty -e nvim_codi_mathjs", mode default
   bindsym p exec "rofi-pass", mode default
   bindsym s exec "rofi -show ssh", mode default
+  bindsym t exec "new_term", mode default
   bindsym y exec "kitty --class=launcher -e fbookmark", mode default
-  bindsym shift+y exec "kitty -e nvim ~/Personal/bookmarks.csv", mode default
+  bindsym shift+y exec "kitty -e nvim Personal/bookmarks.csv", mode default
+  bindsym x exec "new_term xplr", mode default
 
-  bindsym m exec "kitty -e ~/.local/bin/nvim_codi_mathjs", mode default
-  bindsym e exec "kitty -e nvim", mode default
-  bindsym x exec "kitty -e xplr", mode default
-  bindsym t exec "kitty", mode default
-  bindsym n exec "kitty -e ~/.local/bin/nvim_nonono", mode default
-
-  bindsym escape mode default
+  bindsym ctrl+c mode default
   bindsym return mode default
 }
 
-# TODO rename workspace numver 0 to q
+# TODO rename workspace number 0 to q
 mode workspace {
   bindsym q workspace number 0, mode default
   bindsym w workspace number 1, mode default
@@ -140,7 +141,7 @@ mode workspace {
   bindsym o workspace next
   bindsym shift+o move container to workspace next, workspace next
 
-  bindsym escape mode default
+  bindsym ctrl+c mode default
   bindsym return mode default
 }
 
@@ -158,22 +159,7 @@ mode audio {
   bindsym $down exec pamixer -ud 2 && pamixer --get-volume > $WOBSOCK
   bindsym shift+$up exec pamixer -ui 12 && pamixer --get-volume > $WOBSOCK
   bindsym shift+$down exec pamixer -ud 12 && pamixer --get-volume > $WOBSOCK
-  bindsym escape mode default
-  bindsym return mode default
-}
-
-mode jump {
-  bindsym a exec echo go 0 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym s exec echo go 1 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym d exec echo go 2 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym f exec echo go 3 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym j exec echo go 4 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym k exec echo go 5 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym l exec echo go 6 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym semicolon exec echo go 7 current > /tmp/sway-mega-hotkeys; mode default
-  bindsym g exec echo back all > /tmp/sway-mega-hotkeys; mode default
-  bindsym h exec echo last all > /tmp/sway-mega-hotkeys; mode default
-  bindsym escape mode default
+  bindsym ctrl+c mode default
   bindsym return mode default
 }
 
@@ -190,7 +176,7 @@ mode mouse1 {
   bindsym f exec ydotool click left
   bindsym d exec ydotool click right
   bindsym s exec ydotool click middle
-  bindsym escape mode default
+  bindsym ctrl+c mode default
   bindsym return mode default
 }
 mode mouse2 {
@@ -203,7 +189,7 @@ mode mouse2 {
   bindsym f exec ydotool click left
   bindsym d exec ydotool click right
   bindsym s exec ydotool click middle
-  bindsym escape mode default
+  bindsym ctrl+c mode default
   bindsym return mode default
 }
 mode mouse3 {
@@ -216,7 +202,7 @@ mode mouse3 {
   bindsym f exec ydotool click left
   bindsym d exec ydotool click right
   bindsym s exec ydotool click middle
-  bindsym escape mode default
+  bindsym ctrl+c mode default
   bindsym return mode default
 }
 
@@ -225,7 +211,7 @@ mode lumino {
   bindsym $down exec brightnessctl set 2%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym shift+$up exec brightnessctl set 12%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym shift+$down exec brightnessctl set 12%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
-  bindsym escape mode default
+  bindsym ctrl+c mode default
   bindsym return mode default
 }
 
@@ -247,7 +233,7 @@ mode resize {
 
   # return to default mode
   bindsym return mode "default"
-  bindsym escape mode "default"
+  bindsym ctrl+c mode default
 }
 
 # Gaps tweaking
@@ -260,7 +246,7 @@ mode "$mode_gaps" {
   bindsym o      mode "$mode_gaps_outer"
   bindsym i      mode "$mode_gaps_inner"
   bindsym return mode default
-  bindsym escape mode default
+  bindsym ctrl+c mode default
 }
 
 mode "$mode_gaps_inner" {
@@ -273,7 +259,7 @@ mode "$mode_gaps_inner" {
   bindsym shift+0     gaps inner all set 0; mode default
 
   bindsym return mode default
-  bindsym escape mode default
+  bindsym ctrl+c mode default
 }
 
 mode "$mode_gaps_outer" {
@@ -286,5 +272,5 @@ mode "$mode_gaps_outer" {
   bindsym shift+0     gaps outer all set 0; mode default
 
   bindsym return mode default
-  bindsym escape mode default
+  bindsym ctrl+c mode default
 }

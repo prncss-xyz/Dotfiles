@@ -38,7 +38,7 @@ end
 local a = invert {
   m = 'edit',
   g = 'jump',
-  q = 'move',
+  h = 'move',
   M = 'mark',
   Q = 'macro',
   L = 'editor',
@@ -47,10 +47,10 @@ local a = invert {
   K = 'selection',
 }
 local d0 = {
-  h = 'left',
-  l = 'right',
-  j = 'down',
-  k = 'up',
+  [';'] = 'right',
+  l = 'left',
+  k = 'down',
+  j = 'up',
   a = 'diagnostic',
   s = 'symbol',
   z = 'spell',
@@ -124,13 +124,31 @@ local r = invert {
   i = 'inner',
 }
 
+local function setup_edit_mappings()
+  -- local map = require('utils').buf_map
+end
+
 function M.setup()
+  require('utils').augroup('EditMappings', {
+    {
+      events = { 'BufReadPost' },
+      targets = { '*' },
+      command = function()
+        if vim.bo.readonly then
+          require('utils').buf_map('', 'q', '<cmd>q<cr>')
+        else
+          setup_edit_mappings()
+        end
+      end,
+    },
+  })
   -- function M.setup(register)
   local register = require 'which-key-fallback'
   local map = require('utils').map
 
   map('nx', '<leader><leader>', ':')
 
+  map('', 'q', '<nop>')
   map('', a.edit, '<nop>')
   map('', a.jump, '<nop>')
   map('', a.move, '<nop>')
@@ -259,21 +277,18 @@ function M.setup()
     { noremap = false }
   )
   map('n', a.macro .. 'l', 'DisplayMacroHistory')
-
   -- matze move
-  vim.cmd [[
-    call submode#enter_with('move', 'n', 'r', 'mj', '<Plug>MoveLineDown')
-    call submode#enter_with('move', 'n', 'r', 'mk', '<Plug>MoveLineUp')
-    call submode#map('move', 'n', 'r', 'j', '<Plug>MoveLineDown')
-    call submode#map('move', 'n', 'r', 'k', '<Plug>MoveLineUp')
-    call submode#leave_with('move', 'n', '', '<Esc>')
-  ]]
-  -- map('v', a.edit .. 'j', '<Plug>MoveBlockDown', { noremap = false })
-  -- map('v', a.edit .. 'k', '<Plug>MoveBlockUp', { noremap = false })
-  map('v', a.edit .. dd.left, '<Plug>MoveBlockLeft', { noremap = false })
-  map('v', a.edit .. dd.right, '<Plug>MoveBlockRight', { noremap = false })
-  map('n', a.edit .. dd.left, '<Plug>MoveCharLeft', { noremap = false })
-  map('n', a.edit .. dd.right, '<Plug>MoveCharRight', { noremap = false })
+  local rep = require('bindutils').repeatable
+  map('v', a.edit .. dd.left, rep '<Plug>MoveBlockLeft', { noremap = false })
+  map('v', a.edit .. dd.right, rep '<Plug>MoveBlockRight', { noremap = false })
+  map('n', a.edit .. dd.left, rep '<Plug>MoveCharLeft', { noremap = false })
+  map('n', a.edit .. dd.right, rep '<Plug>MoveCharRight', { noremap = false })
+  map('v', a.edit .. dd.up, rep '<Plug>MoveBlockUp', { noremap = false })
+  map('v', a.edit .. dd.down, rep '<Plug>MoveBlockDown', { noremap = false })
+  map('n', a.edit .. dd.up, rep '<Plug>MoveLinueUp', { noremap = false })
+  map('n', a.edit .. dd.down, rep '<Plug>MoveLineDown', { noremap = false })
+
+  -- TODO: map h to join
 
   -- exchange (repeat)
   map('nx', a.edit .. 'x', '<Plug>(Exchange)', { noremap = false })
@@ -343,6 +358,7 @@ function M.setup()
   -- VSSPlit
   -- maybe not K... if visual only
   map('x', 'v', 'V')
+  map('nx', 'V', '<c-v>')
   map('x', 'Kr', '<Plug>(Visual-Split-VSResize)', { noremap = false })
   map('x', 'KS', '<Plug>(Visual-Split-VSSplit)', { noremap = false })
   map('x', 'Kk', '<Plug>(Visual-Split-VSSplitAbove)', { noremap = false })
@@ -427,7 +443,7 @@ function M.setup()
   -- map('c', '<tab>', '<tab><space>')
   -- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
 
-  map('nvi', '<c-c>', 'esc')
+  map('nvi', '<c-c>', '<esc>')
   map('nv', '<c-i>', '<cmd>lua require"bufjump".local_backward()<cr>')
   map('nv', '<c-o>', '<cmd>lua require"bufjump".local_forward()<cr>')
 
@@ -466,6 +482,10 @@ function M.setup()
   map('o', 'ic', 'i%', { noremap = false })
   map('o', 'ac', 'a%', { noremap = false })
 
+  local function alt(key)
+    return string.format('<a-%s>', key)
+  end
+
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     register({
@@ -475,10 +495,10 @@ function M.setup()
       -- ['<a-j>'] = { "<cmd>lua require('Navigator').down()<cr>", 'window down' },
       -- ['<a-k>'] = { "<cmd>lua require('Navigator').up()<cr>", 'window up' },
       -- ['<a-l>'] = { "<cmd>lua require('Navigator').right()<cr>", 'window right' },
-      ['<a-h>'] = { '<cmd>wincmd h<cr>', 'window left' },
-      ['<a-j>'] = { '<cmd>wincmd j<cr>', 'window down' },
-      ['<a-k>'] = { '<cmd>wincmd k<cr>', 'window up' },
-      ['<a-l>'] = { '<cmd>wincmd l<cr>', 'window right' },
+      [alt(dd.left)] = { '<cmd>wincmd h<cr>', 'window left' },
+      [alt(dd.down)] = { '<cmd>wincmd j<cr>', 'window down' },
+      [alt(dd.up)] = { '<cmd>wincmd k<cr>', 'window up' },
+      [alt(dd.right)] = { '<cmd>wincmd l<cr>', 'window right' },
       ['<a-b>'] = { '<cmd>wincmd p<cr>', 'window back' },
       ['<a-a>'] = { '<cmd>e#<cr>', 'previous buffer' },
       -- ['<a-p>'] = { '<cmd>BufferPick<cr>', 'previous pick' },
@@ -544,6 +564,8 @@ function M.setup()
           "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
           'current buffer fuzzy find',
         },
+        [dd.up] = { 'gk', 'visual up' },
+        [dd.down] = { 'gj', 'visual down' },
         -- ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
       },
       -- ['<c-n>'] = {'<cmd>bnext<cr>', 'next buffer'},
@@ -594,6 +616,11 @@ function M.setup()
     })
   end
 
+  map('', dd.right, 'l')
+  map('', dd.left, 'h')
+  map('', dd.up, 'k')
+  map('', dd.down, 'j')
+
   -- n mappings
   register {
     [a.editor] = {
@@ -611,25 +638,28 @@ function M.setup()
         '<cmd>lua require("persistence").load({last=true})<cr>',
         'restore last seesion',
       },
+      c = { '<cmd>TodoTrouble<cr>', 'trouble todo' },
       d = { '<cmd>DiffviewOpen<cr>', 'diffview open' },
       D = { '<cmd>DiffviewClose<cr>', 'diffview close' },
       e = { '<cmd>lua require"bindutils".edit_current()<cr>', 'edit current' },
       f = { '<cmd>NvimTreeFindFile<cr>', 'file tree' },
       F = { '<cmd>NvimTreeClose<cr>', 'file tree' },
       g = { '<cmd>Neogit<cr>', 'neogit' },
+      G = { '<cmd>Gitsigns setqflist<cr>', 'trouble hunk' },
       h = { '<cmd>DiffviewFileHistory .<cr>', 'diffview open' },
       H = { '<cmd>DiffviewClose<cr>', 'diffview close' },
       -- n = {
       --   "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
       --   'pick note',
       -- },
-      -- n = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
-      n = { "<cmd>Telescope node_modules list<cr>", 'new note' },
+      n = { '<cmd>Telescope node_modules list<cr>', 'new note' },
+      N = { "<cmd>lua require'nononotes'.new_note()<cr>", 'new note' },
       p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
       P = {
         "<cmd>lua require'persistence'.load()<cr><cmd>silent! BufferGoto %i<cr>",
       },
       q = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
+      Q = { '<cmd>TroubleClose<cr>', 'trouble close' },
       r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
       s = {
         '<cmd>SymbolsOutline<cr>',
@@ -637,7 +667,7 @@ function M.setup()
       },
       S = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
       t = { '<cmd>lua require"bindutils".term()<cr>', 'new terminal' },
-      u = { '<cmd>UndotreeToggle<cr>', 'undo tree' },
+      u = { '<cmd>UndotreeToggleTree<cr>', 'undo tree' },
       w = { '<cmd>Telescope projects<cr>', 'sessions' },
       W = { "<cmd>lua require'telescope'.extensions.repo.list()<cr>", 'projects' },
       x = {
@@ -646,7 +676,7 @@ function M.setup()
       },
       X = { "<cmd>lua require'bindutils'.term_launch({'xplr'})<cr>", 'xplr' },
       z = { '<cmd>ZenMode<cr>', 'zen mode' },
-      [';'] = {
+      [' '] = {
         "<cmd>lua require('telescope.builtin').commands()<cr>",
         'commands',
       },
@@ -669,7 +699,7 @@ function M.setup()
       },
     },
     [a.jump] = {
-      name = '+jump',
+      name = '+local movements',
       a = { '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'go next diagnostic' },
       A = {
         '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
@@ -688,6 +718,7 @@ function M.setup()
     },
     [a.move] = {
       name = '+global movements',
+      c = { '<cmd>TodoTelescope<cr>', 'telescope TODO' },
       b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
       d = { -- FIXME
         '<cmd>lua require("telescope.builtin").lsp_definitions()<cr>',
@@ -868,9 +899,63 @@ function M.setup()
     y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
   })
 
-  if not require'pager'.full then
+  if not require('pager').full then
     map('n', 'Q', '<cmd>q<cr>')
   end
+
+  require('utils').augroup('MarkdownBindings', {
+    {
+      events = { 'FileType' },
+      targets = { 'markdown' },
+      command = function()
+        local map_local = require('utils').buf_map
+
+        map_local('', 'j', 'gk')
+        map_local('', 'k', 'gj')
+        map_local('', 'gj', 'k')
+        map_local('', 'gk', 'j')
+        map_local('', 'gs', '<cmd>Telescope heading<cr>')
+        map_local(
+          '',
+          'gt',
+          '<Plug>Markdown_MoveToNextHeader',
+          { noremap = false }
+        )
+        map_local(
+          '',
+          'gT',
+          '<Plug>Markdown_MoveToPreviousHeader',
+          { noremap = false }
+        )
+        map_local(
+          '',
+          'gh',
+          '<Plug>Markdown_MoveToCurHeader',
+          { noremap = false }
+        )
+        map_local(
+          '',
+          'gH',
+          '<Plug>Markdown_MoveToParentHeader',
+          { noremap = false }
+        )
+
+        -- both are identical
+        map_local(
+          'ox',
+          'ad',
+          '<Plug>(textobj-datetime-auto)',
+          { noremap = false }
+        )
+        map_local(
+          'ox',
+          'id',
+          '<Plug>(textobj-datetime-auto)',
+          { noremap = false }
+        )
+      end,
+    },
+  })
 end
 
 local SignatureMap = invert {

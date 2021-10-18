@@ -3,9 +3,7 @@ set -e
 
 USER1=prncss
 GIT=https://github.com/prncss-xyz/Dotfiles
-
-if [ -z "$USER1" ]; then
-	echo USER1 not defined
+if [ -z "$USER1" ]; then echo USER1 not defined
 	exit 1
 fi
 if [ -z "$GIT" ]; then

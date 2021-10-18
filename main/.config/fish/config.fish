@@ -4,12 +4,13 @@ abbr -g gncc 'commit -a --allow-empty-message -m ""'
 alias o opener
 # alias e nvr -s
 alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
-alias e 'nvim'
+alias e nvim
 # alias e 'nvim --startuptime /tmp/nvim-startuptime'
 alias s fsearch-ext
 alias c 'bat --style=changes,header,rule,snip --color=always'
 alias l 'exa --icons --git'
 alias t 'exa --icons --git --tree'
+alias m nvim_pager
 # alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvim /tmp/sway-tree.json'
 # alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
 alias nod 'nodemon --config ~/.config/nodemon/config.json'

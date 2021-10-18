@@ -160,41 +160,23 @@ function M.setup()
         Lua = {
           diagnostics = {
             globals = {
+              'nvimpager',
               'use', -- packer
               'xplr', -- xplr
             },
+          },
+          telemetry = {
+            enable = false,
           },
         },
       },
     },
   }
-
   nvim_lsp.sumneko_lua.setup(luadev)
-
-  -- nvim_lsp.sumneko_lua.setup {
-  --   on_attach = on_attach,
-  --   cmd = { 'lua-language-server' },
-  --   settings = {
-  --     Lua = {
-  --       diagnostics = {
-  --         globals = {
-  --           'use', -- packer
-  --           'xplr', -- xplr
-  --         },
-  --       },
-  --     },
-  --   },
-  --   capabilities = capabilities,
-  --   flags = {
-  --     debounce_text_changes = 500,
-  --     allow_incremental_sync = true,
-  --   },
-  -- }
 
   local null_ls = require 'null-ls'
   local b = null_ls.builtins
   local sources = {
-    -- require('nl-language-tool').diagnostics,
     b.formatting.prettierd.with {
       filetypes = {
         'javascript',
@@ -212,7 +194,6 @@ function M.setup()
         'toml',
       },
     },
-    -- b.diagnostics.selene,
     -- b.formatting.eslint_d,
     b.formatting.stylua,
     b.formatting.shfmt,
@@ -220,12 +201,15 @@ function M.setup()
     -- b.diagnostics.write_good,
     -- b.diagnostics.misspell, -- yay -S misspell
     b.diagnostics.shellcheck,
-    b.code_actions.gitsigns,
+    -- b.code_actions.gitsigns, -- FIXME:
     b.formatting.fish_indent,
+    -- b.diagnostics.markdownlint,
+    -- b.diagnostics.selene,
   }
   null_ls.config {
     sources = sources,
   }
+
   nvim_lsp['null-ls'].setup { on_attach = on_attach_format }
 
   -- does not work with jsx/tsx, will keep using emmet.vim

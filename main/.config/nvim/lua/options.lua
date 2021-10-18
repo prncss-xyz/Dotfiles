@@ -1,4 +1,4 @@
-local full = require'pager'.full
+local full = require('pager').full
 
 if not full then
   vim.cmd 'set shada="NONE"'
@@ -79,7 +79,7 @@ deep_merge(vim, {
     -- vim-case-chage
     casechange_nomap = 1,
     -- neovide_refresh_rate = 60,
-    -- -- neovide_transparency = 0.30
+    -- neovide_transparency = 0.30
     -- neovide_cursor_animation_length = 0.3,
     -- neovide_cursor_trail_length = 0.5,
     -- neovide_remember_window_size = false,
@@ -101,6 +101,9 @@ deep_merge(vim, {
   -- like set
   opt = {
     -- shada = 'NONE',
+    shada = "!,'0,f0,<50,s10,h",
+    -- The '0,f0 are the important bits, it says to not save file marks as well as save 0 marks in shada
+    -- @Akinsho https://www.reddit.com/r/neovim/comments/q7bgwo/marksnvim_a_plugin_for_viewing_and_interacting/
     conceallevel = 2,
     laststatus = full and 2 or 0,
     secure = true, -- disable autocmd etc for project local vimrc files
@@ -112,7 +115,7 @@ deep_merge(vim, {
     sessionoptions = 'curdir,folds,tabpages,winsize',
     foldlevel = 20,
     -- foldlevelstart=20,
-    undofile =full,
+    undofile = full,
   },
   -- like setglobal
   opt_global = {},
@@ -122,3 +125,17 @@ deep_merge(vim, {
 })
 
 deep_merge(vim, require('bindings').plugins.vim)
+
+require('utils').augroup('MarkdownOptions', {
+  {
+    events = { 'FileType' },
+    targets = { 'markdown' },
+    command = function()
+      -- I write poetry
+      deep_merge(vim.opt_local, {
+        breakindent = true,
+        breakindentopt = 'shift:2',
+      })
+    end,
+  },
+})

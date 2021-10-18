@@ -1,17 +1,24 @@
 require 'plugins.luasnip'
 
+
 local cmp = require 'cmp'
 local lspkind = require 'lspkind'
 local sources = {
   { name = 'luasnip' },
-  { name = 'nvim_lsp' },
-  { name = 'spell' },
+  -- { name = 'nvim_lsp' },
+  { name = 'spell' }, -- not good with fuzzy matching
   { name = 'path' },
   { name = 'buffer' },
   { name = 'neorg' },
 }
-local lua_sources = require('utils').deep_merge({}, sources)
-table.insert(lua_sources, 4, { name = 'nvim_lua' })
+local lua_sources = {
+  { name = 'luasnip' },
+  { name = 'nvim_lua' },
+  { name = 'spell' }, -- not good with fuzzy matching
+  { name = 'path' },
+  { name = 'buffer' },
+  { name = 'neorg' },
+}
 
 cmp.setup {
   snippet = {

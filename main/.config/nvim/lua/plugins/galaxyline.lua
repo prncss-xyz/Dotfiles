@@ -1,6 +1,6 @@
 local gps = require("nvim-gps")
+gps.setup{}
 local gl = require 'galaxyline'
-local Job = require 'plenary.job'
 local gls = gl.section
 gl.short_line_list = { 'NvimTree', 'Outline', 'Trouble' }
 local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'dbui', 'help' }
@@ -71,8 +71,8 @@ if theme.galaxyline then
   require('utils').deep_merge(colors, theme.galaxyline)
 end
 local text = colors.text
-local background = colors.background
-local background2 = colors.background2
+local background2= colors.background
+local background = colors.background2
 local warn = colors.warn
 local err = colors.error
 
@@ -131,6 +131,8 @@ end
 local function line_count()
   return vim.fn.line '$'
 end
+
+-- TODO: no left side if filename is empty string
 
 gls.left = {
   {

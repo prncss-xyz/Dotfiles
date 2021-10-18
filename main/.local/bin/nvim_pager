@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+export NVIM_PAGING="man"
+
+if [ -n "$1" ]; then
+  nvim -R "$@"
+else
+  nvim -R -
+fi

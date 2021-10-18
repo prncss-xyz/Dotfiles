@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+GHOST_NVIM=1 nvim

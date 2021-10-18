@@ -1,1 +1,0 @@
-bind generic E !git difftool --no-prompt %(commit)

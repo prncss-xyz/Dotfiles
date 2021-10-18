@@ -1,7 +1,37 @@
-map("<Alt-p>", "E");
-map("<Alt-n>", "R");
+// https://github.com/b0o/surfingkeys-conf
 
-settings.modeAfterYank = "Normal"; // FIXME
+map("<Ctrl-c>", "<Esc>");
+cmap("<Ctrl-c>", "<Esc>");
+vmap("<Ctrl-c>", "<Esc>");
+
+map('gE', 'gg')
+unmap('gg')
+map('ge', 'G')
+unmap('G')
+vmap('gE', 'gg')
+vunmap('gg')
+vmap('ge', 'G')
+vunmap('G')
+
+vmap("_", "j")
+vmap("j", "k")
+vmap("k", "_")
+vunmap('_')
+
+cmap('<Ctrl-n>', '<Tab>');
+cmap('<Ctrl-p>', '<Shift-Tab>');
+cmap('<Tab>', '<Enter>');
+
+settings.modeAfterYank = "Normal";
+Hints.characters = "asdfghzxcvbnm,.qwertyuiop";
+Hints.scrollKeys = "0kjl;G$"
+settings.focusFirstCandidate = true;
+
+mapkey('k', 'down', Normal.scroll.bind(Normal, "down"));
+mapkey('j','up',  Normal.scroll.bind(Normal, "up"));
+mapkey('l', 'left',  Normal.scroll.bind(Normal, "left"));
+mapkey(';', 'right', Normal.scroll.bind(Normal, "right"));
+
 addSearchAliasX("gh", "github", "https://github.com/search?q=", "s");
 addSearchAliasX("npm", "npm", "https://www.npmjs.com/search?q=", "s");
 addSearchAliasX("lh", "libhunt", "https://www.libhunt.com/search?query=", "s");
@@ -93,13 +123,6 @@ addSearchAliasX(
   "s"
 );
 
-// an example to replace `T` with `gt`, click `Default mappings` to see how `T` works.
-// map('gt', 't');
-
-// an example to remove mapkey `Ctrl-i`
-// unmap('<ctrl-i>');
-
-// set theme
 settings.theme = `
 .sk_theme {
     font-family: Input Sans Condensed, Charcoal, sans-serif;
@@ -137,4 +160,229 @@ settings.theme = `
 #sk_status, #sk_find {
     font-size: 20pt;
 }`;
-// click `Save` button to make above settings to take effect
+
+const util = {}
+
+util.getCurrentLocation = (prop = "href") => {
+  if (typeof window === "undefined") {
+    return ""
+  }
+  return window.location[prop]
+}
+
+const maxImg = (img) => {
+  const srcs = img.srcset.split(',');
+  let dim0 = 0;
+  let url0;
+  for (const src of srcs) {
+   let [url, dim] = src.split(' ')
+    dim = dim.trim().slice(0, dim.length-1);
+    if (dim > dim0) {
+      dim0 = dim;
+      url0 = url;
+    }
+  }
+  return url0;
+}
+
+const openLink = (url, newTab = false, active = true) => {
+  if (newTab) {
+    RUNTIME("openLink", { tab: { tabbed: true, active }, url })
+    return
+  }
+  window.location.assign(url)
+}
+
+const actions = {}
+actions.copyMarkdownLink = () =>
+  Clipboard.write(
+    `[${document.title}](${util.getCurrentLocation("href")})`,
+  )
+
+actions.openAnchor = ({ newTab = false, active = true, prop = "href" } = {}) => (a) => actions.openLink(a[prop], { newTab, active })()
+
+actions.openLink = (url, { newTab = false, active = true } = {}) => () => {
+  if (newTab) {
+    RUNTIME("openLink", { tab: { tabbed: true, active }, url })
+    return
+  }
+  window.location.assign(url)
+}
+
+// actions.openImgSet = ({ newTab = false, active = true } = {}) => (img) => actions.openLink(maxImg(img), { newTab, active })()
+
+actions.openImgSet = ({ newTab = false, active = true } = {}) => (img) => actions.openLink("www.google.ca", { newTab, active })()
+
+actions.showDns = ({ hostname = util.getCurrentLocation("hostname"), verbose = false } = {}) => () => {
+  let u = ""
+  if (verbose) {
+    u = `${ddossierUrl}?dom_whois=true&dom_dns=true&traceroute=true&net_whois=true&svc_scan=true&addr=${hostname}`
+  } else {
+    u = `${ddossierUrl}?dom_dns=true&addr=${hostname}`
+  }
+  actions.openLink(u, { newTab: true })()
+}
+
+const googleCacheUrl = "https://webcache.googleusercontent.com/search?q=cache:"
+
+actions.showGoogleCache = ({ href = util.getCurrentLocation("href") } = {}) =>
+  () => actions.openLink(`${googleCacheUrl}${href}`, { newTab: true })()
+
+const waybackUrl = "https://web.archive.org/web/*/"
+
+actions.showWayback = ({ href = util.getCurrentLocation("href") } = {}) =>
+  () => actions.openLink(`${waybackUrl}${href}`, { newTab: true })()
+
+const outlineUrl = "https://outline.com/"
+
+actions.showOutline = ({ href = util.getCurrentLocation("href") } = {}) =>
+  () => actions.openLink(`${outlineUrl}${href}`, { newTab: true })()
+
+actions.scrollToHash = (hash = null) => {
+  const h = (hash || document.location.hash).replace("#", "")
+  const e = document.getElementById(h) || document.querySelector(`[name="${h}"]`)
+  if (!e) {
+    return
+  }
+  e.scrollIntoView({ behavior: "smooth" })
+}
+
+actions.fakeSpot = (url = util.getCurrentLocation("href")) =>
+  actions.openLink(`https://fakespot.com/analyze?ra=true&url=${url}`, { newTab: true, active: false })()
+
+createHints = (selector, action) => () => {
+  if (typeof action === "undefined") {
+    // Use manual reassignment rather than a default arg so that we can lint/bundle without access
+    // to the Hints object
+    action = Hints.dispatchMouseClick // eslint-disable-line no-param-reassign
+  }
+  Hints.create(selector, action)
+}
+
+actions.createHints = (selector, action) => () => {
+  if (typeof action === "undefined") {
+    // Use manual reassignment rather than a default arg so that we can lint/bundle without access
+    // to the Hints object
+    action = Hints.dispatchMouseClick // eslint-disable-line no-param-reassign
+  }
+  Hints.create(selector, action)
+}
+
+// Google
+actions.go = {}
+actions.go.parseLocation = () => {
+  const u = new URL(util.getCurrentLocation())
+  const q = u.searchParams.get("q")
+  const p = u.pathname.split("/")
+
+  const res = {
+    type:  "unknown",
+    url:   u,
+    query: q,
+  }
+
+  if (u.hostname === "www.google.com") { // TODO: handle other ccTLDs
+    if (p.length <= 1) {
+      res.type = "home"
+    } else if (p[1] === "search") {
+      switch (u.searchParams.get("tbm")) {
+      case "vid":
+        res.type = "videos"
+        break
+      case "isch":
+        res.type = "images"
+        break
+      case "nws":
+        res.type = "news"
+        break
+      default:
+        res.type = "web"
+      }
+    } else if (p[1] === "maps") {
+      res.type = "maps"
+      if (p[2] === "search" && p[3] !== undefined) {
+        res.query = p[3] // eslint-disable-line prefer-destructuring
+      } else if (p[2] !== undefined) {
+        res.query = p[2] // eslint-disable-line prefer-destructuring
+      }
+    }
+  }
+
+  return res
+}
+
+actions.go.ddg = () => {
+  const g = actions.go.parseLocation()
+
+  const ddg = new URL("https://duckduckgo.com")
+  if (g.query) {
+    ddg.searchParams.set("q", g.query)
+  }
+
+  switch (g.type) {
+  case "videos":
+    ddg.searchParams.set("ia", "videos")
+    ddg.searchParams.set("iax", "videos")
+    break
+  case "images":
+    ddg.searchParams.set("ia", "images")
+    ddg.searchParams.set("iax", "images")
+    break
+  case "news":
+    ddg.searchParams.set("ia", "news")
+    ddg.searchParams.set("iar", "news")
+    break
+  case "maps":
+    ddg.searchParams.set("iaxm", "maps")
+    break
+  case "unknown":
+  default:
+    ddg.searchParams.set("ia", "web")
+    break
+  }
+
+  actions.openLink(ddg.href)()
+}
+
+const domainOpts = (domain) => {
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
+  domain.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&")
+  return {domain: new RegExp(`^http(s)?://(([a-zA-Z0-9-_]+\\.)*)(${domain})(/.*)?`)}
+}
+const leader = '<Space>';
+unmap(leader)
+const dmap0 = (domain, maps) => maps.forEach(([keys, descr, cb]) => mapkey(leader + keys, descr, cb, domainOpts(domain)));
+const dmap = (domains, maps) => typeof domains == "string" ? dmap0(domains, maps) : domains.forEach(domain => dmap(domain, maps))
+
+// generic
+mapkey('ym', "Copy page URL/Title as Markdown link", actions.copyMarkdownLink);
+
+// site specific
+
+// - google
+
+const googleSearchResultSelector = [
+  "div.g>div>div>div>a", // "a h3",
+  "h3 a",
+  "a[href^='/search']:not(.fl):not(#pnnext,#pnprev):not([role]):not(.hide-focus-ring)",
+  "g-scrolling-carousel a",
+  ".rc > div:nth-child(2) a",
+  ".kno-rdesc a",
+  ".kno-fv a",
+  ".isv-r > a:first-child",
+  ".dbsr > a:first-child",
+].join(",")
+dmap("www.google.com", [
+  ["a", "Open search result", actions.createHints(googleSearchResultSelector) ],
+  ["A", "Open search result (new tab)",
+    actions.createHints(googleSearchResultSelector, actions.openAnchor({ newTab: true, active: false })),
+  ],
+  ["d", "Open search in DuckDuckGo", actions.go.ddg, ]
+])
+dmap("www.instagram.com", [
+  ["<Space>", "Close", createHints('[aria-label="Close"]')],
+  ["<Space>", "Play", createHints('[aria-label="Contrôler"]')],
+  ["n", "Next image", createHints('div[class="    coreSpriteRightChevron  "]')],
+  ["p", "Previous image", createHints('div[class="   coreSpriteLeftChevron   "]')],
+  ["i", "Open image", createHints('img[srcset], style="padding-bottom: 66.4815%;" img', (img) => openLink(maxImg(img), true))],
+])

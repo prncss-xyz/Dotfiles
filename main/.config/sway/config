@@ -49,7 +49,9 @@ exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 input type:keyboard {
   xkb_layout ca
   xkb_variant multi
-  xkb_options caps:swapescape
+  # xkb_options caps:swapescape
+  # xkb_options ctrl:swapcaps
+  xkb_options ctrl:nocaps
 }
 
 input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {

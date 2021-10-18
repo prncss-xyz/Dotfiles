@@ -6,6 +6,9 @@ function M.dump(...)
   return ...
 end
 
+function M.local_repo(name)
+  return os.getenv 'PROJECTS' .. '/' .. name
+end
 
 function M.buf_map(modes, lhs, rhs, opts)
   local bufnr = vim.fn.bufnr()

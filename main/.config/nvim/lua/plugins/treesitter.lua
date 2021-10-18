@@ -106,8 +106,3 @@ require('nvim-treesitter.configs').setup(
     },
   })
 )
-
-if full then
-  require('treesitter-context.config').setup {}
-  require('spellsitter').setup()
-end

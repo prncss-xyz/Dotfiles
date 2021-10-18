@@ -9,10 +9,11 @@ function M.setup()
     sign_priority = 5,
     status_formatter = nil, -- Use default
   }
-  -- creates binding conflict
+  -- FIXME: creates binding conflict
   -- deep_merge(o, require('bindings').plugins.gitsigns)
   deep_merge(o, require('signs').plugins.gitsigns)
   require('gitsigns').setup(o)
+  -- print('crotte')
 end
 
 return M

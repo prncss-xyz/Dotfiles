@@ -26,12 +26,6 @@ function M.setup()
         'node_modules/*',
       },
     },
-    extensions = {
-      bookmarks = {
-        selected_browser = 'chromium',
-        url_open_command = 'browser',
-      },
-    },
   }))
 
   require('telescope').load_extension 'repo'
@@ -40,12 +34,8 @@ function M.setup()
   telescope.load_extension 'heading'
   -- telescope.load_extension 'node_modules'
   -- telescope.builtin 'spell_suggest'
-  if require'pager'.full then
-    require('telescope').load_extension 'project'
-    require('telescope').load_extension 'projects'
-    require('telescope').load_extension 'node_modules'
-  end
-  -- gitbranches; see https://github.com/awesome-streamers/awesome-streamerrc/blob/master/ThePrimeagen/lua/theprimeagen/telescope.lua
+  require('telescope').load_extension 'project'
+  telescope.load_extension 'md_help'
 end
 
 M.project_files = function()

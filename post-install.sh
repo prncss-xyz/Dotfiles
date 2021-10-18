@@ -1,6 +1,5 @@
 # shellcheck shell=sh
 
-
 HOSTNAME="${HOSTNAME-$hostname}"
 
 cd ~/Dotfiles/stow || exit 1 # on a fresh install, stow will take config info from current dir

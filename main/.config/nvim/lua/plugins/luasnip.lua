@@ -91,10 +91,9 @@ ls.snippets = {
     s('timestamp', p(os.date, '%c')),
   },
   fish = {
-s( {trig = 'if'}, {
-  -- contents
-}),
-
+    s({ trig = 'if' }, {
+      -- contents
+    }),
   },
   json = {
     -- this snippet generates a textmate snippet from clipboard content

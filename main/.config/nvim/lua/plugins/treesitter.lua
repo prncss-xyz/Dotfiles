@@ -17,14 +17,6 @@ parser_configs.norg = {
 --   filetype = 'markdown',
 -- }
 
-local javascript = {
-  __default = '// %s',
-  jsx_element = '{/* %s */}',
-  jsx_fragment = '{/* %s */}',
-  jsx_attribute = '// %s',
-  comment = '// %s',
-}
-
 local full = require('pager').full
 
 require('nvim-treesitter.configs').setup(
@@ -79,12 +71,7 @@ require('nvim-treesitter.configs').setup(
     },
     context_commentstring = {
       enable = full,
-      config = {
-        --        javascript = javascript,
-        --      javascriptreact = javascript,
-        --    typescript = javascript,
-        --  typescriptreact = javascript,
-      },
+      enable_autocommand = false,
     },
     matchup = {
       enable = true,

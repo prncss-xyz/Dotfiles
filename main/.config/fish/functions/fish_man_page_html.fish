@@ -4,7 +4,7 @@ function fish_man_page_html
 
     # If commandline is empty, exit.
     if not set -q args[1]
-        printf \a
+        fish_help
         return
     end
 

@@ -10,16 +10,30 @@ function m.ro_quit_else(lhs, mode)
   if vim.bo.readonly then
     vim.cmd ':q'
   else
-    vim.feedkeys(lhs, mode)
+    vim.fn.feedkeys(lhs, mode)
   end
 end
 
 function m.repeatable(rhs)
-  return string.format(
-    '%s<cmd>silent! call repeat#set(%q, v:count)<cr>',
-    rhs,
-    t(rhs)
-  )
+  return string.format('%s<cmd>call repeat#set(%q, v:count)<cr>', rhs, t(rhs))
+end
+
+m.redo_or_repeat = string.format(
+  '%s<cmd>silent! call repeat#set(%q, v:count)<cr>',
+  'u',
+  t '<esc>:redo\\<cr>'
+)
+
+function m.project_files()
+  local opts = {} -- define here if you want to define something
+  if vim.fn.getcwd() == os.getenv 'HOME' .. '/Personal/neuron' then
+    require('nononotes').prompt('edit', false, 'all')
+    return
+  end
+  local ok = pcall(require('telescope.builtin').git_files, opts)
+  if not ok then
+    require('telescope.builtin').find_files(opts)
+  end
 end
 
 function m.toggle_cmp()
@@ -115,6 +129,19 @@ function m.term_launch(args)
       args = args,
     })
     :start()
+end
+
+function m.open_current()
+  require('plenary.job')
+    :new({
+      command = 'opener',
+      args = { vim.fn.expand('%') },
+    })
+    :start()
+end
+
+function m.dotfiles()
+  require('telescope.builtin').git_files { cwd = os.getenv 'DOTFILES' }
 end
 
 function m.docu_current()

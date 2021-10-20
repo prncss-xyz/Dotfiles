@@ -49,16 +49,16 @@ xplr.config.modes.builtin.default.key_bindings.on_key.v = nil
 
 -- TODO: bash to lua
 
-xplr.config.modes.builtin.default.key_bindings.on_key["j"] =
+xplr.config.modes.builtin.default.key_bindings.on_key['j'] =
   xplr.config.modes.builtin.default.key_bindings.on_key.up
 
-xplr.config.modes.builtin.default.key_bindings.on_key["k"] =
+xplr.config.modes.builtin.default.key_bindings.on_key['k'] =
   xplr.config.modes.builtin.default.key_bindings.on_key.down
 
-xplr.config.modes.builtin.default.key_bindings.on_key["l"] =
+xplr.config.modes.builtin.default.key_bindings.on_key['l'] =
   xplr.config.modes.builtin.default.key_bindings.on_key.left
 
-xplr.config.modes.builtin.default.key_bindings.on_key[";"] =
+xplr.config.modes.builtin.default.key_bindings.on_key[';'] =
   xplr.config.modes.builtin.default.key_bindings.on_key.right
 local common = {
   ['ctrl-c'] = {
@@ -68,6 +68,19 @@ local common = {
   ['ctrl-q'] = {
     help = 'terminate',
     messages = { 'Terminate' },
+  },
+  ['alt-h'] = {
+    help = 'help',
+    messages = {
+      { BashExec = 'nvim ~/Dotfiles/main/.config/xplr/init.lua' },
+    },
+  },
+  ['ctrl-h'] = {
+    help = 'help',
+    -- TODO: position to active mode
+    messages = {
+      { BashExec = 'nvim_paging markdown "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"' },
+    },
   },
   esc = nop,
 }
@@ -250,7 +263,20 @@ deep_merge(xplr, {
                 help = 'bottom',
                 messages = { 'FocusLast', 'PopMode' },
               },
-              h = nop,
+              h = {
+                help = 'history',
+                messages = {
+                  {
+                    BashExec = [[
+                      PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}" | head -n -1 | tac | fzf --no-sort)
+                      if [ "$PTH" ]; then
+                        PTH="${PTH%/}" # remove trailing slash
+                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                },
+              },
               i = {
                 help = 'view images',
                 messages = {
@@ -265,33 +291,6 @@ deep_merge(xplr, {
                       else
                         PTH=$(basedir "$XPLR_FOCUS_PATH")
                         fd -tl . "$PTH"|imv&
-                      fi
-                    ]],
-                  },
-                },
-              },
-             [';'] = { -- right
-                help = 'open',
-                messages = {
-                  {
-                    BashExecSilently = [[
-                      if [ -d "$XPLR_FOCUS_PATH" ]; then
-                        echo "ChangeDirectory: $XPLR_FOCUS_PATH" >> $XPLR_PIPE_MSG_IN
-                      else
-                        opener "$XPLR_FOCUS_PATH"
-                      fi
-                    ]],
-                  },
-                },
-              },
-              [':'] = { -- shift right
-                help = 'fzf open dir',
-                messages = {
-                  {
-                    BashExec = [[
-                      res="$(fd --type directory --follow --hidden --exclude .git | fzf)"
-                      if [ -n "$res" ]; then
-                        echo ChangeDirectory: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
                       fi
                     ]],
                   },
@@ -357,6 +356,33 @@ deep_merge(xplr, {
               },
               u = register 'dua_cli',
               z = register 'zoxide',
+              [';'] = { -- right
+                help = 'open',
+                messages = {
+                  {
+                    BashExecSilently = [[
+                      if [ -d "$XPLR_FOCUS_PATH" ]; then
+                        echo "ChangeDirectory: $XPLR_FOCUS_PATH" >> $XPLR_PIPE_MSG_IN
+                      else
+                        opener "$XPLR_FOCUS_PATH"
+                      fi
+                    ]],
+                  },
+                },
+              },
+              [':'] = { -- shift right
+                help = 'fzf open dir',
+                messages = {
+                  {
+                    BashExec = [[
+                      res="$(fd --type directory --follow --hidden --exclude .git | fzf)"
+                      if [ -n "$res" ]; then
+                        echo ChangeDirectory: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                },
+              },
               ['~'] = nop,
               ['/'] = nop,
               ['é'] = {
@@ -407,20 +433,6 @@ deep_merge(xplr, {
                   'PopMode',
                 },
               },
-              ['ctrl-h'] = {
-                help = 'history',
-                messages = {
-                  {
-                    BashExec = [[
-                      PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}" | head -n -1 | tac | fzf --no-sort)
-                      if [ "$PTH" ]; then
-                        PTH="${PTH%/}" # remove trailing slash
-                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                    ]],
-                  },
-                },
-              },
               -- ['ctrl-i'] = {
               --   help = "next visited path",
               --   messages = { "NextVisitedPath" },
@@ -439,18 +451,6 @@ deep_merge(xplr, {
                   },
                   'PopMode',
                   { SwitchModeBuiltin = 'default' },
-                },
-              },
-              ['alt-h'] = {
-                help = 'help',
-                messages = {
-                  {
-                    -- TODO: position to active mode
-                    BashExec = [[
-                      export NVIM_PAGING=markdown
-                      nvim -R "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"
-                    ]],
-                  },
                 },
               },
             },

@@ -105,7 +105,8 @@ deep_merge(vim, {
     -- The '0,f0 are the important bits, it says to not save file marks as well as save 0 marks in shada
     -- @Akinsho https://www.reddit.com/r/neovim/comments/q7bgwo/marksnvim_a_plugin_for_viewing_and_interacting/
     conceallevel = 2,
-    laststatus = full and 2 or 0,
+    laststatus = 0,
+    -- laststatus = full and 2 or 0,
     secure = true, -- disable autocmd etc for project local vimrc files
     exrc = false, -- allow project local vimrc files example .nvimrc see :h exrc
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,

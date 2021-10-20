@@ -1,4 +1,3 @@
-local utils = require 'utils'
 local telescope = require 'telescope'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
@@ -12,15 +11,12 @@ local function md_help(opts)
   local cwd = vim.fn.getcwd()
   if cwd == vim.fn.getenv 'DOTFILES' then
     dir = '~/.local/share/nvim/site/pack/packer'
-  elseif cwd == vim.fn.getenv 'DOTFILES' .. '/main/.config/nvim' then
-    dir = '~/.local/share/nvim/site/pack/packer'
   elseif vim.fn.isdirectory(cwd .. '/node_modules') then
     dir = cwd .. '/node_modules'
   else
     print "Don't have anywere to search"
     return
   end
-  print (dir)
   local function action(prompt_bufnr)
     actions.close(prompt_bufnr)
     local entry = actions.get_selected_entry()

@@ -6,7 +6,6 @@ augroup('TerminalNonumbers', {
     events = { 'TermOpen' },
     targets = { '*' },
     command = function()
-      print 'termopen'
       vim.wo.number = false
       vim.wo.relativenumber = false
       vim.cmd 'startinsert'
@@ -163,4 +162,12 @@ augroup('SetTitleGitsigns', {
 -- end
 --     end,
 --   },
+-- })
+
+-- augroup('Test', {
+--   {
+--     events = {'VimEnter'},
+--     targets = {'*'},
+--     command = require('bufjump').local_backward,
+--   }
 -- })

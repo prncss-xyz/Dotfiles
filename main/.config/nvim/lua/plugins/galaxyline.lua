@@ -1,32 +1,93 @@
-local gps = require("nvim-gps")
-gps.setup{}
+-- configuration
+
+local short_line_list = { 'NvimTree', 'Outline', 'Trouble', 'DiffviewFiles' }
+
+vim.opt.laststatus = 2
+
+-- local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'dbui', 'help' }
+local skipLock = {}
+
+local user_icons = {}
+
+local unknown_icon = ''
+
+-- TODO: find icons for relevant buffer types
+local buf_icon = {
+  help = ' ',
+  Trouble = ' ',
+  Outline = ' ',
+  DiffviewFiles = ' ',
+  NvimTree = ' ',
+}
+
+--
 local gl = require 'galaxyline'
 local gls = gl.section
-gl.short_line_list = { 'NvimTree', 'Outline', 'Trouble' }
-local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'dbui', 'help' }
+gl.short_line_list = short_line_list
+local gps = require 'nvim-gps'
+gps.setup {}
 
 local vim, lsp, api = vim, vim.lsp, vim.api
 
+local function get_file_info()
+  return vim.fn.expand '%:t', vim.fn.expand '%:e'
+end
+
+local function get_file_icon()
+  local icon = ''
+  if vim.fn.exists '*WebDevIconsGetFileTypeSymbol' == 1 then
+    icon = vim.fn.WebDevIconsGetFileTypeSymbol()
+    return icon .. ' '
+  end
+  local ok, devicons = pcall(require, 'nvim-web-devicons')
+  if not ok then
+    print "No icon plugin found. Please install 'kyazdani42/nvim-web-devicons'"
+    return ''
+  end
+  local f_name, f_extension = get_file_info()
+  icon = devicons.get_icon(f_name, f_extension)
+  if icon == nil then
+    if user_icons[vim.bo.filetype] ~= nil then
+      icon = user_icons[vim.bo.filetype][2]
+    elseif user_icons[f_extension] ~= nil then
+      icon = user_icons[f_extension][2]
+    else
+      icon = unknown_icon
+    end
+  end
+  return icon .. ' '
+end
+
+local function get_buffer_type_icon()
+  return buf_icon[vim.bo.filetype]
+end
+
 local trouble_mode = function()
-  local mode = require 'trouble.config'.options.mode
+  local mode = require('trouble.config').options.mode
   if mode == 'lsp_workspace_diagnostics' then
-    return 'workspace diagnostics'
+    return 'Workspace diagnostics'
   end
   if mode == 'lsp_document_diagnostics' then
-    return 'document diagnostics'
+    return 'Document diagnostics'
   end
   if mode == 'lsp_references' then
-    return 'references'
+    return 'References'
   end
   if mode == 'lsp_definitions' then
-    return 'definitions'
+    return 'Definitions'
+  end
+  if mode == 'todo' then
+    return 'Todo'
   end
   return mode
 end
 
-local getDisplayname = function()
+local get_displayed_name = function()
   if vim.bo.filetype == 'Trouble' then
     return trouble_mode()
+  end
+  if vim.bo.buftype == 'nofile' then
+    return vim.bo.filetype
   end
   local file = vim.fn.expand '%:p'
   local cwd = vim.fn.getcwd()
@@ -40,86 +101,76 @@ local getDisplayname = function()
   return file
 end
 
-local line_column = function()
+local function get_name_iconified()
+  if vim.fn.expand '%' == '' then
+    return
+  end
+  local res = '  '
+  res = res .. (get_buffer_type_icon() or get_file_icon())
+  res = res .. get_displayed_name() .. ' '
+  return res
+end
+
+local coordinates = function()
+  if vim.fn.expand '%' == '' then
+    return
+  end
   local line = vim.fn.line '.'
   local column = vim.fn.col '.'
-  return string.format('%3d:%02d ', line, column)
+  local line_count = vim.fn.line '$'
+  return string.format('%3d:%02d %d ', line, column, line_count)
 end
 
--- get current file name
-local function modified()
-  local file = vim.fn.expand '%:t'
-  if vim.fn.empty(file) == 1 then
-    return ''
-  end
-  if vim.bo.modifiable then
-    if vim.bo.modified then
-      return ' '
-    end
-  end
-  return ''
-end
-local colors = {
-  warn = vim.g.terminal_color_3,
-  error = vim.g.terminal_color_1,
-  background = vim.g.terminal_color_4,
-  background2 = vim.g.terminal_color_6,
-  text = vim.g.terminal_color_7,
-}
-local theme = require 'theme'
-if theme.galaxyline then
-  require('utils').deep_merge(colors, theme.galaxyline)
-end
-local text = colors.text
-local background2= colors.background
-local background = colors.background2
-local warn = colors.warn
-local err = colors.error
-
-local function get_nvim_lsp_diagnostic(diag_type)
-  if next(lsp.buf_get_clients(0)) == nil then
-    return false
-  end
-  local active_clients = lsp.get_active_clients()
-
-  if active_clients then
-    for _, client in ipairs(active_clients) do
-      if
-        lsp.diagnostic.get_count(
-          api.nvim_get_current_buf(),
-          diag_type,
-          client.id
-        ) > 0
-      then
-        return true
+local function get_lsp_diagnostic()
+  local res = {
+    Error = 0,
+    Warning = 0,
+  }
+  if next(lsp.buf_get_clients(0)) then
+    local active_clients = lsp.get_active_clients()
+    if active_clients then
+      for _, client in ipairs(active_clients) do
+        for diag_type in pairs(res) do
+          res[diag_type] = res[diag_type]
+            + lsp.diagnostic.get_count(
+              api.nvim_get_current_buf(),
+              diag_type,
+              client.id
+            )
+        end
       end
     end
   end
-  return false
+  return res
 end
 
-local function diagnostic_errors()
-  if get_nvim_lsp_diagnostic 'Error' then
-    return ' '
-  end
-  return ''
-end
+local function get_status_icons()
+  local icons = '  '
 
-local function diagnostic_warnings()
-  if get_nvim_lsp_diagnostic 'Warning' then
-    return ' '
+  -- modified
+  local file = vim.fn.expand '%:t'
+  if vim.fn.empty(file) ~= 1 and vim.bo.modifiable and vim.bo.modified then
+    icons = icons .. ' '
   end
-  return ''
-end
 
-local function readonly()
-  if vim.fn.index(skipLock, vim.bo.filetype) ~= -1 then
-    return ''
+  -- read only
+  if
+    vim.bo.buftype ~= 'nofile' and
+    vim.fn.index(skipLock, vim.bo.filetype) ~= -1 and vim.bo.readonly == true
+  then
+    icons = icons .. ' '
   end
-  if vim.bo.readonly == true then
-    return ' '
+
+  -- diagnostics
+  local lsp_diagnostic = get_lsp_diagnostic()
+  if lsp_diagnostic.Error > 0 then
+    icons = icons .. ' '
   end
-  return ''
+  if lsp_diagnostic.Warning > 0 then
+    icons = icons .. ' '
+  end
+
+  return icons
 end
 
 local function constant(val)
@@ -128,69 +179,33 @@ local function constant(val)
   end
 end
 
-local function line_count()
-  return vim.fn.line '$'
+local colors = {
+  warn = vim.g.terminal_color_3,
+  error = vim.g.terminal_color_1,
+  background = vim.g.terminal_color_4,
+  background2 = vim.g.terminal_color_6,
+  text = vim.g.terminal_color_7,
+}
+
+local theme = require 'theme'
+if theme.galaxyline then
+  require('utils').deep_merge(colors, theme.galaxyline)
 end
 
--- TODO: no left side if filename is empty string
+local text = colors.text
+local background2 = colors.background
+local background = colors.background2
 
 gls.left = {
   {
-    Spacer2 = {
-      provider = constant ' ',
-      highlight = { text, background2 },
-    },
-  },
-  {
-    BufferIcon = {
-      provider = 'BufferIcon',
-      separarator_highlight = { text, background2 },
-      highlight = { text, background2 },
-    },
-  },
-  {
-    FileIcon = {
-      provider = 'FileIcon',
-      separarator_highlight = { text, background2 },
-      highlight = { text, background2 },
-    },
-  },
-  {
     FileName = {
-      provider = getDisplayname,
-      -- separator = separator,
-      separator = ' ',
-      separator_highlight = { background, background2 },
+      provider = get_name_iconified,
       highlight = { text, background2 },
     },
   },
   {
-    Spacer3 = {
-      provider = constant ' ',
-      highlight = { text, background },
-    }
-  },
-  {
-    Readonly = {
-      provider = readonly,
-      highlight = { text, background },
-    },
-  },
-  {
-    Modified = {
-      provider = modified,
-      highlight = { text, background },
-    },
-  },
-  {
-    DiagnosticError = {
-      provider = diagnostic_errors,
-      highlight = { text, background },
-    },
-  },
-  {
-    DiagnosticWarn = {
-      provider = diagnostic_warnings,
+    StatusIcons = {
+      provider = get_status_icons,
       highlight = { text, background },
     },
   },
@@ -210,23 +225,7 @@ gls.left = {
 gls.right = {
   {
     LineColumn = {
-      provider = line_column,
-      separator_highlight = { background, background },
-      highlight = { text, background },
-    },
-  },
-  {
-    LineCount = {
-      provider = line_count,
-      separator_highlight = { background, background },
-      highlight = { text, background },
-    },
-  },
-  {
-    Space = {
-      provider = function()
-        return ' '
-      end,
+      provider = coordinates,
       highlight = { text, background },
     },
   },
@@ -234,54 +233,17 @@ gls.right = {
 
 gls.short_line_left = {
   {
-    Spacer2B = {
-      provider = constant ' ',
-      highlight = { text, background },
-    },
-  },
-  {
-    FileIconB = {
-      provider = constant '   ',
-      separarator_highlight = { text, background },
-      highlight = { text, background },
-    },
-  },
-  {
     FileNameB = {
-      provider = getDisplayname,
-      separator = ' ',
-      separator_highlight = { background, background },
+      provider = get_name_iconified,
       highlight = { text, background },
     },
   },
   {
-    Spacer3B = {
-      provider = constant ' ',
+    StatusIconsB = {
+      provider = get_status_icons,
       highlight = { text, background },
-    },
-  },
-  {
-    ReadonlyB = {
-      provider = readonly,
-      highlight = { text, background },
-    },
-  },
-  {
-    ModifiedB = {
-      provider = modified,
-      highlight = { text, background },
-    },
-  },
-  {
-    DiagnosticErrorB = {
-      provider = diagnostic_errors,
-      highlight = { err, background },
-    },
-  },
-  {
-    DiagnosticWarnB = {
-      provider = diagnostic_warnings,
-      highlight = { warn, background },
     },
   },
 }
+
+gls.short_line_right = {}

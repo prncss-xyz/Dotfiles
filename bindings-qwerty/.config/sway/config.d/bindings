@@ -20,6 +20,7 @@ bindsym $mod+shift+b mode lumino
 bindsym $mod+e exec kitty -e nvim_sessions
 bindsym $mod+shift+e exec kitty -e nvim_nonono
 bindsym $mod+g mode launch
+bindsym $mod+h exec "kitty --class=launcher -e nvim Dotfiles/bindings-qwerty/.config/sway/config.d/bindings", mode default
 bindsym $mod+n exec makoctl dismiss
 bindsym $mod+shift+n exec makoctl dismiss --all
 bindsym $mod+m fullscreen

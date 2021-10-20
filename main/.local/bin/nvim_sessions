@@ -1,4 +1,12 @@
 #!/usr/bin/env sh
 
-nvim +"Telescope projects"
-
+if [ -z "$1" ]; then
+  if [ "$PWD" = "$HOME" ]; then
+    nvim +"Telescope projects"
+  else
+    # FIXME:
+    nvim +"lua require'bufjump'.local_backward()"
+  fi
+else
+  nvim "$@"
+fi

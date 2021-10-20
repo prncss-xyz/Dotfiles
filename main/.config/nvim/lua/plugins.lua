@@ -6,7 +6,7 @@ local function full()
 end
 
 local function ghost()
-  return os.getenv 'GHOST_NVIM'
+  return os.getenv 'GHOST_NVIM' or false
 end
 
 local function never()
@@ -34,7 +34,6 @@ return require('packer').startup {
     use 'wbthomason/packer.nvim'
     use {
       'lewis6991/impatient.nvim',
-      disable = true,
       config = {
         -- Move to lua dir so impatient.nvim can cache it
         compile_path = vim.fn.stdpath 'config' .. '/lua/packer_compiled.lua',
@@ -46,9 +45,6 @@ return require('packer').startup {
         require 'plugins.filetype'
       end,
     }
-
-    -- use_rocks 'iconv'
-    -- use 'tami5/sql.nvim'
     use {
       'nvim-lua/plenary.nvim',
       module = 'plenary',
@@ -59,6 +55,7 @@ return require('packer').startup {
     }
     use {
       'onsails/lspkind-nvim',
+      module = 'lspkind',
       config = function()
         require('lspkind').init {
           symbol_map = {
@@ -68,18 +65,25 @@ return require('packer').startup {
         }
       end,
     }
-    use { 'kyazdani42/nvim-web-devicons' }
+    use {
+      'kyazdani42/nvim-web-devicons',
+      module = 'nvim-web-devicons',
+      config = function()
+        require('nvim-web-devicons').setup { default = true }
+      end,
+    }
 
     -- tree sitter
     use {
       'nvim-treesitter/nvim-treesitter',
       run = ':TSUpdate',
       -- event = 'BufRead',
+      module = 'nvim-treesitter.ts_utils',
       opt = true,
       config = function()
         require 'plugins.treesitter'
       end,
-      requires = {
+      requires = { -- TODO: lazy
         { 'p00f/nvim-ts-rainbow', cond = full },
         { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } },
         { 'JoosepAlviste/nvim-ts-context-commentstring', cond = full },
@@ -120,13 +124,6 @@ return require('packer').startup {
     use { 'milisims/nvim-luaref', cond = full }
     use { 'glepnir/prodoc.nvim', cond = full }
 
-    -- use {
-    --   'glacambre/firenvim',
-    --   run = function()
-    --     vim.fn['firenvim#install'](0)
-    --   end,
-    --   cond = full,
-    -- }
     use {
       'subnut/nvim-ghost.nvim',
       run = function()
@@ -138,6 +135,7 @@ return require('packer').startup {
     -- LSP
     use {
       'lewis6991/gitsigns.nvim',
+      module = 'gitsigns',
       wants = 'plenary.nvim',
       requires = { 'nvim-lua/plenary.nvim' },
       cond = full,
@@ -185,7 +183,7 @@ return require('packer').startup {
         }
       end,
     }
-
+    -- FIXME: snippets just disappeared
     use { local_repo 'friendly-snippets' }
     use {
       'hrsh7th/nvim-cmp',
@@ -205,6 +203,7 @@ return require('packer').startup {
         require 'plugins.cmp'
       end,
     }
+
     -- insert or delete brackets, parentheses, quotes in pair
     use {
       'windwp/nvim-autopairs',
@@ -232,14 +231,14 @@ return require('packer').startup {
         }
       end,
     }
+    use { 'SmiteshP/nvim-gps', module = 'nvim-gps' }
+    -- TODO: lazy
     use {
       'glepnir/galaxyline.nvim',
       cond = full,
-      after = 'nvim-treesitter', -- nvim-gps
       config = function()
         require 'plugins.galaxyline'
       end,
-      requires = { { 'SmiteshP/nvim-gps', cond = full } },
     }
     use {
       'folke/trouble.nvim',
@@ -252,15 +251,17 @@ return require('packer').startup {
       },
       config = function()
         require('trouble').setup {
-          position = 'left',
-          width = 30,
+          position = 'bottom',
+          -- width = 30,
           use_lsp_diagnostic_signs = true,
         }
       end,
     }
     use {
+      -- TODO: lazy
       'folke/todo-comments.nvim',
-      event = 'BufReadPre',
+      -- event = 'BufReadPre',
+      cond = full,
       config = function()
         require('todo-comments').setup {}
       end,
@@ -270,13 +271,7 @@ return require('packer').startup {
       'karb94/neoscroll.nvim',
       config = function()
         require('neoscroll').setup {
-          mappings = {
-            '<C-u>',
-            '<C-d>',
-            'zt',
-            'zz',
-            'zb',
-          },
+          mappings = {},
         }
       end,
     }
@@ -288,23 +283,41 @@ return require('packer').startup {
       module = 'telescope',
       module_pattern = 'telescope.*',
       cmd = 'Telescope',
-      requires = {
-        { 'cljoly/telescope-repo.nvim' },
-        { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
-        'nvim-telescope/telescope-symbols.nvim',
-        'crispgm/telescope-heading.nvim',
-        'nvim-telescope/telescope-project.nvim',
-        {
-          -- personal branch for pnpm compat
-          -- https://github.com/nvim-telescope/telescope-node-modules.nvim/pull/3
-          local_repo 'telescope-node-modules.nvim',
-          config = function()
-            require('telescope').load_extension 'node_modules'
-          end,
-          cond = full,
-        },
-        -- 'nvim-telescope/telescope-dap.nvim',
-      },
+    }
+    use {
+      'nvim-telescope/telescope-symbols.nvim',
+      after = 'telescope.nvim',
+    }
+    use {
+      -- personal branch for pnpm compat
+      -- https://github.com/nvim-telescope/telescope-node-modules.nvim/pull/3
+      local_repo 'telescope-node-modules.nvim',
+      after = 'telescope.nvim',
+      config = function()
+        require('telescope').load_extension 'node_modules'
+      end,
+    }
+    use {
+      'nvim-telescope/telescope-fzf-native.nvim',
+      run = 'make',
+      after = 'telescope.nvim',
+      config = function()
+        require('telescope').load_extension 'fzf'
+      end,
+    }
+    use {
+      'crispgm/telescope-heading.nvim',
+      after = 'telescope.nvim',
+      config = function()
+        require('telescope').load_extension 'heading'
+      end,
+    }
+    use {
+      'nvim-telescope/telescope-project.nvim',
+      after = 'telescope.nvim',
+      config = function()
+        require('telescope').load_extension 'project'
+      end,
     }
     -- use {
     --   'romgrk/barbar.nvim',
@@ -339,6 +352,8 @@ return require('packer').startup {
       -- this does not seem to have an effect
       cmd = {
         'DiffviewOpen',
+        'DiffviewClose',
+        'DiffviewFileHistory',
         'DiffViewToggleFiles',
         'DiffViewFocusFiles',
         'DiffViewRefresh',
@@ -422,11 +437,17 @@ return require('packer').startup {
     -- bindings
     use {
       'folke/which-key.nvim',
+      -- cond = never,
       event = 'VimEnter',
       config = function()
         require('which-key').setup {
           plugins = {
             presets = {
+              operators = false,
+              motions = false,
+              text_objects = false,
+              windows = false,
+              nav = false,
               z = false,
               g = false,
             },
@@ -438,14 +459,9 @@ return require('packer').startup {
     -- navigation
     use {
       local_repo 'bufjump.nvim',
-      cond = full,
+      module = 'bufjump',
       config = function()
         require('bufjump').setup {
-          forward = '<c-n>',
-          backward = '<c-p>',
-          on_success = function()
-            vim.cmd [[execute "normal! g`\"zz"]]
-          end,
           cond = require('bufjump').under_cwd,
         }
       end,
@@ -477,6 +493,7 @@ return require('packer').startup {
     -- clipboard
     use {
       'kevinhwang91/nvim-hclipboard',
+      event = 'InsertEnter',
       config = function()
         require 'plugins.hclipboard'
       end,
@@ -553,7 +570,10 @@ return require('packer').startup {
           Mac_NamedMacrosDirectory = mac_repo,
         })
       end,
-      requires = 'tpope/vim-repeat',
+    }
+    use {
+      'tpope/vim-repeat',
+      cond = full,
     }
     use {
       'b3nj5m1n/kommentary',
@@ -564,6 +584,21 @@ return require('packer').startup {
       config = function()
         require('kommentary.config').configure_language('default', {
           prefer_single_line_comments = true,
+        })
+        require('kommentary.config').configure_language('javascriptreact', {
+          single_line_comment_string = 'auto',
+          multi_line_comment_strings = 'auto',
+          hook_function = function()
+            require('ts_context_commentstring.internal').update_commentstring()
+          end,
+        })
+
+        require('kommentary.config').configure_language('typescriptreact', {
+          single_line_comment_string = 'auto',
+          multi_line_comment_strings = 'auto',
+          hook_function = function()
+            require('ts_context_commentstring.internal').update_commentstring()
+          end,
         })
         require('kommentary.config').configure_language('fish', {
           single_line_comment_string = '#',
@@ -672,6 +707,7 @@ return require('packer').startup {
     --   -- },
     -- }
     -- use {
+    --
     --   'Shatur/neovim-session-manager',
     --   setup = function()
     --     require('utils').deep_merge(vim.g, {

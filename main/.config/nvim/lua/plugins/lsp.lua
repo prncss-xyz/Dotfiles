@@ -5,17 +5,6 @@ local M = {}
 -- New signature:
 -- function(err, result, ctx, config)
 
-local servers = {
-  'bashls',
-  'cssls',
-  'html',
-  'jsonls',
-  'vimls',
-  'yamlls',
-  -- 'tsserver',
-  -- 'pyls',
-}
-
 function M.setup()
   vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
   vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
@@ -72,6 +61,7 @@ function M.setup()
 
   local function on_attach_format(client, _)
     client.resolved_capabilities.document_formatting = true
+    client.resolved_capabilities.document_range_formatting = true
     client.resolved_capabilities.goto_definition = false
     -- silent is necessary for vim will complain about calling undojoin after undo
     -- vim.cmd 'autocmd CursorHold <buffer> silent! undojoin | lua vim.lsp.buf.formatting_sync()'
@@ -81,15 +71,16 @@ function M.setup()
 
   local function on_attach(client, _)
     client.resolved_capabilities.document_formatting = false
-    if client.resolved_capabilities.document_highlight then
-      vim.cmd [[
-      augroup lsp_document_highlight
-      autocmd! * <buffer>
-      autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-      autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-      augroup END
-      ]]
-    end
+    client.resolved_capabilities.document_range_formatting = false
+    -- if client.resolved_capabilities.document_highlight then
+    --   vim.cmd [[
+    --   augroup lsp_document_highlight
+    --   autocmd! * <buffer>
+    --   autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+    --   autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+    --   augroup END
+    --   ]]
+    -- end
     -- require('illuminate').on_attach(client)
   end
 
@@ -115,12 +106,12 @@ function M.setup()
       import_all_select_source = false,
 
       -- eslint
-      eslint_enable_code_actions = true,
-      eslint_enable_disable_comments = true,
-      eslint_bin = 'eslint_d',
-      eslint_config_fallback = nil,
-      eslint_enable_diagnostics = true,
-      eslint_show_rule_id = true,
+      -- eslint_enable_code_actions = true,
+      -- eslint_enable_disable_comments = true,
+      -- eslint_bin = 'eslint_d',
+      -- eslint_config_fallback = nil,
+      -- eslint_enable_diagnostics = true,
+      -- eslint_show_rule_id = true,
 
       -- formatting
       enable_formatting = false,
@@ -136,7 +127,18 @@ function M.setup()
     -- client.resolved_capabilities.document_formatting = false
   end
 
-  for _, lsp in ipairs(servers) do
+  nvim_lsp.tsserver.setup {
+    on_attach = on_attach_ts,
+  }
+
+  for _, lsp in ipairs {
+    'bashls',
+    'cssls',
+    'html',
+    'jsonls',
+    'vimls',
+    'yamlls',
+  } do
     nvim_lsp[lsp].setup {
       on_attach = on_attach,
       capabilities = capabilities,
@@ -147,10 +149,6 @@ function M.setup()
     }
   end
 
-  nvim_lsp.tsserver.setup {
-    on_attach = on_attach,
-  }
-
   -- ? https://github.com/folke/lua-dev.nvim/issues/21
   local luadev = require('lua-dev').setup {
     lspconfig = {
@@ -160,7 +158,6 @@ function M.setup()
         Lua = {
           diagnostics = {
             globals = {
-              'nvimpager',
               'use', -- packer
               'xplr', -- xplr
             },
@@ -226,63 +223,22 @@ function M.setup()
   -- 	}
   -- end
   -- nvim_lsp.emmet_ls.setup({ capabilities = capabilities })
+end
 
-  local function preview_location_callback(_, _, result)
-    if result == nil or vim.tbl_isempty(result) then
-      return nil
-    end
-    vim.lsp.util.preview_location(result[1])
+local function preview_location_callback(_, _, result)
+  if result == nil or vim.tbl_isempty(result) then
+    return nil
   end
-
-  _G.PeekDefinition = function()
-    local params = vim.lsp.util.make_position_params()
-    return vim.lsp.buf_request(
-      0,
-      'textDocument/definition',
-      params,
-      preview_location_callback
-    )
-  end
-
-  -- not working
-  --
-  -- https://github.com/iamcco/diagnostic-languageserver/blob/fa26d7f803d76b8a79649187bd4366f5a817ecac/README.md
-  -- https://jose-elias-alvarez.medium.com/configuring-neovims-lsp-client-for-typescript-development-5789d58ea9c
-
-  -- local filetypes = { markdown = 'languagetool' }
-
-  -- cat 3c7f5935.md|languagetool --line-by-line /dev/stdin
-
-  -- local linters = {
-  --   languagetool = {
-  --     command = 'languagetool',
-  --     debounce = 200,
-  --     args = { '/dev/stdin' },
-  --     offsetLine = 0,
-  --     offsetColumn = 0,
-  --     sourceName = 'languagetool',
-  --     formatLines = 2,
-  --     formatPattern = {
-  --       '^\\d+?\\.\\)\\s+Line\\s+(\\d+),\\s+column\\s+(\\d+),\\s+([^\\n]+)\nMessage:\\s+(.*)$',
-  --       {
-  --         line = 1,
-  --         column = 2,
-  --         message = { 4, 3 },
-  --       },
-  --     },
-  --   },
-  -- }
-
-  -- nvim_lsp.diagnosticls.setup {
-  --   on_attach = on_attach,
-  --   filetypes = vim.tbl_keys(filetypes),
-  --   init_options = {
-  --     filetypes = filetypes,
-  --     linters = linters,
-  --     formatters = {},
-  --     formatFiletypes = {},
-  --   },
-  -- }
+  vim.lsp.util.preview_location(result[1])
+end
+_G.PeekDefinition = function()
+  local params = vim.lsp.util.make_position_params()
+  return vim.lsp.buf_request(
+    0,
+    'textDocument/definition',
+    params,
+    preview_location_callback
+  )
 end
 
 return M

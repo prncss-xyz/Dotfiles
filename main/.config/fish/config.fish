@@ -4,7 +4,8 @@ abbr -g gncc 'commit -a --allow-empty-message -m ""'
 alias o opener
 # alias e nvr -s
 alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
-alias e nvim
+# alias e nvim
+alias e nvim_sessions
 # alias e 'nvim --startuptime /tmp/nvim-startuptime'
 alias s fsearch-ext
 alias c 'bat --style=changes,header,rule,snip --color=always'

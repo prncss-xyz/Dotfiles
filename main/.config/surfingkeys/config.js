@@ -1,3 +1,5 @@
+// TODO: WIP
+
 // https://github.com/b0o/surfingkeys-conf
 
 map("<Ctrl-c>", "<Esc>");
@@ -16,6 +18,9 @@ vunmap('G')
 vmap("_", "j")
 vmap("j", "k")
 vmap("k", "_")
+vmap("_", "h")
+vmap(";", "l")
+vmap("l", "_")
 vunmap('_')
 
 cmap('<Ctrl-n>', '<Tab>');

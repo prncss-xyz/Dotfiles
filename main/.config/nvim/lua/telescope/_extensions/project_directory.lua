@@ -28,7 +28,6 @@ local function project_directory(opts)
       actions_set.select:replace(function(_, type)
         local entry = actions_state.get_selected_entry()
         local dir = cwd .. '/' .. entry[1]
-        print(dir)
         if type == 'default' then
           actions._close(prompt_bufnr, true)
           project_files { cwd = dir }

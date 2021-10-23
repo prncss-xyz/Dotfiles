@@ -60,6 +60,7 @@ deep_merge(vim, {
     autosave = full and 1 or 0,
     -- plasticboy/vim-markdown
     -- vim_markdown_folding_disabled = 0,
+    matchup_mappings_enabled = 0,
     vim_markdown_folding_level = 6,
     vim_markdown_no_default_key_mappings = 1,
     vim_markdown_conceal_code_blocks = 0,

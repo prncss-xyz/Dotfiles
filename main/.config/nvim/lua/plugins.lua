@@ -54,18 +54,6 @@ return require('packer').startup {
       module = 'popup',
     }
     use {
-      'onsails/lspkind-nvim',
-      module = 'lspkind',
-      config = function()
-        require('lspkind').init {
-          symbol_map = {
-            Snippet = '',
-            Field = '識',
-          },
-        }
-      end,
-    }
-    use {
       'kyazdani42/nvim-web-devicons',
       module = 'nvim-web-devicons',
       config = function()
@@ -144,6 +132,10 @@ return require('packer').startup {
       end,
     }
     use {
+      'stevearc/aerial.nvim',
+      module = 'aerial',
+    }
+    use {
       'jose-elias-alvarez/null-ls.nvim',
       module = 'null-ls',
     }
@@ -167,13 +159,38 @@ return require('packer').startup {
       'simrat39/symbols-outline.nvim',
       cmd = 'SymbolsOutline',
       setup = function()
+        local symbols = require('symbols').symbols
         vim.g.symbols_outline = {
           width = 30,
           show_guides = false,
           auto_preview = false,
           position = 'left',
           symbols = {
-            Method = { icon = '_', hl = 'TSMethod' },
+            Array = { icon = symbols.Array, hl = 'TSConstant' },
+            Boolean = { icon = symbols.Boolean, hl = 'TSBoolean' },
+            Class = { icon = symbols.Class, hl = 'TSType' },
+            Constant = { icon = symbols.Constant, hl = 'TSConstant' },
+            Constructor = { icon = symbols.Constructor, hl = 'TSConstructor' },
+            Enum = { icon = symbols.Enum, hl = 'TSType' },
+            EnumMember = { icon = symbols.EnumMember, hl = 'TSField' },
+            Event = { icon = symbols.Event, hl = 'TSType' },
+            Field = { icon = symbols.Field, hl = 'TSField' },
+            File = { icon = symbols.File, hl = 'TSURI' },
+            Function = { icon = symbols.Function, hl = 'TSFunction' },
+            Interface = { icon = symbols.Interface, hl = 'TSType' },
+            Key = { icon = symbols.Keyword, hl = 'TSType' },
+            Method = { icon = symbols.Method, hl = 'TSMethod' },
+            Module = { icon = symbols.Module, hl = 'TSNamespace' },
+            Namespace = { icon = symbols.Namespace, hl = 'TSNamespace' },
+            Null = { icon = symbols.Null, hl = 'TSType' },
+            Number = { icon = symbols.Number, hl = 'TSNumber' },
+            Object = { icon = symbols.Object, hl = 'TSType' },
+            Operator = { icon = symbols.Operator, hl = 'TSOperator' },
+            Package = { icon = symbols.Package, hl = 'TSNamespace' },
+            Property = { icon = symbols.Property, hl = 'TSMethod' },
+            String = { icon = symbols.String, hl = 'TSString' },
+            Struct = { icon = symbols.Struct, hl = 'TSType' },
+            Variable = { icon = symbols.Variable, hl = 'TSConstant' },
           },
           show_symbol_details = false,
           symbol_blacklist = {},
@@ -319,29 +336,28 @@ return require('packer').startup {
         require('telescope').load_extension 'project'
       end,
     }
-    -- use {
-    --   'romgrk/barbar.nvim',
-    --   setup = function()
-    --     require('utils').deep_merge(vim, {
-    --       g = {
-    --         bufferline = {
-    --           auto_hide = true,
-    --           icon_separator_active = '',
-    --           icon_separator_inactive = '',
-    --           icon_close_tab = '',
-    --           icon_close_tab_modified = '',
-    --         },
-    --       },
-    --     })
-    --   end,
-    -- }
+    use {
+      'romgrk/barbar.nvim',
+      disable = true,
+      setup = function()
+        require('utils').deep_merge(vim, {
+          g = {
+            bufferline = {
+              auto_hide = true,
+              icon_separator_active = '',
+              icon_separator_inactive = '',
+              icon_close_tab = '',
+              icon_close_tab_modified = '',
+            },
+          },
+        })
+      end,
+    }
     use {
       local_repo 'nononotes-nvim',
       cond = full,
       config = function()
-        -- if require('packer').full then
         require('plugins.nononotes').setup()
-        -- end
       end,
     }
     use {
@@ -349,7 +365,6 @@ return require('packer').startup {
       config = function()
         require('diffview').setup()
       end,
-      -- this does not seem to have an effect
       cmd = {
         'DiffviewOpen',
         'DiffviewClose',
@@ -390,11 +405,11 @@ return require('packer').startup {
       'folke/twilight.nvim',
       wants = 'twilight.nvim',
       requires = { 'folke/twilight.nvim' },
-      cond = full,
+      -- cond = full,
       config = function()
         require('twilight').setup {}
       end,
-      -- cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
+      cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
     }
     use {
       'metakirby5/codi.vim',
@@ -505,19 +520,19 @@ return require('packer').startup {
         require 'plugins.anywise_reg'
       end,
     }
-    -- use {
-    --   'bfredl/nvim-miniyank',
-    --   setup = function()
-    --     require('utils').deep_merge(vim.g, {
-    --       -- miniyank_delete_maxlines = 1,
-    --       miniyank_filename = '/home/prncss/.miniyank.mpack',
-    --     })
-    --   end,
-    -- }
-    -- use {
-    --   'svermeulen/vim-yoink',
-    -- }
-
+    use {
+      'bfredl/nvim-miniyank',
+      disable = true,
+      setup = function()
+        require('utils').deep_merge(vim.g, {
+          -- miniyank_delete_maxlines = 1,
+          miniyank_filename = '/home/prncss/.miniyank.mpack',
+        })
+      end,
+    }
+    use {
+      'svermeulen/vim-yoink', disable = true,
+    }
     -- edition
     use {
       'JoseConseco/vim-case-change',
@@ -553,7 +568,6 @@ return require('packer').startup {
       setup = function()
         require('utils').deep_merge(vim, {
           g = {
-            -- not as documented
             sandwich_no_default_key_mappings = 1,
             operator_sandwich_no_default_key_mappings = 1,
             textobj_sandwich_no_default_key_mappings = 1,
@@ -629,7 +643,7 @@ return require('packer').startup {
             vim.g.textobj_datetime_no_default_key_mappings = 1
           end,
         },
-        -- 'preservim/vim-textobj-sentence',
+        {'preservim/vim-textobj-sentence', cond = full},
         {
           'kana/vim-textobj-line',
           cond = full,
@@ -650,23 +664,23 @@ return require('packer').startup {
         vim.g.ninja_feet_no_mappings = 1
       end,
     }
-
     -- session
-    -- use {
-    --   'windwp/nvim-projectconfig',
-    --   config = function()
-    --     require('nvim-projectconfig').load_project_config {
-    --       project_dir = local_repo'projects-config/',
-    --     }
-    --     require('utils').augroup('NvimProjectConfig', {
-    --       {
-    --         events = { 'DirChanged' },
-    --         targets = { '*' },
-    --         cmd = require('nvim-projectconfig').load_project_config,
-    --       },
-    --     })
-    --   end,
-    -- }
+    use {
+      'windwp/nvim-projectconfig',
+      disable = true,
+      config = function()
+        require('nvim-projectconfig').load_project_config {
+          project_dir = local_repo'projects-config/',
+        }
+        require('utils').augroup('NvimProjectConfig', {
+          {
+            events = { 'DirChanged' },
+            targets = { '*' },
+            cmd = require('nvim-projectconfig').load_project_config,
+          },
+        })
+      end,
+    }
     use {
       'ethanholz/nvim-lastplace',
       cond = full,
@@ -677,16 +691,16 @@ return require('packer').startup {
         }
       end,
     }
-    -- use {
-    --   'folke/persistence.nvim',
-    --   event = 'BufReadPre',
-    --   module = 'persistence',
-    --   dir = os.getenv 'HOME' .. '/Personal/sessions/',
-    --   config = function()
-    --     require('persistence').setup()
-    --   end,
-    -- }
-
+    use {
+      'folke/persistence.nvim',
+      disable = true,
+      event = 'BufReadPre',
+      module = 'persistence',
+      dir = os.getenv 'HOME' .. '/Personal/sessions/',
+      config = function()
+        require('persistence').setup()
+      end,
+    }
     use {
       'ahmedkhalf/project.nvim',
       cond = full,
@@ -696,28 +710,28 @@ return require('packer').startup {
       end,
     }
 
-    -- use {
-    --   'rmagatti/auto-session',
-    --   config = function()
-    --     -- require 'plugins.auto-session'
-    --   end,
-    --   -- requires = {
-    --   --   disabled = true,
-    --   --   'rmagatti/session-lens',
-    --   -- },
-    -- }
-    -- use {
-    --
-    --   'Shatur/neovim-session-manager',
-    --   setup = function()
-    --     require('utils').deep_merge(vim.g, {
-    --       session_dir = os.getenv 'HOME' .. 'Media/sessions',
-    --     })
-    --   end,
-    --   config = function()
-    --     require('telescope').load_extension 'session_manager'
-    --   end,
-    -- }
+    use {
+      'rmagatti/auto-session',
+      disable = true,
+      config = function()
+        -- require 'plugins.auto-session'
+      end,
+      -- requires = {
+      --   'rmagatti/session-lens',
+      -- },
+    }
+    use {
+      'Shatur/neovim-session-manager',
+      disable = true,
+      setup = function()
+        require('utils').deep_merge(vim.g, {
+          session_dir = os.getenv 'HOME' .. 'Media/sessions',
+        })
+      end,
+      config = function()
+        require('telescope').load_extension 'session_manager'
+      end,
+    }
 
     -- themes
     use 'rafamadriz/neon'

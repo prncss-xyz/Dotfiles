@@ -18,21 +18,29 @@ function m.repeatable(rhs)
   return string.format('%s<cmd>call repeat#set(%q, v:count)<cr>', rhs, t(rhs))
 end
 
+-- TODO:
 m.redo_or_repeat = string.format(
   '%s<cmd>silent! call repeat#set(%q, v:count)<cr>',
   'u',
-  t '<esc>:redo\\<cr>'
+  ':redo\\<cr>'
 )
 
+function m.outliner()
+  if vim.bo.filetype == 'markdown' then
+    vim.cmd 'Toc'
+  else
+    vim.cmd 'SymbolsOutline'
+  end
+end
+
 function m.project_files()
-  local opts = {} -- define here if you want to define something
   if vim.fn.getcwd() == os.getenv 'HOME' .. '/Personal/neuron' then
     require('nononotes').prompt('edit', false, 'all')
     return
   end
-  local ok = pcall(require('telescope.builtin').git_files, opts)
+  local ok = pcall(require('telescope.builtin').git_files)
   if not ok then
-    require('telescope.builtin').find_files(opts)
+    require('telescope.builtin').find_files()
   end
 end
 
@@ -43,6 +51,15 @@ function m.toggle_cmp()
   else
     cmp.complete() -- not working
   end
+end
+
+function m.up()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    cmp.select_prev_item()
+    return
+  end
+  vim.fn.feedkeys(t '<up>', '')
 end
 
 function m.tab_complete()
@@ -135,7 +152,7 @@ function m.open_current()
   require('plenary.job')
     :new({
       command = 'opener',
-      args = { vim.fn.expand('%') },
+      args = { vim.fn.expand '%' },
     })
     :start()
 end

@@ -1,8 +1,7 @@
 require 'plugins.luasnip'
 
-
 local cmp = require 'cmp'
-local lspkind = require 'lspkind'
+
 local sources = {
   { name = 'luasnip' },
   -- { name = 'nvim_lsp' },
@@ -20,6 +19,8 @@ local lua_sources = {
   { name = 'neorg' },
 }
 
+local symbolic = require'symbols'.symbolic
+
 cmp.setup {
   snippet = {
     expand = function(args)
@@ -27,11 +28,11 @@ cmp.setup {
     end,
   },
   formatting = {
-    format = lspkind.cmp_format({with_text = false, maxwidth = 50}),
-    -- format = function(entry, vim_item)
-    --   vim_item.kind = lspkind.presets.default[vim_item.kind]
-    --   return vim_item
-    -- end,
+    format = function(entry, vim_item)
+      vim_item.kind = symbolic(vim_item.kind)
+      vim_item.abbr = string.sub(vim_item.abbr, 1, 50)
+      return vim_item
+    end
   },
   sources = sources,
   mapping = {

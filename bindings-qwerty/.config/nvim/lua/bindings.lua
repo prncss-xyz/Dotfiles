@@ -1,55 +1,65 @@
 local M = {}
-local invert = require("utils").invert
+local invert = require('utils').invert
 
 -- mapclear
 
 M.plugins = {}
 
 local function s(char)
-	return "<s-" .. char .. ">"
+  return '<s-' .. char .. '>'
+end
+
+local function alt(key)
+  return string.format('<a-%s>', key)
 end
 
 local function safe_merge(inv, dir, new)
-	for key, value in pairs(new) do
-		if dir[key] then
-			print(string.format("key %q in conflict, %q is declared, trying to add %q", key, dir[key], value))
-		elseif inv[value] then
-			print(
-				string.format(
-					"trying to add value %q to %q, while it is already attached to %q",
-					value,
-					key,
-					inv[value]
-				)
-			)
-		else
-			inv[value] = key
-		end
-	end
+  for key, value in pairs(new) do
+    if dir[key] then
+      print(
+        string.format(
+          'key %q in conflict, %q is declared, trying to add %q',
+          key,
+          dir[key],
+          value
+        )
+      )
+    elseif inv[value] then
+      print(
+        string.format(
+          'trying to add value %q to %q, while it is already attached to %q',
+          value,
+          key,
+          inv[value]
+        )
+      )
+    else
+      inv[value] = key
+    end
+  end
 end
 
-local a = invert({
-	m = "edit",
-	g = "jump",
-	h = "move",
-	M = "mark",
-	Q = "macro",
-	q = "editor",
-	H = "help",
-	Y = "browser",
-	K = "selection",
-})
+local a = invert {
+  m = 'edit',
+  g = 'jump',
+  h = 'move',
+  M = 'mark',
+  Q = 'macro',
+  q = 'editor',
+  H = 'help',
+  Y = 'browser',
+}
 local d0 = {
-	[";"] = "right",
-	l = "left",
-	k = "down",
-	j = "up",
-	a = "diagnostic",
-	s = "symbol",
-	z = "spell",
-	["é"] = "search",
-	[s("É")] = "searchBack",
-	L = "loclist",
+  [';'] = 'right',
+  l = 'left',
+  k = 'down',
+  j = 'up',
+  a = 'diagnostic',
+  s = 'symbol',
+  z = 'spell',
+  ['é'] = 'search',
+  [s 'É'] = 'searchBack',
+  L = 'loclist',
 }
 
 -- map('é', 'search', {
@@ -59,988 +69,1139 @@ local d0 = {
 -- }, {expr=true})
 
 local function append(word)
-	return function(str)
-		return str .. word
-	end
+  return function(str)
+    return str .. word
+  end
 end
 
 local function prepend(word)
-	return function(str)
-		return str .. word
-	end
+  return function(str)
+    return str .. word
+  end
 end
 
 local adapters = {
-	default = { append(" next"), append(" previous") },
-	un = { prepend(""), prepend("un") },
-	time = { append(" forward"), append("back") },
+  default = { append ' next', append ' previous' },
+  un = { prepend '', prepend 'un' },
+  time = { append ' forward', append 'back' },
 }
 
 local function d(key)
-	return {
-		type = "doubler",
-		adapter = function(str)
-			return "line " .. str
-		end,
-	}
+  return {
+    type = 'doubler',
+    adapter = function(str)
+      return 'line ' .. str
+    end,
+  }
 end
 
 local function id(x)
-	return x
+  return x
 end
 
 local function allmap(key, name, maps, opts)
-	local register = require("which-key-fallback")
-	for domain, lhs in pairs(maps) do
-		local adapter2 = id
-		local k = key
-		if type(domain) == "table" then
-			adapter2 = domain.adapter
-			k = key .. key
-		end
-		if type(lhs == "table") then
-			local adapter = adapters[lhs.typ or "default"]
-			register({ a[domain] .. k, lhs[1], adapter2(adapter[1](name)) }, opts)
-			register({ a[domain] .. s(k), lhs[2], adapter2(adapter[2](name)) }, opts)
-		else
-			register({ a[domain] .. k, lhs, name }, opts)
-		end
-	end
+  local register = require 'which-key-fallback'
+  for domain, lhs in pairs(maps) do
+    local adapter2 = id
+    local k = key
+    if type(domain) == 'table' then
+      adapter2 = domain.adapter
+      k = key .. key
+    end
+    if type(lhs == 'table') then
+      local adapter = adapters[lhs.typ or 'default']
+      register({ a[domain] .. k, lhs[1], adapter2(adapter[1](name)) }, opts)
+      register({ a[domain] .. s(k), lhs[2], adapter2(adapter[2](name)) }, opts)
+    else
+      register({ a[domain] .. k, lhs, name }, opts)
+    end
+  end
 end
 
 local dd = invert(d0)
 
 safe_merge(dd, d0, {})
 
-local r = invert({
-	a = "outer",
-	i = "inner",
-})
+local r = invert {
+  a = 'outer',
+  i = 'inner',
+}
 
-local function setup_cut_mappings()
-	-- local map = require('utils').buf_map
+-- summary
+-- jkl;       -- move
+-- aA         -- code action, range code action
+-- bB         -- unjoin, join
+-- c          -- comment
+-- nN         -- ninja
+-- r          -- sandwich-replace
+-- s          -- rename
+-- iI         -- indent
+-- uU         -- lowercase
+-- v          -- toggle case
+-- w          -- telescope symbol
+-- x          -- exchange
+-- yY         -- sandwich-add, delete
+-- z          -- spell suggest
+local function map_edit()
+  local map = require('utils').map
+  local register = require 'which-key-fallback'
+
+  -- matze move
+  local rep = require('bindutils').repeatable
+  map('v', a.edit .. dd.left, rep '<Plug>MoveBlockLeft', { noremap = false })
+  map('v', a.edit .. dd.right, rep '<Plug>MoveBlockRight', { noremap = false })
+  map('n', a.edit .. dd.left, rep '<Plug>MoveCharLeft', { noremap = false })
+  map('n', a.edit .. dd.right, rep '<Plug>MoveCharRight', { noremap = false })
+  map('v', a.edit .. dd.up, rep '<Plug>MoveBlockUp', { noremap = false })
+  map('v', a.edit .. dd.down, rep '<Plug>MoveBlockDown', { noremap = false })
+  map('n', a.edit .. dd.up, rep '<Plug>MoveLineUp', { noremap = false })
+  map('n', a.edit .. dd.down, rep '<Plug>MoveLineDown', { noremap = false })
+
+
+  -- exchange (repeat)
+  map('nx', a.edit .. 'x', '<Plug>(Exchange)', { noremap = false })
+  map(
+    'nx',
+    a.edit .. a.edit .. 'x',
+    '<Plug>(ExchangeLine)',
+    { noremap = false }
+  )
+  map('nx', a.edit .. 'xc', '<Plug>(ExchangeClear)', { noremap = false })
+
+  -- sandwich
+  map('', a.edit .. 'y', '<Plug>(operator-sandwich-add)', { noremap = false })
+  map(
+    '',
+    a.edit .. 'Y',
+    '<Plug>(operator-sandwich-delete)',
+    { noremap = false }
+  )
+  map(
+    '',
+    a.edit .. 'r',
+    '<Plug>(operator-sandwich-replace)',
+    { noremap = false }
+  )
+  map('ox', 'ir', '<Plug>(textobj-sandwich-auto-i)', { noremap = false })
+  map('ox', 'ar', '<Plug>(textobj-sandwich-auto-a)', { noremap = false })
+  map('ox', 'iy', '<Plug>(textobj-sandwich-query-i)', { noremap = false })
+  map('ox', 'ay', '<Plug>(textobj-sandwich-query-a)', { noremap = false })
+
+  -- ninja feet
+  map('o', a.edit .. 'Ni', '<Plug>(ninja-left-foot-inner)', { noremap = false })
+  map('o', a.edit .. 'Na', '<Plug>(ninja-left-foot-a)', { noremap = false })
+  map(
+    'o',
+    a.edit .. 'ni',
+    '<Plug>(ninja-right-foot-inner)',
+    { noremap = false }
+  )
+  map('o', a.edit .. 'na', '<Plug>(ninja-right-foot-a)', { noremap = false })
+  map('n', a.jump .. 'N', '<Plug>(ninja-insert)', { noremap = false })
+  map('n', a.jump .. 'n', '<Plug>(ninja-append)', { noremap = false })
+
+  -- case-change
+  map('nx', a.edit .. 'v', rep [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']])
+
+  -- kommentary
+  map(
+    'n',
+    a.edit .. a.edit .. 'c',
+    '<plug>kommentary_line_default',
+    { noremap = false }
+  )
+  map(
+    'n',
+    a.edit .. 'c',
+    '<Plug>kommentary_motion_default',
+    { noremap = false }
+  )
+  map(
+    'x',
+    a.edit .. 'c',
+    '<Plug>kommentary_visual_default<esc>',
+    { noremap = false }
+  )
+
+  for mode in string.gmatch('nx', '.') do
+    register({
+      -- J = { 'gJ', 'join' },
+      a = {
+        "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
+        'code actions',
+      },
+      A = {
+        "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
+        'range code actions',
+      },
+      B = { 'J', 'join' },
+      -- b = { '', 'unjoin' }, -- mapped by the plugin
+      s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
+      i = { '>>', 'indent' },
+      T = { '<<', 'dedent' },
+      u = { 'gu', 'lowercase' },
+      -- v = { 'g~', 'toggle case' },
+      -- v = { [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']], 'toggle case' },
+      w = {
+        "<cmd>lua require'telescope.builtin'.symbols{ sources = {'math', 'emoji'} }<cr><esc>",
+        'symbols',
+      }, -- FIXME: insert emoji multiple times
+      z = {
+        "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
+        'spell suggest',
+      },
+    }, {
+      prefix = a.edit,
+      mode = mode,
+    })
+  end
+end
+
+local function map_jump()
+  local map = require('utils').map
+  local register = require 'which-key-fallback'
+
+  -- matchup
+  map('nx', a.jump .. 'c', '<plug>(matchup-%)', { noremap = false })
+  map('nx', a.jump .. 'C', '<plug>(matchup-g%)', { noremap = false })
+  map('nx', a.jump .. 'y', '<plug>(matchup-[%)', { noremap = false })
+  map('nx', a.jump .. 'Y', '<plug>(matchup-]%)', { noremap = false })
+  map('nx', a.jump .. 'i', '<plug>(matchup-z%)', { noremap = false })
+  map('o', 'ic', '<plug>(matchup-i%)', { noremap = false })
+  map('o', 'ac', '<plug>(matchup-a%)', { noremap = false })
+
+  if false then
+    map('nv', '<c-i>', '<cmd>lua require"bufjump".local_backward()<cr>')
+  end
+  map('nv', '<c-o>', '<cmd>lua require"bufjump".local_forward()<cr>')
+
+  register({
+    a = { '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'go next diagnostic' },
+    A = {
+      '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
+      'go previous diagnostic',
+    },
+    d = { ']c', 'next change' },
+    D = { '[c', 'previous change' },
+    J = { '<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset' },
+    j = { '<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump' },
+    o = { '`.', 'last change' },
+    -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
+    -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
+    z = { ']s', 'next misspelled' },
+    Z = { '[s', 'prevous misspelled' },
+    [':'] = { 'g,', 'newer change' },
+    [';'] = { 'g;', 'older changer' },
+    ['é'] = {
+      "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
+      'current buffer fuzzy find',
+    },
+  }, {
+    prefix = a.jump,
+  })
+  for mode in string.gmatch('nvo', '.') do
+    register({
+      e = { 'G', 'last line' },
+      E = { 'gg', 'first line' },
+      L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
+      s = {
+        "<cmd>lua require('telescope.builtin').treesitter()<cr>",
+        'symbols',
+      },
+      [dd.up] = { 'gk', 'visual up' },
+      [dd.down] = { 'gj', 'visual down' },
+    }, {
+      mode = mode,
+      prefix = a.jump,
+    })
+  end
+end
+
+-- workspace movements
+local function map_move()
+  local register = require 'which-key-fallback'
+  register({
+    c = { '<cmd>TodoTelescope<cr>', 'telescope TODO' },
+    b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
+    d = { -- FIXME
+      '<cmd>lua require("telescope.builtin").lsp_definitions()<cr>',
+      'go definition',
+    },
+    D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
+    i = { -- FIXME
+      '<cmd>lua require("telescope.").builtin.lsp_implementations()<cr>',
+      'go implementation',
+    },
+    -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
+    o = {
+      "<cmd>lua require('telescope.builtin').oldfiles({only_cwd = true})<cr>",
+      'oldfiles',
+    },
+    r = {
+      "<cmd>lua require('telescope.builtin').lsp_references()<cr>",
+      'lsp references',
+    },
+    t = {
+      '<cmd>lua require("trouble").next({skip_groups = true, jump = true})<cr>',
+      'trouble, next',
+    },
+    T = {
+      '<cmd>lua require("trouble").previous({skip_groups = true, jump = true})<cr>',
+      'trouble, previous',
+    },
+    ['é'] = {
+      "<cmd>lua require('telescope.builtin').live_grep()<cr>",
+      'live grep',
+    },
+    [a.move] = {
+      '<cmd>lua require("bindutils").project_files()<cr>',
+      'project file',
+    },
+  }, {
+    prefix = a.move,
+  })
+end
+
+local function map_editor()
+  require 'which-key-fallback'({
+    a = {
+      '<cmd>TroubleToggle lsp_workspace_diagnostics<cr>',
+      'lsp diagnostics',
+    },
+    A = {
+      '<cmd>TroubleToggle lsp_document_diagnostics<cr>',
+      'lsp document diagnostics',
+    },
+    b = {
+      '<cmd>lua require"bufjump".backward(require"bufjump".not_under_cwd)<cr>',
+      'previous workspace',
+    },
+    B = {
+      '<cmd>lua require"bufjump".backward(require"bufjump".not_under_cwd)<cr>',
+      'previous workspace',
+    },
+    c = { '<cmd>TodoTrouble<cr>', 'trouble todo' },
+    d = { '<cmd>DiffviewOpen<cr>', 'diffview open' },
+    D = { '<cmd>DiffviewClose<cr>', 'diffview close' },
+    e = {
+      '<cmd>lua require"bindutils".edit_current()<cr>',
+      'current in new editor',
+    },
+    f = { '<cmd>NvimTreeOpen<cr>', 'file tree' }, -- FIXME: find a way to focus current file on opening
+    F = { '<cmd>NvimTreeClose<cr>', 'file tree' },
+    g = { '<cmd>Neogit<cr>', 'neogit' },
+    G = { '<cmd>Gitsigns setqflist<cr>', 'trouble hunk' },
+    h = { '<cmd>DiffviewFileHistory<cr>', 'diffview open' },
+    H = { '<cmd>DiffviewClose<cr>', 'diffview close' },
+    m = { '<cmd>Telescope installed_plugins<cr>', 'plugins' },
+    n = { '<cmd>Telescope node_modules list<cr>', 'new note' },
+    o = {
+      "<cmd>lua require'bindutils'.open_current()<cr>",
+      'open current external',
+    },
+    p = { "<cmd>lua require'setup-session'.develop()<cr>", 'session develop' },
+    q = { '<cmd>TroubleToggle quickfix<cr>', 'quickfix' },
+    Q = { '<cmd>TroubleClose<cr>', 'trouble close' },
+    r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
+    s = { '<cmd>lua require"bindutils".outliner()<cr>', 'outliner' },
+    S = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
+    t = { '<cmd>lua require"bindutils".term()<cr>', 'new terminal' },
+    u = { '<cmd>UndotreeToggleTree<cr>', 'undo tree' },
+    w = { '<cmd>Telescope projects<cr>', 'sessions' },
+    W = { '<cmd>Telescope project_directory<cr>', 'projects' },
+    x = {
+      "<cmd>lua require'bindutils'.term_launch({'xplr', vim.fn.expand'%'})<cr>",
+      'xplr',
+    },
+    z = { '<cmd>ZenMode<cr>', 'zen mode' },
+    ['.'] = { '<cmd>lua require"bindutils".dotfiles()<cr>', 'dotfiles' },
+    ['"'] = {
+      "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
+      'pick note',
+    },
+    [' '] = {
+      "<cmd>lua require('telescope.builtin').commands()<cr>",
+      'commands',
+    },
+  }, {
+    prefix = a.editor,
+  })
+end
+
+local function map_browser()
+  local register = require 'which-key-fallback'
+  register {
+    [a.browser] = {
+      man = { '<cmd>lua require"browser".man()<cr>', 'man page' },
+      o = {
+        '<cmd>call jobstart(["opener", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
+        'open current file',
+      },
+      p = { "<cmd>lua require'setup-session'.launch()<cr>", 'session lauch' },
+      u = {
+        '<cmd>lua require"browser".openCfile()<cr>',
+        'open current file',
+      },
+    },
+  }
+  require('browser').mapBrowserSearch(a.browser, '+browser search', {
+    arch = { 'https://wiki.archlinux.org/index.php?search=', 'archlinux wiki' },
+    aur = { 'https://aur.archlinux.org/packages/?K=', 'aur packages' },
+    ca = { 'https://www.cairn.info/resultats_recherche.php?searchTerm=', 'cairn' },
+    cn = { 'https://www.cnrtl.fr/definition/', 'cnrtl' },
+    d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
+    eru = {
+      'https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=',
+      'erudit',
+    },
+    fr = {
+      'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=',
+      'francis',
+    },
+    gh = { 'https://github.com/search?q=', 'github' },
+    go = { 'https://google.ca/search?q=', 'google' },
+    lh = { 'https://www.libhunt.com/search?query=', 'libhunt' },
+    mdn = { 'https://developer.mozilla.org/en-US/search?q=', 'mdn' },
+    nell = {
+      'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
+      'nelligan',
+    },
+    npm = { 'https://www.npmjs.com/search?q=', 'npm' },
+    pac = { 'https://archlinux.org/packages/?q=', 'arch packages' },
+    sea = { 'https://www.seriouseats.com/search?q=', 'seriouseats' },
+    sep = { 'https://plato.stanford.edu/search/searcher.py?query=', 'sep' },
+    sp = { 'https://www.persee.fr/search?ta=article&q=', 'persée' },
+    usi = { 'https://usito.usherbrooke.ca/d%C3%A9finitions/', 'usito' },
+    we = { 'https://en.wikipedia.org/wiki/', 'wikipidia en' },
+    wf = { 'https://fr.wikipedia.org/wiki/', 'wikipidia fr' },
+    y = { 'https://www.youtube.com/results?search_query=', 'youtube' },
+  })
+end
+
+local function map_help()
+  require 'which-key-fallback'({
+    d = { '<cmd>lua require"bindutils".docu_current()<cr>', 'filetype docu' },
+    h = {
+      '<cmd>e ~/Dotfiles/bindings-qwerty/.config/nvim/lua/bindings.lua<cr>',
+      'bindings',
+    }, -- FIXME: use `realpath` instead
+    m = {
+      "<cmd>lua require('telescope.builtin').man_pages()<cr>",
+      'man pages',
+    },
+    p = { '<cmd>Telescope md_help<cr>', 'md help' },
+    v = {
+      "<cmd>lua require('telescope.builtin').help_tags()<cr>",
+      'help tags',
+    },
+  }, {
+    prefix = 'H',
+  })
+end
+
+-- local function map_()
+--   local map = require('utils').map
+--   local register = require 'which-key-fallback'
+-- end
+
+local function map_markdown()
+  local register = require 'which-key-fallback'
+  local map_local = require('utils').buf_map
+  local buffer = vim.api.nvim_get_current_buf()
+  if false then
+    register({
+      y = { '<Plug>Markdown_OpenUrlUnderCursor', 'follow url' },
+    }, {
+      prefix = a.move,
+      buffer = buffer,
+    })
+    for mode in string.gmatch('nvo', '.') do
+      register({
+        -- s = { '<cmd>Telescope heading<cr>', 'headings' },
+        t = { '<Plug>Markdown_MoveToNextHeader', 'next header' },
+        T = {
+          '<Plug>Markdown_MoveToPreviousHeader',
+          'previous header',
+        },
+        h = {
+          '<Plug>Markdown_MoveToCurHeader',
+          'current header',
+        },
+        H = {
+          '<Plug>Markdown_MoveToParentHeader',
+          'parent header',
+        },
+        [dd.up] = { 'k', 'physical line up' },
+        [dd.down] = { 'j', 'physical line down' },
+      }, {
+        prefix = a.jump,
+        mode = mode,
+        buffer = buffer, -- FIXME: this is still setting bindings as global
+        noremap = false,
+      })
+    end
+  end
+
+  map_local('', a.jump..'s', '<cmd>Telescope heading<cr>')
+  map_local('nvo', a.jump .. 'T', '<Plug>Markdown_MoveToPreviousHeader')
+  map_local('nvo', a.jump .. 't', '<Plug>Markdown_MoveToNextHeader')
+  map_local('nvo', a.jump .. 'h', '<Plug>Markdown_MoveToCurHeader')
+  map_local('nvo', a.jump .. 'H', '<Plug>Markdown_MoveToParentHeader')
+  map_local('', a.jump .. dd.up, 'k')
+  map_local('', a.jump .. dd.down, 'j')
+  map_local('nvio', '<c-b>', 'g0')
+  map_local('nvio', '<c-f>', 'g$')
+  map_local('', dd.up, 'gk')
+  map_local('', dd.down, 'gj')
+  -- both are identical
+  map_local('ox', 'ad', '<Plug>(textobj-datetime-auto)', { noremap = false })
+  map_local('ox', 'id', '<Plug>(textobj-datetime-auto)', { noremap = false })
+
+  vim.fn.call('textobj#sentence#init', {})
+end
+
+local function map_readonly()
+  local map = require('utils').buf_map
+  if vim.bo.readonly then
+    map('', 'x', '<cmd>q<cr>', { nowait = true })
+    map('', 'u', '<c-u>', { noremap = false, nowait = true })
+    map('', 'd', '<c-d>', { noremap = false, nowait = true })
+  end
 end
 
 function M.setup()
-	require("utils").augroup("EditMappings", {
-		{
-			events = { "BufReadPost" },
-			targets = { "*" },
-			command = function()
-				if vim.bo.readonly then
-					require("utils").buf_map("", "x", ":q")
-				else
-					setup_cut_mappings()
-				end
-			end,
-		},
-	})
-	-- function M.setup(register)
-	local register = require("which-key-fallback")
-	local map = require("utils").map
+  require('utils').augroup('ReadonlyMappings', {
+    {
+      events = { 'BufReadPost' },
+      targets = { '*' },
+      command = map_readonly,
+    },
+  })
+  require('utils').augroup('MarkdownBindings', {
+    {
+      events = { 'FileType' },
+      targets = { 'markdown' },
+      command = map_markdown,
+    },
+  })
+  map_edit()
+  map_jump()
+  map_move()
+  map_editor()
+  map_browser()
+  map_help()
 
-	-- experiment
-	map("", "b", "*")
-	map("", "B", "#")
-	map("", "e", "w")
-	map("", "E", "W")
-	map("", "w", "ge")
-	map("", "W", "gE")
+  local register = require 'which-key-fallback'
+  local map = require('utils').map
 
-	map("nx", "<leader><leader>", ":")
+  -- TODO:map reselect "gv"
 
-	map("", "q", "<nop>")
-	map("", a.edit, "<nop>")
-	map("", a.jump, "<nop>")
-	map("", a.move, "<nop>")
-	map("", a.mark, "<nop>")
-	map("", a.macro, "<nop>")
-	map("", a.editor, "<nop>")
-	map("", a.help, "<nop>")
-	map("", a.browser, "<nop>")
-	map("", "gg", "<nop>")
-	map("", "g'", "<nop>")
-	map("", "g`", "<nop>")
-	map("", "g~", "<nop>")
-	map("", "gg", "<nop>")
-	map("", "gg", "<nop>")
-	local function remark(new, old)
-		map("", a.mark .. new, "`" .. old)
-		map("", a.mark .. new, "'" .. old)
-	end
-	remark("V", "<")
-	remark("v", ">")
-	remark("P", "[")
-	remark("p", "]")
-	map("n", a.mark, "'")
-	map("n", a.mark .. a.mark, "`") -- not working ?? whichkwey
+  map('nx', '<leader><leader>', ':')
 
-	-- neoscroll
-	require("neoscroll.config").set_mappings({
-		["<C-u>"] = { "scroll", { "-vim.wo.scroll", "true", "250" } },
-		["<C-d>"] = { "scroll", { "vim.wo.scroll", "true", "250" } },
-		zt = { "zt", { "250" } },
-		zz = { "zz", { "250" } },
-		zb = { "zb", { "250" } },
-	})
+  map('', 'q', '<nop>')
+  map('', a.edit, '<nop>')
+  map('', a.jump, '<nop>')
+  map('', a.move, '<nop>')
+  map('', a.mark, '<nop>')
+  map('', a.macro, '<nop>')
+  map('', a.editor, '<nop>')
+  map('', a.help, '<nop>')
+  map('', a.browser, '<nop>')
+  map('', 'gg', '<nop>')
+  map('', "g'", '<nop>')
+  map('', 'g`', '<nop>')
+  map('', 'g~', '<nop>')
+  map('', 'gg', '<nop>')
+  map('', 'gg', '<nop>')
+  map('', '<c-u>', '<nop>')
+  map('', '<c-d>', '<nop>')
+  local function remark(new, old)
+    map('', a.mark .. new, '`' .. old)
+    map('', a.mark .. new, "'" .. old)
+  end
+  map('nx', 'r', 'r')
+  map('nx', 'R', 'R')
+  remark('V', '<')
+  remark('v', '>')
+  remark('P', '[')
+  remark('p', ']')
+  map('n', a.mark, "'")
+  map('n', a.mark .. a.mark, '`') -- not working ?? whichkey
 
-	map("", "s", "<Plug>Lightspeed_s", { noremap = false })
-	map("", "S", "<Plug>Lightspeed_S", { noremap = false })
-	map(
-		"",
-		"f",
-		'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
-		{ noremap = false, expr = true }
-	)
-	map(
-		"",
-		"F",
-		'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_F" : "F"',
-		{ noremap = false, expr = true }
-	)
-	map(
-		"",
-		"t",
-		'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_t" : "t"',
-		{ noremap = false, expr = true }
-	)
-	map(
-		"",
-		"T",
-		'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_T" : "T"',
-		{ noremap = false, expr = true }
-	)
+  map('', dd.right, 'l')
+  map('', dd.left, 'h')
+  map('', dd.up, 'k')
+  map('', dd.down, 'j')
 
-	-- auto-pairs
-	-- map('i', '<cr>', 'v:lua.completion_confirm()', { expr = true })
+  map('', 'b', '*')
+  map('', 'B', '#')
+  map('', 'w', 'ge')
+  map('', 'W', 'gE')
+  map('', 'e', 'w')
+  map('', 'E', 'W')
+  map('', 'é', '/')
+  map('', 'É', 'É')
+  map('nvo', 'L', '^')
+  map('nvo', ':', '$')
 
-	-- map('n', 'i', '<nop>')
-	-- map('n', 'a', '<nop>')
-	-- map('n', 'I', 'i')
-	-- map('n', 'A', 'a')
-	-- map('n', 'ii', 'i')
-	-- map('n', 'aa', 'a')
-	-- map('n', 'iI', 'I')
-	-- map('n', 'aA', 'A')
+  -- neoscroll
+  require('neoscroll.config').set_mappings {
+    ['J'] = { 'scroll', { '-vim.wo.scroll', 'true', '250' } },
+    ['K'] = { 'scroll', { 'vim.wo.scroll', 'true', '250' } },
+    zt = { 'zt', { '250' } },
+    zz = { 'zz', { '250' } },
+    zb = { 'zb', { '250' } },
+  }
 
-	-- -- word
-	-- --  'n', 'w', 'w'
-	-- map('n', 'W', 'ge')
-	-- map('o', 'w', 'iw')
-	-- map('o', 'W', 'aw')
-	-- map('n', 'iw', 'ea')
-	-- map('n', 'iW', 'bi')
+  map('', 's', '<Plug>Lightspeed_s', { noremap = false })
+  map('', 'S', '<Plug>Lightspeed_S', { noremap = false })
+  map(
+    '',
+    'f',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
+    { noremap = false, expr = true }
+  )
+  map(
+    '',
+    'F',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_F" : "F"',
+    { noremap = false, expr = true }
+  )
+  map(
+    '',
+    't',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_t" : "t"',
+    { noremap = false, expr = true }
+  )
+  map(
+    '',
+    'T',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_T" : "T"',
+    { noremap = false, expr = true }
+  )
 
-	-- -- WORD
-	-- map('n', 'e', 'W')
-	-- map('n', 'E', 'gE')
-	-- map('o', 'e', 'iW')
-	-- map('o', 'E', 'aW')
-	-- map('n', 'ie', 'Ea')
-	-- map('n', 'iE', 'Bi')
-	-- ;q
+  -- eft
+  if false then
+    map('nx', ';', '<plug>(eft-repeat)', { noremap = false })
+    map('nxo', 'f', '<plug>(eft-f)', { noremap = false })
+    map('nxo', '<s-f>', '<plug>(eft-F)', { noremap = false })
+    map('nxo', 't', '<plug>(eft-t)', { noremap = false })
+    map('nxo', '<s-t>', '<plug>(eft-T)', { noremap = false })
+  end
 
-	-- " Use <nowait> to override the default bindings which wait for another key press
+  -- searching
+  require 'auto_unhl'
+  map('', '*', '<nop>')
+  map('', '#', '<nop>')
+  map('nxo', 'n', "n<cmd>lua require'auto_unhl'.post()<cr>")
+  map('nxo', 'N', "N<cmd>lua require'auto_unhl'.post()<cr>")
+  map('n', a.jump .. 'q', "g*<cmd>lua require'auto_unhl'.post()<cr>")
+  map('n', 'b', "*<cmd>lua require'auto_unhl'.post()<cr>")
+  map('n', 'B', "#<cmd>lua require'auto_unhl'.post()<cr>")
+  map(
+    'x',
+    'b',
+    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>"
+  )
+  map(
+    'x',
+    'B',
+    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>"
+  )
 
-	-- macrobatics
-	-- map('n', a.macro .. a.macro, '<plug>(Mac_Play)', { noremap = false })
-	map("n", a.macro .. "r", "<plug>(Mac_RecordNew)", { noremap = false })
-	map("n", a.macro .. "n", "<plug>(Mac_RotateBack)", { noremap = false })
-	map("n", a.macro .. "N", "<plug>(Mac_RotateForward)", { noremap = false })
-	map("n", a.macro .. "a", "<plug>(Mac_Append)", { noremap = false })
-	map("n", a.macro .. "A", "<plug>(Mac_Prepend)", { noremap = false })
-	map("n", a.macro .. "w", "<plug>(Mac_NameCurrentMacro)", { noremap = false })
-	map("n", a.macro .. "fw", "<plug>(Mac_NameCurrentMacroForFileType)", { noremap = false })
-	map("n", a.macro .. "sw", "<plug>(Mac_NameCurrentMacroForCurrentSession)", { noremap = false })
-	map("n", a.macro .. dd.search .. "r", "<plug>(Mac_SearchForNamedMacroAndOverwrite)", { noremap = false })
-	map("n", a.macro .. dd.search .. "n", "<plug>(Mac_SearchForNamedMacroAndRename)", { noremap = false })
-	map("n", a.macro .. dd.search .. "d", "<plug>(Mac_SearchForNamedMacroAndDelete)", { noremap = false })
-	map("n", a.macro .. dd.search .. "q", "<plug>(Mac_SearchForNamedMacroAndPlay)", { noremap = false })
-	map("n", a.macro .. "l", "DisplayMacroHistory")
+  -- luasnip + dial
+  -- FIXME:
+  -- map('i', '<c-a>', 'pumvisible() ? "a" : "b"', { expr = true })
+  -- map('i', '<c-x>', '<down>')
 
-	-- matze move
-	local rep = require("bindutils").repeatable
-	map("v", a.edit .. dd.left, rep("<Plug>MoveBlockLeft"), { noremap = false })
-	map("v", a.edit .. dd.right, rep("<Plug>MoveBlockRight"), { noremap = false })
-	map("n", a.edit .. dd.left, rep("<Plug>MoveCharLeft"), { noremap = false })
-	map("n", a.edit .. dd.right, rep("<Plug>MoveCharRight"), { noremap = false })
-	map("v", a.edit .. dd.up, rep("<Plug>MoveBlockUp"), { noremap = false })
-	map("v", a.edit .. dd.down, rep("<Plug>MoveBlockDown"), { noremap = false })
-	map("n", a.edit .. dd.up, rep("<Plug>MoveLinueUp"), { noremap = false })
-	map("n", a.edit .. dd.down, rep("<Plug>MoveLineDown"), { noremap = false })
-	-- map('n', '"', 'u<cmd>call repeat#set("\\<cr>", v:count)<cr>') -- FIXME:
-	-- map('n', '"', require'bindutils'.redo_or_repeat) -- FIXME:
+  -- TODO: use dial-* and luasnip-*-choice in insert mode
+  -- map('i', '<c-x>', 'pumvisible() ? "\\<down>" : 1', { expr = true })
+  map(
+    'nx',
+    '<c-a>',
+    "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
+    { expr = true, noremap = false }
+  )
+  map(
+    'nx',
+    '<c-x>',
+    "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
+    { expr = true, noremap = false }
+  )
+  map(
+    'x',
+    '<c-s-a>',
+    '<Plug>(dial-increment-additional)',
+    { expr = true, silent = true, noremap = false }
+  )
+  map(
+    'x',
+    '<c-s-x>',
+    '<Plug>(dial-decrement-additional)',
+    { expr = true, silent = true, noremap = false }
+  )
 
-	-- TODO: map h to join
+  map(
+    'i',
+    '<cr>',
+    'v:lua.MPairs.autopairs_cr()',
+    { expr = true, noremap = true }
+  )
 
-	-- exchange (repeat)
-	map("nx", a.edit .. "x", "<Plug>(Exchange)", { noremap = false })
-	map("nx", a.edit .. a.edit .. "x", "<Plug>(ExchangeLine)", { noremap = false })
-	map("nx", a.edit .. "xc", "<Plug>(ExchangeClear)", { noremap = false })
+  map('is', '<tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
+  map('is', '<s-tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
+  map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
 
-	-- sandwich
-	map("", a.edit .. "y", "<Plug>(operator-sandwich-add)", { noremap = false })
-	map("", a.edit .. "r", "<Plug>(operator-sandwich-replace)", { noremap = false })
-	map("", a.edit .. "Y", "<Plug>(operator-sandwich-delete)", { noremap = false })
-	map("ox", "ir", "<Plug>(textobj-sandwich-auto-i)", { noremap = false })
-	map("ox", "ar", "<Plug>(textobj-sandwich-auto-a)", { noremap = false })
-	map("ox", "iy", "<Plug>(textobj-sandwich-query-i)", { noremap = false })
-	map("ox", "ay", "<Plug>(textobj-sandwich-query-a)", { noremap = false })
+  -- luasnip + dial
+  -- TODO: use dial-* and luasnip-*-choice in insert mode
+  -- map('i', '<c-x>', 'pumvisible() ? "\\<down>" : 1', { expr = true })
+  map(
+    'nv',
+    '<c-a>',
+    "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
+    { expr = true, noremap = false }
+  )
+  map(
+    'nv',
+    '<c-x>',
+    "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
+    { expr = true, noremap = false }
+  )
+  map(
+    'v',
+    '<c-s-a>',
+    '<Plug>(dial-increment-additional)',
+    { expr = true, silent = true, noremap = false }
+  )
+  map(
+    'v',
+    '<c-s-x>',
+    '<Plug>(dial-decrement-additional)',
+    { expr = true, silent = true, noremap = false }
+  )
 
-	-- ninja feet
-	map("o", a.edit .. "Ni", "<Plug>(ninja-left-foot-inner)", { noremap = false })
-	map("o", a.edit .. "Na", "<Plug>(ninja-left-foot-a)", { noremap = false })
-	map("o", a.edit .. "ni", "<Plug>(ninja-right-foot-inner)", { noremap = false })
-	map("o", a.edit .. "na", "<Plug>(ninja-right-foot-a)", { noremap = false })
-	map("n", a.jump .. "N", "<Plug>(ninja-insert)", { noremap = false })
-	map("n", a.jump .. "n", "<Plug>(ninja-append)", { noremap = false })
+  map(
+    'i',
+    '<cr>',
+    'v:lua.MPairs.autopairs_cr()',
+    { expr = true, noremap = true }
+  )
 
-	-- case-change
-	map("v", "mU", [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']])
+  map('is', '<tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
+  map('is', '<s-tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
+  map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
+  -- macrobatics
+  if false then
+    map('n', a.macro .. a.macro, '<plug>(Mac_Play)', { noremap = false })
+  end
+  map('n', a.macro .. 'r', '<plug>(Mac_RecordNew)', { noremap = false })
+  map('n', a.macro .. 'n', '<plug>(Mac_RotateBack)', { noremap = false })
+  map('n', a.macro .. 'N', '<plug>(Mac_RotateForward)', { noremap = false })
+  map('n', a.macro .. 'a', '<plug>(Mac_Append)', { noremap = false })
+  map('n', a.macro .. 'A', '<plug>(Mac_Prepend)', { noremap = false })
+  map('n', a.macro .. 'w', '<plug>(Mac_NameCurrentMacro)', { noremap = false })
+  map(
+    'n',
+    a.macro .. 'fw',
+    '<plug>(Mac_NameCurrentMacroForFileType)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    a.macro .. 'sw',
+    '<plug>(Mac_NameCurrentMacroForCurrentSession)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    a.macro .. dd.search .. 'r',
+    '<plug>(Mac_SearchForNamedMacroAndOverwrite)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    a.macro .. dd.search .. 'n',
+    '<plug>(Mac_SearchForNamedMacroAndRename)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    a.macro .. dd.search .. 'd',
+    '<plug>(Mac_SearchForNamedMacroAndDelete)',
+    { noremap = false }
+  )
+  map(
+    'n',
+    a.macro .. dd.search .. 'q',
+    '<plug>(Mac_SearchForNamedMacroAndPlay)',
+    { noremap = false }
+  )
+  map('n', a.macro .. 'l', 'DisplayMacroHistory')
 
-	-- kommentary
-	map("n", a.edit .. a.edit .. "c", "<plug>kommentary_line_default", { noremap = false })
-	map("n", a.edit .. "c", "<Plug>kommentary_motion_default", { noremap = false })
-	map("x", a.edit .. "c", "<Plug>kommentary_visual_default<esc>", { noremap = false })
+  -- VSSPlit
+  -- maybe not K...if for visual only
+  map('x', 'v', 'V')
+  map('x', '<c-w>r', '<Plug>(Visual-Split-VSResize)', { noremap = false })
+  map('x', '<c-w>S', '<Plug>(Visual-Split-VSSplit)', { noremap = false })
+  map(
+    'x',
+    '<c-w>' .. dd.up,
+    '<Plug>(Visual-Split-VSSplitAbove)',
+    { noremap = false }
+  )
+  map(
+    'x',
+    '<c-w>' .. dd.down,
+    '<Plug>(Visual-Split-VSSplitBelow)',
+    { noremap = false }
+  )
 
-	-- VSSPlit
-	-- maybe not K... if visual only
-	map("x", "v", "V")
-	map("nx", "V", "<c-v>")
-	map("x", "Kr", "<Plug>(Visual-Split-VSResize)", { noremap = false })
-	map("x", "KS", "<Plug>(Visual-Split-VSSplit)", { noremap = false })
-	map("x", "Kk", "<Plug>(Visual-Split-VSSplitAbove)", { noremap = false })
-	map("x", "Kj", "<Plug>(Visual-Split-VSSplitBelow)", { noremap = false })
-	--
-	-- eft
-	-- map('nx', ';', '<plug>(eft-repeat)', { noremap = false })
-	-- map('nxo', 'f', '<plug>(eft-f)', { noremap = false })
-	-- map('nxo', '<s-f>', '<plug>(eft-F)', { noremap = false })
-	-- map('nxo', 't', '<plug>(eft-t)', { noremap = false })
-	-- map('nxo', '<s-t>', '<plug>(eft-T)', { noremap = false })
+  -- wildmenu
+  -- needed for tab-completion
+  -- map('i', '<c-a>', <cmd>pumvisible() ? : <up>')
+  map('c', '<c-a>', 'wilder#previous()', { expr = true })
+  map('c', '<c-x>', 'wilder#next()', { expr = true })
+  -- cannot make "autoselect" work
+  map(
+    'c',
+    '<tab>',
+    'wilder#can_accept_completion() ? wilder#accept_completion() : wilder#next()+"\\<cr>"',
+    { expr = true }
+  )
+  -- map('c', '<tab>', 'wilder#accept_completion(1)', {expr = true})
+  -- map('c', '<tab>', '<tab><space>')
+  -- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
 
-	-- -- nohl on insert
-	-- -- https://vi.stackexchange.com/questions/10407/stop-highlighting-when-entering-insert-mode
-	-- breaks operators in expressions such as `daw`
-	-- for _, cmd in ipairs { 'a', 'A', '<Insert>', 'i', 'I', 'gI', 'gi', 'o', 'O' } do
-	--   map(
-	--     '',
-	--     cmd,
-	--     "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>"
-	--       .. cmd
-	--   )
-	-- end
+  map('nvio', '<c-c>', '<esc>')
 
-	-- luasnip + dial
-	-- FIXME
-	--
+  -- fish-emacs compatibility
+  map('nvio', '<c-b>', '^')
+  map('nvio', '<c-e>', '$')
+  map('c', '<c-e>', '<home>')
+  map('c', '<c-b>', '<end>')
+  map('n', '<a-t>', '"zdh"zp') -- transpose
+  map('i', '<a-t>', '<esc>"zdh"zpa') -- transpose
+  map('c', '<c-p>', '<up>')
+  map('c', '<c-n>', '<down>')
+  map('c', '<a-v>', '<c-f>')
+  map('c', '<c-v>', '<c-r>+')
 
-	map("i", "<c-a>", "<up>")
-	map("i", "<c-x>", "<down>")
+  -- nvi mappings
+  for mode in string.gmatch('nvi', '.') do
+    register({
+      [alt(dd.left)] = { '<cmd>wincmd h<cr>', 'window left' },
+      [alt(dd.down)] = { '<cmd>wincmd j<cr>', 'window down' },
+      [alt(dd.up)] = { '<cmd>wincmd k<cr>', 'window up' },
+      [alt(dd.right)] = { '<cmd>wincmd l<cr>', 'window right' },
+      ['<a-b>'] = { '<cmd>wincmd p<cr>', 'window back' },
+      ['<a-a>'] = { '<cmd>e#<cr>', 'previous buffer' }, -- move
+      ['<a-w>'] = { '<cmd>q<cr>', 'close window' },
+      ['<c-l>'] = {
+        "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
+        'nohlsearch',
+      },
+      ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
+      ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
+      -- ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
+    }, {
+      mode = mode,
+    })
+  end
 
-	-- TODO: use dial-* and luasnip-*-choice in insert mode
-	-- map('i', '<c-x>', 'pumvisible() ? "\\<down>" : 1', { expr = true })
-	map(
-		"nv",
-		"<c-a>",
-		"luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
-		{ expr = true, noremap = false }
-	)
-	map(
-		"nv",
-		"<c-x>",
-		"luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
-		{ expr = true, noremap = false }
-	)
-	map("v", "<c-s-a>", "<Plug>(dial-increment-additional)", { expr = true, silent = true, noremap = false })
-	map("v", "<c-s-x>", "<Plug>(dial-decrement-additional)", { expr = true, silent = true, noremap = false })
-
-	map("i", "<cr>", "v:lua.MPairs.autopairs_cr()", { expr = true, noremap = true })
-
-	map("is", "<tab>", '<cmd>lua require"bindutils".tab_complete()<cr>')
-	map("is", "<s-tab>", '<cmd>lua require"bindutils".s_tab_complete()<cr>')
-	map("is", "<c-space>", '<cmd>lua require"bindutils".toggle_cmp()<cr>')
-
-	-- wildmenu
-	-- needed for tab-completion
-	map("c", "<c-a>", "wilder#previous()", { expr = true })
-	map("c", "<c-x>", "wilder#next()", { expr = true })
-	-- cannot make "autoselect" work
-	map(
-		"c",
-		"<tab>",
-		'wilder#can_accept_completion() ? wilder#accept_completion() : wilder#next()+"\\<cr>"',
-		{ expr = true }
-	)
-	-- map('c', '<tab>', 'wilder#accept_completion(1)', {expr = true})
-	-- map('c', '<tab>', '<tab><space>')
-	-- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
-
-	map("nvi", "<c-c>", "<esc>")
-	map("nv", "<c-i>", '<cmd>lua require"bufjump".local_backward()<cr>')
-	map("nv", "<c-o>", '<cmd>lua require"bufjump".local_forward()<cr>')
-
-	-- fish-emacs compat
-	map("", "<c-b>", "^")
-	map("", "<c-e>", "$")
-	map("c", "<c-e>", "<home>")
-	map("c", "<c-b>", "<end>")
-	map("n", "<a-t>", '"zdh"zp') -- transpose
-	map("i", "<a-t>", '<esc>"zdh"zpa') -- transpose
-	map("c", "<c-p>", "<up>")
-	map("c", "<c-n>", "<down>")
-	map("c", "<a-v>", "<c-f>")
-	map("c", "<c-v>", "<c-r>+")
-
-	-- searching
-	require("auto_unhl")
-	map("", "*", "<nop>")
-	map("", "#", "<nop>")
-	map("", "n", "n<cmd>lua require'auto_unhl'.post()<cr>")
-	map("", "N", "N<cmd>lua require'auto_unhl'.post()<cr>")
-	map("n", a.jump .. "q", "g*N<cmd>lua require'auto_unhl'.post()<cr>")
-	map("n", "b", "*<cmd>lua require'auto_unhl'.post()<cr>")
-	map("n", "B", "#<cmd>lua require'auto_unhl'.post()<cr>")
-	map("x", "b", "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>")
-	map("x", "B", "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>")
-
-	-- matchup
-	map("", a.jump .. "c", "%", { noremap = false })
-	map("", a.jump .. "C", "g%", { noremap = false })
-	map("", a.jump .. "y", "[%", { noremap = false })
-	map("", a.jump .. "Y", "]%", { noremap = false })
-	map("", a.jump .. "i", "z%", { noremap = false })
-	map("o", "ic", "i%", { noremap = false })
-	map("o", "ac", "a%", { noremap = false })
-
-	local function alt(key)
-		return string.format("<a-%s>", key)
-	end
-
-	-- nvi mappings
-	for mode in string.gmatch("nvi", ".") do
-		register({
-			-- ['<a-p>'] = { '<cmd>BufferPrevious<cr>', 'focus previous buffer' },
-			-- ['<a-n>'] = { '<cmd>BufferNext<cr>', 'focus next buffer' },
-			-- ['<a-h>'] = { "<cmd>lua require('Navigator').left()<cr>", 'window left' },
-			-- ['<a-j>'] = { "<cmd>lua require('Navigator').down()<cr>", 'window down' },
-			-- ['<a-k>'] = { "<cmd>lua require('Navigator').up()<cr>", 'window up' },
-			-- ['<a-l>'] = { "<cmd>lua require('Navigator').right()<cr>", 'window right' },
-			[alt(dd.left)] = { "<cmd>wincmd h<cr>", "window left" },
-			[alt(dd.down)] = { "<cmd>wincmd j<cr>", "window down" },
-			[alt(dd.up)] = { "<cmd>wincmd k<cr>", "window up" },
-			[alt(dd.right)] = { "<cmd>wincmd l<cr>", "window right" },
-			["<a-b>"] = { "<cmd>wincmd p<cr>", "window back" },
-			["<a-a>"] = { "<cmd>e#<cr>", "previous buffer" },
-			-- ['<a-p>'] = { '<cmd>BufferPick<cr>', 'previous pick' },
-			-- ['<a-P>'] = { '<cmd>BufferPin<cr>', 'previous pin' },
-
-			-- ['<a-x>'] = { '<cmd>BufferClose!<cr>', 'close buffer' },
-			-- ['<a-X>'] = { '<cmd>tabnew#<cr>', 'close buffer' },
-			-- ['<a-o>'] = {
-			--   '<cmd>BufferCloseBuffersRight<cr><cmd>BufferCloseBuffersLeft<cr><c-w>o',
-			--   'buffer only',
-			-- },
-			["<a-w>"] = { "<cmd>q<cr>", "close window" },
-
-			-- ['<a-s-n>'] = { '<cmd>BufferMoveNext<cr>', 'move buffer next' },
-			-- ['<a-s-p>'] = { '<cmd>BufferMovePrevious<cr>', 'move buffer previous' },
-			["<c-l>"] = {
-				"<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
-				"nohlsearch",
-			},
-			["<c-a>"] = { "<esc>``", "jump before last jump" },
-			-- ['<c-a-o>'] = { '<cmd>b#<cr>', 'only' }, -- FIXME
-			["<c-j>"] = { '<cmd>lua require"alt-jump".toggle()<cr>', "alt-jump toggle" },
-			["<c-q>"] = { "<cmd>qall!<cr>", "quit" },
-			["<c-s>"] = { "<cmd>w!<cr>", "save" },
-			-- ['<c-w>'] = {
-			--   L = { '<cmd>vsplit<cr>', 'split left' },
-			--   J = { '<cmd>split<cr>', 'split down' },
-			-- },
-		}, {
-			mode = mode,
-		})
-		-- for i = 1, 9 do
-		--   register({
-		--     [string.format('<a-%d>', i)] = {
-		--       string.format('<cmd>BufferGoto %i<cr>', i),
-		--       string.format('focus buffer %d', i),
-		--     },
-		--   }, {
-		--     mode = mode,
-		--   })
-		-- end
-	end
-
-	-- for mode in string.gmatch('nx', '.') do
-	--   register({}, {mode = mode})
-	-- end
-
-	-- nvo mappings
-	for mode in string.gmatch("nvo", ".") do
-		register({
-			-- G = { 'gg', 'first line'},
-			-- local movements
-			[a.jump] = {
-				name = "+local movements",
-				e = { "G", "last line" },
-				E = { "gg", "first line" },
-				L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", "loclist" },
-				s = {
-					"<cmd>lua require('telescope.builtin').treesitter()<cr>",
-					"symbol or heading",
-				}, --
-				["é"] = { "/", "search" },
-				["É"] = { "?", "backward" },
-				[dd.up] = { "gk", "visual up" },
-				[dd.down] = { "gj", "visual down" },
-				-- ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
-			},
-			-- ['<c-n>'] = {'<cmd>bnext<cr>', 'next buffer'},
-			-- ['<c-p>'] = {'<cmd>bprevious<cr>', 'previous buffer'},
-		}, {
-			mode = mode,
-		})
-	end
-
-	-- nx mappings
-	for mode in string.gmatch("nx", ".") do
-		register({
-			["é"] = {
-				"<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
-				"current buffer fuzzy find",
-			},
-			[a.selection] = {
-				name = "+visual selection",
-				s = { "<c-v>", "square selection" },
-				[a.selection] = { "gv", "reselect" },
-			},
-			[a.edit] = {
-				name = "+edit",
-				-- J = { 'gJ', 'join' },
-				a = {
-					"<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
-					"code actions",
-				},
-				A = {
-					"<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
-					"range code actions",
-				},
-				s = { "<cmd>lua vim.lsp.buf.rename()<cr>", "rename" },
-				t = { ">>", "indent" },
-				T = { "<<", "dedent" },
-				u = { "gu", "lowercase" },
-				U = { "gU", "uppercase" },
-				v = { "g~", "toggle case" },
-				w = {
-					"<cmd>lua require'telescope.builtin'.symbols{ sources = {'math', 'emoji'} }<cr>",
-					"symbols",
-				},
-				z = {
-					"<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
-					"spell suggest",
-				},
-			},
-		}, {
-			mode = mode,
-		})
-	end
-
-	map("", dd.right, "l")
-	map("", dd.left, "h")
-	map("", dd.up, "k")
-	map("", dd.down, "j")
-
-	-- n mappings
-	register({
-		["<c-n>"] = { '<cmd>lua require("bufjump").forward()<cr>', "jump next buffer" },
-		["<c-p>"] = { '<cmd>lua require("bufjump").backward()<cr>', "jump previous buffer" },
-		[a.editor] = {
-			name = "+editor state",
-			a = {
-				"<cmd>TroubleToggle lsp_workspace_diagnostics<cr>",
-				"lsp diagnostics",
-			},
-			A = {
-				"<cmd>TroubleToggle lsp_document_diagnostics<cr>",
-				"lsp document diagnostics",
-			},
-			c = { "<cmd>TodoTrouble<cr>", "trouble todo" },
-			d = { "<cmd>DiffviewOpen<cr>", "diffview open" },
-			D = { "<cmd>DiffviewClose<cr>", "diffview close" },
-			e = {
-				'<cmd>lua require"bindutils".edit_current()<cr>',
-				"current in new editor",
-			},
-			f = { "<cmd>NvimTreeOpen<cr>", "file tree" }, -- FIXME: find a way to focus current file on opening
-			F = { "<cmd>NvimTreeClose<cr>", "file tree" },
-			g = { "<cmd>Neogit<cr>", "neogit" },
-			G = { "<cmd>Gitsigns setqflist<cr>", "trouble hunk" },
-			h = { "<cmd>DiffviewFileHistory<cr>", "diffview open" },
-			H = { "<cmd>DiffviewClose<cr>", "diffview close" },
-			-- n  {
-			--   "<cmd>lua require'nononotes'.prompt('edit', false, 'all')<cr>",
-			--   'pick note',
-			-- },
-			n = { "<cmd>Telescope node_modules list<cr>", "new note" },
-			N = { "<cmd>lua require'nononotes'.new_note()<cr>", "new note" },
-			o = {
-				"<cmd>lua require'bindutils'.open_current()<cr>",
-				"open current external",
-			},
-			m = { "<cmd>Telescope installed_plugins<cr>", "plugins" },
-			p = { "<cmd>lua require'setup-session'.develop()<cr>", "session develop" },
-			q = { "<cmd>TroubleToggle quickfix<cr>", "quickfix" },
-			Q = { "<cmd>TroubleClose<cr>", "trouble close" },
-			r = { "<cmd>update<cr><cmd>luafile %<cr>", "reload" },
-			s = { "<cmd>SymbolsOutline<cr>", "symbol outline" },
-			S = { "<cmd>TroubleToggle lsp_references<cr>", "lsp reference" },
-			t = { '<cmd>lua require"bindutils".term()<cr>', "new terminal" },
-			u = { "<cmd>UndotreeToggleTree<cr>", "undo tree" },
-			w = { "<cmd>Telescope projects<cr>", "sessions" },
-			W = { "<cmd>Telescope project_directory<cr>", "projects" },
-			x = {
-				"<cmd>lua require'bindutils'.term_launch({'xplr', vim.fn.expand'%'})<cr>",
-				"xplr",
-			},
-			z = { "<cmd>ZenMode<cr>", "zen mode" },
-			["."] = { '<cmd>lua require"bindutils".dotfiles()<cr>', "dotfiles" },
-			[" "] = {
-				"<cmd>lua require('telescope.builtin').commands()<cr>",
-				"commands",
-			},
-		},
-		[a.browser] = {
-			man = { '<cmd>lua require"browser".man()<cr>', "man page" },
-			o = {
-				'<cmd>call jobstart(["opener", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
-				"open current file",
-			},
-			p = { "<cmd>lua require'setup-session'.launch()<cr>", "session lauch" },
-			u = {
-				'<cmd>lua require"browser".openCfile()<cr>',
-				"open current file",
-			},
-		},
-		[a.jump] = {
-			name = "+local movements",
-			a = { "<cmd>lua vim.lsp.diagnostic.goto_next()<cr>", "go next diagnostic" },
-			A = {
-				"<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>",
-				"go previous diagnostic",
-			},
-			d = { "]c", "next change" },
-			D = { "[c", "previous change" },
-			-- j = {'mXmY', 'alt-jump reset'},
-			j = { '<cmd>lua require"alt-jump".reset()<cr>', "alt-jump reset" },
-			o = { "`.", "last change" },
-			-- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
-			-- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
-			z = { "]s", "next misspelled" },
-			Z = { "[s", "prevous misspelled" },
-			[":"] = { "g,", "newer change" }, -- cf  'g;', 'older change' },
-		},
-		[a.move] = {
-			name = "+global movements",
-			c = { "<cmd>TodoTelescope<cr>", "telescope TODO" },
-			b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", "buffers" },
-			d = { -- FIXME
-				'<cmd>lua require("telescope.builtin").lsp_definitions()<cr>',
-				"go definition",
-			},
-			D = { "<cmd>lua vim.lsp.buf.declaration()<cr>", "go declaration" },
-			i = { -- FIXME
-				'<cmd>lua require("telescope.").builtin.lsp_implementations()<cr>',
-				"go implementation",
-			},
-			-- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
-			o = {
-				"<cmd>lua require('telescope.builtin').oldfiles({only_cwd = true})<cr>",
-				"oldfiles",
-			},
-			r = {
-				"<cmd>lua require('telescope.builtin').lsp_references()<cr>",
-				"lsp references",
-			},
-			t = {
-				'<cmd>lua require("trouble").next({skip_groups = true, jump = true})<cr>',
-				"trouble, next",
-			},
-			T = {
-				'<cmd>lua require("trouble").previous({skip_groups = true, jump = true})<cr>',
-				"trouble, previous",
-			},
-			["é"] = {
-				"<cmd>lua require('telescope.builtin').live_grep()<cr>",
-				"live grep",
-			},
-			[a.move] = {
-				'<cmd>lua require("bindutils").project_files()<cr>',
-				"project file",
-			},
-		},
-		H = {
-			name = "+help",
-			h = { '<cmd>lua require"bindutils".docu_current()<cr>', "filetype docu" },
-			b = { "<cmd>e ~/Dotfiles/bindings-qwerty/.config/nvim/lua/bindings.lua<cr>", "bindings" }, -- FIXME: use realpath instead
-			m = {
-				"<cmd>lua require('telescope.builtin').man_pages()<cr>",
-				"man pages",
-			},
-			p = { "<cmd>Telescope md_help<cr>", "md help" },
-			v = {
-				"<cmd>lua require('telescope.builtin').help_tags()<cr>",
-				"help tags",
-			},
-		},
-		["<leader>"] = {
-			s = {
-				name = "+LSP",
-				a = {
-					"<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>",
-					"show line diagnostics",
-				},
-				c = { "<cmd>ProDoc<cr>", "prepare doc comment" },
-				d = { "<cmd>lua PeekDefinition()<cr>", "hover definition" },
-				k = { "<cmd>lua vim.lsp.buf.hover()<cr>", "hover" },
-				r = { "<cmd>lua vim.lsp.buf.references()<cr>", "references" },
-				s = { "<cmd>lua vim.lsp.buf.signature_help()<cr>", "signature help" },
-				t = {
-					"<cmd>lua vim.lsp.buf.type_definition()<cr>",
-					"go to type definition", -- ??
-				},
-				wa = {
-					"<cmd>lua vim.lsp.buf.add_workspace_folder()<cr>",
-					"add workspace folder",
-				},
-				wl = {
-					"<cmd>lua vim.lsp.buf.list_workspace_folder()<cr>",
-					"rm workspace folder",
-				},
-				wd = {
-					"<cmd>lua vim.lsp.buf.remove_workspace_folder()<cr>",
-					"rm workspace folder",
-				},
-				x = {
-					"<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>",
-					"stop active clients",
-				},
-			},
-			z = {
-				name = "+Spell",
-				b = { "<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>", "en fr" },
-				e = { "<cmd>setlocal spell spelllang=en_us,cjk<cr>", "en" },
-				f = { "<cmd>setlocal spell spelllang=fr,cjk<cr>", "fr" },
-				g = { "<cmd>LanguageToolCheck<cr>", "language tools" },
-				x = { "<cmd>setlocal nospell spelllang=<cr>", "none" },
-			},
-			d = {
-				name = "+DAP",
-				b = {
-					"<cmd>lua require'dap'.toggle_breakpoint()<cr>",
-					"toggle breakpoints",
-				},
-				c = { "<cmd>lua require'dap'.continue()<cr>", "continue" },
-				s = { "<cmd>lua require'dap'.stop()<cr>", "stop" },
-				o = { "<cmd>lua require'dap'.step_over()<cr>", "step over" },
-				O = { "<cmd>lua require'dap'.step_out()<cr>", "step out" },
-				i = { "<cmd>lua require'dap'.step_into()<cr>", "step into" },
-				["."] = { "<cmd>lua require'dap'.run_last()<cr>", "run last" },
-				u = { "<cmd>lua require'dapui'.toggle()<cr>", "toggle dapui" },
-				k = { "<cmd>lua require'dap'.up()<cr>", "up" },
-				j = { "<cmd>lua require'dap'.down()<cr>", "down" },
-				l = { "<cmd>lua require'plugins.dap'.launch()<cr>", "launch" },
-				r = { "<cmd>lua require'dap'.repl.open()<cr>", "repl" },
-				a = { "<cmd>lua require'plugins.dap'.attach()<cr>", "attach" },
-				A = {
-					"<cmd>lua require'plugins.dap'.attachToRemote()<cr>",
-					"attach to remote",
-				},
-				h = { "<cmd>lua require'dap.ui.widgets'.hover()<cr>", "widgets" },
-				H = { "<cmd>lua require'dap.ui.variables'.hover()<cr>", "hover" },
-				v = {
-					"<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
-					"visual hover",
-				},
-				["?"] = {
-					"<cmd>lua require'dap.ui.variables'.scopes()<cr>",
-					"variables scopes",
-				},
-				B = {
-					"<cmd>lua require'dap'.set_exception_breakpoints({'all'})<cr>",
-					"set exception breakoints",
-				},
-				tc = {
-					"<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
-					"commands",
-				},
-				["t,"] = {
-					"<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
-					"configurations",
-				},
-				tb = {
-					"<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
-					"list breakpoints",
-				},
-				tv = {
-					"<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
-					"dap variables",
-				},
-				tf = {
-					"<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
-					"dap frames",
-				},
-			},
-		},
-	})
-
-	require("browser").mapBrowserSearch(register, a.browser, "+browser search", {
-		arch = { "https://wiki.archlinux.org/index.php?search=", "archlinux wiki" },
-		aur = { "https://aur.archlinux.org/packages/?K=", "aur packages" },
-		ca = { "https://www.cairn.info/resultats_recherche.php?searchTerm=", "cairn" },
-		cn = { "https://www.cnrtl.fr/definition/", "cnrtl" },
-		d = { "https://duckduckgo.com/?q=", "duckduckgo" },
-		eru = {
-			"https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=",
-			"erudit",
-		},
-		fr = {
-			"https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=",
-			"francis",
-		},
-		gh = { "https://github.com/search?q=", "github" },
-		go = { "https://google.ca/search?q=", "google" },
-		lh = { "https://www.libhunt.com/search?query=", "libhunt" },
-		mdn = { "https://developer.mozilla.org/en-US/search?q=", "mdn" },
-		nell = {
-			"https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=",
-			"nelligan",
-		},
-		npm = { "https://www.npmjs.com/search?q=", "npm" },
-		pac = { "https://archlinux.org/packages/?q=", "arch packages" },
-		sea = { "https://www.seriouseats.com/search?q=", "seriouseats" },
-		sep = { "https://plato.stanford.edu/search/searcher.py?query=", "sep" },
-		sp = { "https://www.persee.fr/search?ta=article&q=", "persée" },
-		usi = { "https://usito.usherbrooke.ca/d%C3%A9finitions/", "usito" },
-		we = { "https://en.wikipedia.org/wiki/", "wikipidia en" },
-		wf = { "https://fr.wikipedia.org/wiki/", "wikipidia fr" },
-		y = { "https://www.youtube.com/results?search_query=", "youtube" },
-	})
-
-	if not require("pager").full then
-		map("n", "Q", "<cmd>q<cr>")
-	end
-
-	require("utils").augroup("MarkdownBindings", {
-		{
-			events = { "FileType" },
-			targets = { "markdown" },
-			command = function()
-				local map_local = require("utils").buf_map
-
-				map_local("", "j", "gk")
-				map_local("", "k", "gj")
-				map_local("", "gj", "k")
-				map_local("", "gk", "j")
-				map_local("", "gs", "<cmd>Telescope heading<cr>")
-				map_local("", "gt", "<Plug>Markdown_MoveToNextHeader", { noremap = false })
-				map_local("", "gT", "<Plug>Markdown_MoveToPreviousHeader", { noremap = false })
-				map_local("", "gh", "<Plug>Markdown_MoveToCurHeader", { noremap = false })
-				map_local("", "gH", "<Plug>Markdown_MoveToParentHeader", { noremap = false })
-
-				-- both are identical
-				map_local("ox", "ad", "<Plug>(textobj-datetime-auto)", { noremap = false })
-				map_local("ox", "id", "<Plug>(textobj-datetime-auto)", { noremap = false })
-			end,
-		},
-	})
+  -- n mappings
+  register {
+    ['<c-n>'] = {
+      '<cmd>lua require("bufjump").forward()<cr>',
+      'jump next buffer',
+    },
+    ['<c-p>'] = {
+      '<cmd>lua require("bufjump").backward()<cr>',
+      'jump previous buffer',
+    },
+    ['<leader>'] = {
+      s = {
+        name = '+LSP',
+        a = {
+          '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>',
+          'show line diagnostics',
+        },
+        c = { '<cmd>ProDoc<cr>', 'prepare doc comment' },
+        d = { '<cmd>lua PeekDefinition()<cr>', 'hover definition' },
+        k = { '<cmd>lua vim.lsp.buf.hover()<cr>', 'hover' },
+        r = { '<cmd>lua vim.lsp.buf.references()<cr>', 'references' },
+        s = { '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'signature help' },
+        t = {
+          '<cmd>lua vim.lsp.buf.type_definition()<cr>',
+          'go to type definition', -- ??
+        },
+        wa = {
+          '<cmd>lua vim.lsp.buf.add_workspace_folder()<cr>',
+          'add workspace folder',
+        },
+        wl = {
+          '<cmd>lua vim.lsp.buf.list_workspace_folder()<cr>',
+          'rm workspace folder',
+        },
+        wd = {
+          '<cmd>lua vim.lsp.buf.remove_workspace_folder()<cr>',
+          'rm workspace folder',
+        },
+        x = {
+          '<cmd>lua vim.lsp.stop_client(vim.lsp.get_active_clients())<cr>',
+          'stop active clients',
+        },
+      },
+      z = {
+        name = '+Spell',
+        b = { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
+        e = { '<cmd>setlocal spell spelllang=en_us,cjk<cr>', 'en' },
+        f = { '<cmd>setlocal spell spelllang=fr,cjk<cr>', 'fr' },
+        g = { '<cmd>LanguageToolCheck<cr>', 'language tools' },
+        x = { '<cmd>setlocal nospell spelllang=<cr>', 'none' },
+      },
+      d = {
+        name = '+DAP',
+        b = {
+          "<cmd>lua require'dap'.toggle_breakpoint()<cr>",
+          'toggle breakpoints',
+        },
+        c = { "<cmd>lua require'dap'.continue()<cr>", 'continue' },
+        s = { "<cmd>lua require'dap'.stop()<cr>", 'stop' },
+        o = { "<cmd>lua require'dap'.step_over()<cr>", 'step over' },
+        O = { "<cmd>lua require'dap'.step_out()<cr>", 'step out' },
+        i = { "<cmd>lua require'dap'.step_into()<cr>", 'step into' },
+        ['.'] = { "<cmd>lua require'dap'.run_last()<cr>", 'run last' },
+        u = { "<cmd>lua require'dapui'.toggle()<cr>", 'toggle dapui' },
+        k = { "<cmd>lua require'dap'.up()<cr>", 'up' },
+        j = { "<cmd>lua require'dap'.down()<cr>", 'down' },
+        l = { "<cmd>lua require'plugins.dap'.launch()<cr>", 'launch' },
+        r = { "<cmd>lua require'dap'.repl.open()<cr>", 'repl' },
+        a = { "<cmd>lua require'plugins.dap'.attach()<cr>", 'attach' },
+        A = {
+          "<cmd>lua require'plugins.dap'.attachToRemote()<cr>",
+          'attach to remote',
+        },
+        h = { "<cmd>lua require'dap.ui.widgets'.hover()<cr>", 'widgets' },
+        H = { "<cmd>lua require'dap.ui.variables'.hover()<cr>", 'hover' },
+        v = {
+          "<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
+          'visual hover',
+        },
+        ['?'] = {
+          "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
+          'variables scopes',
+        },
+        B = {
+          "<cmd>lua require'dap'.set_exception_breakpoints({'all'})<cr>",
+          'set exception breakoints',
+        },
+        tc = {
+          "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
+          'commands',
+        },
+        ['t,'] = {
+          "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
+          'configurations',
+        },
+        tb = {
+          "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
+          'list breakpoints',
+        },
+        tv = {
+          "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
+          'dap variables',
+        },
+        tf = {
+          "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
+          'dap frames',
+        },
+      },
+    },
+  }
 end
 
-local SignatureMap = invert({
-	[a.jump .. "b"] = "GotoNextSpotByPos",
-	[a.jump .. a.jump .. "b"] = "GotoNextLineByPos",
-	[a.jump .. "B"] = "GotoPrevSpotByPos",
-	[a.jump .. a.jump .. "B"] = "GotoPrevLineByPos",
-	[a.mark .. "da"] = "PurgeMarksAtLine",
-	[a.mark .. "dA"] = "PurgeMarks",
-	[a.jump .. "e"] = "GotoNextMarkerAny",
-	[a.jump .. "E"] = "GotoPrevMarkerAny",
-	[a.mark .. "ha"] = "ListBufferMarkers",
-	[a.jump .. "m"] = "GotoNextSpotAlpha",
-	[a.jump .. a.jump .. "m"] = "GotoNextLineAlpha",
-	[a.jump .. "M"] = "GotoPrevSpotAlpha",
-	[a.jump .. a.jump .. "M"] = "GotoPrevLineAlpha",
-	[a.mark .. "sa"] = "PurgeMarkers",
-	[a.mark .. "t"] = "ToggleMarkAtLine",
-	[a.jump .. "x"] = "GotoNextMarker",
-	[a.jump .. "X"] = "GotoPrevMarker",
-	[a.mark .. "xa"] = "DeleteMark",
-	[a.mark .. "y"] = "PlaceNextMark",
-})
-SignatureMap.Leader = "M"
-
+-- unsused
+local SignatureMap = invert {
+  [a.jump .. 'b'] = 'GotoNextSpotByPos',
+  [a.jump .. a.jump .. 'b'] = 'GotoNextLineByPos',
+  [a.jump .. 'B'] = 'GotoPrevSpotByPos',
+  [a.jump .. a.jump .. 'B'] = 'GotoPrevLineByPos',
+  [a.mark .. 'da'] = 'PurgeMarksAtLine',
+  [a.mark .. 'dA'] = 'PurgeMarks',
+  [a.jump .. 'e'] = 'GotoNextMarkerAny',
+  [a.jump .. 'E'] = 'GotoPrevMarkerAny',
+  [a.mark .. 'ha'] = 'ListBufferMarkers',
+  [a.jump .. 'm'] = 'GotoNextSpotAlpha',
+  [a.jump .. a.jump .. 'm'] = 'GotoNextLineAlpha',
+  [a.jump .. 'M'] = 'GotoPrevSpotAlpha',
+  [a.jump .. a.jump .. 'M'] = 'GotoPrevLineAlpha',
+  [a.mark .. 'sa'] = 'PurgeMarkers',
+  [a.mark .. 't'] = 'ToggleMarkAtLine',
+  [a.jump .. 'x'] = 'GotoNextMarker',
+  [a.jump .. 'X'] = 'GotoPrevMarker',
+  [a.mark .. 'xa'] = 'DeleteMark',
+  [a.mark .. 'y'] = 'PlaceNextMark',
+}
+SignatureMap.Leader = 'M'
 local signature = { g = { SignatureMap = SignatureMap } }
 local vim = vim
 
 M.plugins = {
-	vim = {
-		-- options related to mapping
-		g = {
-			mapleader = " ",
-			user_emmet_leader_key = "<C-y>",
-		},
-	},
-	revJ = {
-		operator = a.edit .. "j", -- for operator (+motion)
-		line = a.edit .. a.edit .. "j", -- for formatting current line
-		visual = a.edit .. "j", -- for formatting visual selection
-	},
-	textobj = {
-		g = {
-			["textobj#sentence#select"] = "s",
-			["textobj#sentence#move_p"] = "S",
-			["textobj#sentence#move_n"] = "s",
-			-- vim_textobj_parameter_mapping = ','
-		},
-	},
-	signature = signature,
-	nononotes = invert({
-		-- ['<cr>'] = 'enter_link',
-		["<c-k>"] = "print_hover_title",
-	}),
-	telescope = function()
-		local actions = require("telescope.actions")
-		local trouble = require("trouble.providers.telescope")
-		return {
-			projects = {
-				mappings = {
-					i = {
-						["<cr>"] = function()
-							print("caca")
-						end,
-					},
-				},
-			},
-			defaults = {
-				mappings = {
-					i = {
-						["<c-q>"] = actions.send_to_qflist,
-						["<c-l>"] = actions.send_to_loclist,
-						["<c-t>"] = trouble.open_with_trouble,
-						["<c-c>"] = function()
-							vim.cmd("stopinsert")
-						end,
-					},
-					n = {
-						["<c-j>"] = actions.file_split,
-						["<c-l>"] = actions.file_vsplit,
-						["<c-t>"] = trouble.open_ith_trouble,
-						-- ['<c-c>'] = function() vim.fn.feedkeys('\\<esc>') end,
-					},
-				},
-			},
-		}
-	end,
-	treesitter = {
-		incremental_selection = {
-			keymaps = invert({
-				gnn = "init_selection",
-				grn = "node_incremental",
-				nrc = "scope_incremental",
-				grm = "node_decremental",
-			}),
-		},
-		textobjects = {
-			select = {
-				keymaps = {
-					["af"] = "@function.outer",
-					["if"] = "@function.inner",
-					-- ['ia'] = '@parameter.inner',
-					-- ['aq'] = {
-					--   lua = '@string.outer',
-					-- },
-				},
-			},
-			swap = {
-				swap_next = {
-					["<leader>a"] = "@parameter.inner",
-				},
-				swap_previous = {
-					["<leader>A"] = "@parameter.inner",
-				},
-			},
-			move = {
-				goto_next_start = {
-					["gf"] = "@function.outer",
-				},
-				goto_previous_end = {
-					["gF"] = "@function.outer",
-				},
-			},
-		},
-		-- textsubjects = {
-		--   keymaps = {
-		--     ['.'] = 'textsubjects-smart',
-		--     [','] = 'textsubjects-big',
-		--   },
-		-- },
-	},
-	gitsigns = {
-		keymaps = {
-			name = "git",
-			noremap = true,
-			buffer = true,
-			["n ]c"] = {
-				expr = true,
-				"&diff ? ']c' : '<cmd>lua require\"gitsigns\".next_hunk()<cr>'",
-			},
-			["n [c"] = {
-				expr = true,
-				"&diff ? '[c' : '<cmd>lua require\"gitsigns\".prev_hunk()<cr>'",
-			},
-			["n <leader>hb"] = '<cmd>lua require"gitsigns".blame_line()<cr>',
-			["n <leader>hp"] = '<cmd>lua require"gitsigns".preview_hunk()<cr>',
-			["n <leader>hr"] = '<cmd>lua require"gitsigns".reset_hunk()<cr>',
-			["n <leader>hs"] = '<cmd>lua require"gitsigns".stage_hunk()<cr>',
-			["n <leader>hu"] = '<cmd>lua require"gitsigns".undo_stage_hunk()<cr>',
-		},
-	},
-	nvim_tree = {
-		-- still use ijkl, gG, G
-		a = "create",
-		d = "remove",
-		h = "parent_node",
-		H = "dir_up",
-		J = "last_sibling",
-		K = "first_sibling",
-		l = "edit",
-		ll = "copy_name",
-		lp = "copy_path",
-		lP = "copy_absolute_path",
-		o = "system_open",
-		p = "paste",
-		q = "close",
-		r = "rename",
-		R = "refresh",
-		t = "next_sibling",
-		T = "prev_sibling",
-		v = "next_git_item",
-		V = "prev_git_item",
-		x = "cut",
-		yl = "copy_name",
-		yp = "copy_path",
-		ya = "copy_absolute_path",
-		yy = "copy",
-		["."] = "toggle_ignored",
-		["?"] = "toggle_help",
-		["<bs>"] = "close_node",
-		["<tab>"] = "preview",
-		["<s-c>"] = "close_node",
-		["<c-r>"] = "full_rename",
-		["<c-t>"] = "tabnew",
-		["<c-x>"] = "split",
-	},
+  vim = {
+    -- options related to mapping
+    g = {
+      mapleader = ' ',
+    },
+  },
+  revJ = {
+    operator = a.edit .. 'b', -- for operator (+motion)
+    line = a.edit .. a.edit .. 'b', -- for formatting current line
+    visual = a.edit .. 'b', -- for formatting visual selection
+  },
+  textobj = {
+    g = {
+      ['textobj#sentence#select'] = 's',
+      ['textobj#sentence#move_p'] = 'S',
+      ['textobj#sentence#move_n'] = 's',
+    },
+  },
+  signature = signature, -- unused
+  nononotes = invert {
+    -- ['<cr>'] = 'enter_link',
+    ['<c-k>'] = 'print_hover_title',
+  },
+  telescope = function()
+    local actions = require 'telescope.actions'
+    local trouble = require 'trouble.providers.telescope'
+    return {
+      projects = {
+        mappings = {
+          i = {
+            ['<cr>'] = function()
+              print 'caca'
+            end,
+          },
+        },
+      },
+      defaults = {
+        mappings = {
+          i = {
+            ['<c-q>'] = actions.send_to_qflist,
+            ['<c-l>'] = actions.send_to_loclist,
+            ['<c-t>'] = trouble.open_with_trouble,
+            ['<c-c>'] = function()
+              vim.cmd 'stopinsert'
+            end,
+          },
+          n = {
+            ['<c-j>'] = actions.file_split,
+            ['<c-l>'] = actions.file_vsplit,
+            ['<c-t>'] = trouble.open_ith_trouble,
+            ['<c-c>'] = actions.close,
+          },
+        },
+      },
+    }
+  end,
+  treesitter = {
+    -- incremental_selection = {
+    --   keymaps = invert {
+    --     gnn = 'init_selection',
+    --     grn = 'node_incremental',
+    --     nrc = 'scope_incremental',
+    --     grm = 'node_decremental',
+    --   },
+    -- },
+    textobjects = {
+      select = {
+        keymaps = {
+          ['af'] = '@function.outer',
+          ['if'] = '@function.inner',
+          -- ['ia'] = '@parameter.inner',
+          -- ['aq'] = {
+          --   lua = '@string.outer',
+          -- },
+        },
+      },
+      swap = {
+        swap_next = {
+          ['<leader>a'] = '@parameter.inner',
+        },
+        swap_previous = {
+          ['<leader>A'] = '@parameter.inner',
+        },
+      },
+      move = {
+        goto_next_start = {
+          ['gf'] = '@function.outer',
+        },
+        goto_previous_end = {
+          ['gF'] = '@function.outer',
+        },
+      },
+    },
+    textsubjects = {
+      keymaps = {
+        [','] = 'textsubjects-smart', -- comments, consecutive line comments, function calls, function definitions, class definitions, loops, if statements, return values, arguments.
+        ["'"] = 'textsubjects-container-outer', -- classes, structs, functions, methods.
+      },
+    },
+  },
+  gitsigns = {
+    keymaps = {
+      name = 'git',
+      noremap = true,
+      buffer = true,
+      ['n ]c'] = {
+        expr = true,
+        "&diff ? ']c' : '<cmd>lua require\"gitsigns\".next_hunk()<cr>'",
+      },
+      ['n [c'] = {
+        expr = true,
+        "&diff ? '[c' : '<cmd>lua require\"gitsigns\".prev_hunk()<cr>'",
+      },
+      ['n <leader>hb'] = '<cmd>lua require"gitsigns".blame_line()<cr>',
+      ['n <leader>hp'] = '<cmd>lua require"gitsigns".preview_hunk()<cr>',
+      ['n <leader>hr'] = '<cmd>lua require"gitsigns".reset_hunk()<cr>',
+      ['n <leader>hs'] = '<cmd>lua require"gitsigns".stage_hunk()<cr>',
+      ['n <leader>hu'] = '<cmd>lua require"gitsigns".undo_stage_hunk()<cr>',
+    },
+  },
+  nvim_tree = {
+    -- still use ijkl, gG, G
+    a = 'create',
+    d = 'remove',
+    h = 'parent_node',
+    H = 'dir_up',
+    J = 'last_sibling',
+    K = 'first_sibling',
+    l = 'edit',
+    ll = 'copy_name',
+    lp = 'copy_path',
+    lP = 'copy_absolute_path',
+    o = 'system_open',
+    p = 'paste',
+    q = 'close',
+    r = 'rename',
+    R = 'refresh',
+    t = 'next_sibling',
+    T = 'prev_sibling',
+    v = 'next_git_item',
+    V = 'prev_git_item',
+    x = 'cut',
+    yl = 'copy_name',
+    yp = 'copy_path',
+    ya = 'copy_absolute_path',
+    yy = 'copy',
+    ['.'] = 'toggle_ignored',
+    ['?'] = 'toggle_help',
+    ['<bs>'] = 'close_node',
+    ['<tab>'] = 'preview',
+    ['<s-c>'] = 'close_node',
+    ['<c-r>'] = 'full_rename',
+    ['<c-t>'] = 'tabnew',
+    ['<c-x>'] = 'split',
+  },
 }
 
 return M

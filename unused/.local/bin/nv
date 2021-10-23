@@ -2,13 +2,13 @@
 
 # This is my 'clone' of Notational velocity! ;-)
 
-if [ -n "NV_DIR" ]; then
+if [ -n "$NV_DIR" ]; then
   notes="$NV_DIR"
 else
   notes=~/Notes
 fi
 mkdir -p "$notes"
-cd "$notes"
+cd "$notes" || exit
 result=$(fd -e md -x echo '{.}'|fzf --history=$HOME/.histories/nv --print-query|tail -1)
 if [ -n "$result" ]; then
   if [ ! -f "$result.md" ]; then
@@ -23,4 +23,3 @@ if [ -n "$result" ]; then
     exec "$EDITOR" "$result.md"
   fi
 fi
-

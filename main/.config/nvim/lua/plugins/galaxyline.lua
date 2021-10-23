@@ -20,12 +20,29 @@ local buf_icon = {
   NvimTree = ' ',
 }
 
---
 local gl = require 'galaxyline'
 local gls = gl.section
 gl.short_line_list = short_line_list
 local gps = require 'nvim-gps'
-gps.setup {}
+local symbols = require('symbols').symbols
+gps.setup {
+  enabled = true,
+  icons = {
+    ['class-name'] = symbols.Class .. ' ',
+    ['function-name'] = symbols.Function .. ' ',
+    ['method-name'] = symbols.Method .. ' ',
+    ['container-name'] = symbols.Array .. ' ',
+    ['tag-name'] = symbols.Property .. ' ',
+  },
+  separator = ' > ',
+}
+
+-- TODO: display current note title
+-- local note_title
+-- local get_note_title = require('nononotes').get_title
+-- get_note_title(vim.fn.expand '%', function(title)
+--   note_title = title
+-- end)
 
 local vim, lsp, api = vim, vim.lsp, vim.api
 
@@ -82,9 +99,25 @@ local trouble_mode = function()
   return mode
 end
 
+-- HACK:
+local title
+local function hook()
+  require('nononotes').get_title(vim.fn.expand '%:p', function(note_title)
+    title = note_title
+  end)
+  if title then
+    vim.b.title = title
+  end
+end
+
 local get_displayed_name = function()
+  hook()
+  if vim.b.title then
+    return vim.b.title
+  end
+
   if vim.bo.filetype == 'Trouble' then
-    return trouble_mode()
+    return trouble_mode
   end
   if vim.bo.buftype == 'nofile' then
     return vim.bo.filetype
@@ -155,8 +188,9 @@ local function get_status_icons()
 
   -- read only
   if
-    vim.bo.buftype ~= 'nofile' and
-    vim.fn.index(skipLock, vim.bo.filetype) ~= -1 and vim.bo.readonly == true
+    vim.bo.buftype ~= 'nofile'
+    and vim.fn.index(skipLock, vim.bo.filetype) ~= -1
+    and vim.bo.readonly == true
   then
     icons = icons .. ' '
   end

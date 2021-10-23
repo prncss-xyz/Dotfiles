@@ -44,8 +44,10 @@ xplr.config.general.initial_layout = 'no_help_no_selection'
 local copy_here = {
   unpack(xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages),
 }
-xplr.config.modes.builtin.default.key_bindings.on_key.space = nil
-xplr.config.modes.builtin.default.key_bindings.on_key.v = nil
+
+for _,key in ipairs{'space', 'v', 'h', 'j', 'k', 'l'} do
+  xplr.config.modes.builtin.default.key_bindings.on_key[key] = nil
+end
 
 -- TODO: bash to lua
 
@@ -60,6 +62,7 @@ xplr.config.modes.builtin.default.key_bindings.on_key['l'] =
 
 xplr.config.modes.builtin.default.key_bindings.on_key[';'] =
   xplr.config.modes.builtin.default.key_bindings.on_key.right
+
 local common = {
   ['ctrl-c'] = {
     help = 'cancel',
@@ -237,31 +240,13 @@ deep_merge(xplr, {
                   { SwitchModeCustom = 'last' },
                 },
               },
-              v = {
-                help = 'toggle selection',
-                messages = { 'ToggleSelection', 'FocusNext' },
-              },
-              V = {
-                help = 'selection mode',
-                messages = {
-                  { SwitchModeBuiltin = 'selection_ops' },
-                },
-              },
-              O = {
-                help = 'open editor',
-                messages = {
-                  {
-                    BashExecSilently = [[ exec $TERMINAL -e nvim & ]],
-                  },
-                },
+              e = {
+                help = 'bottom',
+                messages = { 'FocusLast', 'PopMode' },
               },
               E = {
                 help = 'top',
                 messages = { 'FocusFirst', 'PopMode' },
-              },
-              e = {
-                help = 'bottom',
-                messages = { 'FocusLast', 'PopMode' },
               },
               h = {
                 help = 'history',
@@ -322,6 +307,14 @@ deep_merge(xplr, {
                   },
                 },
               },
+              O = {
+                help = 'open editor',
+                messages = {
+                  {
+                    BashExecSilently = [[ exec $TERMINAL -e nvim & ]],
+                  },
+                },
+              },
               q = {
                 help = 'print pwd and quit',
                 messages = { 'PrintPwdAndQuit' },
@@ -336,6 +329,16 @@ deep_merge(xplr, {
                   {
                     BashExecSilently = [[ exec $TERMINAL & ]],
                   },
+                },
+              },
+              v = {
+                help = 'toggle selection',
+                messages = { 'ToggleSelection', 'FocusNext' },
+              },
+              V = {
+                help = 'selection mode',
+                messages = {
+                  { SwitchModeBuiltin = 'selection_ops' },
                 },
               },
               w = {

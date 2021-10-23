@@ -1,5 +1,6 @@
 local M = {}
 
+
 -- Old signature:
 -- function(err, method, result, client_id, bufnr, config)
 -- New signature:
@@ -70,6 +71,7 @@ function M.setup()
   end
 
   local function on_attach(client, _)
+    require('aerial').on_attach(client)
     client.resolved_capabilities.document_formatting = false
     client.resolved_capabilities.document_range_formatting = false
     -- if client.resolved_capabilities.document_highlight then
@@ -95,7 +97,7 @@ function M.setup()
       enable_import_on_completion = false,
 
       -- import all
-      import_all_timeout = 5000, -- ms
+      import_all_timeout = 5000,
       import_all_priorities = {
         buffers = 4, -- loaded buffer names
         buffer_content = 3, -- loaded buffer content
@@ -124,7 +126,6 @@ function M.setup()
 
     -- required to fix code action ranges
     ts_utils.setup_client(client)
-    -- client.resolved_capabilities.document_formatting = false
   end
 
   nvim_lsp.tsserver.setup {
@@ -149,7 +150,6 @@ function M.setup()
     }
   end
 
-  -- ? https://github.com/folke/lua-dev.nvim/issues/21
   local luadev = require('lua-dev').setup {
     lspconfig = {
       on_attach = on_attach,
@@ -198,7 +198,7 @@ function M.setup()
     -- b.diagnostics.write_good,
     -- b.diagnostics.misspell, -- yay -S misspell
     b.diagnostics.shellcheck,
-    -- b.code_actions.gitsigns, -- FIXME:
+    b.code_actions.gitsigns,
     b.formatting.fish_indent,
     -- b.diagnostics.markdownlint,
     -- b.diagnostics.selene,

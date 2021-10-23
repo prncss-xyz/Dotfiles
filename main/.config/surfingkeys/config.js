@@ -2,6 +2,9 @@
 
 // https://github.com/b0o/surfingkeys-conf
 
+map('J', 'u')
+map('K', 'd')
+map("<Alt-h>", "?")
 map("<Ctrl-c>", "<Esc>");
 cmap("<Ctrl-c>", "<Esc>");
 vmap("<Ctrl-c>", "<Esc>");
@@ -30,7 +33,7 @@ cmap('<Tab>', '<Enter>');
 settings.modeAfterYank = "Normal";
 Hints.characters = "asdfghzxcvbnm,.qwertyuiop";
 Hints.scrollKeys = "0kjl;G$"
-settings.focusFirstCandidate = true;
+settings.focusFirstCandidate = false;
 
 mapkey('k', 'down', Normal.scroll.bind(Normal, "down"));
 mapkey('j','up',  Normal.scroll.bind(Normal, "up"));

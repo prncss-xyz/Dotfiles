@@ -82,7 +82,7 @@ local common = {
     help = 'help',
     -- TODO: position to active mode
     messages = {
-      { BashExec = 'nvim_paging markdown "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"' },
+      { BashExec = 'nvim_paging markdown -R "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"' },
     },
   },
   esc = nop,
@@ -301,7 +301,7 @@ deep_merge(xplr, {
                     BashExec = [[
                       res="$(fd --type file --follow --hidden --exclude .git | fzf --preview 'echo {} >/tmp/xplr.fifo' --preview-window 0)" -- FIXME
                       if [ -n "$res" ]; then
-                        opener "$res"
+                        xdg-open "$res"
                       fi
                     ]],
                   },
@@ -367,7 +367,7 @@ deep_merge(xplr, {
                       if [ -d "$XPLR_FOCUS_PATH" ]; then
                         echo "ChangeDirectory: $XPLR_FOCUS_PATH" >> $XPLR_PIPE_MSG_IN
                       else
-                        opener "$XPLR_FOCUS_PATH"
+                        xdg-open "$XPLR_FOCUS_PATH"
                       fi
                     ]],
                   },
@@ -440,22 +440,6 @@ deep_merge(xplr, {
               --   help = "next visited path",
               --   messages = { "NextVisitedPath" },
               -- },
-              ['ctrl-j'] = {
-                help = 'pane-swap',
-                messages = {
-                  {
-                    BashExec = [[ 
-                      LOC="$(cat "$XPLR_SESSION_PATH/pane")"
-                      if [ -n "$LOC" ]; then
-                        echo "$PWD" > "$XPLR_SESSION_PATH/pane" 
-                        echo ChangeDirectory: "'"${LOC:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                    ]],
-                  },
-                  'PopMode',
-                  { SwitchModeBuiltin = 'default' },
-                },
-              },
             },
           },
         },
@@ -501,11 +485,27 @@ deep_merge(xplr, {
                   },
                 },
               },
-              j = {
+              M = {
                 help = 'pane-set',
                 messages = {
                   {
                     BashExecSilently = [[ echo "$PWD" > "$XPLR_SESSION_PATH/pane" ]],
+                  },
+                  'PopMode',
+                  { SwitchModeBuiltin = 'default' },
+                },
+              },
+              m = {
+                help = 'pane-swap',
+                messages = {
+                  {
+                    BashExec = [[ 
+                      LOC="$(cat "$XPLR_SESSION_PATH/pane")"
+                      if [ -n "$LOC" ]; then
+                        echo "$PWD" > "$XPLR_SESSION_PATH/pane" 
+                        echo ChangeDirectory: "'"${LOC:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
                   },
                   'PopMode',
                   { SwitchModeBuiltin = 'default' },
@@ -658,7 +658,7 @@ deep_merge(xplr, {
                     BashExec = [[
                       PTH=$(fzf <"$XPLR_PIPE_SELECTION_OUT")
                       if [ -n "$PTH" ]; then
-                        opener "$PTH"
+                        xdg-open "$PTH"
                       fi
                     ]],
                   },

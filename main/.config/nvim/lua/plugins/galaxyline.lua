@@ -117,7 +117,7 @@ local get_displayed_name = function()
   end
 
   if vim.bo.filetype == 'Trouble' then
-    return trouble_mode
+    return trouble_mode()
   end
   if vim.bo.buftype == 'nofile' then
     return vim.bo.filetype

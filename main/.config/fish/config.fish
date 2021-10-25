@@ -1,7 +1,7 @@
 set fish_greeting # suppress greetings 
 alias ght 'export GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1)'
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
-alias o opener
+alias o xdg-open
 # alias e nvr -s
 alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 alias e nvim_sessions

@@ -4,38 +4,36 @@
 # fish_key_reader -- to get binding code
 
 function fish_user_key_bindings
-    # fish_vi_key_bindings
     fzf_key_bindings
-    # bind \eb accept-autosuggestion
-    bind \ef nextd-or-forward-word
     bind \eb prevd-or-backward-word
-    bind \ep backward-bigword
-    bind \en forward-bigword
-    # bind \ca up-or-search
-    # bind \cx down-or-search
-    bind \eb backward-word
-    bind \ef forward-word
-    bind \ct transpose-chars
+    # \ec fzf-cd-widget
     bind \ed fzf-file-widget
-    bind \cy fish_clipboard_copy
-    bind \ch beginning-of-line
-    bind \cs 'pet-select --layout=bottom-up'
+    bind \ef nextd-or-forward-word
     bind \eh fish_man_page_html
     bind \el fish_list_current_token
+    bind \en forward-bigword
+    # \eo open in pager
+    bind \ep backward-bigword
+    # \es prepend sudo
+    # \ev edit command line
+
+    # \ca to bol
+    # \cb back
+    # \cc cancel line
+    # \cd del or quit
+    # \ce to eol
+    # \cf forward
+    bind \ch beginning-of-line
+    # \ck kill to eol
+    # \cl repaint
+    # \cm up-or-search # bind
+    # \cn down-or-search # bind
+    # \cr fzf-history-widget
+    bind \cs 'pet-select --layout=bottom-up'
+    bind \ct transpose-chars
+    # \cu kill to bol
+    # \v paste
+    # \cw kill to bow
+    bind \cy fish_clipboard_copy
+    # \cz undo
 end
-
-# \cb \cf back, forward
-# \ca \ce home, end
-# \cu \ck cut to bol, eol
-# \cc kill line
-# \cd del or quit
-
-
-# \eo open in pager
-# \ev edit command line
-# \es prepend sudo
-# \cc cancel line
-# \cw
-
-# bind \cr fzf-history-widget
-# bind \ec fzf-cd-widget

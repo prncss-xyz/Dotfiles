@@ -4,15 +4,15 @@ launch() {
 
 	FPATH="$1"
 
-  if [ -z "$FPATH" ]; then
-    nvr_do
-    exit 0
-  fi
+	if [ -z "$FPATH" ]; then
+		nvr_do
+		exit 0
+	fi
 
-  if [ -d "$FPATH" ]; then
-    $TERMINAL -e xplr
-    exit 0
-  fi
+	if [ -d "$FPATH" ]; then
+		$TERMINAL -e xplr
+		exit 0
+	fi
 
 	case "${FPATH}" in
 	http://* | https://*)
@@ -120,7 +120,7 @@ launch() {
 		;;
 	esac
 	echo unknown mimetype "$MIMETYPE" >/dev/stderr
-  exit 1
+	exit 1
 }
 
 launch "$1"

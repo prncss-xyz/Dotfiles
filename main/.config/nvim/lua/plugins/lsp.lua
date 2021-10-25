@@ -186,7 +186,7 @@ function M.setup()
         'html',
         'json',
         'yaml',
-        'markdown',
+        -- 'markdown', -- slow
         'scss',
         'toml',
       },

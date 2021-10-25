@@ -26,6 +26,7 @@ export gtk_theme="Adwaita"
 
 # passing these vars unexpended
 export WOBSOCK='$WOBSOCK'
+export terminal='$terminal'
 
 source "$HOME/.config/stow/theming/extra/$name.sh"
 

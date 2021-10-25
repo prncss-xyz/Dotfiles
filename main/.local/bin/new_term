@@ -2,5 +2,5 @@
 
 export NVIM_LISTEN_ADDRESS=/tmp/nvim-$$
 $TERMINAL -e "$@"
-# swaymsg exec --  kitty -e "$@"
+# swaymsg exec --  $TERMINAL -e "$@"
 

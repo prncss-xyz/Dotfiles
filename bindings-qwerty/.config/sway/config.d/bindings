@@ -17,10 +17,10 @@ floating_modifier $mod normal
 
 bindsym $mod+b mode audio
 bindsym $mod+shift+b mode lumino
-bindsym $mod+e exec kitty -e nvim_sessions
-bindsym $mod+shift+e exec kitty -e nvim_nonono
+bindsym $mod+e exec $terminal -e nvim_sessions
+bindsym $mod+shift+e exec $terminal -e nvim_nonono
 bindsym $mod+g mode launch
-bindsym $mod+h exec "kitty --class=launcher -e nvim Dotfiles/bindings-qwerty/.config/sway/config.d/bindings", mode default
+bindsym $mod+h exec $terminal "--class=launcher -e nvim Dotfiles/bindings-qwerty/.config/sway/config.d/bindings"
 bindsym $mod+n exec makoctl dismiss
 bindsym $mod+shift+n exec makoctl dismiss --all
 bindsym $mod+m fullscreen
@@ -85,19 +85,19 @@ bindsym $mod+shift+$right move right, mode default
 
 mode launch {
   bindsym c exec "clipman pick -t rofi", mode default
-  bindsym d exec "kitty --class=launcher -e fdocu", mode default
-  bindsym shift+d exec "kitty --class=launcher -e fdocu \*", mode default
-  bindsym e exec "kitty -e nvim_sessions", mode default
-  bindsym shift+e exec "kitty -e nvim_nonono", mode default
-  bindsym g exec "kitty -e nvim_ghost", mode default
-  bindsym h exec "kitty --class=launcher -e fman", mode default
-  bindsym k exec "kitty --class=launcher -e fkill", mode default
-  bindsym m exec "kitty -e nvim_codi_mathjs", mode default
+  bindsym d exec "$terminal --class=launcher -e fdocu", mode default
+  bindsym shift+d exec "$terminal --class=launcher -e fdocu \*", mode default
+  bindsym e exec "$terminal -e nvim_sessions", mode default
+  bindsym shift+e exec "$terminal -e nvim_nonono", mode default
+  bindsym g exec "$terminal -e nvim_ghost", mode default
+  bindsym h exec "$terminal --class=launcher -e fman", mode default
+  bindsym k exec "$terminal --class=launcher -e fkill", mode default
+  bindsym m exec "$terminal -e nvim_codi_mathjs", mode default
   bindsym p exec "rofi-pass", mode default
   bindsym s exec "rofi -show ssh", mode default
   bindsym t exec "new_term", mode default
-  bindsym y exec "kitty --class=launcher -e fbookmark", mode default
-  bindsym shift+y exec "kitty -e nvim Personal/bookmarks.csv", mode default
+  bindsym y exec "$terminal --class=launcher -e fbookmark", mode default
+  bindsym shift+y exec "$terminal -e nvim Personal/bookmarks.csv", mode default
   bindsym x exec "new_term xplr", mode default
 
   bindsym ctrl+c mode default

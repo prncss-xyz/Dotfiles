@@ -101,7 +101,7 @@ return require('packer').startup {
       -- weirdly seems required to format yaml frontmatter
       'godlygeek/tabular',
       requires = {
-        'plasticboy/vim-markdown',
+        disable = true,
         ft = 'markdown',
         -- unsuccessful setting options here
       },
@@ -357,7 +357,7 @@ return require('packer').startup {
       local_repo 'nononotes-nvim',
       cond = full,
       config = function()
-        require('plugins.nononotes').setup()
+        require'plugins.nononotes'.setup()
       end,
     }
     use {
@@ -531,7 +531,8 @@ return require('packer').startup {
       end,
     }
     use {
-      'svermeulen/vim-yoink', disable = true,
+      'svermeulen/vim-yoink',
+      disable = true,
     }
     -- edition
     use {
@@ -643,7 +644,7 @@ return require('packer').startup {
             vim.g.textobj_datetime_no_default_key_mappings = 1
           end,
         },
-        {'preservim/vim-textobj-sentence', cond = full},
+        { 'preservim/vim-textobj-sentence', cond = full },
         {
           'kana/vim-textobj-line',
           cond = full,
@@ -670,7 +671,7 @@ return require('packer').startup {
       disable = true,
       config = function()
         require('nvim-projectconfig').load_project_config {
-          project_dir = local_repo'projects-config/',
+          project_dir = local_repo 'projects-config/',
         }
         require('utils').augroup('NvimProjectConfig', {
           {

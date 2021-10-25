@@ -2,6 +2,6 @@
 
 res=$(tag-u "$@" | sort /dev/stdin -u | fzf --no-sort)
 if [ -n "$res" ]; then
-	opener "$res"
+	xdg-open "$res"
 	sleep 1
 fi

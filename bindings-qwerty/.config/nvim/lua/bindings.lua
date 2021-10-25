@@ -157,7 +157,6 @@ local function map_edit()
   map('n', a.edit .. dd.up, rep '<Plug>MoveLineUp', { noremap = false })
   map('n', a.edit .. dd.down, rep '<Plug>MoveLineDown', { noremap = false })
 
-
   -- exchange (repeat)
   map('nx', a.edit .. 'x', '<Plug>(Exchange)', { noremap = false })
   map(
@@ -283,8 +282,8 @@ local function map_jump()
     },
     d = { ']c', 'next change' },
     D = { '[c', 'previous change' },
-    J = { '<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset' },
-    j = { '<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump' },
+    M = { '<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset' },
+    m = { '<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump' },
     o = { '`.', 'last change' },
     -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
     -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
@@ -434,7 +433,7 @@ local function map_browser()
     [a.browser] = {
       man = { '<cmd>lua require"browser".man()<cr>', 'man page' },
       o = {
-        '<cmd>call jobstart(["opener", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
+        '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
         'open current file',
       },
       p = { "<cmd>lua require'setup-session'.launch()<cr>", 'session lauch' },
@@ -542,7 +541,7 @@ local function map_markdown()
     end
   end
 
-  map_local('', a.jump..'s', '<cmd>Telescope heading<cr>')
+  map_local('', a.jump .. 's', '<cmd>Telescope heading<cr>')
   map_local('nvo', a.jump .. 'T', '<Plug>Markdown_MoveToPreviousHeader')
   map_local('nvo', a.jump .. 't', '<Plug>Markdown_MoveToNextHeader')
   map_local('nvo', a.jump .. 'h', '<Plug>Markdown_MoveToCurHeader')
@@ -557,7 +556,9 @@ local function map_markdown()
   map_local('ox', 'ad', '<Plug>(textobj-datetime-auto)', { noremap = false })
   map_local('ox', 'id', '<Plug>(textobj-datetime-auto)', { noremap = false })
 
-  vim.fn.call('textobj#sentence#init', {})
+  if require('pager').full then
+    vim.fn.call('textobj#sentence#init', {})
+  end
 end
 
 local function map_readonly()
@@ -635,10 +636,10 @@ function M.setup()
 
   map('', 'b', '*')
   map('', 'B', '#')
-  map('', 'w', 'ge')
-  map('', 'W', 'gE')
-  map('', 'e', 'w')
-  map('', 'E', 'W')
+  map('', 'w', 'b')
+  map('', 'W', 'B')
+  map('', 'e', 'e')
+  map('', 'E', 'E')
   map('', 'é', '/')
   map('', 'É', 'É')
   map('nvo', 'L', '^')
@@ -646,8 +647,8 @@ function M.setup()
 
   -- neoscroll
   require('neoscroll.config').set_mappings {
-    ['J'] = { 'scroll', { '-vim.wo.scroll', 'true', '250' } },
-    ['K'] = { 'scroll', { 'vim.wo.scroll', 'true', '250' } },
+    J = { 'scroll', { '-vim.wo.scroll', 'true', '250' } },
+    K = { 'scroll', { 'vim.wo.scroll', 'true', '250' } },
     zt = { 'zt', { '250' } },
     zz = { 'zz', { '250' } },
     zb = { 'zb', { '250' } },
@@ -840,6 +841,7 @@ function M.setup()
 
   -- VSSPlit
   -- maybe not K...if for visual only
+  map('', 'V', '<c-v>')
   map('x', 'v', 'V')
   map('x', '<c-w>r', '<Plug>(Visual-Split-VSResize)', { noremap = false })
   map('x', '<c-w>S', '<Plug>(Visual-Split-VSSplit)', { noremap = false })

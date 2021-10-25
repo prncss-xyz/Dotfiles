@@ -151,7 +151,7 @@ end
 function m.open_current()
   require('plenary.job')
     :new({
-      command = 'opener',
+      command = 'xdg-open',
       args = { vim.fn.expand '%' },
     })
     :start()

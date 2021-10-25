@@ -21,20 +21,22 @@ local function setup(port, command)
   scheme.pass = 'session/' .. dirname
   local fifo = string.format('/tmp/session-%d', port)
   job:new({ command = 'mkfifo', args = { fifo } }):sync()
-  os.execute(string.format(
-    [[
-    export PORT=%q
-    pass show %q|. 2>/dev/null
-    exec %q --title=%q -e sh %q&
-  ]],
-    port,
-    scheme.pass,
-    os.getenv 'TERMINAL',
-    dirname .. ' — ' .. command,
-    fifo
-  ))
+  job
+    :new({
+      command = os.getenv 'TERMINAL',
+      args = {
+        '--title=' .. dirname .. ' — ' .. command,
+        '-e',
+        'sh',
+        fifo,
+      },
+    })
+    :start()
   local file = io.open(fifo, 'a')
-  file:write(command .. '; sleep inf')
+  file:write(string.format('export PORT=%q\n', port))
+  file:write(string.format('source <(pass show %q)\n', scheme.pass))
+  file:write(command .. '\n')
+  file:write 'sleep inf\n'
   file:close()
 end
 
@@ -71,7 +73,7 @@ end
 
 require('utils').augroup('SetupSession', {
   {
-    events = { 'DirChanged' },
+    events = { 'VimEnter', 'DirChanged' },
     targets = { '*' },
     command = setup_scheme,
   },
@@ -92,7 +94,7 @@ function m.develop()
 end
 
 require('utils').command('SetupSessionInfo', {}, function()
-  print(require'utils'.dump(scheme))
+  require('utils').dump(scheme)
 end)
 
 return m

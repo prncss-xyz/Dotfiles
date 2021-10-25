@@ -9,7 +9,7 @@ local conf = require('telescope.config').values
 local function open(path)
   Job
     :new({
-      command = 'opener',
+      command = 'xdg-open',
       args = { path },
     })
     :start()

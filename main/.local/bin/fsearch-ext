@@ -7,5 +7,5 @@ else
 	res="$(fd --type file --follow --hidden --exclude .git | fzf --preview 'bat  --style=changes,header,rule,snip --color=always {}')"
 fi
 if [ -n "$res" ]; then
-	opener "$res"
+	xdg-open "$res"
 fi

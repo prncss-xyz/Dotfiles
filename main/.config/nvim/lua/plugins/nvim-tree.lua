@@ -37,7 +37,7 @@ M.config = function()
     }, -- https://github.com/ahmedkhalf/project.nvim
     nvim_tree_bindings = bindings,
     tree_auto_open = 1,
-    tree_system_open_command = 'opener',
+    -- tree_system_open_command = 'xdg-open',
     tree_follow = 1,
     tree_disable_default_keybindings = 1,
     show_hidden = true,

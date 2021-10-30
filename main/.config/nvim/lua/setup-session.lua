@@ -1,10 +1,6 @@
 local m = {}
 
--- TODO lua realpath
-
-local browser = os.getenv 'BROWSER'
 local scheme = { type = 'unknown' }
-local first = true
 
 local function setup(port, command)
   local dirname
@@ -87,10 +83,6 @@ end
 
 function m.develop()
   setup(scheme.port, scheme.develop)
-  if first then
-    first = false
-    m.launch()
-  end
 end
 
 require('utils').command('SetupSessionInfo', {}, function()

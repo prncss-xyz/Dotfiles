@@ -1,1 +1,1 @@
-set $terminal=$TERMINAL
+set $terminal $TERMINAL

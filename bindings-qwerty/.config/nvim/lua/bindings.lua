@@ -168,7 +168,7 @@ local function map_edit()
   map('nx', a.edit .. 'xc', '<Plug>(ExchangeClear)', { noremap = false })
 
   -- sandwich
-  map('', a.edit .. 'y', '<Plug>(operator-sandwich-add)', { noremap = false })
+  -- map('', a.edit .. 'y', '<Plug>(operator-sandwich-add)', { noremap = false })
   map(
     '',
     a.edit .. 'Y',
@@ -331,7 +331,6 @@ local function map_move()
       '<cmd>lua require("telescope.").builtin.lsp_implementations()<cr>',
       'go implementation',
     },
-    -- n = { '<cmd>Telescope node_modules list<cr>', 'node modules' },
     o = {
       "<cmd>lua require('telescope.builtin').oldfiles({only_cwd = true})<cr>",
       'oldfiles',
@@ -570,6 +569,56 @@ local function map_readonly()
   end
 end
 
+--[[
+## Macros (Q)
+
+## Text objects (ai)
+| key                                       | Description           | source                |
+| ----------------------------------------- | --------------------- | --------------------- |
+| a                                         | argument              | targets               |
+| b                                         | brackets              | vim, targets          |
+| B                                         | block                 | vim, targets          |
+| c                                         | matching block        | matchup               |
+| d                                         | datetimem ft:markdown | datetimee             |
+| e                                         | entire buffer         | entire                |
+| f                                         | function              | ts                    |
+| g                                         | parameter             | ts                    | inner only
+| i                                         | indent                | indent                |
+| I                                         | indent                | indent                |
+| l                                         | line                  | -                     | ?? conflict with targers
+| p                                         | paragraph             | vim                   |
+| q                                         | quotes                | targets               |
+| r                                         | auto                  | sandwich              |
+| s                                         | sentence, ft:markdown | sentence, conflict    |
+| t                                         | tag (html)            | vim                   |
+| v                                         | variable segment      | -                     |
+| w                                         | word                  | vim                   |
+| W                                         | bigword               | vim                   |
+| ,                                         | parameter             | conflict with targets |
+| `{count}ih` nth surrounding open to close |
+| n                                         | next                  | targets               |
+| l                                         | last                  | targets               |
+
+- sentence: as, is, gS, gs
+- line: al, il
+
+| Key bindings | Description                                                 |
+| ------------ | ----------------------------------------------------------- |
+| `<count>ai`  | **A**n **I**ndentation level and line above.                |
+| `<count>ii`  | **I**nner **I**ndentation level (**no line above**).        |
+| `<count>aI`  | **A**n **I**ndentation level and lines above/below.         |
+| `<count>iI`  | **I**nner **I**ndentation level (**no lines above/below**). |
+
+
+| command | key              |
+| ------- | ---------------- |
+| r       | RecordNew        |
+| n       | RotateBack       |
+| N       | RotateForward    |
+| a       | Append           |
+| A       | Prepend          |
+| w       | NameCurrentMacro |
+--]]
 function M.setup()
   require('utils').augroup('ReadonlyMappings', {
     {
@@ -1119,7 +1168,7 @@ M.plugins = {
         keymaps = {
           ['af'] = '@function.outer',
           ['if'] = '@function.inner',
-          -- ['ia'] = '@parameter.inner',
+          ['ig'] = '@parameter.inner',
           -- ['aq'] = {
           --   lua = '@string.outer',
           -- },

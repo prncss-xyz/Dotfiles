@@ -654,7 +654,6 @@ return require('packer').startup {
         },
         { 'kana/vim-textobj-entire', cond = full },
         { 'michaeljsmith/vim-indent-object', cond = full },
-        { 'sgur/vim-textobj-parameter', cond = full },
       },
     }
     use { 'wellle/targets.vim', cond = full }

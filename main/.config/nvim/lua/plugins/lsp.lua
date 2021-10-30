@@ -129,9 +129,9 @@ function M.setup()
   end
 
   nvim_lsp.tsserver.setup {
-    on_attach = on_attach_ts,
+    on_attach = on_attach
+    -- on_attach = on_attach_ts,
   }
-
   for _, lsp in ipairs {
     'bashls',
     'cssls',

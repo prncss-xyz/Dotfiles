@@ -4,7 +4,7 @@
 
 src="$1"
 if [ ! -f "$src" ]; then
-  echo tag-mv: \'"$src"\' is not a file >/dev/err
+  echo tag-mv: \'"$src"\' is not a file >/dev/stderr
   exit 1
 fi
 dst="$2"
@@ -16,11 +16,11 @@ else
   dst_file="$dst"
 fi
 if [ ! -d "$dst_dir" ]; then
-  echo tag-mv: \'"$dst_dir"\' is not a directory >/dev/err
+  echo tag-mv: \'"$dst_dir"\' is not a directory >/dev/stderr
   exit 1
 fi
 if [ -e "$dst_file" ]; then
-  echo tag-mv: \'"$dst_file"\' already exists >/dev/err
+  echo tag-mv: \'"$dst_file"\' already exists >/dev/stderr
   exit 1
 fi
 

@@ -99,19 +99,7 @@ local trouble_mode = function()
   return mode
 end
 
--- HACK:
-local title
-local function hook()
-  require('nononotes').get_title(vim.fn.expand '%:p', function(note_title)
-    title = note_title
-  end)
-  if title then
-    vim.b.title = title
-  end
-end
-
 local get_displayed_name = function()
-  hook()
   if vim.b.title then
     return vim.b.title
   end

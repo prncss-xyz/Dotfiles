@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+cd "$WEBDIR"|| exit 1
+
+res="$(fd -e csv -x cat|fzf --delimiter='\t' --nth=1,2 --with-nth=1|cut  -f2)"
+if [ -n "$res" ]; then
+  browser "$res" 2> /dev/null
+fi

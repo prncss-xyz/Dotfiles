@@ -694,6 +694,9 @@ function M.setup()
   map('nvo', 'L', '^')
   map('nvo', ':', '$')
 
+  map('o', ',', ':<C-U>lua require("tsht").nodes()<CR>')
+  map('v', ',', ':lua require("tsht").nodes()<CR>')
+
   -- neoscroll
   require('neoscroll.config').set_mappings {
     J = { 'scroll', { '-vim.wo.scroll', 'true', '250' } },
@@ -1191,6 +1194,7 @@ M.plugins = {
         },
       },
     },
+    -- disabled
     textsubjects = {
       keymaps = {
         [','] = 'textsubjects-smart', -- comments, consecutive line comments, function calls, function definitions, class definitions, loops, if statements, return values, arguments.

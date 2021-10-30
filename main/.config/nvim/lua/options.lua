@@ -2,6 +2,8 @@ local full = require('pager').full
 
 if not full then
   vim.cmd 'set shada="NONE"'
+  -- let test#javascript#jest#options = "--color=always"
+  -- let test#javascript#reactscripts#options = "--watchAll=false"
 end
 local deep_merge = require('utils').deep_merge
 local indent = 2

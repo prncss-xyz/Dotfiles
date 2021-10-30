@@ -11,6 +11,7 @@ MANPAGER OVERRIDE="nvim_paging man"
 MANPATH OVERRIDE=${NPM_PACKAGES}/share/man:${MANPATH}
 MBSYNC_CONFIG OVERRIDE=${HOME}/.config/mbsync/config
 MOZ_ENABLE_WAYLAND OVERRIDE=1
+NODE_OPTIONS=--experimental-vm-modules
 NOTMUCH_CONFIG OVERRIDE=${HOME}/.config/notmuch/config
 PAGER=nvim_pager
 PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?

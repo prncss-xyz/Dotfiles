@@ -76,7 +76,7 @@ return require('packer').startup {
         { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } },
         { 'JoosepAlviste/nvim-ts-context-commentstring', cond = full },
         { 'nvim-treesitter/nvim-treesitter-textobjects', cond = full },
-        { 'RRethy/nvim-treesitter-textsubjects', cond = full },
+        -- { 'RRethy/nvim-treesitter-textsubjects', cond = full },
         -- "beloglazov/vim-textobj-punctuation", -- au/iu for punctuation
         { 'mfussenegger/nvim-ts-hint-textobject', cond = full },
         -- Use 'tressitter 'to autoclose and autorename html tag
@@ -106,6 +106,9 @@ return require('packer').startup {
         -- unsuccessful setting options here
       },
     }
+
+    -- tests
+    use { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" }
 
     -- lua dev
     use { 'nanotee/luv-vimdocs', cond = full }
@@ -357,7 +360,7 @@ return require('packer').startup {
       local_repo 'nononotes-nvim',
       cond = full,
       config = function()
-        require'plugins.nononotes'.setup()
+        require('plugins.nononotes').setup()
       end,
     }
     use {

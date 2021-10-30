@@ -5,7 +5,8 @@ if [ -z "$1" ]; then
 		nvim +"Telescope projects"
 	else
 		# FIXME:
-		nvim +"lua require'bufjump'.local_backward()"
+    nvim
+		# nvim +"lua require'bufjump'.local_backward()"
 	fi
 else
 	nvim "$@"

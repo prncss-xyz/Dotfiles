@@ -28,6 +28,7 @@ function M.setup()
   telescope.load_extension 'md_help'
   telescope.load_extension 'installed_plugins'
   telescope.load_extension 'project_directory'
+  telescope.load_extension 'my_projects'
 end
 
 return M

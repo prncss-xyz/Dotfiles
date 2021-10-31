@@ -96,6 +96,8 @@ rules:
       default-opacity: 1
     - app-id: firefox
       default-opacity: 1
+    - app-id: foot
+      default-opacity: 0.9
     - app-id: kitty
       default-opacity: 0.9
     - app-id: neovide

@@ -22,6 +22,8 @@ arch-chroot /mnt
 
 timedatectl set-ntp true
 hwclock --systohc
+# ln -sf /dev/null /etc/pacman.d/hooks/90-mkinitcpio-install.hook
+# ln -sf /dev/null /etc/pacman.d/hooks/60-mkinitcpio-remove.hook
 
 echo "wheel ALL=(ALL) ALL">>/etc/sudoers
 useradd -m -G wheel,input,lp,users,prncss "$USER1"

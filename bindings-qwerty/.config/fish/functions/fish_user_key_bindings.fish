@@ -29,7 +29,7 @@ function fish_user_key_bindings
     # \cm up-or-search # bind
     # \cn down-or-search # bind
     # \cr fzf-history-widget
-    bind \cs 'pet-select --layout=bottom-up'
+    bind \cs pet-select
     bind \ct transpose-chars
     # \cu kill to bol
     # \v paste

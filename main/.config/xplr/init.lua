@@ -1,4 +1,4 @@
-version = '0.14.4'
+version = '0.15.2'
 package.path = os.getenv 'HOME' .. '/.config/xplr/plugins/?.xplr/src/init.lua'
 require('comex').setup { compress_key = 'c', extract_key = 'x' }
 require('type-to-nav').setup()

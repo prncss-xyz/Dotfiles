@@ -64,7 +64,7 @@ require('nvim-treesitter.configs').setup(
       use_languagetree = true,
     },
     incremental_selection = {
-      enable = full,
+      enable = false,
     },
     indent = {
       enable = full,
@@ -77,7 +77,7 @@ require('nvim-treesitter.configs').setup(
       enable = true,
     },
     textsubjects = {
-      enable = full,
+      enable = false,
     },
     textobjects = {
       select = {

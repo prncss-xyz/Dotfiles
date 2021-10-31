@@ -37,13 +37,6 @@ gps.setup {
   separator = ' > ',
 }
 
--- TODO: display current note title
--- local note_title
--- local get_note_title = require('nononotes').get_title
--- get_note_title(vim.fn.expand '%', function(title)
---   note_title = title
--- end)
-
 local vim, lsp, api = vim, vim.lsp, vim.api
 
 local function get_file_info()

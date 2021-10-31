@@ -20,7 +20,7 @@ bindsym $mod+shift+b mode lumino
 bindsym $mod+e exec $terminal -e nvim_sessions
 bindsym $mod+shift+e exec $terminal -e nvim_nonono
 bindsym $mod+g mode launch
-bindsym $mod+h exec $terminal "--class=launcher -e nvim Dotfiles/bindings-qwerty/.config/sway/config.d/bindings"
+bindsym $mod+h exec $terminal "--app-id=launcher -e nvim Dotfiles/bindings-qwerty/.config/sway/config.d/bindings"
 bindsym $mod+n exec makoctl dismiss
 bindsym $mod+shift+n exec makoctl dismiss --all
 bindsym $mod+m fullscreen
@@ -47,10 +47,9 @@ bindsym $mod+shift+d move container to workspace number 2
 bindsym $mod+f workspace number 3, mode default
 bindsym $mod+shift+f move container to workspace number 3 
 
-bindsym $mod+return [title="^scratchpad$"] scratchpad show
 bindsym $mod+space focus mode_toggle
 bindsym $mod+shift+space floating toggle
-bindsym $mod+minus scratchpad show
+bindsym $mod+return scratchpad show
 bindsym $mod+shift+minus move scratchpad
 bindsym $mod+ctrl+g mode "$mode_gaps"
 bindsym $mod+ctrl+period mark __mark
@@ -85,19 +84,20 @@ bindsym $mod+shift+$right move right, mode default
 
 mode launch {
   bindsym c exec "clipman pick -t rofi", mode default
-  bindsym d exec "$terminal --class=launcher -e fdocu", mode default
-  bindsym shift+d exec "$terminal --class=launcher -e fdocu \*", mode default
+  bindsym d exec "$terminal --app-id=launcher -e fdocu", mode default
+  bindsym shift+d exec "$terminal --app-id=launcher -e fdocu \*", mode default
   bindsym e exec "$terminal -e nvim_sessions", mode default
   bindsym shift+e exec "$terminal -e nvim_nonono", mode default
-  bindsym f exec "$terminal --class=launcher -e fdoku", mode default
+  bindsym f exec "$terminal --app-id=launcher -e fdoku", mode default
   bindsym g exec "$terminal -e nvim_ghost", mode default
-  bindsym h exec "$terminal --class=launcher -e fman", mode default
-  bindsym k exec "$terminal --class=launcher -e fkill", mode default
+  bindsym h exec "$terminal --app-id=launcher -e fman", mode default
+  bindsym k exec "$terminal --app-id=launcher -e fkill", mode default
   bindsym m exec "$terminal -e nvim_codi_mathjs", mode default
   bindsym p exec "rofi-pass", mode default
   bindsym s exec "rofi -show ssh", mode default
   bindsym t exec "new_term", mode default
-  bindsym y exec "$terminal --class=launcher -e fbookmark", mode default
+  bindsym shift+t exec "foot", mode default
+  bindsym y exec "$terminal --app-id=launcher -e fbookmark", mode default
   bindsym shift+y exec "$terminal -e nvim Personal/bookmarks.csv", mode default
   bindsym x exec "new_term xplr", mode default
 

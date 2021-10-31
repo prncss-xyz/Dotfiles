@@ -6,7 +6,9 @@ end
 
 local isHome = os.getenv 'HOME' == os.getenv 'PWD'
 
+
 require('auto-session').setup {
+  ('auto-session').setup {
   log_level = 'error',
   auto_save_enabled = true,
   auto_session_root_dir = os.getenv 'HOME' .. '/Media/sessions/',
@@ -20,9 +22,9 @@ require('utils').augroup('SessionAsk', {
     events = { 'VimEnter' },
     targets = { '*' },
     modifiers = { 'silent!' },
-    command = function()
-      if isHome then
         require('session-lens').search_session()
+      if isHome then
+        -- require('session-lens').search_session()
         -- require'telescope'.extensions.repo.list()
       end
     end,

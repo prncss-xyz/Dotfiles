@@ -1,6 +1,9 @@
 matcher:
   - label: "terminal"
     criteria: "app_id"
+    value: "foot"
+  - label: "terminal"
+    criteria: "app_id"
     value: "kitty"
   - label: "browser"
     criteria: "app_id"
@@ -9,5 +12,5 @@ matcher:
     criteria: "app_id"
     value: "chromium"
 runner:
-  terminal: "kitty"
+  terminal: "foot"
   browser: "browser --new-window"

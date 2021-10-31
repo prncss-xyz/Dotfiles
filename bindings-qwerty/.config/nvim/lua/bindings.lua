@@ -405,7 +405,7 @@ local function map_editor()
     S = { '<cmd>TroubleToggle lsp_references<cr>', 'lsp reference' },
     t = { '<cmd>lua require"bindutils".term()<cr>', 'new terminal' },
     u = { '<cmd>UndotreeToggleTree<cr>', 'undo tree' },
-    w = { '<cmd>Telescope projects<cr>', 'sessions' },
+    w = { '<cmd>Telescope my_projects<cr>', 'sessions' },
     W = { '<cmd>Telescope project_directory<cr>', 'projects' },
     x = {
       "<cmd>lua require'bindutils'.term_launch({'xplr', vim.fn.expand'%'})<cr>",
@@ -620,13 +620,13 @@ end
 | w       | NameCurrentMacro |
 --]]
 function M.setup()
-  require('utils').augroup('ReadonlyMappings', {
-    {
-      events = { 'BufReadPost' },
-      targets = { '*' },
-      command = map_readonly,
-    },
-  })
+  -- require('utils').augroup('ReadonlyMappings', {
+  --   {
+  --     events = { 'BufReadPost' },
+  --     targets = { '*' },
+  --     command = map_readonly,
+  --   },
+  -- })
   require('utils').augroup('MarkdownBindings', {
     {
       events = { 'FileType' },
@@ -1226,17 +1226,12 @@ M.plugins = {
     -- still use ijkl, gG, G
     a = 'create',
     d = 'remove',
-    h = 'parent_node',
-    H = 'dir_up',
-    J = 'last_sibling',
-    K = 'first_sibling',
-    l = 'edit',
-    ll = 'copy_name',
-    lp = 'copy_path',
-    lP = 'copy_absolute_path',
+    l = 'parent_node',
+    L = 'dir_up',
+    K = 'last_sibling',
+    J = 'first_sibling',
     o = 'system_open',
     p = 'paste',
-    q = 'close',
     r = 'rename',
     R = 'refresh',
     t = 'next_sibling',
@@ -1248,8 +1243,9 @@ M.plugins = {
     yp = 'copy_path',
     ya = 'copy_absolute_path',
     yy = 'copy',
+    [';'] = 'edit',
     ['.'] = 'toggle_ignored',
-    ['?'] = 'toggle_help',
+    ['h'] = 'toggle_help',
     ['<bs>'] = 'close_node',
     ['<tab>'] = 'preview',
     ['<s-c>'] = 'close_node',

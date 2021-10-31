@@ -61,7 +61,7 @@ return require('packer').startup {
       end,
     }
 
-    -- tree sitter
+    -- treesitter
     use {
       'nvim-treesitter/nvim-treesitter',
       run = ':TSUpdate',
@@ -77,12 +77,10 @@ return require('packer').startup {
         { 'JoosepAlviste/nvim-ts-context-commentstring', cond = full },
         { 'nvim-treesitter/nvim-treesitter-textobjects', cond = full },
         -- { 'RRethy/nvim-treesitter-textsubjects', cond = full },
-        -- "beloglazov/vim-textobj-punctuation", -- au/iu for punctuation
         { 'mfussenegger/nvim-ts-hint-textobject', cond = full },
         -- Use 'tressitter 'to autoclose and autorename html tag
         { 'windwp/nvim-ts-autotag', cond = full },
         -- shows the context of the currently visible buffer contents
-        { 'romgrk/nvim-treesitter-context', cond = full },
       },
     }
     use {
@@ -93,6 +91,15 @@ return require('packer').startup {
         require('spellsitter').setup()
       end,
     }
+    use {
+      'romgrk/nvim-treesitter-context',
+      after = 'nvim-treesitter',
+      cond = full,
+      disable = true,
+      config = function()
+        require('treesitter-context').setup {}
+      end,
+    }
 
     -- syntax
     use 'ajouellette/sway-vim-syntax'
@@ -101,14 +108,18 @@ return require('packer').startup {
       -- weirdly seems required to format yaml frontmatter
       'godlygeek/tabular',
       requires = {
-        disable = true,
+        'plasticboy/vim-markdown',
         ft = 'markdown',
         -- unsuccessful setting options here
       },
     }
-
+   
     -- tests
-    use { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" }
+    use {
+      'rcarriga/vim-ultest',
+      requires = { 'vim-test/vim-test' },
+      run = ':UpdateRemotePlugins',
+    }
 
     -- lua dev
     use { 'nanotee/luv-vimdocs', cond = full }
@@ -135,15 +146,11 @@ return require('packer').startup {
       end,
     }
     use {
-      'stevearc/aerial.nvim',
-      module = 'aerial',
-    }
-    use {
       'jose-elias-alvarez/null-ls.nvim',
       module = 'null-ls',
     }
     use { 'folke/lua-dev.nvim', module = 'lua-dev' }
-    use { 'jose-elias-alvarez/nvim-lsp-ts-utils', module = 'nvim-lsp-ts-utils' }
+    -- use { 'jose-elias-alvarez/nvim-lsp-ts-utils', module = 'nvim-lsp-ts-utils' }
     use {
       'neovim/nvim-lspconfig',
       cond = full,
@@ -675,13 +682,13 @@ return require('packer').startup {
         require('nvim-projectconfig').load_project_config {
           project_dir = local_repo 'projects-config/',
         }
-        require('utils').augroup('NvimProjectConfig', {
-          {
-            events = { 'DirChanged' },
-            targets = { '*' },
-            cmd = require('nvim-projectconfig').load_project_config,
-          },
-        })
+        -- require('utils').augroup('NvimProjectConfig', {
+        --   {
+        --     events = { 'DirChanged' },
+        --     targets = { '*' },
+        --     cmd = require('nvim-projectconfig').load_project_config,
+        --   },
+        -- })
       end,
     }
     use {
@@ -706,6 +713,7 @@ return require('packer').startup {
     }
     use {
       'ahmedkhalf/project.nvim',
+      module = 'project_nvim.utils.history',
       cond = full,
       config = function()
         require('project_nvim').setup {}

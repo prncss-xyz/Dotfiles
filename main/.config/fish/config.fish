@@ -7,7 +7,7 @@ alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 alias e nvim_sessions
 # alias e 'nvim --startuptime /tmp/nvim-startuptime'
 alias s fsearch-ext
-alias c 'bat --style=changes,header,rule,snip --color=always'
+alias c 'bat --style=changes,header,rule,snip'
 alias l 'exa --icons --git'
 alias t 'exa --icons --git --tree'
 alias m nvim_pager

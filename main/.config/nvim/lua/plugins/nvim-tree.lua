@@ -2,7 +2,6 @@ local M = {}
 
 M.setup = function()
   require('utils').deep_merge(vim.g, {
-    nvim_tree_ignore = { '.git' },
     nvim_tree_gitignore = 1,
     nvim_tree_ignore_ft = {},
     -- nvim_tree_quit_on_open = 1,
@@ -10,7 +9,7 @@ M.setup = function()
   })
 end
 
-function file_exists(name)
+local function file_exists(name)
   local f = io.open(name, 'r')
   if f ~= nil then
     io.close(f)
@@ -20,24 +19,53 @@ function file_exists(name)
   end
 end
 
-M.config = function()
-  local bindings = {}
+local function setup_bindings(buf_id)
   local cb = require('nvim-tree.config').nvim_tree_callback
   for key, value in pairs(require('bindings').plugins.nvim_tree) do
-    table.insert(bindings, {
-      key = key,
-      cb = cb(value),
-    })
+    vim.api.nvim_buf_set_keymap(
+      buf_id,
+      'n',
+      key,
+      cb(value),
+      { noremap = true, silent = true, nowait = true }
+    )
   end
+end
+
+-- https://github.com/sindrets/dotfiles/blob/cafb333578a1ad482531ba5091c5171b32525d24/.config/nvim/lua/nvim-config/plugins/nvim-tree.lua#L67-L120
+local function custom_setup()
+  local buf_id = vim.api.nvim_get_current_buf()
+  local ok, custom_setup_done = pcall(
+    vim.api.nvim_buf_get_var,
+    buf_id,
+    'custom_setup_done'
+  )
+
+  if ok and custom_setup_done == 1 then
+    return
+  end
+
+  vim.api.nvim_buf_set_var(buf_id, 'custom_setup_done', 1)
+  setup_bindings(buf_id)
+end
+
+require('utils').augroup('NvimTreeConfig', {
+  {
+    events = { 'FileType' },
+    targets = { 'NvimTree' },
+    command = custom_setup,
+  },
+})
+
+M.config = function()
   require('nvim-tree').setup {
+    hijack_cursor = true,
     update_cwd = true,
     update_focused_file = {
       enable = true,
       update_cwd = true,
     }, -- https://github.com/ahmedkhalf/project.nvim
-    nvim_tree_bindings = bindings,
-    tree_auto_open = 1,
-    -- tree_system_open_command = 'xdg-open',
+    nvim_tree_ignore = { '.git' },
     tree_follow = 1,
     tree_disable_default_keybindings = 1,
     show_hidden = true,

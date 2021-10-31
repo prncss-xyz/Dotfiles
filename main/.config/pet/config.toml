@@ -1,0 +1,6 @@
+[General]
+  snippetfile = "/home/prncss/.config/pet/snippet.toml"
+  editor = "nvim"
+  column = 40
+  selectcmd = "fzf"
+  sortby = ""

@@ -1,17 +1,17 @@
 local augroup = require('utils').augroup
 local dotfiles = os.getenv 'DOTFILES'
 
-augroup('TerminalNonumbers', {
-  {
-    events = { 'TermOpen' },
-    targets = { '*' },
-    command = function()
-      vim.wo.number = false
-      vim.wo.relativenumber = false
-      vim.cmd 'startinsert'
-    end,
-  },
-})
+-- augroup('TerminalNonumbers', {
+--   {
+--     events = { 'TermOpen' },
+--     targets = { '*' },
+--     command = function()
+--       vim.wo.number = false
+--       vim.wo.relativenumber = false
+--       vim.cmd 'startinsert'
+--     end,
+--   },
+-- })
 -- augroup('TerminalEnter', {
 --   {
 --     events = { 'BufEnter' },

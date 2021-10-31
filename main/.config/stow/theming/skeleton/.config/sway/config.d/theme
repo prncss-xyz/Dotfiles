@@ -1,5 +1,5 @@
 # $name
-
+default_border pixel 3
 # class                 border             background  text        indicator child_border
 client.focused         	#$color0	#$color0	#$foreground	#$color2		#$color4	
 client.unfocused       	#$color0	#$color0	#$foreground	#$color4		#$color0

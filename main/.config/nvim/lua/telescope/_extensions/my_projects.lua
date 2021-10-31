@@ -82,7 +82,7 @@ end
 
 ---Main entrypoint for Telescope.
 ---@param opts table
-local function projects(opts)
+local function my_projects(opts)
   opts = opts or {}
 
   local displayer = entry_display.create {
@@ -147,5 +147,5 @@ local function projects(opts)
 end
 
 return telescope.register_extension {
-  exports = { projects = projects },
+  exports = { my_projects = my_projects },
 }

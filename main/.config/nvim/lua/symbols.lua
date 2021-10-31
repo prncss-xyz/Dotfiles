@@ -2,7 +2,7 @@ local m = {}
 
 m.symbols = {
   -- LSP kind
-  Array = '⛶',
+  Array = '',
   Boolean = '⊨',
   Class = '𝓒',
   Color = '',
@@ -20,7 +20,7 @@ m.symbols = {
   Keyword = '',
   Method = '',
   Module = '',
-  Namespace = '',
+  Namespace = '炙',
   Null = 'NULL',
   Number = '#',
   Object = '⦿',

@@ -2,7 +2,7 @@
 
 if [ -z "$1" ]; then
 	if [ "$PWD" = "$HOME" ]; then
-		nvim +"Telescope projects"
+		nvim +"Telescope my_projects"
 	else
 		# FIXME:
     nvim

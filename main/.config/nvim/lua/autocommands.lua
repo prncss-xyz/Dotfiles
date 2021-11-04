@@ -23,15 +23,16 @@ local dotfiles = os.getenv 'DOTFILES'
 --     end,
 --   },
 -- })
--- augroup('TmpFiles', {
---   {
---     events = { 'FileType' },
---     targets = { 'gitcommit', 'gitrebase', 'gitconfig' },
---     command = function()
---       vim.bo.bufhidden = 'delete'
---     end,
---   },
--- })
+
+augroup('TmpFiles', {
+  {
+    events = { 'FileType' },
+    targets = { 'gitcommit', 'gitrebase', 'gitconfig' },
+    command = function()
+      vim.bo.bufhidden = 'delete'
+    end,
+  },
+})
 
 augroup('PackerCompile', {
   {
@@ -90,7 +91,7 @@ local function set_title(branch)
   vim.cmd(string.format('let &titlestring=%q', titlestring))
 end
 
-local function set_title_plenary()
+local function set_title_git_plenary()
   local job = require 'plenary.job'
   local branch
   job
@@ -108,12 +109,12 @@ local function set_title_plenary()
     :start()
 end
 
-local function set_title_gitsigns()
+local function set_title_git()
   local branch = vim.b.gitsigns_head
   if branch then
     set_title(branch)
   else
-    set_title_plenary()
+    set_title_git_plenary()
   end
 end
 
@@ -121,7 +122,7 @@ augroup('SetTitleGitsigns', {
   {
     events = { 'DirChanged', 'CursorHold' },
     targets = { '*' },
-    command = set_title_gitsigns,
+    command = set_title_git,
   },
 })
 

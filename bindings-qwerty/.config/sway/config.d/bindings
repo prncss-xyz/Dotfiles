@@ -87,9 +87,9 @@ mode launch {
   bindsym d exec "$terminal --app-id=launcher -e fdocu", mode default
   bindsym shift+d exec "$terminal --app-id=launcher -e fdocu \*", mode default
   bindsym e exec "$terminal -e nvim_sessions", mode default
-  bindsym shift+e exec "$terminal -e nvim_nonono", mode default
+  bindsym shift+e  exec "$terminal -e nvim_ghost", mode default
   bindsym f exec "$terminal --app-id=launcher -e fdoku", mode default
-  bindsym g exec "$terminal -e nvim_ghost", mode default
+  bindsym g exec "rofi -show drun", mode default
   bindsym h exec "$terminal --app-id=launcher -e fman", mode default
   bindsym k exec "$terminal --app-id=launcher -e fkill", mode default
   bindsym m exec "$terminal -e nvim_codi_mathjs", mode default

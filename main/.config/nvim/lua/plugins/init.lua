@@ -100,6 +100,18 @@ return require('packer').startup {
         require('treesitter-context').setup {}
       end,
     }
+    use {
+      'danymat/neogen',
+      after = 'nvim-treesitter',
+      cond = full,
+      config = function()
+        require('neogen').setup {
+          enabled = true,
+        }
+      end,
+      requires = 'nvim-treesitter/nvim-treesitter',
+    }
+    use { 'SmiteshP/nvim-gps', module = 'nvim-gps' }
 
     -- syntax
     use 'ajouellette/sway-vim-syntax'
@@ -110,15 +122,8 @@ return require('packer').startup {
       requires = {
         'plasticboy/vim-markdown',
         ft = 'markdown',
-        -- unsuccessful setting options here
+        -- unsuccessful setting options here, using options.lua instead
       },
-    }
-   
-    -- tests
-    use {
-      'rcarriga/vim-ultest',
-      requires = { 'vim-test/vim-test' },
-      run = ':UpdateRemotePlugins',
     }
 
     -- lua dev
@@ -134,23 +139,72 @@ return require('packer').startup {
       cond = ghost,
     }
 
-    -- LSP
+    -- DAP
     use {
-      'lewis6991/gitsigns.nvim',
-      module = 'gitsigns',
-      wants = 'plenary.nvim',
-      requires = { 'nvim-lua/plenary.nvim' },
+      'nvim-telescope/telescope-dap.nvim',
       cond = full,
+    }
+    use {
+      'Pocco81/DAPInstall.nvim',
+      module = 'dap-install',
+      cmd = {
+        'DIInstall',
+        'IUninstall',
+        'DIList',
+      },
+      -- TODO: autoinstall some servers
+    }
+    use {
+      'mfussenegger/nvim-dap',
+      module = 'dap',
       config = function()
-        require('plugins.gitsigns').setup()
+        require('plugins.dap').setup()
       end,
     }
+    -- tests
+    use {
+      'rcarriga/vim-ultest',
+      requires = { 'vim-test/vim-test' },
+      run = ':UpdateRemotePlugins',
+      cmd = {
+        'Ultest',
+        'UltestNearest',
+        'UltestDebug',
+        'UltestLast',
+        'UltestDebugNearest',
+        'UltestOutput',
+        'UltestAttach',
+        'UltestStop',
+        'UltestStopNearest',
+        'UltestSummary',
+        'UltestSummaryOpen',
+        'UltestSummaryClose',
+        'UltestClear',
+      },
+      setup = function()
+        require('plugins.ultest').setup()
+      end,
+      config = function()
+        require('plugins.ultest').config()
+      end,
+    }
+    use {
+      'rcarriga/nvim-dap-ui',
+      requires = { 'mfussenegger/nvim-dap' },
+      module = 'dapui',
+      config = function()
+        require('dapui').setup()
+      end,
+    }
+
+    -- LSP
     use {
       'jose-elias-alvarez/null-ls.nvim',
       module = 'null-ls',
     }
+    use { 'brymer-meneses/grammar-guard.nvim', module = 'grammar-guard' }
     use { 'folke/lua-dev.nvim', module = 'lua-dev' }
-    -- use { 'jose-elias-alvarez/nvim-lsp-ts-utils', module = 'nvim-lsp-ts-utils' }
+    use { 'jose-elias-alvarez/nvim-lsp-ts-utils', module = 'nvim-lsp-ts-utils' }
     use {
       'neovim/nvim-lspconfig',
       cond = full,
@@ -210,18 +264,40 @@ return require('packer').startup {
         }
       end,
     }
-    -- FIXME: snippets just disappeared
+    use {
+      -- https://github.com/ray-x/navigator.lua/issues/71
+      'ray-x/navigator.lua',
+      disable = true,
+      after = 'nvim-lspconfig',
+      requires = { 'ray-x/guihua.lua', run = 'cd lua/fzy && make' },
+      config = function()
+        require('plugins.navigator').config()
+      end,
+    }
+
+    -- TODO:
+    -- weilbith/nvim-code-action-menu
+    -- ThePrimeagen/refactoring.nvim
+    -- filipdutescu/renamer.nvim/
+
+    -- completion
     use { local_repo 'friendly-snippets' }
     use {
       'hrsh7th/nvim-cmp',
       module = 'cmp',
       event = 'InsertEnter',
       requires = {
-        { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' },
+        { 'hrsh7th/cmp-buffer', after = { 'nvim-cmp', 'cmp-cmdline' } },
+        {
+          'hrsh7th/cmp-path',
+          module = 'cmp-path',
+          after = { 'nvim-cmp', 'cmp-cmdline' },
+        },
+        -- { 'tzachar/fuzzy.nvim', module = 'fuzzy' },
+        -- { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp' },
+        -- { 'tzachar/cmp-fuzzy-path', after = 'nvim-cmp' },
         { 'f3fora/cmp-spell', after = 'nvim-cmp' },
-        { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' },
         { 'hrsh7th/cmp-nvim-lsp', after = 'nvim-cmp' },
-        { 'hrsh7th/cmp-path', after = 'nvim-cmp' },
         { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' },
         { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' },
         { 'L3MON4D3/LuaSnip', module = 'luasnip' },
@@ -230,7 +306,7 @@ return require('packer').startup {
         require 'plugins.cmp'
       end,
     }
-
+    use { 'hrsh7th/cmp-cmdline', event = 'CmdlineEnter' }
     -- insert or delete brackets, parentheses, quotes in pair
     use {
       'windwp/nvim-autopairs',
@@ -240,8 +316,45 @@ return require('packer').startup {
       end,
     }
 
+    -- Git
+    use {
+      'lewis6991/gitsigns.nvim',
+      module = 'gitsigns',
+      wants = 'plenary.nvim',
+      requires = { 'nvim-lua/plenary.nvim' },
+      cond = full,
+      config = function()
+        require('plugins.gitsigns').setup()
+      end,
+    }
+    use {
+      'sindrets/diffview.nvim',
+      config = function()
+        require('diffview').setup()
+      end,
+      cmd = {
+        'DiffviewOpen',
+        'DiffviewClose',
+        'DiffviewFileHistory',
+        'DiffViewToggleFiles',
+        'DiffViewFocusFiles',
+        'DiffViewRefresh',
+      },
+    }
+    use {
+      'TimUntersberger/neogit',
+      cmd = 'Neogit',
+      module = 'neogit',
+      config = function()
+        require('neogit').setup {
+          integrations = {
+            diffview = true,
+          },
+        }
+      end,
+    }
+
     -- UI
-    use { 'gelguy/wilder.nvim' }
     use {
       'lukas-reineke/indent-blankline.nvim',
       event = 'BufReadPre',
@@ -258,7 +371,6 @@ return require('packer').startup {
         }
       end,
     }
-    use { 'SmiteshP/nvim-gps', module = 'nvim-gps' }
     -- TODO: lazy
     use {
       'glepnir/galaxyline.nvim',
@@ -267,6 +379,16 @@ return require('packer').startup {
         require 'plugins.galaxyline'
       end,
     }
+    use {
+      'karb94/neoscroll.nvim',
+      config = function()
+        require('neoscroll').setup {
+          mappings = {},
+        }
+      end,
+    }
+
+    -- navigation
     use {
       'folke/trouble.nvim',
       module = 'trouble.providers.telescope',
@@ -295,13 +417,92 @@ return require('packer').startup {
     }
     use 'kevinhwang91/nvim-hlslens'
     use {
-      'karb94/neoscroll.nvim',
+      'edluffy/specs.nvim',
+      after = 'neoscroll.nvim',
       config = function()
-        require('neoscroll').setup {
-          mappings = {},
+        require('specs').setup {}
+      end,
+    }
+    use {
+      'folke/zen-mode.nvim',
+      cond = full,
+      config = function()
+        require('plugins.zen-mode').setup()
+      end,
+      cmd = { 'ZenMode' },
+    }
+    use {
+      'folke/twilight.nvim',
+      wants = 'twilight.nvim',
+      requires = { 'folke/twilight.nvim' },
+      -- cond = full,
+      config = function()
+        require('twilight').setup {}
+      end,
+      cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
+    }
+    use { 'wellle/visual-split.vim', cond = full }
+    use {
+      'kyazdani42/nvim-tree.lua',
+      requires = 'kyazdani42/nvim-web-devicons',
+      setup = function()
+        require('plugins.nvim-tree').setup()
+      end,
+      config = function()
+        require('plugins.nvim-tree').config()
+      end,
+      cmd = {
+        'NvimTreeClipboard',
+        'NvimTreeClose',
+        'NvimTreeFindFile',
+        'NvimTreeFocus',
+        'NvimTreeOpen',
+        'NvimTreeRefresh',
+        'NvimTreeResize',
+        'NvimTreeToggle',
+      },
+    }
+    use {
+      local_repo 'bufjump.nvim',
+      module = 'bufjump',
+      config = function()
+        require('bufjump').setup {
+          cond = require('bufjump').under_cwd,
         }
       end,
     }
+    use {
+      'chentau/marks.nvim',
+      config = function()
+        require('marks').setup {
+          default_mappings = false,
+          mappings = require('bindings').plugins.marks,
+        }
+      end,
+    } -- TODO:
+    use {
+      cond = full,
+      'andymass/vim-matchup',
+    }
+    use {
+      'ggandor/lightspeed.nvim',
+      event = 'BufReadPost',
+      config = function()
+        require('lightspeed').setup {}
+      end,
+    }
+    use {
+      'abecodes/tabout.nvim',
+      cond = full,
+      config = function()
+        require('tabout').setup {
+          tabkey = '',
+          backwards_tabkey = '',
+        }
+      end,
+    }
+
+    -- UI
     use {
       'nvim-telescope/telescope.nvim',
       config = function()
@@ -347,23 +548,6 @@ return require('packer').startup {
       end,
     }
     use {
-      'romgrk/barbar.nvim',
-      disable = true,
-      setup = function()
-        require('utils').deep_merge(vim, {
-          g = {
-            bufferline = {
-              auto_hide = true,
-              icon_separator_active = '',
-              icon_separator_inactive = '',
-              icon_close_tab = '',
-              icon_close_tab_modified = '',
-            },
-          },
-        })
-      end,
-    }
-    use {
       local_repo 'nononotes-nvim',
       cond = full,
       config = function()
@@ -371,85 +555,11 @@ return require('packer').startup {
       end,
     }
     use {
-      'sindrets/diffview.nvim',
-      config = function()
-        require('diffview').setup()
-      end,
-      cmd = {
-        'DiffviewOpen',
-        'DiffviewClose',
-        'DiffviewFileHistory',
-        'DiffViewToggleFiles',
-        'DiffViewFocusFiles',
-        'DiffViewRefresh',
-      },
-    }
-    use {
-      'TimUntersberger/neogit',
-      cmd = 'Neogit',
-      module = 'neogit',
-      config = function()
-        require('neogit').setup {
-          integrations = {
-            diffview = true,
-          },
-        }
-      end,
-    }
-    use {
-      'edluffy/specs.nvim',
-      after = 'neoscroll.nvim',
-      config = function()
-        require('specs').setup {}
-      end,
-    }
-    use {
-      'folke/zen-mode.nvim',
-      cond = full,
-      config = function()
-        require('plugins.zen-mode').setup()
-      end,
-      cmd = { 'ZenMode' },
-    }
-    use {
-      'folke/twilight.nvim',
-      wants = 'twilight.nvim',
-      requires = { 'folke/twilight.nvim' },
-      -- cond = full,
-      config = function()
-        require('twilight').setup {}
-      end,
-      cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
-    }
-    use {
       'metakirby5/codi.vim',
       cmd = { 'Codi', 'Codi!', 'Codi!!' },
     }
-    use { 'wellle/visual-split.vim', cond = full }
     use {
-      'kyazdani42/nvim-tree.lua',
-      requires = 'kyazdani42/nvim-web-devicons',
-      setup = function()
-        require('plugins.nvim-tree').setup()
-      end,
-      config = function()
-        require('plugins.nvim-tree').config()
-      end,
-      -- session manager destroys nvim-tree buffer which prevents nvim-tree from working
-      -- nvim-tree so needs to be loaded after the session is restored
-      cmd = {
-        'NvimTreeClipboard',
-        'NvimTreeClose',
-        'NvimTreeFindFile',
-        'NvimTreeFocus',
-        'NvimTreeOpen',
-        'NvimTreeRefresh',
-        'NvimTreeResize',
-        'NvimTreeToggle',
-      },
-    }
-    use {
-      'mbbill/undotree', -- FIXME
+      'mbbill/undotree',
       setup = function()
         require('utils').deep_merge(vim.g, {
           undotree_SplitWidth = 30,
@@ -477,40 +587,6 @@ return require('packer').startup {
               g = false,
             },
           },
-        }
-      end,
-    }
-
-    -- navigation
-    use {
-      local_repo 'bufjump.nvim',
-      module = 'bufjump',
-      config = function()
-        require('bufjump').setup {
-          cond = require('bufjump').under_cwd,
-        }
-      end,
-    }
-    -- use { 'chentau/marks.nvim', } -- TODO:
-    use {
-      cond = full,
-      'andymass/vim-matchup',
-    }
-    -- use 'hrsh7th/vim-eft'
-    use {
-      'ggandor/lightspeed.nvim',
-      event = 'BufReadPost',
-      config = function()
-        require('lightspeed').setup {}
-      end,
-    }
-    use {
-      'abecodes/tabout.nvim',
-      cond = full,
-      config = function()
-        require('tabout').setup {
-          tabkey = '',
-          backwards_tabkey = '',
         }
       end,
     }
@@ -544,6 +620,7 @@ return require('packer').startup {
       'svermeulen/vim-yoink',
       disable = true,
     }
+
     -- edition
     use {
       'JoseConseco/vim-case-change',
@@ -617,7 +694,6 @@ return require('packer').startup {
             require('ts_context_commentstring.internal').update_commentstring()
           end,
         })
-
         require('kommentary.config').configure_language('typescriptreact', {
           single_line_comment_string = 'auto',
           multi_line_comment_strings = 'auto',
@@ -674,6 +750,7 @@ return require('packer').startup {
         vim.g.ninja_feet_no_mappings = 1
       end,
     }
+
     -- session
     use {
       'windwp/nvim-projectconfig',
@@ -693,7 +770,6 @@ return require('packer').startup {
     }
     use {
       'ethanholz/nvim-lastplace',
-      cond = full,
       config = function()
         require('nvim-lastplace').setup {
           lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
@@ -702,45 +778,11 @@ return require('packer').startup {
       end,
     }
     use {
-      'folke/persistence.nvim',
-      disable = true,
-      event = 'BufReadPre',
-      module = 'persistence',
-      dir = os.getenv 'HOME' .. '/Personal/sessions/',
-      config = function()
-        require('persistence').setup()
-      end,
-    }
-    use {
       'ahmedkhalf/project.nvim',
       module = 'project_nvim.utils.history',
       cond = full,
       config = function()
-        require('project_nvim').setup {}
-        require('telescope').load_extension 'projects'
-      end,
-    }
-
-    use {
-      'rmagatti/auto-session',
-      disable = true,
-      config = function()
-        -- require 'plugins.auto-session'
-      end,
-      -- requires = {
-      --   'rmagatti/session-lens',
-      -- },
-    }
-    use {
-      'Shatur/neovim-session-manager',
-      disable = true,
-      setup = function()
-        require('utils').deep_merge(vim.g, {
-          session_dir = os.getenv 'HOME' .. 'Media/sessions',
-        })
-      end,
-      config = function()
-        require('telescope').load_extension 'session_manager'
+        require('plugins.project').setup()
       end,
     }
 

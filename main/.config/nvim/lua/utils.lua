@@ -1,5 +1,23 @@
 local M = {}
 
+--- Check if a file or directory exists in this path
+function exists(file)
+  local ok, err, code = os.rename(file, file)
+  if not ok then
+    if code == 13 then
+      -- Permission denied, but it exists
+      return true
+    end
+  end
+  return ok, err
+end
+
+--- Check if a directory exists in this path
+function M.isdir(path)
+  -- "/" works on both Unix and Windows
+  return exists(path .. '/')
+end
+
 function M.dump(...)
   local objects = vim.tbl_map(vim.inspect, { ... })
   print(unpack(objects))
@@ -63,10 +81,18 @@ function M.deep_merge(t1, t2)
   return t1
 end
 
-function M.invert(table)
+function M.invert(tbl)
   local res = {}
-  for key, value in pairs(table) do
+  for key, value in pairs(tbl) do
     res[value] = key
+  end
+  return res
+end
+
+function M.prefixed(prefix, tbl)
+  local res = {}
+  for key, value in pairs(tbl) do
+    res[prefix .. key] = value
   end
   return res
 end

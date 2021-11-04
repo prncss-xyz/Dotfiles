@@ -5,19 +5,15 @@
 [commit]
   gpgsign = true
 [diff]
-	tool = nvim
+	tool = delta
 	algorithm = histogram
 [pager]
   diff = delta
   log = delta
   reflog = delta
   show = delta
-[difftool "nvim"]
-  cmd = nvim -s -d $LOCAL $REMOTE
-[difftool "kitty"]
-  cmd = kitty +kitten diff $LOCAL $REMOTE
-[difftool "kitty.gui"]
-  cmd = kitty kitty +kitten diff $LOCAL $REMOTE
+[difftool "delta"]
+  cmd = delta
 [init]
 	defaultBranch = main
 [core]

@@ -39,9 +39,10 @@ function m.project_files()
     return
   end
   local ok = pcall(require('telescope.builtin').git_files)
-  if not ok then
-    require('telescope.builtin').find_files()
+  if ok then
+    return
   end
+  require('telescope.builtin').find_files()
 end
 
 function m.toggle_cmp()
@@ -73,6 +74,11 @@ function m.tab_complete()
   end
   local r = require('luasnip').jump(1)
   if r then
+    return
+  end
+  local neogen = require 'neogen'
+  if neogen.jumpable() then
+    neogen.jump_next()
     return
   end
   vim.fn.feedkeys(t '<Plug>(TaboutMulti)', '')
@@ -138,8 +144,8 @@ function m.term()
     :start()
 end
 
-function m.term_launch(args)
-  local args = { '-e', unpack(args) }
+function m.term_launch(args0)
+  local args = { '-e', unpack(args0) }
   require('plenary.job')
     :new({
       command = vim.env.TERMINAL,

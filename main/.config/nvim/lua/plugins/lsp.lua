@@ -1,22 +1,70 @@
 local M = {}
 
+local function noformat_on_attach(client, _)
+  -- TODO: bindings
+  client.resolved_capabilities.document_formatting = false
+  client.resolved_capabilities.document_range_formatting = false
+end
+
+local format_on_attach = function(client)
+  if client.resolved_capabilities.document_formatting then
+    vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
+  end
+end
+
+local function ts_uttils_on_attach(client, bufnr)
+  local ts_utils = require 'nvim-lsp-ts-utils'
+  ts_utils.setup {
+    debug = false,
+    disable_commands = false,
+    enable_import_on_completion = true, -- touched
+
+    -- import all
+    import_all_timeout = 5000, -- ms
+    -- lower numbers indicate higher priority
+    import_all_priorities = {
+      same_file = 1, -- add to existing import statement
+      local_files = 2, -- git files or files with relative path markers
+      buffer_content = 3, -- loaded buffer content
+      buffers = 4, -- loaded buffer names
+    },
+    import_all_scan_buffers = 100,
+    import_all_select_source = false,
+
+    -- no eslint
+    eslint_enable_code_actions = false,
+    eslint_enable_disable_comments = false,
+    eslint_enable_diagnostics = false,
+    eslint_opts = {},
+    -- no prettier
+    enable_formatting = false,
+
+    -- update imports on file move
+    update_imports_on_move = true,
+    require_confirmation_on_move = true,
+    watch_dir = nil,
+
+    -- filter diagnostics
+    filter_out_diagnostics_by_severity = {},
+    filter_out_diagnostics_by_code = {},
+  }
+
+  -- required to fix code action ranges and filter diagnostics
+  ts_utils.setup_client(client)
+
+  -- no default maps, so you may want to define some here
+  -- local opts = { silent = true }
+  -- vim.api.nvim_buf_set_keymap(bufnr, "n", "gs", ":TSLspOrganize<CR>", opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", ":TSLspRenameFile<CR>", opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", ":TSLspImportAll<CR>", opts)
+end
+
 function M.setup()
   -- LSP settings
   local nvim_lsp = require 'lspconfig'
 
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
-
-  local function on_attach(client, _)
-    -- TODO: bindings
-    client.resolved_capabilities.document_formatting = false
-    client.resolved_capabilities.document_range_formatting = false
-  end
-  local on_attach_format = function(client)
-    if client.resolved_capabilities.document_formatting then
-      vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
-    end
-  end
 
   for _, lsp in ipairs {
     'bashls',
@@ -25,10 +73,9 @@ function M.setup()
     'jsonls',
     'vimls',
     'yamlls',
-    'tsserver',
   } do
     nvim_lsp[lsp].setup {
-      on_attach = on_attach,
+      on_attach = noformat_on_attach,
       capabilities = capabilities,
       flags = {
         debounce_text_changes = 500,
@@ -36,20 +83,23 @@ function M.setup()
       },
     }
   end
-
-  local runtime_path = vim.split(package.path, ';')
-  table.insert(runtime_path, 'lua/?.lua')
-  table.insert(runtime_path, 'lua/?/init.lua')
+  nvim_lsp.tsserver.setup {
+    on_attach = function(client, bufnr)
+      noformat_on_attach(client, bufnr)
+      ts_uttils_on_attach(client, bufnr)
+    end,
+    capabilities = capabilities,
+    flags = {
+      debounce_text_changes = 500,
+      allow_incremental_sync = true,
+    },
+  }
   local luadev = require('lua-dev').setup {
     lspconfig = {
       capabilities = capabilities,
       cmd = { 'lua-language-server' },
       settings = {
         Lua = {
-          runtime = {
-            version = 'LuaJIT',
-            path = runtime_path,
-          },
           diagnostics = {
             globals = {
               'vim',
@@ -58,8 +108,8 @@ function M.setup()
               'version', -- xplr
             },
           },
-          workspace = {
-            library = vim.api.nvim_get_runtime_file('', true),
+          runtime = {
+            version = 'LuaJIT',
           },
           telemetry = {
             enable = false,
@@ -69,6 +119,12 @@ function M.setup()
     },
   }
   nvim_lsp.sumneko_lua.setup(luadev)
+
+  nvim_lsp.eslint.setup {
+    settings = {
+      packageManager = 'pnpm',
+    },
+  }
 
   local null_ls = require 'null-ls'
   local b = null_ls.builtins
@@ -101,12 +157,13 @@ function M.setup()
       -- b.diagnostics.selene,
     },
   }
-  nvim_lsp['null-ls'].setup { on_attach = on_attach_format }
+  nvim_lsp['null-ls'].setup { on_attach = format_on_attach }
+  require('grammar-guard').init()
+  nvim_lsp.grammar_guard.setup {}
 
-  -- TODO:  jose-elias-alvarez/nvim-lsp-ts-utils
   -- TODO: emmet-ls (jsx branch)
-  -- TODO:  grammarly
 
+  -- To connect to an LT HTTP server, set the setting ltex.languageToolHttpServerUri to the root URI of the server, for instance, http://localhost:8081/. Note that in this mode, LTEX will still depend on ltex-ls and Java, as the interface for communicating with LT over HTTP is in ltex-ls.
 end
 
 return M

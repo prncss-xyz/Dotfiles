@@ -1,9 +1,119 @@
 [[snippets]]
-  description = "test network"
+  description = "Test network."
   command = "ping 1.1.1.1"
   output = ""
 
 [[snippets]]
-  description = "fish"
-  command = "fish"
+  description = "Upgrade arch and aur."
+  command = "yay --combinedupgrade "
+  tag = ["pacman"]
+  output = ""
+
+[[snippets]]
+  description = "Display package owning <file>."
+  command = "sudo pacman -Qo "
+  tag = ["pacman"]
+  output = ""
+
+[[snippets]]
+  description = "List files owned by <package>."
+  command = "sudo pacman -Ql "
+  tag = ["pacman"]
+  output = ""
+
+[[snippets]]
+  description = "Remove <package>."
+  command = "sudo pacman -R "
+  tag = ["pacman"]
+  output = ""
+
+[[snippets]]
+  description = "List week's events."
+  command = "khal list now week"
+  tag = ["khal"]
+  output = ""
+
+[[snippets]]
+  description = "Create an event."
+  command = 'khal new <date> <time> "<description>"'
+  tag = ["khal"]
+  output = ""
+
+[[snippets]]
+  description = "Remove broken symlinks."
+  command = 'find . -xtype l -exec rm {} \;'
+  tag = []
+  output = ""
+
+[[sinppets]]
+  description = "Remove broken symlinks."
+  command = "find . -xtype l -exec rm {} "
+  tag = ["cli"]
+  output = ""
+
+[[snippets]]
+  description = "Change remote address/protcol."
+  command = 'git remote set-url origin git@github.com:prncss-xyz/"(basename "(pwd)")".git'
+  tag = ["git"]
+  output = ""
+
+[[snippets]]
+  description = "Restore <file> to last commit."
+  command = "git restore "
+  tag = ["git"]
+  output = ""
+
+[[snippets]]
+  description = "Revert to a previous commit, ignoring any changes."
+  command = "git reset --hard HEAD"
+  tag = ["git"]
+  output = ""
+
+[[snippets]]
+  description = "Temporarily switch to a different <commit>."
+  command = "git checkout "
+  tag = ["git"]
+  output = ""
+
+
+[[snippets]]
+  description = "Resore to <hash> commit a specified <file>."
+  command = "git restore --source "
+  tag = ["git"]
+  output = ""
+
+[[snippets]]
+  description = "Revert to a previous commit, ignoring any changes."
+  command = "git reset --hard HEAD"
+  tag = ["git"]
+  output = ""
+
+[[snippets]]
+  description = "Rewrite last commit."
+  command = "git commit --amend -m <message>"
+  tag = ["git"]
+  output = ""
+
+[[snippets]]
+  description = "Add submodule."
+  command = "git submodule add <url>"
+  tag = ["git", "submodule"]
+  output = ""
+
+[[snippets]]
+  description = "Update submodules."
+  command = "git submodule update --init --recursive"
+  tag = ["git"]
+  output = ""
+
+[[snippets]]
+  description = "Clone repository with submodules."
+  command = "git clone --recursive <url>"
+  tag = ["git"]
+  output = ""
+
+[[snippets]]
+  description = "Find last file's commit."
+  command = "git rev-list HEAD -- <file> -n 1"
+  tag = ["git"]
   output = ""

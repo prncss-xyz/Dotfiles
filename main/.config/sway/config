@@ -23,7 +23,7 @@ exec swayidle -w \
  before-sleep 'swaylock'
 exec aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
 exec blueberry-tray
-
+exec http-server -p 8083 .config/surfingkeys &
 mouse_warping none
 focus_follows_mouse no
 for_window [workspace=0] layout stacking
@@ -33,12 +33,12 @@ exec pactl set-sink-volume @DEFAULT_SINK@ 30%
 exec pactl set-sink-mute @DEFAULT_SINK@ 0
 for_window [title="^scratchpad$"] move scratchpad
 exec foot --server
-exec sh -c "sleep 1; foot --title=scratchpad"
-exec $terminal --title=scratchpad
+exec sh -c "sleep 1; $TERMINAL --title=scratchpad"
+# exec $terminal --title=scratchpad
 exec ~/.local/bin/setbg-sway
 exec ~/.local/bin/browser
 exec mako
-exec languagetool --http
+# exec languagetool --http
 exec ~/Media/Projects/sway-mega-hotkeys/cli.js
 exec ~/Media/Projects/nononotes/cli/index serve
 
@@ -76,7 +76,7 @@ assign [app_id="^org\.kde\.kdeconnect"] workspace 3
 exec kdeconnect-sms
 exec kdeconnect-app
 assign [app_id="^com\.github\.wwmm\.easyeffects"] workspace 3
-exec easyeffects
+# exec easyeffects
 
 ### Idle
 
@@ -89,7 +89,7 @@ focus_on_window_activation smart
 
 for_window [window_role="pop-up"] floating enable
 # for_window [app_id="dmenu.*"] floating enable, sticky enable, resize set width 60ppt height 80ppt
-for_window [app_id="^launcher$"] floating enable, sticky enable, resize set width 60ppt height 80ppt
+for_window [app_id="^launcher$"] floating enable, sticky enable, resize set width 70ppt height 80ppt
 
 ### Styling
 

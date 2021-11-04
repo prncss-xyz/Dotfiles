@@ -132,10 +132,12 @@ local r = invert {
 -- aA         -- code action, range code action
 -- bB         -- unjoin, join
 -- c          -- comment
+-- h          -- annotate
 -- nN         -- ninja
 -- r          -- sandwich-replace
 -- s          -- rename
--- iI         -- indent
+-- t          -- indent
+-- i          -- indent
 -- uU         -- lowercase
 -- v          -- toggle case
 -- w          -- telescope symbol
@@ -145,6 +147,26 @@ local r = invert {
 local function map_edit()
   local map = require('utils').map
   local register = require 'which-key-fallback'
+
+  -- neogen
+  map(
+    'n',
+    a.edit .. 'hf',
+    "<cmd>lua require('neogen').generate({ type = 'func' })<cr>",
+    { noremap = false }
+  )
+  map(
+    'n',
+    a.edit .. 'hc',
+    "<cmd>lua require('neogen').generate({ type = 'class' })<cr>",
+    { noremap = false }
+  )
+  map(
+    'n',
+    a.edit .. 'ht',
+    "<cmd>lua require('neogen').generate({ type = 'type' })<cr>",
+    { noremap = false }
+  )
 
   -- matze move
   local rep = require('bindutils').repeatable
@@ -168,7 +190,7 @@ local function map_edit()
   map('nx', a.edit .. 'xc', '<Plug>(ExchangeClear)', { noremap = false })
 
   -- sandwich
-  -- map('', a.edit .. 'y', '<Plug>(operator-sandwich-add)', { noremap = false })
+  map('', a.edit .. 'y', '<Plug>(operator-sandwich-add)', { noremap = false })
   map(
     '',
     a.edit .. 'Y',
@@ -237,7 +259,7 @@ local function map_edit()
       -- b = { '', 'unjoin' }, -- mapped by the plugin
       s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
       i = { '>>', 'indent' },
-      T = { '<<', 'dedent' },
+      t = { '<<', 'dedent' },
       u = { 'gu', 'lowercase' },
       -- v = { 'g~', 'toggle case' },
       -- v = { [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']], 'toggle case' },
@@ -282,8 +304,8 @@ local function map_jump()
     },
     d = { ']c', 'next change' },
     D = { '[c', 'previous change' },
-    M = { '<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset' },
-    m = { '<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump' },
+    b = { '<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump' },
+    B = { '<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset' },
     o = { '`.', 'last change' },
     -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
     -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
@@ -391,8 +413,9 @@ local function map_editor()
     G = { '<cmd>Gitsigns setqflist<cr>', 'trouble hunk' },
     h = { '<cmd>DiffviewFileHistory<cr>', 'diffview open' },
     H = { '<cmd>DiffviewClose<cr>', 'diffview close' },
+    i = { "<cmd>lua require'dapui'.toggle()<cr>", 'toggle dapui' },
     m = { '<cmd>Telescope installed_plugins<cr>', 'plugins' },
-    n = { '<cmd>Telescope node_modules list<cr>', 'new note' },
+    n = { '<cmd>Telescope modules<cr>', 'node modules' },
     o = {
       "<cmd>lua require'bindutils'.open_current()<cr>",
       'open current external',
@@ -675,8 +698,6 @@ function M.setup()
   remark('v', '>')
   remark('P', '[')
   remark('p', ']')
-  map('n', a.mark, "'")
-  map('n', a.mark .. a.mark, '`') -- not working ?? whichkey
 
   map('', dd.right, 'l')
   map('', dd.left, 'h')
@@ -1025,7 +1046,7 @@ function M.setup()
         O = { "<cmd>lua require'dap'.step_out()<cr>", 'step out' },
         i = { "<cmd>lua require'dap'.step_into()<cr>", 'step into' },
         ['.'] = { "<cmd>lua require'dap'.run_last()<cr>", 'run last' },
-        u = { "<cmd>lua require'dapui'.toggle()<cr>", 'toggle dapui' },
+        -- u = { "<cmd>lua require'dapui'.eval()<cr>", 'toggle dapui' },
         k = { "<cmd>lua require'dap'.up()<cr>", 'up' },
         j = { "<cmd>lua require'dap'.down()<cr>", 'down' },
         l = { "<cmd>lua require'plugins.dap'.launch()<cr>", 'launch' },
@@ -1074,30 +1095,6 @@ function M.setup()
   }
 end
 
--- unsused
-local SignatureMap = invert {
-  [a.jump .. 'b'] = 'GotoNextSpotByPos',
-  [a.jump .. a.jump .. 'b'] = 'GotoNextLineByPos',
-  [a.jump .. 'B'] = 'GotoPrevSpotByPos',
-  [a.jump .. a.jump .. 'B'] = 'GotoPrevLineByPos',
-  [a.mark .. 'da'] = 'PurgeMarksAtLine',
-  [a.mark .. 'dA'] = 'PurgeMarks',
-  [a.jump .. 'e'] = 'GotoNextMarkerAny',
-  [a.jump .. 'E'] = 'GotoPrevMarkerAny',
-  [a.mark .. 'ha'] = 'ListBufferMarkers',
-  [a.jump .. 'm'] = 'GotoNextSpotAlpha',
-  [a.jump .. a.jump .. 'm'] = 'GotoNextLineAlpha',
-  [a.jump .. 'M'] = 'GotoPrevSpotAlpha',
-  [a.jump .. a.jump .. 'M'] = 'GotoPrevLineAlpha',
-  [a.mark .. 'sa'] = 'PurgeMarkers',
-  [a.mark .. 't'] = 'ToggleMarkAtLine',
-  [a.jump .. 'x'] = 'GotoNextMarker',
-  [a.jump .. 'X'] = 'GotoPrevMarker',
-  [a.mark .. 'xa'] = 'DeleteMark',
-  [a.mark .. 'y'] = 'PlaceNextMark',
-}
-SignatureMap.Leader = 'M'
-local signature = { g = { SignatureMap = SignatureMap } }
 local vim = vim
 
 M.plugins = {
@@ -1119,24 +1116,37 @@ M.plugins = {
       ['textobj#sentence#move_n'] = 's',
     },
   },
-  signature = signature, -- unused
+  marks = invert {
+    [a.mark .. 't'] = 'toggle', -- Toggle next available mark at cursor.
+    [a.mark .. 'd'] = 'delete_line', -- Deletes all marks on current line.
+    [a.mark .. 'D'] = 'delete_buf', -- Deletes all marks in current buffer.
+    [a.jump .. 'm'] = 'next', -- Goes to next mark in buffer.
+    [a.jump .. 'M'] = 'prev', -- Goes to previous mark in buffer.
+    [a.mark .. a.mark] = 'preview', -- Previews mark (will wait for user input). press <cr> to just preview the next mark.
+    [a.mark .. 's'] = 'set', -- Sets a letter mark (will wait for input).
+    [a.mark .. 'S'] = 'delete', -- Delete a letter mark (will wait for input).
+    -- 'set_next', -- Set next available lowercase mark at cursor.
+    --set_bookmark[0-9]     -- Sets a bookmark from group[0-9].
+    --delete_bookmark[0-9]  -- Deletes all bookmarks from group[0-9].
+    --delete_bookmark       -- Deletes the bookmark under the cursor.
+    --next_bookmark         -- Moves to the next bookmark having the same type as the
+    --                      -- bookmark under the cursor.
+    --prev_bookmark         -- Moves to the previous bookmark having the same type as the
+    --                      -- bookmark under the cursor.
+    --next_bookmark[0-9]    -- Moves to the next bookmark of of the same group type. Works by
+    --                      -- first going according to line number, and then according to buffer
+    --                      -- number.
+    --prev_bookmark[0-9]    -- Moves to the previous bookmark of of the same group type. Works by
+    --                      -- first going according to line number, and then according to buffer
+    --                      -- number.
+  },
   nononotes = invert {
-    -- ['<cr>'] = 'enter_link',
     ['<c-k>'] = 'print_hover_title',
   },
   telescope = function()
     local actions = require 'telescope.actions'
     local trouble = require 'trouble.providers.telescope'
     return {
-      projects = {
-        mappings = {
-          i = {
-            ['<cr>'] = function()
-              print 'caca'
-            end,
-          },
-        },
-      },
       defaults = {
         mappings = {
           i = {
@@ -1158,23 +1168,11 @@ M.plugins = {
     }
   end,
   treesitter = {
-    -- incremental_selection = {
-    --   keymaps = invert {
-    --     gnn = 'init_selection',
-    --     grn = 'node_incremental',
-    --     nrc = 'scope_incremental',
-    --     grm = 'node_decremental',
-    --   },
-    -- },
     textobjects = {
       select = {
         keymaps = {
           ['af'] = '@function.outer',
           ['if'] = '@function.inner',
-          ['ig'] = '@parameter.inner',
-          -- ['aq'] = {
-          --   lua = '@string.outer',
-          -- },
         },
       },
       swap = {
@@ -1192,13 +1190,6 @@ M.plugins = {
         goto_previous_end = {
           ['gF'] = '@function.outer',
         },
-      },
-    },
-    -- disabled
-    textsubjects = {
-      keymaps = {
-        [','] = 'textsubjects-smart', -- comments, consecutive line comments, function calls, function definitions, class definitions, loops, if statements, return values, arguments.
-        ["'"] = 'textsubjects-container-outer', -- classes, structs, functions, methods.
       },
     },
   },
@@ -1223,7 +1214,6 @@ M.plugins = {
     },
   },
   nvim_tree = {
-    -- still use ijkl, gG, G
     a = 'create',
     d = 'remove',
     l = 'parent_node',

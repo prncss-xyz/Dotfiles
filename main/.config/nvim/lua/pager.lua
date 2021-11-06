@@ -7,7 +7,7 @@ if nvim_paging then
     augroup('SetFiletype', {
       {
         events = { 'VimEnter' },
-        targets = {'*'},
+        targets = { '*' },
         command = function()
           vim.bo.filetype = nvim_paging
         end,
@@ -15,6 +15,24 @@ if nvim_paging then
     })
   end
 else
+  augroup('SetupStatusline', {
+    {
+      events = { 'BufReadPost' },
+      targets = { '*' },
+      command = function()
+        require 'galaxyline'
+      end,
+    },
+  })
+  augroup('SetupLSP', {
+    {
+      events = { 'BufReadPost' },
+      targets = { '*' },
+      command = function()
+        require 'lspconfig'
+      end,
+    },
+  })
   full = true
 end
 

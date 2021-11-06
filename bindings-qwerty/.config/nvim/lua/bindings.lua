@@ -127,17 +127,40 @@ local r = invert {
   i = 'inner',
 }
 
+local function map_command_insert()
+  local map = require('utils').map
+  -- TODO: dedent
+  -- char
+  map('ci', '<c-d>', '<c-h>') -- kill
+  map('ci', '<c-b>', '<left>')
+  map('ci', '<c-f>', '<right>')
+  map('ci', '<c-w>', '<c-w>')
+  map('ci', '<c-g>', '<c-right>')
+  map('ci', '<c-h>', '<c-left>')
+
+  -- line
+  map('ci', '<c-u>', '<c-u>') -- kill
+  map('i', '<c-k>', '<c-o>d$')
+  map('i', '<c-o>', '<c-o>')
+
+  -- commandline
+  map('c', '<a-v>', '<c-f>') -- edit command line
+  map('c', '<c-v>', '<c-r>+') -- paste to command line
+end
+
 -- summary
 -- jkl;       -- move
 -- aA         -- code action, range code action
 -- bB         -- unjoin, join
 -- c          -- comment
+-- f          -- refactoring
 -- h          -- annotate
 -- nN         -- ninja
 -- r          -- sandwich-replace
 -- s          -- rename
 -- t          -- indent
 -- i          -- indent
+-- l          -- line
 -- uU         -- lowercase
 -- v          -- toggle case
 -- w          -- telescope symbol
@@ -168,6 +191,9 @@ local function map_edit()
     { noremap = false }
   )
 
+  -- refactoring
+  map('', a.edit .. 'f', '<cmd>Telescope refactoring<cr>')
+
   -- matze move
   local rep = require('bindutils').repeatable
   map('v', a.edit .. dd.left, rep '<Plug>MoveBlockLeft', { noremap = false })
@@ -175,8 +201,8 @@ local function map_edit()
   map('n', a.edit .. dd.left, rep '<Plug>MoveCharLeft', { noremap = false })
   map('n', a.edit .. dd.right, rep '<Plug>MoveCharRight', { noremap = false })
   map('v', a.edit .. dd.up, rep '<Plug>MoveBlockUp', { noremap = false })
-  map('v', a.edit .. dd.down, rep '<Plug>MoveBlockDown', { noremap = false })
   map('n', a.edit .. dd.up, rep '<Plug>MoveLineUp', { noremap = false })
+  map('v', a.edit .. dd.down, rep '<Plug>MoveBlockDown', { noremap = false })
   map('n', a.edit .. dd.down, rep '<Plug>MoveLineDown', { noremap = false })
 
   -- exchange (repeat)
@@ -243,18 +269,19 @@ local function map_edit()
     '<Plug>kommentary_visual_default<esc>',
     { noremap = false }
   )
+  map('nvx', a.edit .. 'a', '<cmd>CodeActionMenu<cr>')
 
   for mode in string.gmatch('nx', '.') do
     register({
       -- J = { 'gJ', 'join' },
-      a = {
-        "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
-        'code actions',
-      },
-      A = {
-        "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
-        'range code actions',
-      },
+      -- a = {
+      --   "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
+      --   'code actions',
+      -- },
+      -- A = {
+      --   "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
+      --   'range code actions',
+      -- },
       B = { 'J', 'join' },
       -- b = { '', 'unjoin' }, -- mapped by the plugin
       s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
@@ -282,14 +309,18 @@ local function map_jump()
   local map = require('utils').map
   local register = require 'which-key-fallback'
 
+  -- textobject line
+  map('vo', 'al', '<Plug>(textobj-line-a)')
+  map('vo', 'il', '<Plug>(textobj-line-i)')
+
   -- matchup
   map('nx', a.jump .. 'c', '<plug>(matchup-%)', { noremap = false })
   map('nx', a.jump .. 'C', '<plug>(matchup-g%)', { noremap = false })
   map('nx', a.jump .. 'y', '<plug>(matchup-[%)', { noremap = false })
   map('nx', a.jump .. 'Y', '<plug>(matchup-]%)', { noremap = false })
   map('nx', a.jump .. 'i', '<plug>(matchup-z%)', { noremap = false })
-  map('o', 'ic', '<plug>(matchup-i%)', { noremap = false })
-  map('o', 'ac', '<plug>(matchup-a%)', { noremap = false })
+  map('vo', 'ic', '<plug>(matchup-i%)', { noremap = false })
+  map('vo', 'ac', '<plug>(matchup-a%)', { noremap = false })
 
   if false then
     map('nv', '<c-i>', '<cmd>lua require"bufjump".local_backward()<cr>')
@@ -342,23 +373,23 @@ end
 local function map_move()
   local register = require 'which-key-fallback'
   register({
-    c = { '<cmd>TodoTelescope<cr>', 'telescope TODO' },
-    b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", 'buffers' },
-    d = { -- FIXME
-      '<cmd>lua require("telescope.builtin").lsp_definitions()<cr>',
-      'go definition',
-    },
-    D = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' },
-    i = { -- FIXME
-      '<cmd>lua require("telescope.").builtin.lsp_implementations()<cr>',
-      'go implementation',
-    },
+    p = { '<cmd>TodoTrouble<cr>', 'telescope TODO' },
+    P = { '<cmd>TodoTelescope<cr>', 'telescope TODO' },
+    b = { '<cmd>Telescope buffers<cr>', 'buffers' },
+    d = { '<cmd>Telescope lsp_definitions<cr>', 'go definition' }, -- also, trouble
+    D = { '<cmd>Telescope lsp_type_definitions<cr>', 'go type' }, -- also, trouble
+    i = { '<cmd>Telescope lsp_implementations<cr>', 'go implementation' }, -- also, trouble
+    I = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' }, -- FIXME:
     o = {
       "<cmd>lua require('telescope.builtin').oldfiles({only_cwd = true})<cr>",
       'oldfiles',
     },
+    -- r = {
+    --   "<cmd>Telescope lsp_references<cr>",
+    --   'lsp references',
+    -- },
     r = {
-      "<cmd>lua require('telescope.builtin').lsp_references()<cr>",
+      '<cmd>Trouble lsp_references<cr>',
       'lsp references',
     },
     t = {
@@ -370,7 +401,7 @@ local function map_move()
       'trouble, previous',
     },
     ['é'] = {
-      "<cmd>lua require('telescope.builtin').live_grep()<cr>",
+      '<cmd>Telescope live_grep<cr>',
       'live grep',
     },
     [a.move] = {
@@ -400,7 +431,6 @@ local function map_editor()
       '<cmd>lua require"bufjump".backward(require"bufjump".not_under_cwd)<cr>',
       'previous workspace',
     },
-    c = { '<cmd>TodoTrouble<cr>', 'trouble todo' },
     d = { '<cmd>DiffviewOpen<cr>', 'diffview open' },
     D = { '<cmd>DiffviewClose<cr>', 'diffview close' },
     e = {
@@ -529,7 +559,11 @@ local function map_markdown()
   local register = require 'which-key-fallback'
   local map_local = require('utils').buf_map
   local buffer = vim.api.nvim_get_current_buf()
-  if false then
+  if true then
+    map_local('i', '<c-a>', '<c-o>g^')
+    map_local('i', '<c-e>', '<c-o>g$')
+    map_local('nvo', '<c-a>', 'g^')
+    map_local('nvo', '<c-e>', 'g$')
     register({
       y = { '<Plug>Markdown_OpenUrlUnderCursor', 'follow url' },
     }, {
@@ -570,8 +604,6 @@ local function map_markdown()
   map_local('nvo', a.jump .. 'H', '<Plug>Markdown_MoveToParentHeader')
   map_local('', a.jump .. dd.up, 'k')
   map_local('', a.jump .. dd.down, 'j')
-  map_local('nvio', '<c-b>', 'g0')
-  map_local('nvio', '<c-f>', 'g$')
   map_local('', dd.up, 'gk')
   map_local('', dd.down, 'gj')
   -- both are identical
@@ -643,6 +675,8 @@ end
 | w       | NameCurrentMacro |
 --]]
 function M.setup()
+  vim.cmd 'cmapclear'
+  vim.cmd 'imapclear'
   -- require('utils').augroup('ReadonlyMappings', {
   --   {
   --     events = { 'BufReadPost' },
@@ -663,9 +697,27 @@ function M.setup()
   map_editor()
   map_browser()
   map_help()
+  map_command_insert()
 
   local register = require 'which-key-fallback'
   local map = require('utils').map
+
+  -- TODO: remap cmp c-e
+  -- fish-emacs compatibility
+  map('nvioc', '<c-e>', '<end>')
+
+  map('c', '<c-a>', '<home>')
+  map('c', '<c-e>', '<end>')
+  map('i', '<c-a>', '<c-o>^')
+  map('i', '<c-e>', '<c-o>$')
+  map('nvo', '<c-a>', '^')
+  map('nvo', '<c-e>', '$')
+
+  map('nvioc', '<c-p>', '<up>')
+  map('nvioc', '<c-n>', '<down>')
+  map('nvioc', '<c-c>', '<esc>')
+  map('n', '<a-t>', '"zdh"zp') -- transpose
+  map('i', '<a-t>', '<esc>"zdh"zpa') -- transpose
 
   -- TODO:map reselect "gv"
 
@@ -715,8 +767,8 @@ function M.setup()
   map('nvo', 'L', '^')
   map('nvo', ':', '$')
 
-  map('o', ',', ':<C-U>lua require("tsht").nodes()<CR>')
-  map('v', ',', ':lua require("tsht").nodes()<CR>')
+  map('o', ',', ':<c-u>lua require("tsht").nodes()<CR>')
+  map('v', ',', ':lua require("tsht").nodes()<cr>')
 
   -- neoscroll
   require('neoscroll.config').set_mappings {
@@ -754,15 +806,6 @@ function M.setup()
     { noremap = false, expr = true }
   )
 
-  -- eft
-  if false then
-    map('nx', ';', '<plug>(eft-repeat)', { noremap = false })
-    map('nxo', 'f', '<plug>(eft-f)', { noremap = false })
-    map('nxo', '<s-f>', '<plug>(eft-F)', { noremap = false })
-    map('nxo', 't', '<plug>(eft-t)', { noremap = false })
-    map('nxo', '<s-t>', '<plug>(eft-T)', { noremap = false })
-  end
-
   -- searching
   require 'auto_unhl'
   map('', '*', '<nop>')
@@ -792,7 +835,7 @@ function M.setup()
   -- map('i', '<c-x>', 'pumvisible() ? "\\<down>" : 1', { expr = true })
   map(
     'nx',
-    '<c-a>',
+    '<c-j>',
     "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
     { expr = true, noremap = false }
   )
@@ -804,7 +847,7 @@ function M.setup()
   )
   map(
     'x',
-    '<c-s-a>',
+    '<c-s-j>',
     '<Plug>(dial-increment-additional)',
     { expr = true, silent = true, noremap = false }
   )
@@ -826,44 +869,6 @@ function M.setup()
   map('is', '<s-tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
   map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
 
-  -- luasnip + dial
-  -- TODO: use dial-* and luasnip-*-choice in insert mode
-  -- map('i', '<c-x>', 'pumvisible() ? "\\<down>" : 1', { expr = true })
-  map(
-    'nv',
-    '<c-a>',
-    "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
-    { expr = true, noremap = false }
-  )
-  map(
-    'nv',
-    '<c-x>',
-    "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
-    { expr = true, noremap = false }
-  )
-  map(
-    'v',
-    '<c-s-a>',
-    '<Plug>(dial-increment-additional)',
-    { expr = true, silent = true, noremap = false }
-  )
-  map(
-    'v',
-    '<c-s-x>',
-    '<Plug>(dial-decrement-additional)',
-    { expr = true, silent = true, noremap = false }
-  )
-
-  map(
-    'i',
-    '<cr>',
-    'v:lua.MPairs.autopairs_cr()',
-    { expr = true, noremap = true }
-  )
-
-  map('is', '<tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
-  map('is', '<s-tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
-  map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
   -- macrobatics
   if false then
     map('n', a.macro .. a.macro, '<plug>(Mac_Play)', { noremap = false })
@@ -931,36 +936,6 @@ function M.setup()
     { noremap = false }
   )
 
-  -- wildmenu
-  -- needed for tab-completion
-  -- map('i', '<c-a>', <cmd>pumvisible() ? : <up>')
-  map('c', '<c-a>', 'wilder#previous()', { expr = true })
-  map('c', '<c-x>', 'wilder#next()', { expr = true })
-  -- cannot make "autoselect" work
-  map(
-    'c',
-    '<tab>',
-    'wilder#can_accept_completion() ? wilder#accept_completion() : wilder#next()+"\\<cr>"',
-    { expr = true }
-  )
-  -- map('c', '<tab>', 'wilder#accept_completion(1)', {expr = true})
-  -- map('c', '<tab>', '<tab><space>')
-  -- map('c', '<tab>', 'wilder#accept_completion(1)', { noremap=false,expr = true })
-
-  map('nvio', '<c-c>', '<esc>')
-
-  -- fish-emacs compatibility
-  map('nvio', '<c-b>', '^')
-  map('nvio', '<c-e>', '$')
-  map('c', '<c-e>', '<home>')
-  map('c', '<c-b>', '<end>')
-  map('n', '<a-t>', '"zdh"zp') -- transpose
-  map('i', '<a-t>', '<esc>"zdh"zpa') -- transpose
-  map('c', '<c-p>', '<up>')
-  map('c', '<c-n>', '<down>')
-  map('c', '<a-v>', '<c-f>')
-  map('c', '<c-v>', '<c-r>+')
-
   -- nvi mappings
   for mode in string.gmatch('nvi', '.') do
     register({
@@ -1000,7 +975,8 @@ function M.setup()
           '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>',
           'show line diagnostics',
         },
-        c = { '<cmd>ProDoc<cr>', 'prepare doc comment' },
+        C = { '<cmd>lua vim.lsp.buf.incoming_calls()<cr>', 'incoming calls' },
+        c = { '<cmd>lua vim.lsp.buf.outgoing_calls()<cr>', 'outgoing calls' },
         d = { '<cmd>lua PeekDefinition()<cr>', 'hover definition' },
         k = { '<cmd>lua vim.lsp.buf.hover()<cr>', 'hover' },
         r = { '<cmd>lua vim.lsp.buf.references()<cr>', 'references' },

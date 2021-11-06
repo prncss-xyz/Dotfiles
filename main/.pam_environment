@@ -7,13 +7,13 @@ FZF_DEFAULT_COMMAND OVERRIDE="fd --type file --follow --hidden --exclude .git"
 FZF_DEFAULT_OPTS OVERRIDE="--bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)'"
 GRIM_DEFAULT_DIR OVERRIDE=${HOME}/Media/Pictures/Captures
 GUI OVERRIDE=${HOME}/.local/bin/newterm
-MANPAGER OVERRIDE="nvim_paging man"
+# MANPAGER OVERRIDE="nvim_paging man"
 MANPATH OVERRIDE=${NPM_PACKAGES}/share/man:${MANPATH}
 MBSYNC_CONFIG OVERRIDE=${HOME}/.config/mbsync/config
 MOZ_ENABLE_WAYLAND OVERRIDE=1
 NODE_OPTIONS=--experimental-vm-modules
 NOTMUCH_CONFIG OVERRIDE=${HOME}/.config/notmuch/config
-PAGER=nvim_pager
+# PAGER=nvim_pager
 PASSWORD_STORE_CHARACTER_SET=a-zA-Z0-9~!@#$%^&*()-_=+[]{};:,.<>?
 PASSWORD_STORE_DIR OVERRIDE=${HOME}/Personal/pass
 PASSWORD_STORE_ENABLE_EXTENSIONS OVERRIDE=true

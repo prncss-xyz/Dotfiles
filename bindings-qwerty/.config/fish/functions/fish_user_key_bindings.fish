@@ -5,34 +5,22 @@
 
 function fish_user_key_bindings
     fzf_key_bindings
-    bind \eb prevd-or-backward-word
+    bind \cg prevd-or-backward-word
+    bind \ch nextd-or-forward-word
+    bind \cj history-token-search-backward
+    bind \cx history-token-search-forward
     # \ec fzf-cd-widget
     bind \ed fzf-file-widget
-    bind \ef nextd-or-forward-word
     bind \eh fish_man_page_html
     bind \el fish_list_current_token
-    bind \en forward-bigword
     # \eo open in pager
-    bind \ep backward-bigword
     # \es prepend sudo
     # \ev edit command line
-
-    # \ca to bol
-    # \cb back
-    # \cc cancel line
-    # \cd del or quit
-    # \ce to eol
-    # \cf forward
-    bind \ch beginning-of-line
-    # \ck kill to eol
-    # \cl repaint
-    # \cm up-or-search # bind
-    # \cn down-or-search # bind
     # \cr fzf-history-widget
     bind \cs pet-select
     bind \ct transpose-chars
     # \cu kill to bol
-    # \v paste
+    # \cv paste
     # \cw kill to bow
     bind \cy fish_clipboard_copy
     # \cz undo

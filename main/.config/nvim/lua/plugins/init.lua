@@ -13,8 +13,6 @@ local function never()
   return false
 end
 
--- TODO: lazy loading; cf https://github.com/akinsho/dotfiles/blob/main/.config/nvim/lua/as/plugins/init.lua
-
 local function local_repo(name)
   return os.getenv 'PROJECTS' .. '/' .. name
 end
@@ -65,9 +63,8 @@ return require('packer').startup {
     use {
       'nvim-treesitter/nvim-treesitter',
       run = ':TSUpdate',
-      -- event = 'BufRead',
-      module = 'nvim-treesitter.ts_utils',
-      opt = true,
+      module = { 'nvim-treesitter', 'nvim-treesitter.parsers' }, -- HACK: why do I need this?
+      module_pattern = 'nvim-treesitter.*',
       config = function()
         require 'plugins.treesitter'
       end,
@@ -76,11 +73,9 @@ return require('packer').startup {
         { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } },
         { 'JoosepAlviste/nvim-ts-context-commentstring', cond = full },
         { 'nvim-treesitter/nvim-treesitter-textobjects', cond = full },
-        -- { 'RRethy/nvim-treesitter-textsubjects', cond = full },
         { 'mfussenegger/nvim-ts-hint-textobject', cond = full },
-        -- Use 'tressitter 'to autoclose and autorename html tag
+        -- Use tressitter to autoclose and autorename html tag
         { 'windwp/nvim-ts-autotag', cond = full },
-        -- shows the context of the currently visible buffer contents
       },
     }
     use {
@@ -92,6 +87,7 @@ return require('packer').startup {
       end,
     }
     use {
+      -- shows the context of the currently visible buffer contents
       'romgrk/nvim-treesitter-context',
       after = 'nvim-treesitter',
       cond = full,
@@ -101,12 +97,14 @@ return require('packer').startup {
       end,
     }
     use {
+      -- annotation toolkit
       'danymat/neogen',
       after = 'nvim-treesitter',
       cond = full,
       config = function()
         require('neogen').setup {
           enabled = true,
+          jump_map = 'â', -- that is, diable mapping
         }
       end,
       requires = 'nvim-treesitter/nvim-treesitter',
@@ -126,11 +124,12 @@ return require('packer').startup {
       },
     }
 
-    -- lua dev
+    -- luv docs in :help
     use { 'nanotee/luv-vimdocs', cond = full }
+    -- lua docs in :help
     use { 'milisims/nvim-luaref', cond = full }
-    use { 'glepnir/prodoc.nvim', cond = full }
 
+    -- edit browser's textinput in nvim instance
     use {
       'subnut/nvim-ghost.nvim',
       run = function()
@@ -161,6 +160,14 @@ return require('packer').startup {
         require('plugins.dap').setup()
       end,
     }
+    use {
+      'rcarriga/nvim-dap-ui',
+      requires = { 'mfussenegger/nvim-dap' },
+      module = 'dapui',
+      config = function()
+        require('dapui').setup()
+      end,
+    }
     -- tests
     use {
       'rcarriga/vim-ultest',
@@ -188,14 +195,6 @@ return require('packer').startup {
         require('plugins.ultest').config()
       end,
     }
-    use {
-      'rcarriga/nvim-dap-ui',
-      requires = { 'mfussenegger/nvim-dap' },
-      module = 'dapui',
-      config = function()
-        require('dapui').setup()
-      end,
-    }
 
     -- LSP
     use {
@@ -207,7 +206,8 @@ return require('packer').startup {
     use { 'jose-elias-alvarez/nvim-lsp-ts-utils', module = 'nvim-lsp-ts-utils' }
     use {
       'neovim/nvim-lspconfig',
-      cond = full,
+      -- cond = full,
+      module = 'lspconfig',
       config = function()
         require('plugins.lsp').setup()
       end,
@@ -265,20 +265,20 @@ return require('packer').startup {
       end,
     }
     use {
-      -- https://github.com/ray-x/navigator.lua/issues/71
-      'ray-x/navigator.lua',
-      disable = true,
-      after = 'nvim-lspconfig',
-      requires = { 'ray-x/guihua.lua', run = 'cd lua/fzy && make' },
+      'ThePrimeagen/refactoring.nvim',
+      module = 'refactoring',
       config = function()
-        require('plugins.navigator').config()
+        local refactor = require 'refactoring'
+        refactor.setup()
       end,
     }
-
+    require('packer').use {
+      'weilbith/nvim-code-action-menu',
+      cmd = 'CodeActionMenu',
+    }
     -- TODO:
-    -- weilbith/nvim-code-action-menu
-    -- ThePrimeagen/refactoring.nvim
     -- filipdutescu/renamer.nvim/
+    -- b0o/SchemaStore.nvim
 
     -- completion
     use { local_repo 'friendly-snippets' }
@@ -353,6 +353,13 @@ return require('packer').startup {
         }
       end,
     }
+    -- Resolve git conflicts with ConflictMarker* commands
+    use {
+      'rhysd/conflict-marker.vim',
+      setup = function()
+        vim.g.conflict_marker_enable_mappings = 0
+      end,
+    }
 
     -- UI
     use {
@@ -363,8 +370,8 @@ return require('packer').startup {
         require('indent_blankline').setup {
           show_current_context = false,
           char = ' ',
-          buftype_exclude = { 'terminal', 'help' },
-          filetype_exclude = { 'markdown', 'help' },
+          buftype_exclude = { 'terminal', 'help', 'nofile' },
+          filetype_exclude = { 'markdown', 'help', 'packer' },
           char_highlight_list = highlitght_list,
           space_char_highlight_list = highlitght_list,
           space_char_blankline_highlight_list = highlitght_list,
@@ -374,7 +381,8 @@ return require('packer').startup {
     -- TODO: lazy
     use {
       'glepnir/galaxyline.nvim',
-      cond = full,
+      -- cond = full,
+      module = 'galaxyline',
       config = function()
         require 'plugins.galaxyline'
       end,
@@ -423,6 +431,7 @@ return require('packer').startup {
         require('specs').setup {}
       end,
     }
+    -- TODO: autohide plugin
     use {
       'folke/zen-mode.nvim',
       cond = full,
@@ -770,9 +779,16 @@ return require('packer').startup {
     }
     use {
       'ethanholz/nvim-lastplace',
+      -- TODO: lazy
       config = function()
         require('nvim-lastplace').setup {
           lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
+          lastplace_ignore_filetype = {
+            'gitcommit',
+            'gitrebase',
+            'svn',
+            'hgcommit',
+          },
           lastplace_open_folds = true,
         }
       end,
@@ -812,6 +828,7 @@ return require('packer').startup {
       },
     }
 
+    use { 'dstein64/vim-startuptime' }
     use {
       'henriquehbr/nvim-startup.lua',
       cond = never,
@@ -824,6 +841,11 @@ return require('packer').startup {
     }
   end,
   config = {
+    display = {
+      open_fn = function()
+        return require('packer.util').float { border = 'single' }
+      end,
+    },
     profile = {
       enable = true,
       threshold = 1, -- the amount in ms that a plugins load time must be over for it to be included in the profile

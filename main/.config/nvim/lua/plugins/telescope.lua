@@ -29,6 +29,7 @@ function M.setup()
   telescope.load_extension 'project_directory'
   telescope.load_extension 'my_projects'
   telescope.load_extension 'modules'
+  telescope.load_extension 'refactoring'
 end
 
 return M

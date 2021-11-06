@@ -1,10 +1,13 @@
 pcall(function() -- needed to enable first installation
-  -- require('impatient').enable_profile()
+  require('impatient').enable_profile()
 end)
 
+local g = vim.g
+
+-- this won't significantly improve startup time
+-- it will still make the system simpler
 local disabled_built_ins = {
   '2html_plugin',
-  'filetypes', -- nathom/filetype.nvim
   'getscript',
   'getscriptPlugin',
   'gzip',
@@ -23,10 +26,13 @@ local disabled_built_ins = {
   'zip',
   'zipPlugin',
 }
-
 for _, plugin in pairs(disabled_built_ins) do
-  vim.g['loaded_' .. plugin] = 1
+  g['loaded_' .. plugin] = 1
 end
+
+-- this will (slightly) improve startup time,
+-- and make configuration more readable
+g.did_load_filetypes = 1 -- nathom/filetype.nvim
 
 require('signs').setup()
 require 'options'

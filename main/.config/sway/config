@@ -3,6 +3,10 @@ set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
 workspace_layout stacking
 workspace 0
 
+# sway-hidpi-bin
+# xwayland force scale 2
+# exec xsettingsd
+
 # set $terminal
 include ~/.config/sway/env 
 include ~/.config/sway/config.d/*
@@ -52,9 +56,12 @@ input type:keyboard {
   xkb_options ctrl:nocaps
 }
 
-input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {
-  ### Bring the escape key home!
+# input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {}
+input "1133:45890:Keyboard_K380_Keyboard" {
+   xkb_layout "us"
 }
+# } # bluetooth
+# input "8738:137:MGI_USB_Compact_Pro_Keyboard_System_Control" {}
 
 # input "12951:18804:ZSA_Technology_Labs_ErgoDox_EZ" {
 #   xkb_layout "fr"

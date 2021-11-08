@@ -62,9 +62,7 @@ local function setup_scheme()
         scheme.port = get_new_port()
       end
     end
-    return
   end
-  return
 end
 
 require('utils').augroup('SetupSession', {

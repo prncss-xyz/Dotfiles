@@ -235,7 +235,9 @@ local function map_edit()
   map('ox', 'ay', '<Plug>(textobj-sandwich-query-a)', { noremap = false })
 
   -- ninja feet
-  map('o', a.edit .. 'Ni', '<Plug>(ninja-left-foot-inner)', { noremap = false })
+  map('o', a.edit .. 'Ni', '<Plug>(ninja-left-foot-inner)', {
+    noremap = false,
+  })
   map('o', a.edit .. 'Na', '<Plug>(ninja-left-foot-a)', { noremap = false })
   map(
     'o',
@@ -314,10 +316,10 @@ local function map_jump()
   map('vo', 'il', '<Plug>(textobj-line-i)')
 
   -- matchup
-  map('nx', a.jump .. 'c', '<plug>(matchup-%)', { noremap = false })
   map('nx', a.jump .. 'C', '<plug>(matchup-g%)', { noremap = false })
-  map('nx', a.jump .. 'y', '<plug>(matchup-[%)', { noremap = false })
-  map('nx', a.jump .. 'Y', '<plug>(matchup-]%)', { noremap = false })
+  map('nx', a.jump .. 'c', '<plug>(matchup-%)', { noremap = false })
+  map('nx', a.jump .. 'Y', '<plug>(matchup-[%)', { noremap = false })
+  map('nx', a.jump .. 'y', '<plug>(matchup-]%)', { noremap = false })
   map('nx', a.jump .. 'i', '<plug>(matchup-z%)', { noremap = false })
   map('vo', 'ic', '<plug>(matchup-i%)', { noremap = false })
   map('vo', 'ac', '<plug>(matchup-a%)', { noremap = false })
@@ -328,7 +330,10 @@ local function map_jump()
   map('nv', '<c-o>', '<cmd>lua require"bufjump".local_forward()<cr>')
 
   register({
-    a = { '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', 'go next diagnostic' },
+    a = {
+      '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>',
+      'go next diagnostic',
+    },
     A = {
       '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
       'go previous diagnostic',
@@ -423,11 +428,11 @@ local function map_editor()
       '<cmd>TroubleToggle lsp_document_diagnostics<cr>',
       'lsp document diagnostics',
     },
-    b = {
+    b = { -- FIXME:
       '<cmd>lua require"bufjump".backward(require"bufjump".not_under_cwd)<cr>',
       'previous workspace',
     },
-    B = {
+    B = { -- FIXME:
       '<cmd>lua require"bufjump".backward(require"bufjump".not_under_cwd)<cr>',
       'previous workspace',
     },
@@ -496,9 +501,15 @@ local function map_browser()
     },
   }
   require('browser').mapBrowserSearch(a.browser, '+browser search', {
-    arch = { 'https://wiki.archlinux.org/index.php?search=', 'archlinux wiki' },
+    arch = {
+      'https://wiki.archlinux.org/index.php?search=',
+      'archlinux wiki',
+    },
     aur = { 'https://aur.archlinux.org/packages/?K=', 'aur packages' },
-    ca = { 'https://www.cairn.info/resultats_recherche.php?searchTerm=', 'cairn' },
+    ca = {
+      'https://www.cairn.info/resultats_recherche.php?searchTerm=',
+      'cairn',
+    },
     cn = { 'https://www.cnrtl.fr/definition/', 'cnrtl' },
     d = { 'https://duckduckgo.com/?q=', 'duckduckgo' },
     eru = {
@@ -865,8 +876,8 @@ function M.setup()
     { expr = true, noremap = true }
   )
 
-  map('is', '<tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
-  map('is', '<s-tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
+  map('is', '<Tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
+  map('is', '<s-Tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
   map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
 
   -- macrobatics

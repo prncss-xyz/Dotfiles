@@ -71,7 +71,6 @@ return require('packer').startup {
       requires = { -- TODO: lazy
         { 'p00f/nvim-ts-rainbow', cond = full },
         { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } },
-        { 'JoosepAlviste/nvim-ts-context-commentstring', cond = full },
         { 'nvim-treesitter/nvim-treesitter-textobjects', cond = full },
         { 'mfussenegger/nvim-ts-hint-textobject', cond = full },
         -- Use tressitter to autoclose and autorename html tag
@@ -104,7 +103,7 @@ return require('packer').startup {
       config = function()
         require('neogen').setup {
           enabled = true,
-          jump_map = 'â', -- that is, diable mapping
+          -- jump_map = 'â', -- that is, diable mapping
         }
       end,
       requires = 'nvim-treesitter/nvim-treesitter',
@@ -203,7 +202,11 @@ return require('packer').startup {
     }
     use { 'brymer-meneses/grammar-guard.nvim', module = 'grammar-guard' }
     use { 'folke/lua-dev.nvim', module = 'lua-dev' }
-    use { 'jose-elias-alvarez/nvim-lsp-ts-utils', module = 'nvim-lsp-ts-utils' }
+    use { 'b0o/schemastore.nvim', module = 'schemastore' }
+    use {
+      'jose-elias-alvarez/nvim-lsp-ts-utils',
+      module = 'nvim-lsp-ts-utils',
+    }
     use {
       'neovim/nvim-lspconfig',
       -- cond = full,
@@ -277,8 +280,7 @@ return require('packer').startup {
       cmd = 'CodeActionMenu',
     }
     -- TODO:
-    -- filipdutescu/renamer.nvim/
-    -- b0o/SchemaStore.nvim
+    -- filipdutescu/renamer.nvim
 
     -- completion
     use { local_repo 'friendly-snippets' }
@@ -688,7 +690,10 @@ return require('packer').startup {
     }
     use {
       'b3nj5m1n/kommentary',
+      -- keys = { 'mmc', 'mc' },
       cond = full,
+      wants = 'nvim-ts-context-commentstring',
+      requires = { 'JoosepAlviste/nvim-ts-context-commentstring' },
       setup = function()
         vim.g.kommentary_create_default_mappings = false
       end,
@@ -715,6 +720,7 @@ return require('packer').startup {
         })
       end,
     }
+    -- TODO: https://github.com/numToStr/Comment.nvim
     use {
       'AckslD/nvim-revJ.lua',
       cond = full,

@@ -62,37 +62,39 @@ end
 function M.setup()
   -- LSP settings
   local nvim_lsp = require 'lspconfig'
-
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+  local flags = {
+    debounce_text_changes = 500,
+    allow_incremental_sync = true,
+  }
 
   for _, lsp in ipairs {
     'bashls',
-    'cssls',
     'html',
-    'jsonls',
+    'cssls',
     'vimls',
     'yamlls',
   } do
     nvim_lsp[lsp].setup {
       on_attach = noformat_on_attach,
       capabilities = capabilities,
-      flags = {
-        debounce_text_changes = 500,
-        allow_incremental_sync = true,
-      },
+      flags = flags,
     }
   end
+  nvim_lsp.jsonls.setup {
+    settings = { json = { schemas = require('schemastore').json.schemas() } },
+    on_attach = noformat_on_attach,
+    capabilities = capabilities,
+    flags = flags,
+  }
   nvim_lsp.tsserver.setup {
     on_attach = function(client, bufnr)
       noformat_on_attach(client, bufnr)
       ts_uttils_on_attach(client, bufnr)
     end,
     capabilities = capabilities,
-    flags = {
-      debounce_text_changes = 500,
-      allow_incremental_sync = true,
-    },
+    flags = flags,
   }
   local luadev = require('lua-dev').setup {
     lspconfig = {
@@ -116,6 +118,7 @@ function M.setup()
           },
         },
       },
+      flags = flags,
     },
   }
   nvim_lsp.sumneko_lua.setup(luadev)
@@ -157,7 +160,7 @@ function M.setup()
       -- b.diagnostics.selene,
     },
   }
-  nvim_lsp['null-ls'].setup { on_attach = format_on_attach }
+  nvim_lsp['null-ls'].setup { on_attach = format_on_attach, debounce = 500 }
   -- require('grammar-guard').init()
   -- nvim_lsp.grammar_guard.setup {}
 

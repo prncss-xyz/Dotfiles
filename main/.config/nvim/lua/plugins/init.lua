@@ -98,8 +98,7 @@ return require('packer').startup {
     use {
       -- annotation toolkit
       'danymat/neogen',
-      after = 'nvim-treesitter',
-      cond = full,
+      module = 'neogen',
       config = function()
         require('neogen').setup {
           enabled = true,
@@ -287,13 +286,13 @@ return require('packer').startup {
     use {
       'hrsh7th/nvim-cmp',
       module = 'cmp',
-      event = 'InsertEnter',
+      event = { 'CmdlineEnter', 'CmdlineEnter' },
       requires = {
-        { 'hrsh7th/cmp-buffer', after = { 'nvim-cmp', 'cmp-cmdline' } },
+        { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' },
         {
           'hrsh7th/cmp-path',
           module = 'cmp-path',
-          after = { 'nvim-cmp', 'cmp-cmdline' },
+          after = 'nvim-cmp',
         },
         -- { 'tzachar/fuzzy.nvim', module = 'fuzzy' },
         -- { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp' },
@@ -308,13 +307,25 @@ return require('packer').startup {
         require 'plugins.cmp'
       end,
     }
-    use { 'hrsh7th/cmp-cmdline', event = 'CmdlineEnter' }
+    use { 'hrsh7th/cmp-cmdline', after = 'nvim-cmp' }
     -- insert or delete brackets, parentheses, quotes in pair
     use {
       'windwp/nvim-autopairs',
       after = 'nvim-cmp',
       config = function()
         require 'plugins.autopairs'
+      end,
+    }
+
+    -- Tracking
+    use { 'git-time-metric/gtm-vim-plugin', cond = full }
+    use {
+      'chrisbra/BufTimer',
+      cond = full,
+      setup = function()
+        vim.g.buf_report_autosave_dir = os.getenv 'HOME'
+          .. '-'
+          .. (os.getenv 'hostname' or 'unknown') -- FIXME:
       end,
     }
 
@@ -380,10 +391,8 @@ return require('packer').startup {
         }
       end,
     }
-    -- TODO: lazy
     use {
       'glepnir/galaxyline.nvim',
-      -- cond = full,
       module = 'galaxyline',
       config = function()
         require 'plugins.galaxyline'
@@ -417,15 +426,21 @@ return require('packer').startup {
       end,
     }
     use {
-      -- TODO: lazy
       'folke/todo-comments.nvim',
-      -- event = 'BufReadPre',
-      cond = full,
+      cmd = { 'TodoTrouble', 'TodoTelescope' },
       config = function()
         require('todo-comments').setup {}
       end,
     }
-    use 'kevinhwang91/nvim-hlslens'
+    use {
+      'kevinhwang91/nvim-hlslens',
+      module = 'hlslens',
+      config = function()
+        require('hlslens').setup {
+          calm_down = true,
+        }
+      end,
+    }
     use {
       'edluffy/specs.nvim',
       after = 'neoscroll.nvim',
@@ -433,20 +448,17 @@ return require('packer').startup {
         require('specs').setup {}
       end,
     }
-    -- TODO: autohide plugin
     use {
       'folke/zen-mode.nvim',
-      cond = full,
+      cmd = { 'ZenMode' },
       config = function()
         require('plugins.zen-mode').setup()
       end,
-      cmd = { 'ZenMode' },
     }
     use {
       'folke/twilight.nvim',
       wants = 'twilight.nvim',
       requires = { 'folke/twilight.nvim' },
-      -- cond = full,
       config = function()
         require('twilight').setup {}
       end,
@@ -490,10 +502,13 @@ return require('packer').startup {
           mappings = require('bindings').plugins.marks,
         }
       end,
-    } -- TODO:
+    }
     use {
-      cond = full,
       'andymass/vim-matchup',
+      cond = full,
+      setup = function()
+        vim.g.matchup_matchparen_offscreen = { method = 'status' }
+      end,
     }
     use {
       'ggandor/lightspeed.nvim',
@@ -572,10 +587,8 @@ return require('packer').startup {
     use {
       'mbbill/undotree',
       setup = function()
-        require('utils').deep_merge(vim.g, {
-          undotree_SplitWidth = 30,
-          undotree_TreeVertShape = '│',
-        })
+        vim.g.undotree_SplitWidth = 30
+        vim.g.undotree_TreeVertShape = '│'
       end,
       cmd = { 'UndotreeToggle' },
     }
@@ -607,7 +620,7 @@ return require('packer').startup {
       'kevinhwang91/nvim-hclipboard',
       event = 'InsertEnter',
       config = function()
-        require 'plugins.hclipboard'
+        -- require 'plugins.hclipboard'
       end,
     }
     use {
@@ -621,10 +634,7 @@ return require('packer').startup {
       'bfredl/nvim-miniyank',
       disable = true,
       setup = function()
-        require('utils').deep_merge(vim.g, {
-          -- miniyank_delete_maxlines = 1,
-          miniyank_filename = '/home/prncss/.miniyank.mpack',
-        })
+        vim.g.miniyank_filename = '/home/prncss/.miniyank.mpack'
       end,
     }
     use {
@@ -665,13 +675,9 @@ return require('packer').startup {
       'machakann/vim-sandwich',
       cond = full,
       setup = function()
-        require('utils').deep_merge(vim, {
-          g = {
-            sandwich_no_default_key_mappings = 1,
-            operator_sandwich_no_default_key_mappings = 1,
-            textobj_sandwich_no_default_key_mappings = 1,
-          },
-        })
+        vim.g.sandwich_no_default_key_mappings = 1
+        vim.g.operator_sandwich_no_default_key_mappings = 1
+        vim.g.textobj_sandwich_no_default_key_mappings = 1
       end,
     }
     local mac_repo = local_repo 'macrobatics'
@@ -679,9 +685,7 @@ return require('packer').startup {
       'svermeulen/vim-macrobatics',
       cond = full,
       setup = function()
-        require('utils').deep_merge(vim.g, {
-          Mac_NamedMacrosDirectory = mac_repo,
-        })
+        vim.g.Mac_NamedMacrosDirectory = mac_repo
       end,
     }
     use {
@@ -754,7 +758,8 @@ return require('packer').startup {
           end,
         },
         { 'kana/vim-textobj-entire', cond = full },
-        { 'michaeljsmith/vim-indent-object', cond = full },
+        -- { 'michaeljsmith/vim-indent-object', cond = full },
+        -- breaks completion through 'v' mappings
       },
     }
     use { 'wellle/targets.vim', cond = full }

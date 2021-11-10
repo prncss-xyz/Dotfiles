@@ -1,5 +1,5 @@
 pcall(function() -- needed to enable first installation
-  -- require('impatient').enable_profile()
+  require('impatient').enable_profile()
 end)
 
 local g = vim.g

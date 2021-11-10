@@ -57,8 +57,11 @@ deep_merge(vim, {
     title = true,
   },
   g = {
+    -- what's that ? -- FIXME:
     autosave = full and 1 or 0,
+
     -- plasticboy/vim-markdown
+    -- do not seem to work in setup
     -- vim_markdown_folding_disabled = 0,
     matchup_mappings_enabled = 0,
     vim_markdown_folding_level = 6,
@@ -76,23 +79,6 @@ deep_merge(vim, {
       'tsx=typescriptreact',
       'bash=sh',
     },
-    -- vim_markdown_conceal_code_blocks = 0,
-    -- vim-case-chage
-    casechange_nomap = 1,
-    -- neovide_refresh_rate = 60,
-    -- neovide_transparency = 0.30
-    -- neovide_cursor_animation_length = 0.3,
-    -- neovide_cursor_trail_length = 0.5,
-    -- neovide_remember_window_size = false,
-    -- neovide_cursor_antialiasing = true,
-    -- neovide_cursor_vfx_mode = 'railgun',
-    -- neovide_cursor_vfx_opacity = 200.0,
-    -- neovide_cursor_vfx_particle_lifetime = 1.2,
-    -- neovide_cursor_vfx_particle_density = 7.0,
-    -- neovide_cursor_vfx_particle_speed = 10.0,
-    -- neovide_cursor_vfx_particle_phase = 1.5,
-    -- neovide_cursor_vfx_particle_curl = 1.0,
-    matchup_matchparen_offscreen = { method = 'status' },
   },
   wo = {
     number = false,
@@ -101,8 +87,8 @@ deep_merge(vim, {
   },
   -- like set
   opt = {
-    -- shada = 'NONE',
-    shada = "!,'0,f0,<50,s10,h",
+    -- FIXME:
+    --  shada = '0,f0',
     -- The '0,f0 are the important bits, it says to not save file marks as well as save 0 marks in shada
     -- @Akinsho https://www.reddit.com/r/neovim/comments/q7bgwo/marksnvim_a_plugin_for_viewing_and_interacting/
     conceallevel = 2,

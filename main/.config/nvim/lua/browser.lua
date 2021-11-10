@@ -17,7 +17,10 @@ function m.mapBrowserSearch(prefix, name, mappings)
   for abbr, value in pairs(mappings) do
     local url, help = unpack(value)
     register({
-      [abbr] = { string.format('<cmd>lua require"browser".searchCword(%q)<cr>', url), help },
+      [abbr] = {
+        string.format('<cmd>lua require"browser".searchCword(%q)<cr>', url),
+        help,
+      },
     }, {
       prefix = prefix,
     })
@@ -28,7 +31,7 @@ function m.mapBrowserSearch(prefix, name, mappings)
       },
     }, {
       prefix = prefix,
-      mode = 'v',
+      mode = 'x',
     })
   end
 end

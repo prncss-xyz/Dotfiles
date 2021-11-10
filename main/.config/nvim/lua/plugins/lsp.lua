@@ -161,13 +161,9 @@ function M.setup()
     },
   }
   nvim_lsp['null-ls'].setup { on_attach = format_on_attach, debounce = 500 }
-  -- require('grammar-guard').init()
-  -- nvim_lsp.grammar_guard.setup {}
-
+  require('grammar-guard').init()
+  nvim_lsp.grammar_guard.setup {}
   -- TODO: emmet-ls (jsx branch)
-  -- TODO: grammar guard
-
-  -- To connect to an LT HTTP server, set the setting ltex.languageToolHttpServerUri to the root URI of the server, for instance, http://localhost:8081/. Note that in this mode, LTEX will still depend on ltex-ls and Java, as the interface for communicating with LT over HTTP is in ltex-ls.
 end
 
 return M

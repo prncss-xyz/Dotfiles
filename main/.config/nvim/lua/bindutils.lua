@@ -18,13 +18,6 @@ function m.repeatable(rhs)
   return string.format('%s<cmd>call repeat#set(%q, v:count)<cr>', rhs, t(rhs))
 end
 
--- TODO:
-m.redo_or_repeat = string.format(
-  '%s<cmd>silent! call repeat#set(%q, v:count)<cr>',
-  'u',
-  ':redo\\<cr>'
-)
-
 function m.outliner()
   if vim.bo.filetype == 'markdown' then
     vim.cmd 'Toc'

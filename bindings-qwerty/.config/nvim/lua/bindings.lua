@@ -192,18 +192,22 @@ local function map_edit()
   )
 
   -- refactoring
-  map('', a.edit .. 'f', '<cmd>Telescope refactoring<cr>')
+  map('nxo', a.edit .. 'f', '<cmd>Telescope refactoring<cr>')
 
   -- matze move
   local rep = require('bindutils').repeatable
-  map('v', a.edit .. dd.left, rep '<Plug>MoveBlockLeft', { noremap = false })
-  map('v', a.edit .. dd.right, rep '<Plug>MoveBlockRight', { noremap = false })
+  map('x', a.edit .. dd.left, rep '<Plug>MoveBlockLeft', { noremap = false })
+  map('x', a.edit .. dd.right, rep '<Plug>MoveBlockRight', { noremap = false })
   map('n', a.edit .. dd.left, rep '<Plug>MoveCharLeft', { noremap = false })
   map('n', a.edit .. dd.right, rep '<Plug>MoveCharRight', { noremap = false })
-  map('v', a.edit .. dd.up, rep '<Plug>MoveBlockUp', { noremap = false })
+  map('x', a.edit .. dd.up, rep '<Plug>MoveBlockUp', { noremap = false })
   map('n', a.edit .. dd.up, rep '<Plug>MoveLineUp', { noremap = false })
-  map('v', a.edit .. dd.down, rep '<Plug>MoveBlockDown', { noremap = false })
+  map('x', a.edit .. dd.down, rep '<Plug>MoveBlockDown', { noremap = false })
   map('n', a.edit .. dd.down, rep '<Plug>MoveLineDown', { noremap = false })
+
+  -- revJ
+  map('x', a.edit .. 'b', '<cmd>lua require("revj").format_visual()<cr>')
+  -- see also plugins.revJ
 
   -- exchange (repeat)
   map('nx', a.edit .. 'x', '<Plug>(Exchange)', { noremap = false })
@@ -216,15 +220,20 @@ local function map_edit()
   map('nx', a.edit .. 'xc', '<Plug>(ExchangeClear)', { noremap = false })
 
   -- sandwich
-  map('', a.edit .. 'y', '<Plug>(operator-sandwich-add)', { noremap = false })
   map(
-    '',
+    'nxo',
+    a.edit .. 'y',
+    '<Plug>(operator-sandwich-add)',
+    { noremap = false }
+  )
+  map(
+    'nxo',
     a.edit .. 'Y',
     '<Plug>(operator-sandwich-delete)',
     { noremap = false }
   )
   map(
-    '',
+    'nxo',
     a.edit .. 'r',
     '<Plug>(operator-sandwich-replace)',
     { noremap = false }
@@ -271,7 +280,7 @@ local function map_edit()
     '<Plug>kommentary_visual_default<esc>',
     { noremap = false }
   )
-  map('nvx', a.edit .. 'a', '<cmd>CodeActionMenu<cr>')
+  map('nx', a.edit .. 'a', '<cmd>CodeActionMenu<cr>')
 
   for mode in string.gmatch('nx', '.') do
     register({
@@ -285,7 +294,7 @@ local function map_edit()
       --   'range code actions',
       -- },
       B = { 'J', 'join' },
-      -- b = { '', 'unjoin' }, -- mapped by the plugin
+      -- b = { 'nxo', 'unjoin' }, -- mapped by the plugin
       s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
       i = { '>>', 'indent' },
       t = { '<<', 'dedent' },
@@ -312,8 +321,8 @@ local function map_jump()
   local register = require 'which-key-fallback'
 
   -- textobject line
-  map('vo', 'al', '<Plug>(textobj-line-a)')
-  map('vo', 'il', '<Plug>(textobj-line-i)')
+  map('xo', 'al', '<Plug>(textobj-line-a)')
+  map('xo', 'il', '<Plug>(textobj-line-i)')
 
   -- matchup
   map('nx', a.jump .. 'C', '<plug>(matchup-g%)', { noremap = false })
@@ -321,13 +330,13 @@ local function map_jump()
   map('nx', a.jump .. 'Y', '<plug>(matchup-[%)', { noremap = false })
   map('nx', a.jump .. 'y', '<plug>(matchup-]%)', { noremap = false })
   map('nx', a.jump .. 'i', '<plug>(matchup-z%)', { noremap = false })
-  map('vo', 'ic', '<plug>(matchup-i%)', { noremap = false })
-  map('vo', 'ac', '<plug>(matchup-a%)', { noremap = false })
+  map('xo', 'ic', '<plug>(matchup-i%)', { noremap = false })
+  map('xo', 'ac', '<plug>(matchup-a%)', { noremap = false })
 
   if false then
-    map('nv', '<c-i>', '<cmd>lua require"bufjump".local_backward()<cr>')
+    map('n', '<c-i>', '<cmd>lua require"bufjump".local_backward()<cr>')
   end
-  map('nv', '<c-o>', '<cmd>lua require"bufjump".local_forward()<cr>')
+  map('n', '<c-o>', '<cmd>lua require"bufjump".local_forward()<cr>')
 
   register({
     a = {
@@ -356,7 +365,7 @@ local function map_jump()
   }, {
     prefix = a.jump,
   })
-  for mode in string.gmatch('nvo', '.') do
+  for mode in string.gmatch('nxo', '.') do
     register({
       e = { 'G', 'last line' },
       E = { 'gg', 'first line' },
@@ -581,7 +590,7 @@ local function map_markdown()
       prefix = a.move,
       buffer = buffer,
     })
-    for mode in string.gmatch('nvo', '.') do
+    for mode in string.gmatch('nxo', '.') do
       register({
         -- s = { '<cmd>Telescope heading<cr>', 'headings' },
         t = { '<Plug>Markdown_MoveToNextHeader', 'next header' },
@@ -608,15 +617,15 @@ local function map_markdown()
     end
   end
 
-  map_local('', a.jump .. 's', '<cmd>Telescope heading<cr>')
-  map_local('nvo', a.jump .. 'T', '<Plug>Markdown_MoveToPreviousHeader')
-  map_local('nvo', a.jump .. 't', '<Plug>Markdown_MoveToNextHeader')
-  map_local('nvo', a.jump .. 'h', '<Plug>Markdown_MoveToCurHeader')
-  map_local('nvo', a.jump .. 'H', '<Plug>Markdown_MoveToParentHeader')
-  map_local('', a.jump .. dd.up, 'k')
-  map_local('', a.jump .. dd.down, 'j')
-  map_local('', dd.up, 'gk')
-  map_local('', dd.down, 'gj')
+  map_local('nxo', a.jump .. 's', '<cmd>Telescope heading<cr>')
+  map_local('nxo', a.jump .. 'T', '<Plug>Markdown_MoveToPreviousHeader')
+  map_local('nxo', a.jump .. 't', '<Plug>Markdown_MoveToNextHeader')
+  map_local('nxo', a.jump .. 'h', '<Plug>Markdown_MoveToCurHeader')
+  map_local('nxo', a.jump .. 'H', '<Plug>Markdown_MoveToParentHeader')
+  map_local('nxo', a.jump .. dd.up, 'k')
+  map_local('nxo', a.jump .. dd.down, 'j')
+  map_local('nxo', dd.up, 'gk')
+  map_local('nxo', dd.down, 'gj')
   -- both are identical
   map_local('ox', 'ad', '<Plug>(textobj-datetime-auto)', { noremap = false })
   map_local('ox', 'id', '<Plug>(textobj-datetime-auto)', { noremap = false })
@@ -629,9 +638,9 @@ end
 local function map_readonly()
   local map = require('utils').buf_map
   if vim.bo.readonly then
-    map('', 'x', '<cmd>q<cr>', { nowait = true })
-    map('', 'u', '<c-u>', { noremap = false, nowait = true })
-    map('', 'd', '<c-d>', { noremap = false, nowait = true })
+    map('nxo', 'x', '<cmd>q<cr>', { nowait = true })
+    map('nxo', 'u', '<c-u>', { noremap = false, nowait = true })
+    map('nxo', 'd', '<c-d>', { noremap = false, nowait = true })
   end
 end
 
@@ -734,26 +743,26 @@ function M.setup()
 
   map('nx', '<leader><leader>', ':')
 
-  map('', 'q', '<nop>')
-  map('', a.edit, '<nop>')
-  map('', a.jump, '<nop>')
-  map('', a.move, '<nop>')
-  map('', a.mark, '<nop>')
-  map('', a.macro, '<nop>')
-  map('', a.editor, '<nop>')
-  map('', a.help, '<nop>')
-  map('', a.browser, '<nop>')
-  map('', 'gg', '<nop>')
-  map('', "g'", '<nop>')
-  map('', 'g`', '<nop>')
-  map('', 'g~', '<nop>')
-  map('', 'gg', '<nop>')
-  map('', 'gg', '<nop>')
+  map('nxo', 'q', '<nop>')
+  map('nxo', a.edit, '<nop>')
+  map('nxo', a.jump, '<nop>')
+  map('nxo', a.move, '<nop>')
+  map('nxo', a.mark, '<nop>')
+  map('nxo', a.macro, '<nop>')
+  map('nxo', a.editor, '<nop>')
+  map('nxo', a.help, '<nop>')
+  map('nxo', a.browser, '<nop>')
+  map('nxo', 'gg', '<nop>')
+  map('nxo', "g'", '<nop>')
+  map('nxo', 'g`', '<nop>')
+  map('nxo', 'g~', '<nop>')
+  map('nxo', 'gg', '<nop>')
+  map('nxo', 'gg', '<nop>')
   map('', '<c-u>', '<nop>')
   map('', '<c-d>', '<nop>')
   local function remark(new, old)
-    map('', a.mark .. new, '`' .. old)
-    map('', a.mark .. new, "'" .. old)
+    map('nxo', a.mark .. new, '`' .. old)
+    map('nxo', a.mark .. new, "'" .. old)
   end
   map('nx', 'r', 'r')
   map('nx', 'R', 'R')
@@ -762,24 +771,18 @@ function M.setup()
   remark('P', '[')
   remark('p', ']')
 
-  map('', dd.right, 'l')
-  map('', dd.left, 'h')
-  map('', dd.up, 'k')
-  map('', dd.down, 'j')
+  map('nxo', dd.right, 'l')
+  map('nxo', dd.left, 'h')
+  map('nxo', dd.up, 'k')
+  map('nxo', dd.down, 'j')
 
-  map('', 'b', '*')
-  map('', 'B', '#')
-  map('', 'w', 'b')
-  map('', 'W', 'B')
-  map('', 'e', 'e')
-  map('', 'E', 'E')
-  map('', 'é', '/')
-  map('', 'É', 'É')
-  map('nvo', 'L', '^')
-  map('nvo', ':', '$')
+  map('nxo', 'w', 'b')
+  map('nxo', 'W', 'B')
+  map('nxo', 'e', 'e')
+  map('nxo', 'E', 'E')
 
   map('o', ',', ':<c-u>lua require("tsht").nodes()<CR>')
-  map('v', ',', ':lua require("tsht").nodes()<cr>')
+  map('x', ',', ':lua require("tsht").nodes()<cr>')
 
   -- neoscroll
   require('neoscroll.config').set_mappings {
@@ -790,28 +793,28 @@ function M.setup()
     zb = { 'zb', { '250' } },
   }
 
-  map('', 's', '<Plug>Lightspeed_s', { noremap = false })
-  map('', 'S', '<Plug>Lightspeed_S', { noremap = false })
+  map('nxo', 's', '<Plug>Lightspeed_s', { noremap = false })
+  map('nxo', 'S', '<Plug>Lightspeed_S', { noremap = false })
   map(
-    '',
+    'nxo',
     'f',
     'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
     { noremap = false, expr = true }
   )
   map(
-    '',
+    'nxo',
     'F',
     'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_F" : "F"',
     { noremap = false, expr = true }
   )
   map(
-    '',
+    'nxo',
     't',
     'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_t" : "t"',
     { noremap = false, expr = true }
   )
   map(
-    '',
+    'nxo',
     'T',
     'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_T" : "T"',
     { noremap = false, expr = true }
@@ -819,31 +822,54 @@ function M.setup()
 
   -- searching
   require 'auto_unhl'
-  map('', '*', '<nop>')
-  map('', '#', '<nop>')
-  map('nxo', 'n', "n<cmd>lua require'auto_unhl'.post()<cr>")
-  map('nxo', 'N', "N<cmd>lua require'auto_unhl'.post()<cr>")
-  map('n', a.jump .. 'q', "g*<cmd>lua require'auto_unhl'.post()<cr>")
-  map('n', 'b', "*<cmd>lua require'auto_unhl'.post()<cr>")
-  map('n', 'B', "#<cmd>lua require'auto_unhl'.post()<cr>")
+  -- map('nxo', '*', '<nop>')
+  -- map('nxo', '#', '<nop>')
+  -- map('nxo', 'n', "n<cmd>lua require'auto_unhl'.post()<cr>")
+  -- map('nxo', 'N', "N<cmd>lua require'auto_unhl'.post()<cr>")
+  -- map('n', a.jump .. 'q', "g*<cmd>lua require'auto_unhl'.post()<cr>")
+  -- map('n', 'b', "*<cmd>lua require'auto_unhl'.post()<cr>")
+  -- map('n', 'B', "#<cmd>lua require'auto_unhl'.post()<cr>")
+  -- map(
+  --   'x',
+  --   'b',
+  --   "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>"
+  -- )
+  -- map(
+  --   'x',
+  --   'B',
+  --   "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>"
+  -- )
+  map('nxo', '*', '<nop>')
+  map('nxo', '#', '<nop>')
+  -- map('nxo', 'é', '/')
+  -- map('nxo', 'É', '?')
+  map('nxo', 'é', '<cmd>lua require"hlslens"<cr>/')
+  map('nxo', 'É', '<cmd>lua require"hlslens"<cr>?')
+  map(
+    'n',
+    'n',
+    "<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>"
+  )
+  map(
+    'n',
+    'N',
+    "<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>"
+  )
+  map('n', 'b', "*N<cmd>lua require'hlslens'.start()<cr>")
+  map('n', 'B', "g*N<cmd>lua require'hlslens'.start()<cr>")
   map(
     'x',
     'b',
-    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>"
+    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'hlslens'.start()<cr>"
   )
   map(
     'x',
     'B',
-    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>"
+    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'hlslens'.start()<cr>"
   )
 
   -- luasnip + dial
   -- FIXME:
-  -- map('i', '<c-a>', 'pumvisible() ? "a" : "b"', { expr = true })
-  -- map('i', '<c-x>', '<down>')
-
-  -- TODO: use dial-* and luasnip-*-choice in insert mode
-  -- map('i', '<c-x>', 'pumvisible() ? "\\<down>" : 1', { expr = true })
   map(
     'nx',
     '<c-j>',
@@ -930,7 +956,7 @@ function M.setup()
 
   -- VSSPlit
   -- maybe not K...if for visual only
-  map('', 'V', '<c-v>')
+  map('nxo', 'V', '<c-v>')
   map('x', 'v', 'V')
   map('x', '<c-w>r', '<Plug>(Visual-Split-VSResize)', { noremap = false })
   map('x', '<c-w>S', '<Plug>(Visual-Split-VSSplit)', { noremap = false })
@@ -947,8 +973,8 @@ function M.setup()
     { noremap = false }
   )
 
-  -- nvi mappings
-  for mode in string.gmatch('nvi', '.') do
+  -- nxi mappings
+  for mode in string.gmatch('nxi', '.') do
     register({
       [alt(dd.left)] = { '<cmd>wincmd h<cr>', 'window left' },
       [alt(dd.down)] = { '<cmd>wincmd j<cr>', 'window down' },
@@ -957,10 +983,11 @@ function M.setup()
       ['<a-b>'] = { '<cmd>wincmd p<cr>', 'window back' },
       ['<a-a>'] = { '<cmd>e#<cr>', 'previous buffer' }, -- move
       ['<a-w>'] = { '<cmd>q<cr>', 'close window' },
-      ['<c-l>'] = {
-        "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
-        'nohlsearch',
-      },
+      -- ['<c-l>'] = {
+      --   "<cmd>nohlsearch<cr><cmd>lua require('hlslens.main').cmdl_search_leave()<cr>",
+      --   'nohlsearch',
+      -- },
+      ['<c-l>'] = { '<cmd>nohlsearch<cr>', 'nohlsearch' },
       ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       ['<c-s>'] = { '<cmd>w!<cr>', 'save' },
       -- ['<a-t>'] = { '<cmd><cr>', 'edit alt' },
@@ -1094,7 +1121,6 @@ M.plugins = {
   revJ = {
     operator = a.edit .. 'b', -- for operator (+motion)
     line = a.edit .. a.edit .. 'b', -- for formatting current line
-    visual = a.edit .. 'b', -- for formatting visual selection
   },
   textobj = {
     g = {

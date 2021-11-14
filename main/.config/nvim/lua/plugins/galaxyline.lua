@@ -208,8 +208,8 @@ if theme.galaxyline then
 end
 
 local text = colors.text
-local background2 = colors.background
-local background = colors.background2
+local background = colors.background
+local background2 = colors.background2
 
 gls.left = {
   {

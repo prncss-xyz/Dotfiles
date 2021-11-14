@@ -13,32 +13,6 @@ local function alt(key)
   return string.format('<a-%s>', key)
 end
 
-local function safe_merge(inv, dir, new)
-  for key, value in pairs(new) do
-    if dir[key] then
-      print(
-        string.format(
-          'key %q in conflict, %q is declared, trying to add %q',
-          key,
-          dir[key],
-          value
-        )
-      )
-    elseif inv[value] then
-      print(
-        string.format(
-          'trying to add value %q to %q, while it is already attached to %q',
-          value,
-          key,
-          inv[value]
-        )
-      )
-    else
-      inv[value] = key
-    end
-  end
-end
-
 local a = invert {
   m = 'edit',
   g = 'jump',
@@ -49,7 +23,7 @@ local a = invert {
   H = 'help',
   Y = 'browser',
 }
-local d0 = {
+local dd = invert {
   [';'] = 'right',
   l = 'left',
   k = 'down',
@@ -62,357 +36,514 @@ local d0 = {
   L = 'loclist',
 }
 
--- map('é', 'search', {
---   jump = {'/', '?'},
---   d'jump' = 'k',
---   move = '<cmd><cr>',
--- }, {expr=true})
+-- local r = invert {
+--   a = 'outer',
+--   i = 'inner',
+-- }
 
-local function append(word)
-  return function(str)
-    return str .. word
+local function map_text_objects()
+  local register = require('which-key-fallback').register
+
+  -- map('ox', 'ir', '<Plug>(textobj-sandwich-auto-i)', { noremap = false })
+  -- map('ox', 'ar', '<Plug>(textobj-sandwich-auto-a)', { noremap = false })
+  -- map('ox', 'iy', '<Plug>(textobj-sandwich-query-i)', { noremap = false })
+  -- map('ox', 'ay', '<Plug>(textobj-sandwich-query-a)', { noremap = false })
+  -- map('ox', 'ic', '<plug>(matchup-i%)', { noremap = false })
+  -- map('ox', 'ac', '<plug>(matchup-a%)', { noremap = false })
+
+  for mode in string.gmatch('ox', '.') do
+    register({
+      [','] = { '<cmd>lua require("tsht").nodes()<cr>', 'hint' },
+      Ni = { '<Plug>(ninja-left-foot-inner', 'ninja left foot' },
+      Na = { '<Plug>(ninja-left-foot-a', 'ninja left foot' },
+      -- conflict with targets.vim
+      -- ni = { '<Plug>(ninja-right-foot-inner)', 'ninja right foot' },
+      -- na = { '<Plug>(ninja-right-foot-a)', 'ninja right foot' },
+      -- al = { '<Plug>(textobj-line-a)', 'line' },
+      -- il = { '<Plug>(textobj-line-i)', 'line' },
+    }, {
+      mode = mode,
+      noremap = false,
+    })
   end
 end
-
-local function prepend(word)
-  return function(str)
-    return str .. word
-  end
-end
-
-local adapters = {
-  default = { append ' next', append ' previous' },
-  un = { prepend '', prepend 'un' },
-  time = { append ' forward', append 'back' },
-}
-
-local function d(key)
-  return {
-    type = 'doubler',
-    adapter = function(str)
-      return 'line ' .. str
-    end,
-  }
-end
-
-local function id(x)
-  return x
-end
-
-local function allmap(key, name, maps, opts)
-  local register = require 'which-key-fallback'
-  for domain, lhs in pairs(maps) do
-    local adapter2 = id
-    local k = key
-    if type(domain) == 'table' then
-      adapter2 = domain.adapter
-      k = key .. key
-    end
-    if type(lhs == 'table') then
-      local adapter = adapters[lhs.typ or 'default']
-      register({ a[domain] .. k, lhs[1], adapter2(adapter[1](name)) }, opts)
-      register({ a[domain] .. s(k), lhs[2], adapter2(adapter[2](name)) }, opts)
-    else
-      register({ a[domain] .. k, lhs, name }, opts)
-    end
-  end
-end
-
-local dd = invert(d0)
-
-safe_merge(dd, d0, {})
-
-local r = invert {
-  a = 'outer',
-  i = 'inner',
-}
 
 local function map_command_insert()
   local map = require('utils').map
   -- TODO: dedent
   -- char
-  map('ci', '<c-d>', '<c-h>') -- kill
-  map('ci', '<c-b>', '<left>')
-  map('ci', '<c-f>', '<right>')
-  map('ci', '<c-w>', '<c-w>')
-  map('ci', '<c-g>', '<c-right>')
-  map('ci', '<c-h>', '<c-left>')
+  map('l', '<c-d>', '<c-h>') -- kill
+  map('l', '<c-b>', '<left>')
+  map('l', '<c-f>', '<right>')
+  map('l', '<c-w>', '<c-w>')
+  map('l', '<c-g>', '<c-right>')
+  map('l', '<c-h>', '<c-left>')
 
-  -- line
-  map('ci', '<c-u>', '<c-u>') -- kill
+  -- insert
+  map('l', '<c-u>', '<c-u>') -- kill
   map('i', '<c-k>', '<c-o>d$')
   map('i', '<c-o>', '<c-o>')
+  map('i', '<c-v>', '<esc>pa')
 
   -- commandline
   map('c', '<a-v>', '<c-f>') -- edit command line
   map('c', '<c-v>', '<c-r>+') -- paste to command line
 end
 
--- summary
--- jkl;       -- move
--- aA         -- code action, range code action
--- bB         -- unjoin, join
--- c          -- comment
--- f          -- refactoring
--- h          -- annotate
--- nN         -- ninja
--- r          -- sandwich-replace
--- s          -- rename
--- t          -- indent
--- i          -- indent
--- l          -- line
--- uU         -- lowercase
--- v          -- toggle case
--- w          -- telescope symbol
--- x          -- exchange
--- yY         -- sandwich-add, delete
--- z          -- spell suggest
 local function map_edit()
-  local map = require('utils').map
-  local register = require 'which-key-fallback'
-
-  -- neogen
-  map(
-    'n',
-    a.edit .. 'hf',
-    "<cmd>lua require('neogen').generate({ type = 'func' })<cr>",
-    { noremap = false }
-  )
-  map(
-    'n',
-    a.edit .. 'hc',
-    "<cmd>lua require('neogen').generate({ type = 'class' })<cr>",
-    { noremap = false }
-  )
-  map(
-    'n',
-    a.edit .. 'ht',
-    "<cmd>lua require('neogen').generate({ type = 'type' })<cr>",
-    { noremap = false }
-  )
-
-  -- refactoring
-  map('nxo', a.edit .. 'f', '<cmd>Telescope refactoring<cr>')
-
-  -- matze move
+  local reg = require('which-key-fallback').reg
+  local reg2 = require('which-key-fallback').reg2
   local rep = require('bindutils').repeatable
-  map('x', a.edit .. dd.left, rep '<Plug>MoveBlockLeft', { noremap = false })
-  map('x', a.edit .. dd.right, rep '<Plug>MoveBlockRight', { noremap = false })
-  map('n', a.edit .. dd.left, rep '<Plug>MoveCharLeft', { noremap = false })
-  map('n', a.edit .. dd.right, rep '<Plug>MoveCharRight', { noremap = false })
-  map('x', a.edit .. dd.up, rep '<Plug>MoveBlockUp', { noremap = false })
-  map('n', a.edit .. dd.up, rep '<Plug>MoveLineUp', { noremap = false })
-  map('x', a.edit .. dd.down, rep '<Plug>MoveBlockDown', { noremap = false })
-  map('n', a.edit .. dd.down, rep '<Plug>MoveLineDown', { noremap = false })
-
-  -- revJ
-  map('x', a.edit .. 'b', '<cmd>lua require("revj").format_visual()<cr>')
-  -- see also plugins.revJ
-
-  -- exchange (repeat)
-  map('nx', a.edit .. 'x', '<Plug>(Exchange)', { noremap = false })
-  map(
-    'nx',
-    a.edit .. a.edit .. 'x',
-    '<Plug>(ExchangeLine)',
-    { noremap = false }
-  )
-  map('nx', a.edit .. 'xc', '<Plug>(ExchangeClear)', { noremap = false })
-
-  -- sandwich
-  map(
-    'nxo',
-    a.edit .. 'y',
-    '<Plug>(operator-sandwich-add)',
-    { noremap = false }
-  )
-  map(
-    'nxo',
-    a.edit .. 'Y',
-    '<Plug>(operator-sandwich-delete)',
-    { noremap = false }
-  )
-  map(
-    'nxo',
-    a.edit .. 'r',
-    '<Plug>(operator-sandwich-replace)',
-    { noremap = false }
-  )
-  map('ox', 'ir', '<Plug>(textobj-sandwich-auto-i)', { noremap = false })
-  map('ox', 'ar', '<Plug>(textobj-sandwich-auto-a)', { noremap = false })
-  map('ox', 'iy', '<Plug>(textobj-sandwich-query-i)', { noremap = false })
-  map('ox', 'ay', '<Plug>(textobj-sandwich-query-a)', { noremap = false })
-
-  -- ninja feet
-  map('o', a.edit .. 'Ni', '<Plug>(ninja-left-foot-inner)', {
-    noremap = false,
-  })
-  map('o', a.edit .. 'Na', '<Plug>(ninja-left-foot-a)', { noremap = false })
-  map(
-    'o',
-    a.edit .. 'ni',
-    '<Plug>(ninja-right-foot-inner)',
-    { noremap = false }
-  )
-  map('o', a.edit .. 'na', '<Plug>(ninja-right-foot-a)', { noremap = false })
-  map('n', a.jump .. 'N', '<Plug>(ninja-insert)', { noremap = false })
-  map('n', a.jump .. 'n', '<Plug>(ninja-append)', { noremap = false })
-
-  -- case-change
-  map('nx', a.edit .. 'v', rep [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']])
-
-  -- kommentary
-  map(
-    'n',
-    a.edit .. a.edit .. 'c',
-    '<plug>kommentary_line_default',
-    { noremap = false }
-  )
-  map(
-    'n',
-    a.edit .. 'c',
-    '<Plug>kommentary_motion_default',
-    { noremap = false }
-  )
-  map(
-    'x',
-    a.edit .. 'c',
-    '<Plug>kommentary_visual_default<esc>',
-    { noremap = false }
-  )
-  map('nx', a.edit .. 'a', '<cmd>CodeActionMenu<cr>')
-
-  for mode in string.gmatch('nx', '.') do
-    register({
-      -- J = { 'gJ', 'join' },
-      -- a = {
-      --   "<cmd>lua require('telescope.builtin').lsp_code_actions(require('telescope.themes').get_cursor{})<cr>",
-      --   'code actions',
-      -- },
-      -- A = {
-      --   "<cmd>lua require('telescope.builtin').lsp_range_code_actions(require('telescope.themes').get_cursor{})<cr>",
-      --   'range code actions',
-      -- },
-      B = { 'J', 'join' },
-      -- b = { 'nxo', 'unjoin' }, -- mapped by the plugin
-      s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
-      i = { '>>', 'indent' },
-      t = { '<<', 'dedent' },
-      u = { 'gu', 'lowercase' },
-      -- v = { 'g~', 'toggle case' },
-      -- v = { [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']], 'toggle case' },
-      w = {
-        "<cmd>lua require'telescope.builtin'.symbols{ sources = {'math', 'emoji'} }<cr><esc>",
-        'symbols',
-      }, -- FIXME: insert emoji multiple times
-      z = {
-        "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
-        'spell suggest',
+  reg2 {
+    C = { '""C', modes = 'nx' },
+    c = { '""c', modes = 'nx' },
+    D = { '""D', modes = 'nx' },
+    d = { '""d', modes = 'nx' },
+    p = { 'p', modes = 'nx' },
+    R = { 'R', modes = 'nx' },
+    r = { 'r', modes = 'nx' },
+    X = { '"+d$', modes = 'nx' },
+    x = { '"+d', modes = 'nx' },
+    cc = '""S',
+    dd = '""dd',
+    xx = '"+dd',
+    ['É'] = { '?', modes = 'nxo' },
+    ['é'] = { '/', modes = 'nxo' },
+    ['<c-j>'] = {
+      "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
+      noremap = false,
+      expr = true,
+      modes = 'nx',
+    },
+    ['c-v'] = { 'gp', modes = 'nx' },
+    ['<c-x>'] = {
+      "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
+      noremap = false,
+      expr = true,
+      modes = 'nx',
+    },
+    [a.edit] = {
+      name = '+edit',
+      a = { '<cmd>CodeActionMenu<cr>', 'code action', modes = 'nx' },
+      B = { 'J', 'join', modes = 'nx' },
+      b = {
+        function()
+          require('revj').format_visual()
+        end,
+        'rev join',
+        modes = 'x',
+      }, -- see also plugins.revJ
+      c = {
+        modes = {
+          n = {
+            '<plug>kommentary_motion_default',
+            'comment',
+            noremap = false,
+          },
+          x = {
+            '<Plug>kommentary_visual_default<esc>',
+            'comment',
+            noremap = false,
+          },
+        },
       },
-    }, {
-      prefix = a.edit,
-      mode = mode,
-    })
-  end
+      f = { '<cmd>Telescope refactoring<cr>', 'refactoring', modes = 'nx' },
+      h = {
+        name = '+annotate',
+        c = {
+          function()
+            require('neogen').generate { type = 'class' }
+          end,
+          'class',
+        },
+        f = {
+          function()
+            require('neogen').generate { type = 'func' }
+          end,
+          'function',
+        },
+        t = {
+          function()
+            require('neogen').generate { type = 'class' }
+          end,
+          'type',
+        },
+      },
+      i = { '>>', 'indent', modes = 'nx' },
+      N = { '<Plug>(ninja-insert)', 'ninja insert', noremap = false },
+      n = { '<Plug>(ninja-append)', 'ninja append', noremap = false },
+      r = {
+        '<Plug>(operator-sandwich-replace)',
+        'sandwich replace',
+        noremap = false,
+        modes = 'nx',
+      },
+      s = { vim.lsp.buf.rename, 'rename', modes = 'nx' },
+      t = { '<<', 'dedent', modes = 'nx' },
+      U = { 'gU', 'uppercase', modes = 'nx' },
+      u = { 'gu', 'lowercase', modes = 'nx' },
+      v = {
+        rep [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']],
+        'change case',
+        modes = 'nx',
+      }, -- FIXME: not repeatable
+      -- v = { 'g~', 'toggle case', modes = 'nx' },
+      w = {
+        function()
+          require('telescope.builtin').symbols {
+            sources = { 'math', 'emoji' },
+          }
+        end,
+        'symbols',
+        modes = 'nx',
+      },
+      X = {
+        '<Plug>(ExchangeClear)',
+        'exchange clear',
+        noremap = false,
+        modes = 'nx',
+      },
+      x = {
+        name = 'exchange',
+        modes = {
+          x = { '<Plug>(Exchange)', noremap = false },
+          n = { '<Plug>(ExchangeLine)', noremap = false },
+        },
+      },
+      Y = {
+        '<Plug>(operator-sandwich-delete)',
+        'sandwich delete',
+        noremap = false,
+        modes = 'nx',
+      },
+      y = {
+        '<Plug>(operator-sandwich-add)',
+        'sandwich add',
+        noremap = false,
+        modes = 'nx',
+      },
+      z = {
+        function()
+          require('telescope.builtin').spell_suggest(
+            require('telescope.themes').get_cursor {}
+          )
+        end,
+        'spell suggest',
+        modes = 'nx',
+      },
+      [dd.left] = { '<Plug>MoveCharLefg', 'move up', noremap = false },
+      [dd.right] = { '<Plug>MoveCharRight', 'move up', noremap = false },
+      [dd.up] = { '<Plug>MoveLineUp', 'move up', noremap = false },
+      [dd.down] = { '<Plug>MoveLineDown', 'move up', noremap = false },
+      [a.edit] = {
+        name = 'line',
+        c = {
+          '<plug>kommentary_line_default',
+          'comment',
+          noremap = false,
+        },
+      },
+      ['<c-j>'] = {
+        '<Plug>(dial-increment-additional)',
+        noremap = false,
+      },
+      ['<c-x>'] = {
+        '<Plug>(dial-decrement-additional)',
+        noremap = false,
+      },
+      [dd.left] = {
+        '<Plug>MoveBlockLeft',
+        'move up',
+        noremap = false,
+        modes = 'x',
+      },
+      [dd.right] = {
+        '<Plug>MoveBlockRight',
+        'move up',
+        noremap = false,
+        modes = 'x',
+      },
+      [dd.up] = {
+        '<Plug>MoveBlockUp',
+        'move up',
+        noremap = false,
+        modes = 'x',
+      },
+      [dd.down] = {
+        '<Plug>MoveBlockDown',
+        'move up',
+        noremap = false,
+        modes = 'x',
+      },
+    },
+  }
+
+  reg({
+    modes = 'n',
+  }, {
+    -- p = { 'p', 'paste' },
+    -- xx = { '"+dd', 'cut line' },
+    -- cc = { '""S', 'replace line' },
+    -- dd = { '""dd', 'delete line' },
+    [a.edit] = {
+      name = '+edit',
+      h = {
+        name = '+annotatate',
+        -- c = {
+        --   "<cmd>lua require('neogen').generate({ type = 'class' })<cr>",
+        --   'class',
+        -- },
+        -- f = {
+        --   "<cmd>lua require('neogen').generate({ type = 'func' })<cr>",
+        --   'function',
+        -- },
+        -- t = {
+        --   "<cmd>lua require('neogen').generate({ type = 'type' })<cr>",
+        --   'type',
+        -- },
+      },
+    },
+  })
+  reg({
+    modes = 'n',
+    noremap = false,
+  }, {
+    [a.edit] = {
+      -- c = { '<plug>kommentary_motion_default', 'comment' },
+      -- N = { '<Plug>(ninja-insert)', 'ninja insert' },
+      -- n = { '<Plug>(ninja-append)', 'ninja append' },
+      -- [dd.left] = { '<Plug>MoveCharLefg', 'move up' },
+      -- [dd.right] = { '<Plug>MoveCharRight', 'move up' },
+      -- [dd.up] = { '<Plug>MoveLineUp', 'move up' },
+      -- [dd.down] = { '<Plug>MoveLineDown', 'move up' },
+      -- [a.edit] = {
+      --   name = 'line',
+      --   x = { '<Plug>(ExchangeLine)', 'exchange' },
+      --   c = { '<plug>kommentary_line_default', 'comment' },
+      -- },
+    },
+  })
+  reg({ modes = 'x', noremap = false }, {
+    [a.edit] = {
+      -- b = { '<cmd>lua require("revj").format_visual()<cr>', 'rev join' }, -- see also plugins.revJ
+      -- c = { '<Plug>kommentary_visual_default<esc>', 'comment' },
+      -- [dd.left] = { '<Plug>MoveBlockLeft', 'move up' },
+      -- [dd.right] = { '<Plug>MoveBlockRight', 'move up' },
+      -- [dd.up] = { '<Plug>MoveBlockUp', 'move up' },
+      -- [dd.down] = { '<Plug>MoveBlockDown', 'move up' },
+      -- ['<c-j>'] = { '<Plug>(dial-increment-additional)' },
+      -- ['<c-x>'] = { '<Plug>(dial-decrement-additional)' },
+    },
+  })
+  reg({ modes = 'nx' }, {
+    -- C = { '""C', 'replace to EOL' },
+    -- c = { '""c', 'replace' },
+    -- D = { '""D', 'delete to EOL' },
+    -- d = { '""d', 'delete' },
+    -- R = { 'R', 'replace' },
+    -- r = { 'r', 'replace char' },
+    -- X = { '"+d$', 'cut to EOL' },
+    -- x = { '"+d', 'cut' },
+    -- ['c-v'] = { 'gp', 'paste' }, -- FIXME:
+    [a.edit] = {
+      -- a = { '<cmd>CodeActionMenu<cr>', 'code action' },
+      -- B = { 'J', 'join' },
+      -- -- b (unjoin): mapped by the plugin
+      -- f = { '<cmd>Telescope refactoring<cr>', 'refactoring' },
+      -- i = { '>>', 'indent' },
+      -- s = { '<cmd>lua vim.lsp.buf.rename()<cr>', 'rename' },
+      -- t = { '<<', 'dedent' },
+      -- U = { 'gU', 'uppercase' },
+      -- u = { 'gu', 'lowercase' },
+      -- v = { rep [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']], 'change case' }, -- FIXME: not repeatable
+      -- -- v = { 'g~', 'toggle case' },
+      -- w = {
+      --   "<cmd>lua require'telescope.builtin'.symbols{ sources = {'math', 'emoji'} }<cr><esc>",
+      --   'symbols',
+      -- },
+      -- z = {
+      --   "<cmd>lua require('telescope.builtin').spell_suggest(require('telescope.themes').get_cursor{})<cr>",
+      --   'spell suggest',
+      -- },
+    },
+  })
+  reg({ modes = 'nx', noremap = false }, {
+    [a.edit] = {
+      -- r = { '<Plug>(operator-sandwich-replace)', 'sandwich replace' },
+      -- X = { '<Plug>(ExchangeClear)', 'exchange clear' },
+      -- x = { '<Plug>(Exchange)', 'exchange' },
+      -- Y = { '<Plug>(operator-sandwich-delete)', 'sandwich delete' },
+      -- y = { '<Plug>(operator-sandwich-add)', 'sandwich add' },
+    },
+  })
+  reg({ modes = 'nx', expr = true, noremap = false }, {
+    -- ['<c-j>'] = {
+    --   "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
+    -- },
+    -- ['<c-x>'] = {
+    --   "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
+    -- },
+  })
 end
 
 local function map_jump()
   local map = require('utils').map
-  local register = require 'which-key-fallback'
-
-  -- textobject line
-  map('xo', 'al', '<Plug>(textobj-line-a)')
-  map('xo', 'il', '<Plug>(textobj-line-i)')
-
-  -- matchup
-  map('nx', a.jump .. 'C', '<plug>(matchup-g%)', { noremap = false })
-  map('nx', a.jump .. 'c', '<plug>(matchup-%)', { noremap = false })
-  map('nx', a.jump .. 'Y', '<plug>(matchup-[%)', { noremap = false })
-  map('nx', a.jump .. 'y', '<plug>(matchup-]%)', { noremap = false })
-  map('nx', a.jump .. 'i', '<plug>(matchup-z%)', { noremap = false })
-  map('xo', 'ic', '<plug>(matchup-i%)', { noremap = false })
-  map('xo', 'ac', '<plug>(matchup-a%)', { noremap = false })
-
-  if false then
-    map('n', '<c-i>', '<cmd>lua require"bufjump".local_backward()<cr>')
-  end
-  map('n', '<c-o>', '<cmd>lua require"bufjump".local_forward()<cr>')
-
+  local register = require('which-key-fallback').register
   register({
-    a = {
-      '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>',
-      'go next diagnostic',
+    N = {
+      "<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>",
+      'search previous',
     },
-    A = {
-      '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
-      'go previous diagnostic',
+    n = {
+      "<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>",
+      'search next',
     },
-    d = { ']c', 'next change' },
-    D = { '[c', 'previous change' },
-    b = { '<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump' },
-    B = { '<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset' },
-    o = { '`.', 'last change' },
-    -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
-    -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
-    z = { ']s', 'next misspelled' },
-    Z = { '[s', 'prevous misspelled' },
-    [':'] = { 'g,', 'newer change' },
-    [';'] = { 'g;', 'older changer' },
-    ['é'] = {
-      "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
-      'current buffer fuzzy find',
+    r = { 'r', 'replace char' },
+    [a.jump] = {
+      A = {
+        '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>',
+        'go previous diagnostic',
+      },
+      a = {
+        '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>',
+        'go next diagnostic',
+      },
+      D = { '[c', 'previous change' }, -- FIXME:
+      d = { ']c', 'next change' }, -- FIXME:
+      o = { '`.', 'last change' },
+      -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
+      -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
+      Z = { '[s', 'prevous misspelled' },
+      z = { ']s', 'next misspelled' },
+      [':'] = { 'g,', 'newer change' },
+      [';'] = { 'g;', 'older changer' },
+      ['é'] = {
+        "<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>",
+        'current buffer fuzzy find',
+      },
     },
   }, {
-    prefix = a.jump,
+    mode = 'n',
   })
+  map(
+    'nx',
+    'b',
+    '<Plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
+    { noremap = false }
+  )
+  map(
+    'x',
+    'B',
+    '<Plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
+    { noremap = false }
+  )
+  map(
+    'nxo',
+    'f',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
+    { noremap = false, expr = true }
+  )
+  map(
+    'nxo',
+    'F',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_F" : "F"',
+    { noremap = false, expr = true }
+  )
+  map(
+    'nxo',
+    't',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_t" : "t"',
+    { noremap = false, expr = true }
+  )
+  map(
+    'nxo',
+    'T',
+    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_T" : "T"',
+    { noremap = false, expr = true }
+  )
+
   for mode in string.gmatch('nxo', '.') do
     register({
-      e = { 'G', 'last line' },
-      E = { 'gg', 'first line' },
-      L = { "<cmd>lua require('telescope.builtin').loclist()<cr>", 'loclist' },
-      s = {
-        "<cmd>lua require('telescope.builtin').treesitter()<cr>",
-        'symbols',
+      W = { 'B', 'previous word' },
+      w = { 'b', 'next word' },
+      E = { 'E', 'previous bigword' },
+      e = { 'e', 'next bigword ' },
+      [dd.right] = { 'l', 'right' },
+      [dd.left] = { 'h', 'left' },
+      [dd.up] = { 'k', 'up' },
+      [dd.down] = { 'j', 'down' },
+      [a.jump] = {
+        E = { 'gg', 'first line' },
+        e = { 'G', 'last line' },
+        L = {
+          "<cmd>lua require('telescope.builtin').loclist()<cr>",
+          'loclist',
+        },
+        s = {
+          "<cmd>lua require('telescope.builtin').treesitter()<cr>",
+          'symbols',
+        },
+        [dd.up] = { 'gk', 'visual up' },
+        [dd.down] = { 'gj', 'visual down' },
       },
-      [dd.up] = { 'gk', 'visual up' },
-      [dd.down] = { 'gj', 'visual down' },
     }, {
       mode = mode,
-      prefix = a.jump,
+    })
+  end
+  for mode in string.gmatch('nxo', '.') do
+    register({
+      -- F = { '<Plug>Lightspeed_F', 'F' },
+      -- f = { '<Plug>Lightspeed_f', 'f' },
+      S = { '<Plug>Lightspeed_S', 'S' },
+      s = { '<Plug>Lightspeed_s', 's' },
+      -- T = { '<Plug>Lightspeed_T', 'T' },
+      -- t = { '<Plug>Lightspeed_t', 't' },
+      [a.jump] = {
+        C = { '<plug>(matchup-g%)', 'matchup cycle backward' },
+        c = { '<plug>(matchup-%)', 'matchup cycle forward' },
+        Y = { '<plug>(matchup-[%)', 'matchup backward' },
+        y = { '<plug>(matchup-]%)', 'matchup forward' },
+        i = { '<plug>(matchup-z%)', 'matchup inward' },
+      },
+    }, {
+      mode = mode,
+      noremap = false,
     })
   end
 end
 
 -- workspace movements
 local function map_move()
-  local register = require 'which-key-fallback'
+  local register = require('which-key-fallback').register
   register({
-    p = { '<cmd>TodoTrouble<cr>', 'telescope TODO' },
-    P = { '<cmd>TodoTelescope<cr>', 'telescope TODO' },
     b = { '<cmd>Telescope buffers<cr>', 'buffers' },
-    d = { '<cmd>Telescope lsp_definitions<cr>', 'go definition' }, -- also, trouble
     D = { '<cmd>Telescope lsp_type_definitions<cr>', 'go type' }, -- also, trouble
-    i = { '<cmd>Telescope lsp_implementations<cr>', 'go implementation' }, -- also, trouble
+    d = { '<cmd>Telescope lsp_definitions<cr>', 'go definition' }, -- also, trouble
+    E = { '<cmd>lua require"alt-jump".reset()<cr>', 'alt-jump reset' },
+    e = { '<cmd>lua require"alt-jump".toggle()<cr>', 'alt-jump' },
     I = { '<cmd>lua vim.lsp.buf.declaration()<cr>', 'go declaration' }, -- FIXME:
+    i = { '<cmd>Telescope lsp_implementations<cr>', 'go implementation' }, -- also, trouble
     o = {
       "<cmd>lua require('telescope.builtin').oldfiles({only_cwd = true})<cr>",
       'oldfiles',
     },
-    -- r = {
     --   "<cmd>Telescope lsp_references<cr>",
+    -- r = {
     --   'lsp references',
     -- },
+    p = { '<cmd>TodoTrouble<cr>', 'telescope TODO' },
+    P = { '<cmd>TodoTelescope<cr>', 'telescope TODO' },
     r = {
       '<cmd>Trouble lsp_references<cr>',
       'lsp references',
     },
-    t = {
-      '<cmd>lua require("trouble").next({skip_groups = true, jump = true})<cr>',
-      'trouble, next',
-    },
     T = {
       '<cmd>lua require("trouble").previous({skip_groups = true, jump = true})<cr>',
       'trouble, previous',
+    },
+    t = {
+      '<cmd>lua require("trouble").next({skip_groups = true, jump = true})<cr>',
+      'trouble, next',
     },
     ['é'] = {
       '<cmd>Telescope live_grep<cr>',
@@ -428,7 +559,13 @@ local function map_move()
 end
 
 local function map_editor()
-  require 'which-key-fallback'({
+  local map = require('utils').map
+  local register = require('which-key-fallback').register
+  if false then
+    map('n', '<c-i>', '<cmd>lua require"bufjump".local_backward()<cr>')
+  end
+  map('n', '<c-o>', '<cmd>lua require"bufjump".local_forward()<cr>')
+  register({
     a = {
       '<cmd>TroubleToggle lsp_workspace_diagnostics<cr>',
       'lsp diagnostics',
@@ -438,8 +575,8 @@ local function map_editor()
       'lsp document diagnostics',
     },
     b = { -- FIXME:
-      '<cmd>lua require"bufjump".backward(require"bufjump".not_under_cwd)<cr>',
-      'previous workspace',
+      '<cmd>lua require"bufjump".forward(require"bufjump".not_under_cwd)<cr>',
+      'next workspace',
     },
     B = { -- FIXME:
       '<cmd>lua require"bufjump".backward(require"bufjump".not_under_cwd)<cr>',
@@ -494,7 +631,7 @@ local function map_editor()
 end
 
 local function map_browser()
-  local register = require 'which-key-fallback'
+  local register = require('which-key-fallback').register
   register {
     [a.browser] = {
       man = { '<cmd>lua require"browser".man()<cr>', 'man page' },
@@ -550,7 +687,8 @@ local function map_browser()
 end
 
 local function map_help()
-  require 'which-key-fallback'({
+  local register = require('which-key-fallback').register
+  register({
     d = { '<cmd>lua require"bindutils".docu_current()<cr>', 'filetype docu' },
     h = {
       '<cmd>e ~/Dotfiles/bindings-qwerty/.config/nvim/lua/bindings.lua<cr>',
@@ -572,63 +710,63 @@ end
 
 -- local function map_()
 --   local map = require('utils').map
---   local register = require 'which-key-fallback'
+--   local register = require 'which-key-fallback'.register
 -- end
 
 local function map_markdown()
-  local register = require 'which-key-fallback'
   local map_local = require('utils').buf_map
-  local buffer = vim.api.nvim_get_current_buf()
-  if true then
-    map_local('i', '<c-a>', '<c-o>g^')
-    map_local('i', '<c-e>', '<c-o>g$')
-    map_local('nvo', '<c-a>', 'g^')
-    map_local('nvo', '<c-e>', 'g$')
-    register({
-      y = { '<Plug>Markdown_OpenUrlUnderCursor', 'follow url' },
-    }, {
-      prefix = a.move,
-      buffer = buffer,
-    })
-    for mode in string.gmatch('nxo', '.') do
-      register({
-        -- s = { '<cmd>Telescope heading<cr>', 'headings' },
-        t = { '<Plug>Markdown_MoveToNextHeader', 'next header' },
-        T = {
-          '<Plug>Markdown_MoveToPreviousHeader',
-          'previous header',
-        },
-        h = {
-          '<Plug>Markdown_MoveToCurHeader',
-          'current header',
-        },
-        H = {
-          '<Plug>Markdown_MoveToParentHeader',
-          'parent header',
-        },
-        [dd.up] = { 'k', 'physical line up' },
-        [dd.down] = { 'j', 'physical line down' },
-      }, {
-        prefix = a.jump,
-        mode = mode,
-        buffer = buffer, -- FIXME: this is still setting bindings as global
-        noremap = false,
-      })
-    end
-  end
-
-  map_local('nxo', a.jump .. 's', '<cmd>Telescope heading<cr>')
-  map_local('nxo', a.jump .. 'T', '<Plug>Markdown_MoveToPreviousHeader')
-  map_local('nxo', a.jump .. 't', '<Plug>Markdown_MoveToNextHeader')
-  map_local('nxo', a.jump .. 'h', '<Plug>Markdown_MoveToCurHeader')
-  map_local('nxo', a.jump .. 'H', '<Plug>Markdown_MoveToParentHeader')
-  map_local('nxo', a.jump .. dd.up, 'k')
-  map_local('nxo', a.jump .. dd.down, 'j')
-  map_local('nxo', dd.up, 'gk')
-  map_local('nxo', dd.down, 'gj')
+  map_local('i', '<c-a>', '<c-o>g^')
+  map_local('i', '<c-e>', '<c-o>g$')
+  map_local('nvo', '<c-a>', 'g^')
+  map_local('nvo', '<c-e>', 'g$')
   -- both are identical
   map_local('ox', 'ad', '<Plug>(textobj-datetime-auto)', { noremap = false })
   map_local('ox', 'id', '<Plug>(textobj-datetime-auto)', { noremap = false })
+
+  local register = require('which-key-fallback').register
+  local buffer = vim.api.nvim_get_current_buf()
+  register({
+    y = { '<Plug>Markdown_OpenUrlUnderCursor', 'follow url' },
+  }, {
+    prefix = a.move,
+    buffer = buffer,
+  })
+  for mode in string.gmatch('nxo', '.') do
+    register({
+      s = { '<cmd>Telescope heading<cr>', 'headings' },
+      t = { '<Plug>Markdown_MoveToNextHeader', 'next header' },
+      T = {
+        '<Plug>Markdown_MoveToPreviousHeader',
+        'previous header',
+      },
+      h = {
+        '<Plug>Markdown_MoveToCurHeader',
+        'current header',
+      },
+      H = {
+        '<Plug>Markdown_MoveToParentHeader',
+        'parent header',
+      },
+    }, {
+      prefix = a.jump,
+      mode = mode,
+      buffer = buffer, -- FIXME: this is still setting bindings as global
+      noremap = false,
+    })
+  end
+  for mode in string.gmatch('nxo', '.') do
+    register({
+      [dd.up] = { 'gk', 'visual line up' },
+      [dd.down] = { 'gj', 'visual line down' },
+      [a.jump] = {
+        [dd.up] = { 'k', 'physical line up' },
+        [dd.down] = { 'j', 'physical line down' },
+      },
+    }, {
+      mode = mode,
+      buffer = buffer, -- FIXME: this is still setting bindings as global
+    })
+  end
 
   if require('pager').full then
     vim.fn.call('textobj#sentence#init', {})
@@ -636,12 +774,13 @@ local function map_markdown()
 end
 
 local function map_readonly()
-  local map = require('utils').buf_map
-  if vim.bo.readonly then
-    map('nxo', 'x', '<cmd>q<cr>', { nowait = true })
-    map('nxo', 'u', '<c-u>', { noremap = false, nowait = true })
-    map('nxo', 'd', '<c-d>', { noremap = false, nowait = true })
+  if not vim.bo.readonly then
+    return
   end
+  local map = require('utils').buf_map
+  map('nxo', 'x', '<cmd>q<cr>', { nowait = true })
+  map('nxo', 'u', '<c-u>', { noremap = false, nowait = true })
+  map('nxo', 'd', '<c-d>', { noremap = false, nowait = true })
 end
 
 --[[
@@ -711,6 +850,7 @@ function M.setup()
       command = map_markdown,
     },
   })
+  map_text_objects()
   map_edit()
   map_jump()
   map_move()
@@ -718,24 +858,22 @@ function M.setup()
   map_browser()
   map_help()
   map_command_insert()
+  map_readonly()
 
-  local register = require 'which-key-fallback'
+  local register = require('which-key-fallback').register
   local map = require('utils').map
 
   -- TODO: remap cmp c-e
   -- fish-emacs compatibility
-  map('nvioc', '<c-e>', '<end>')
-
-  map('c', '<c-a>', '<home>')
-  map('c', '<c-e>', '<end>')
+  map('l', '<c-e>', '<end>')
+  map('l', '<c-a>', '<home>')
   map('i', '<c-a>', '<c-o>^')
   map('i', '<c-e>', '<c-o>$')
   map('nvo', '<c-a>', '^')
   map('nvo', '<c-e>', '$')
-
-  map('nvioc', '<c-p>', '<up>')
-  map('nvioc', '<c-n>', '<down>')
-  map('nvioc', '<c-c>', '<esc>')
+  map('nvol', '<c-p>', '<up>')
+  map('nvol', '<c-n>', '<down>')
+  map('nvol', '<c-c>', '<esc>')
   map('n', '<a-t>', '"zdh"zp') -- transpose
   map('i', '<a-t>', '<esc>"zdh"zpa') -- transpose
 
@@ -760,29 +898,15 @@ function M.setup()
   map('nxo', 'gg', '<nop>')
   map('', '<c-u>', '<nop>')
   map('', '<c-d>', '<nop>')
+
   local function remark(new, old)
     map('nxo', a.mark .. new, '`' .. old)
     map('nxo', a.mark .. new, "'" .. old)
   end
-  map('nx', 'r', 'r')
-  map('nx', 'R', 'R')
   remark('V', '<')
   remark('v', '>')
   remark('P', '[')
   remark('p', ']')
-
-  map('nxo', dd.right, 'l')
-  map('nxo', dd.left, 'h')
-  map('nxo', dd.up, 'k')
-  map('nxo', dd.down, 'j')
-
-  map('nxo', 'w', 'b')
-  map('nxo', 'W', 'B')
-  map('nxo', 'e', 'e')
-  map('nxo', 'E', 'E')
-
-  map('o', ',', ':<c-u>lua require("tsht").nodes()<CR>')
-  map('x', ',', ':lua require("tsht").nodes()<cr>')
 
   -- neoscroll
   require('neoscroll.config').set_mappings {
@@ -793,115 +917,12 @@ function M.setup()
     zb = { 'zb', { '250' } },
   }
 
-  map('nxo', 's', '<Plug>Lightspeed_s', { noremap = false })
-  map('nxo', 'S', '<Plug>Lightspeed_S', { noremap = false })
-  map(
-    'nxo',
-    'f',
-    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
-    { noremap = false, expr = true }
-  )
-  map(
-    'nxo',
-    'F',
-    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_F" : "F"',
-    { noremap = false, expr = true }
-  )
-  map(
-    'nxo',
-    't',
-    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_t" : "t"',
-    { noremap = false, expr = true }
-  )
-  map(
-    'nxo',
-    'T',
-    'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_T" : "T"',
-    { noremap = false, expr = true }
-  )
-
-  -- searching
-  require 'auto_unhl'
-  -- map('nxo', '*', '<nop>')
-  -- map('nxo', '#', '<nop>')
-  -- map('nxo', 'n', "n<cmd>lua require'auto_unhl'.post()<cr>")
-  -- map('nxo', 'N', "N<cmd>lua require'auto_unhl'.post()<cr>")
-  -- map('n', a.jump .. 'q', "g*<cmd>lua require'auto_unhl'.post()<cr>")
-  -- map('n', 'b', "*<cmd>lua require'auto_unhl'.post()<cr>")
-  -- map('n', 'B', "#<cmd>lua require'auto_unhl'.post()<cr>")
-  -- map(
-  --   'x',
-  --   'b',
-  --   "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>"
-  -- )
-  -- map(
-  --   'x',
-  --   'B',
-  --   "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'auto_unhl'.post()<cr>"
-  -- )
-  map('nxo', '*', '<nop>')
-  map('nxo', '#', '<nop>')
-  -- map('nxo', 'é', '/')
-  -- map('nxo', 'É', '?')
-  map('nxo', 'é', '<cmd>lua require"hlslens"<cr>/')
-  map('nxo', 'É', '<cmd>lua require"hlslens"<cr>?')
-  map(
-    'n',
-    'n',
-    "<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>"
-  )
-  map(
-    'n',
-    'N',
-    "<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>"
-  )
-  map('n', 'b', "*N<cmd>lua require'hlslens'.start()<cr>")
-  map('n', 'B', "g*N<cmd>lua require'hlslens'.start()<cr>")
-  map(
-    'x',
-    'b',
-    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'hlslens'.start()<cr>"
-  )
-  map(
-    'x',
-    'B',
-    "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'hlslens'.start()<cr>"
-  )
-
-  -- luasnip + dial
-  -- FIXME:
-  map(
-    'nx',
-    '<c-j>',
-    "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
-    { expr = true, noremap = false }
-  )
-  map(
-    'nx',
-    '<c-x>',
-    "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
-    { expr = true, noremap = false }
-  )
-  map(
-    'x',
-    '<c-s-j>',
-    '<Plug>(dial-increment-additional)',
-    { expr = true, silent = true, noremap = false }
-  )
-  map(
-    'x',
-    '<c-s-x>',
-    '<Plug>(dial-decrement-additional)',
-    { expr = true, silent = true, noremap = false }
-  )
-
   map(
     'i',
     '<cr>',
     'v:lua.MPairs.autopairs_cr()',
     { expr = true, noremap = true }
   )
-
   map('is', '<Tab>', '<cmd>lua require"bindutils".tab_complete()<cr>')
   map('is', '<s-Tab>', '<cmd>lua require"bindutils".s_tab_complete()<cr>')
   map('is', '<c-space>', '<cmd>lua require"bindutils".toggle_cmp()<cr>')
@@ -976,10 +997,19 @@ function M.setup()
   -- nxi mappings
   for mode in string.gmatch('nxi', '.') do
     register({
-      [alt(dd.left)] = { '<cmd>wincmd h<cr>', 'window left' },
-      [alt(dd.down)] = { '<cmd>wincmd j<cr>', 'window down' },
-      [alt(dd.up)] = { '<cmd>wincmd k<cr>', 'window up' },
-      [alt(dd.right)] = { '<cmd>wincmd l<cr>', 'window right' },
+      [alt(dd.left)] = {
+        '<cmd>lua require"wrap_win".left()<cr>',
+        'window left',
+      },
+      [alt(dd.down)] = {
+        '<cmd>lua require"wrap_win".down()<cr>',
+        'window down',
+      },
+      [alt(dd.up)] = { '<cmd>lua require"wrap_win".up()<cr>', 'window up' },
+      [alt(dd.right)] = {
+        '<cmd>lua require"wrap_win".right()<cr>',
+        'window right',
+      },
       ['<a-b>'] = { '<cmd>wincmd p<cr>', 'window back' },
       ['<a-a>'] = { '<cmd>e#<cr>', 'previous buffer' }, -- move
       ['<a-w>'] = { '<cmd>q<cr>', 'close window' },
@@ -1118,9 +1148,28 @@ M.plugins = {
       mapleader = ' ',
     },
   },
+  anywise_reg = {
+    textobjects = {
+      { 'i', 'a' },
+      { 'w', 'W' },
+    },
+    paste_keys = {
+      ['p'] = 'p',
+    },
+    setmap = {
+      y = 'y',
+      x = 'd',
+    },
+  },
   revJ = {
     operator = a.edit .. 'b', -- for operator (+motion)
     line = a.edit .. a.edit .. 'b', -- for formatting current line
+  },
+  lightspeed = invert {
+    a = 'instant_repeat_fwd_key',
+    A = 'instant_repeat_bwd_key',
+    c = 'cycle_group_fwd_key',
+    C = 'cycle_group_bwd_key',
   },
   textobj = {
     g = {

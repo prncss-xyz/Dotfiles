@@ -1,5 +1,5 @@
 set fish_greeting # suppress greetings 
-alias ght 'export GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1)'
+alias gh 'GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1) /usr/bin/gh '
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
 alias o xdg-open
 # alias e nvr -s

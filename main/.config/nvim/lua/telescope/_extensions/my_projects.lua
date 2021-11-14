@@ -1,12 +1,7 @@
 -- Customization of
 -- https://github.com/ahmedkhalf/project.nvim/blob/main/lua/telescope/_extensions/projects.lua
 
-local has_telescope, telescope = pcall(require, 'telescope')
-
-if not has_telescope then
-  return
-end
-
+local telescope = require 'telescope'
 local finders = require 'telescope.finders'
 local pickers = require 'telescope.pickers'
 local telescope_config = require('telescope.config').values
@@ -15,15 +10,12 @@ local state = require 'telescope.actions.state'
 local builtin = require 'telescope.builtin'
 local entry_display = require 'telescope.pickers.entry_display'
 
-local history = require 'project_nvim.utils.history'
-local project = require 'project_nvim.project'
-local config = require 'project_nvim.config'
-
 ----------
 -- Actions
 ----------
 
 local function change_working_directory(prompt_bufnr, prompt)
+  local project = require 'project_nvim.project'
   local selected_entry = state.get_selected_entry(prompt_bufnr)
   if selected_entry == nil then
     actions.close(prompt_bufnr)
@@ -40,6 +32,7 @@ local function change_working_directory(prompt_bufnr, prompt)
 end
 
 local function find_project_files(prompt_bufnr)
+  local config = require 'project_nvim.config'
   local project_path, cd_successful = change_working_directory(
     prompt_bufnr,
     true
@@ -51,6 +44,7 @@ local function find_project_files(prompt_bufnr)
 end
 
 local function browse_project_files(prompt_bufnr)
+  local config = require 'project_nvim.config'
   local project_path, cd_successful = change_working_directory(
     prompt_bufnr,
     true
@@ -62,6 +56,7 @@ local function browse_project_files(prompt_bufnr)
 end
 
 local function search_in_project_files(prompt_bufnr)
+  local config = require 'project_nvim.config'
   local project_path, cd_successful = change_working_directory(
     prompt_bufnr,
     true
@@ -73,6 +68,7 @@ local function search_in_project_files(prompt_bufnr)
 end
 
 local function recent_project_files(prompt_bufnr)
+  local config = require 'project_nvim.config'
   local _, cd_successful = change_working_directory(prompt_bufnr, true)
   local opt = { cwd_only = true, hidden = config.options.show_hidden }
   if cd_successful then
@@ -100,6 +96,7 @@ local function my_projects(opts)
     }
   end
 
+  local history = require 'project_nvim.utils.history'
   local results = history.get_recent_projects()
 
   -- Reverse results

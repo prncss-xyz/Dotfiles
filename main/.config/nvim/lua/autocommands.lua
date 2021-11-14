@@ -1,29 +1,6 @@
 local augroup = require('utils').augroup
 local dotfiles = os.getenv 'DOTFILES'
 
--- augroup('TerminalNonumbers', {
---   {
---     events = { 'TermOpen' },
---     targets = { '*' },
---     command = function()
---       vim.wo.number = false
---       vim.wo.relativenumber = false
---       vim.cmd 'startinsert'
---     end,
---   },
--- })
--- augroup('TerminalEnter', {
---   {
---     events = { 'BufEnter' },
---     target = { '*' },
---     command = function()
---       if vim.bo.bt == 'terminal' then
---         vim.cmd 'startinsert'
---       end
---     end,
---   },
--- })
-
 augroup('TmpFiles', {
   {
     events = { 'FileType' },
@@ -69,9 +46,6 @@ augroup('NoUndoFile', {
 })
 
 local function set_title(branch)
-  -- local titlestring = ''
-  -- local titlestring = 'nvim — '
-
   local titlestring = ''
   local home = vim.loop.os_homedir()
   local dir = vim.fn.getcwd()
@@ -86,9 +60,8 @@ local function set_title(branch)
   titlestring = titlestring .. dir
   if branch then
     titlestring = titlestring .. ' — ' .. branch
-    -- titlestring = titlestring .. ' ' .. branch .. ' — '
   end
-  vim.cmd(string.format('let &titlestring=%q', titlestring))
+  vim.cmd(string.format('let &titlestring=%q', titlestring)) -- FIXME:
 end
 
 local function set_title_git_plenary()
@@ -118,11 +91,21 @@ local function set_title_git()
   end
 end
 
+-- works with kitty terminal
+-- do not work with foot terminal
 augroup('SetTitleGitsigns', {
   {
-    events = { 'DirChanged', 'CursorHold' },
+    events = { 'VimEnter', 'DirChanged', 'CursorHold' },
     targets = { '*' },
     command = set_title_git,
+  },
+})
+
+augroup('Outline', {
+  {
+    events = { 'FileType' },
+    targets = { 'Outline' },
+    command = 'setlocal scl=no',
   },
 })
 
@@ -143,29 +126,7 @@ augroup('SetTitleGitsigns', {
 --   },
 -- })
 
--- require'utils'.augroup('SessionAsk', {
---   {
---     events = { 'VimEnter' },
---     targets = { '*' },
---     modifiers = { 'silent!' },
---     command = function ()
--- require'persistence'.load()
--- vim.cmd("silent! BufferGoto %i<cr>")
--- require("persistence").load()
--- local isHome = os.getenv 'HOME' == os.getenv 'PWD'
--- if isHome then
---   -- require("persistence").load({last=true})
---   -- require('session-lens').search_session()
---   -- require'telescope'.extensions.repo.list()
--- else
---   require("persistence").load()
---   require'telescope' -- workaround
--- end
---     end,
---   },
--- })
-
--- augroup('Test', {
+-- augroup('LastFile', {
 --   {
 --     events = {'VimEnter'},
 --     targets = {'*'},

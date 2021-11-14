@@ -34,6 +34,17 @@ local function pick_process()
 end
 
 function M.setup()
+  vim.fn.sign_define(
+    'DapBreakpoint',
+    { text = '🛑', texthl = '', linehl = '', numhl = '' }
+  )
+  vim.fn.sign_define(
+    'DapStopped',
+    { text = '🟢', texthl = '', linehl = '', numhl = '' }
+  )
+  -- vim.fn.sign_define('DapLogPoint', {text='→', texthl='', linehl='', numhl=''})
+  -- vim.fn.sign_define('DapBreakpointRejected', {text='R', texthl='', linehl='', numhl=''})
+
   dap.configurations.lua = {
     {
       type = 'nlua',

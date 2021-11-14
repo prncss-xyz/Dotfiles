@@ -1,6 +1,15 @@
 -- triggers undo commands unexpectedly
 local m = {}
 
+
+  register({
+    b = {
+      "y/\\V<C-R>=escape(@\",'/\\')<CR><CR><cmd>lua require'hlslens'.start()<cr>",
+    },
+  }, {
+    mode = 'x',
+  })
+
 function m.auto()
   vim.cmd 'autocmd! trailer'
   require('hlslens.main').cmdl_search_leave()

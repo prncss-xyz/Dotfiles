@@ -34,15 +34,12 @@ end
 -- and make configuration more readable
 g.did_load_filetypes = 1 -- nathom/filetype.nvim
 
-require('signs').setup()
 require 'options'
 require 'plugins'
 require('bindings').setup()
-require 'signs'
 require 'commands'
 require 'autocommands'
 require('theme').setup()
-require 'theme-exporter'
 require 'setup-session'
 
 vim.cmd [[

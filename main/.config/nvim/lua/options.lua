@@ -59,7 +59,7 @@ deep_merge(vim, {
   g = {
     -- what's that ? -- FIXME:
     autosave = full and 1 or 0,
-
+    ['asterisk#keeppos'] = 1,
     -- plasticboy/vim-markdown
     -- do not seem to work in setup
     -- vim_markdown_folding_disabled = 0,

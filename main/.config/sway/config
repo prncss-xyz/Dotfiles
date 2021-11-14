@@ -41,7 +41,6 @@ exec foot --server
 exec sh -c "sleep 1; $TERMINAL --title=scratchpad"
 # exec $terminal --title=scratchpad
 exec ~/.local/bin/setbg-sway
-exec ~/.local/bin/browser
 exec mako
 # exec languagetool --http
 exec ~/Media/Projects/sway-mega-hotkeys/cli.js

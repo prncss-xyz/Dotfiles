@@ -1,6 +1,8 @@
 local ls = require 'luasnip'
 require('luasnip/loaders/from_vscode').lazy_load()
 
+local split_string = require('utils').split_string
+
 local s = ls.snippet
 local sn = ls.snippet_node
 local t = ls.text_node
@@ -8,10 +10,6 @@ local i = ls.insert_node
 local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
-
--- require('luasnip/loaders/from_vscode').lazy_load {
---   paths = os.getenv 'PROJECTS' .. '/closet',
--- }
 
 local p = require('luasnip.extras').partial
 --
@@ -60,11 +58,33 @@ local function bash(_, command)
   return res
 end
 
+local prettierrc = [[trailingComma: "all"
+quoteProps: "consistent"
+jsxSingleQuote: true
+singleQuote: true]]
+
+local eslintrc = [[ module.exports = {
+  settings: {
+    react: { version: 'detect' },
+  },
+  env: {
+    es2020: true,
+    node: true,
+  },
+  parserOptions: {
+    sourceType: 'module',
+  },
+  extends: ['eslint:recommended', 'plugin:react/recommended', 'prettier'],
+  rules: { 'react/prop-types': 0 },
+};]]
+
 ls.snippets = {
   TEMPLATES = {
+    s({ trig = '.prettierrc.yaml' }, { t(split_string(prettierrc, '\n')) }),
+    s({ trig = '.eslintrc.js' }, { t(split_string(eslintrc, '\n')) }),
     s(
       { trig = '*.lua' },
-      { t { 'local m = {}', '', '' }, i(0), t { '', '', 'return m' } }
+      { t { 'local M = {}', '', '' }, i(0), t { '', '', 'return M' } }
     ),
     s({ trig = '*/.local/bin/*.*' }, {}),
     s({

@@ -218,6 +218,10 @@ return require('packer').startup {
       'kosayoda/nvim-lightbulb',
       after = 'nvim-lspconfig',
       config = function()
+        vim.fn.sign_define(
+          'LightBulbSign',
+          { text = '', texthl = '', linehl = '', numhl = '' }
+        )
         vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
       end,
     }
@@ -427,6 +431,7 @@ return require('packer').startup {
     }
     use {
       'folke/todo-comments.nvim',
+      event = 'BufReadPost',
       cmd = { 'TodoTrouble', 'TodoTelescope' },
       config = function()
         require('todo-comments').setup {}
@@ -434,12 +439,14 @@ return require('packer').startup {
     }
     use {
       'kevinhwang91/nvim-hlslens',
-      module = 'hlslens',
       config = function()
         require('hlslens').setup {
           calm_down = true,
         }
       end,
+    }
+    use {
+      'haya14busa/vim-asterisk',
     }
     use {
       'edluffy/specs.nvim',
@@ -514,7 +521,7 @@ return require('packer').startup {
       'ggandor/lightspeed.nvim',
       event = 'BufReadPost',
       config = function()
-        require('lightspeed').setup {}
+        require('lightspeed').setup(require('bindings').plugins.lightspeed)
       end,
     }
     use {
@@ -620,12 +627,12 @@ return require('packer').startup {
       'kevinhwang91/nvim-hclipboard',
       event = 'InsertEnter',
       config = function()
-        -- require 'plugins.hclipboard'
+        require 'plugins.hclipboard'
       end,
     }
     use {
       'AckslD/nvim-anywise-reg.lua',
-      cond = full,
+      cond = never,
       config = function()
         require 'plugins.anywise_reg'
       end,
@@ -741,7 +748,12 @@ return require('packer').startup {
         require('utils').deep_merge(vim, require('bindings').plugins)
       end,
       requires = {
-        { 'Julian/vim-textobj-variable-segment', cond = full },
+        {
+          'Julian/vim-textobj-variable-segment',
+          opt = true,
+          -- cond = full, -- FIXME:
+          after = 'vim-textobj-user',
+        },
         {
           'kana/vim-textobj-datetime',
           cond = full,
@@ -806,10 +818,9 @@ return require('packer').startup {
     }
     use {
       'ahmedkhalf/project.nvim',
-      module = 'project_nvim.utils.history',
       cond = full,
       config = function()
-        require('plugins.project').setup()
+        require('project_nvim').setup {}
       end,
     }
 

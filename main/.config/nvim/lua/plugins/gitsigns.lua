@@ -2,17 +2,29 @@ local M = {}
 local deep_merge = require('utils').deep_merge
 
 function M.setup()
-  local o = {
+  require('gitsigns').setup {
     watch_index = {
       interval = 100,
     },
     sign_priority = 5,
     status_formatter = nil, -- Use default
+    signs = {
+      add = { hl = 'DiffAdd', text = '▌', numhl = 'GitSignsAddNr' },
+      change = { hl = 'DiffChange', text = '▌', numhl = 'GitSignsChangeNr' },
+      delete = { hl = 'DiffDelete', text = '▌', numhl = 'GitSignsDeleteNr' },
+      topdelete = {
+        hl = 'DiffDelete',
+        text = '‾',
+        numhl = 'GitSignsDeleteNr',
+      },
+      changedelete = {
+        hl = 'DiffChange',
+        text = '~',
+        numhl = 'GitSignsChangeNr',
+      },
+    },
+    numhl = false,
   }
-  -- FIXME: creates binding conflict
-  -- deep_merge(o, require('bindings').plugins.gitsigns)
-  deep_merge(o, require('signs').plugins.gitsigns)
-  require('gitsigns').setup(o)
 end
 
 return M

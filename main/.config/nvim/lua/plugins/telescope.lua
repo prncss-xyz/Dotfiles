@@ -25,7 +25,9 @@ function M.setup()
     },
   }))
 
+  -- local telescope extensions
   telescope.load_extension 'md_help'
+  telescope.load_extension 'gitignore'
   telescope.load_extension 'project_directory'
   telescope.load_extension 'my_projects'
   telescope.load_extension 'modules'

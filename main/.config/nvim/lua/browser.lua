@@ -12,7 +12,7 @@ function m.open(url)
 end
 
 function m.mapBrowserSearch(prefix, name, mappings)
-  local register = require 'which-key-fallback'
+  local register = require 'which-key-fallback'.register
   register { [prefix] = { name = name } }
   for abbr, value in pairs(mappings) do
     local url, help = unpack(value)

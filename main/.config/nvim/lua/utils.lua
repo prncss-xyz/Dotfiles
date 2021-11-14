@@ -1,21 +1,16 @@
 local M = {}
 
---- Check if a file or directory exists in this path
-function exists(file)
-  local ok, err, code = os.rename(file, file)
-  if not ok then
-    if code == 13 then
-      -- Permission denied, but it exists
-      return true
-    end
+function M.split_string(str, delimiter)
+  local result = {}
+  local from = 1
+  local delim_from, delim_to = string.find(str, delimiter, from)
+  while delim_from do
+    table.insert(result, string.sub(str, from, delim_from - 1))
+    from = delim_to + 1
+    delim_from, delim_to = string.find(str, delimiter, from)
   end
-  return ok, err
-end
-
---- Check if a directory exists in this path
-function M.isdir(path)
-  -- "/" works on both Unix and Windows
-  return exists(path .. '/')
+  table.insert(result, string.sub(str, from))
+  return result
 end
 
 function M.dump(...)
@@ -59,15 +54,6 @@ end
 
 M._store = {}
 
--- mostly taken from https://github.com/akinsho/dotfiles/blob/main/.config/nvim/lua/as/globals.lua
-
----Check if a cmd is executable
----@param e string
----@return boolean
-function M.executable(e)
-  return vim.fn.executable(e) > 0
-end
-
 -- ?? vim.tbl_deep_extend instead ??
 -- TODO merge arrays
 function M.deep_merge(t1, t2)
@@ -85,14 +71,6 @@ function M.invert(tbl)
   local res = {}
   for key, value in pairs(tbl) do
     res[value] = key
-  end
-  return res
-end
-
-function M.prefixed(prefix, tbl)
-  local res = {}
-  for key, value in pairs(tbl) do
-    res[prefix .. key] = value
   end
   return res
 end
@@ -164,21 +142,6 @@ end
 function M.lambda(cb)
   local fn_id = create(cb)
   return string.format("lua require'utils'._execute(%d)", fn_id)
-end
-
-function M.job_sync(command, args)
-  local Job = require('plenary').job
-  local res
-  Job
-    :new({
-      command = command,
-      args = args,
-      on_exit = function(j)
-        res = j:result(j)
-      end,
-    })
-    :sync()
-  return res
 end
 
 -- http://lua-users.org/wiki/StringRecipes

@@ -112,8 +112,6 @@ deep_merge(vim, {
   env = {},
 })
 
-deep_merge(vim, require('bindings').plugins.vim)
-
 require('utils').augroup('MarkdownOptions', {
   {
     events = { 'FileType' },

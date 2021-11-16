@@ -193,7 +193,7 @@ const openLink = (url, newTab = false, active = true) => {
 
 const actions = {};
 
-const githubIdReg = /:\/\/github\.com\/([\w-]+\/[\w-]+)/;
+const githubIdReg = /:\/\/github\.com\/([\w-.]+\/[\w-.]+)/;
 actions.copyGithubId = () => {
   const href = util.getCurrentLocation('href');
   const m = href.match(githubIdReg);

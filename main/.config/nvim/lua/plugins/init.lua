@@ -108,6 +108,20 @@ return require('packer').startup {
       requires = 'nvim-treesitter/nvim-treesitter',
     }
     use { 'SmiteshP/nvim-gps', module = 'nvim-gps' }
+    use {
+      'haringsrob/nvim_context_vt',
+      after = 'nvim-treesitter',
+      config = function()
+        require('nvim_context_vt').setup()
+      end,
+    }
+    use {
+      'mizlan/iswap.nvim',
+      cmd = { 'ISwap', 'ISwapWith' },
+      config = function()
+        require('iswap').setup {}
+      end,
+    }
 
     -- syntax
     use 'ajouellette/sway-vim-syntax'
@@ -317,7 +331,9 @@ return require('packer').startup {
       'windwp/nvim-autopairs',
       after = 'nvim-cmp',
       config = function()
-        require 'plugins.autopairs'
+        require('nvim-autopairs').setup {
+          disable_in_macro = true,
+        }
       end,
     }
 
@@ -506,7 +522,7 @@ return require('packer').startup {
       config = function()
         require('marks').setup {
           default_mappings = false,
-          mappings = require('bindings').plugins.marks,
+          mappings = require('binder').captures.marks,
         }
       end,
     }
@@ -519,6 +535,7 @@ return require('packer').startup {
     }
     use {
       'ggandor/lightspeed.nvim',
+      disable = false,
       event = 'BufReadPost',
       config = function()
         require('lightspeed').setup(require('bindings').plugins.lightspeed)
@@ -531,6 +548,16 @@ return require('packer').startup {
         require('tabout').setup {
           tabkey = '',
           backwards_tabkey = '',
+        }
+      end,
+    }
+    use {
+      'max397574/better-escape.nvim',
+      config = function()
+        require('better_escape').setup {
+          mapping = { 'ff' },
+
+          clear_empty_lines = true,
         }
       end,
     }
@@ -699,6 +726,11 @@ return require('packer').startup {
       'tpope/vim-repeat',
       cond = full,
     }
+    -- TODO: https://github.com/numToStr/Comment.nvim
+    -- use {
+    --   'numToStr/Comment.nvim',
+
+    -- }
     use {
       'b3nj5m1n/kommentary',
       -- keys = { 'mmc', 'mc' },
@@ -731,15 +763,19 @@ return require('packer').startup {
         })
       end,
     }
-    -- TODO: https://github.com/numToStr/Comment.nvim
+    -- TODO: https://github.com/AndrewRadev/splitjoin.vim
     use {
       'AckslD/nvim-revJ.lua',
       cond = full,
       config = function()
         require('revj').setup {
-          keymaps = require('bindings').plugins.revJ,
+          keymaps = require('binder').captures.revJ,
         }
       end,
+    }
+    use {
+      'bkad/CamelCaseMotion',
+      cond = full,
     }
     use {
       'kana/vim-textobj-user',
@@ -758,23 +794,33 @@ return require('packer').startup {
           'kana/vim-textobj-datetime',
           cond = full,
           setup = function()
-            vim.g.textobj_datetime_no_default_key_mappings = 1
+            vim.g.textobj_datetime_no_default_key_mappings = 0
           end,
         },
         { 'preservim/vim-textobj-sentence', cond = full },
-        {
-          'kana/vim-textobj-line',
-          cond = full,
-          setup = function()
-            vim.g.textobj_line_no_default_key_mappings = 1
-          end,
-        },
+        -- {
+        --   'kana/vim-textobj-line',
+        --   cond = full,
+        --   setup = function()
+        --     vim.g.textobj_line_no_default_key_mappings = 1
+        --   end,
+        -- },
         { 'kana/vim-textobj-entire', cond = full },
         -- { 'michaeljsmith/vim-indent-object', cond = full },
         -- breaks completion through 'v' mappings
       },
     }
-    use { 'wellle/targets.vim', cond = full }
+    use {
+      'wellle/targets.vim',
+      -- cond = full,
+      opt = true,
+      require = {
+        use 'wellle/line-targets.vim',
+        -- cond = full,
+        opt = true,
+        after = 'targets.vim',
+      },
+    }
     use {
       'tommcdo/vim-ninja-feet',
       cond = full,

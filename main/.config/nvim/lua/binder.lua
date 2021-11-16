@@ -1,6 +1,13 @@
 local M = {}
 
-local module = 'which-key-fallback'
+-- TODO at the moment we register with whichkey plugin everytime
+-- would be better to only do this once but not sure when to do this
+-- https://github.com/AckslD/nvim-whichkey-setup.lua/blob/main/lua/whichkey_setup.lua
+-- vim.fn['which_key#register'](raw_key, textmap)
+-- raw_key = vim.fn.escape(raw_key, '\\')
+-- vim.api.nvim_set_keymap(mode, key, ':<c-u> :WhichKey "'..raw_key..'"<CR>', {silent=true, noremap=true})
+
+local module = 'binder'
 
 function M.buf_map(modes, lhs, rhs, opts)
   local bufnr = vim.fn.bufnr()
@@ -43,10 +50,33 @@ pcall(function()
   M.register = require('which-key').register
 end)
 
-M.register = M.register or fallback_register
+-- M.register = M.register or fallback_register
 
 M.store = {}
 M.help = {}
+
+local function map(bufnr, mode, keys, rhs, map_opts)
+  -- TODO: map function
+  -- print(mode,keys, rhs)
+  -- require('utils').dump(map_opts)
+  if bufnr then
+    vim.api.nvim_buf_set_keymap(bufnr, mode, keys, rhs, map_opts)
+  else
+    vim.api.nvim_set_keymap(mode, keys, rhs, map_opts)
+  end
+end
+
+local mappings = {}
+
+local function map_defer(...)
+  table.insert(mappings, { ... })
+end
+
+function M.setup_mappings()
+  for _, mapping in ipairs(mappings) do
+    map(unpack(mapping))
+  end
+end
 
 local function create(f, help)
   table.insert(M.store, f)
@@ -55,7 +85,35 @@ local function create(f, help)
   return string.format('<cmd>lua require%q.store[%d]()<cr>', module, id)
 end
 
-local function reg2(t, bufnr, acc)
+M.captures = {}
+local captures = M.captures
+
+local function add_path(t, path, value)
+  for i, key in ipairs(path) do
+    if i == #path then
+      t[key] = value
+      return
+    else
+      t[key] = t[key] or {}
+      t = t[key]
+      if type(t) ~= 'table' then
+        error 'conflict with a nonkey value'
+      end
+    end
+  end
+end
+
+local function capture(keys, c)
+  local value = c.value
+  if value then
+    table.insert(c, keys)
+  else
+    value = keys
+  end
+  add_path(captures, c, value)
+end
+
+local function reg(t, bufnr, acc)
   if type(t) ~= 'table' then
     t = { t }
   end
@@ -67,6 +125,7 @@ local function reg2(t, bufnr, acc)
     local map_opts = {
       silent = t.silent,
       noremap = t.noremap,
+      nowait = t.nowait,
       expr = t.expr,
     }
     if map_opts.noremap == nil then
@@ -74,14 +133,7 @@ local function reg2(t, bufnr, acc)
     end
     local modes = t.modes or acc.modes or 'n'
     for mode in string.gmatch(modes, '.') do
-      -- TODO: map function
-      -- print(mode, acc.keys, rhs)
-      -- require('utils').dump(map_opts)
-      if bufnr then
-        vim.api.nvim_buf_set_keymap(bufnr, mode, acc.keys, rhs, map_opts)
-      else
-        vim.api.nvim_set_keymap(mode, acc.keys, rhs, map_opts)
-      end
+      map_defer(bufnr, mode, acc.keys, rhs, map_opts)
     end
     return
   end
@@ -92,62 +144,29 @@ local function reg2(t, bufnr, acc)
       for k0, v0 in pairs(v) do
         local acc0 = vim.tbl_extend('error', {}, acc)
         acc0.modes = k0
-        reg2(v0, bufnr, acc0)
+        reg(v0, bufnr, acc0)
+      end
+    elseif k == 'capture' then
+      capture(acc.keys, v)
+    elseif k == 'captures' then
+      for _, c in ipairs(v) do
+        capture(acc.keys, c)
       end
     else
       local acc0 = vim.tbl_extend('error', {}, acc)
       acc0.keys = acc.keys .. k
-      reg2(v, bufnr, acc0)
+      reg(v, bufnr, acc0)
     end
   end
 end
 
-function M.reg2(t)
-  reg2(t, nil, { keys = '' })
+function M.reg(t)
+  reg(t, nil, { keys = '' })
 end
 
-function M.reg2_local(t)
+function M.reg_local(t)
   local bufnr = vim.api.nvim_get_current_buf()
-  reg2(t, bufnr, { keys = '' })
-end
-
-function M.reg(opts, t)
-  local options = { noremap = true }
-  if opts then
-    options = vim.tbl_extend('force', options, opts)
-  end
-  local bufnr = options.buffer
-  local modes = options.modes
-  local map_opts = {
-    noremap = options.noremap,
-    expr = options.expr,
-    silent = options.silent,
-  }
-  if not modes or modes == '' then
-    error 'no modes'
-    return
-  end
-  for mode in string.gmatch(modes, '.') do
-    for key, value in pairs(t) do
-      local rhs = value[1]
-      if rhs then
-        if bufnr then
-          vim.api.nvim_buf_set_keymap(bufnr, mode, key, rhs, map_opts)
-        else
-          vim.api.nvim_set_keymap(mode, key, rhs, map_opts)
-        end
-      else
-        M.register(value, {
-          mode = mode,
-          prefix = key,
-          noremap = options.noremap,
-          expr = options.expr,
-          silent = options.silent,
-          buffer = bufnr,
-        })
-      end
-    end
-  end
+  reg(t, bufnr, { keys = '' })
 end
 
 return M

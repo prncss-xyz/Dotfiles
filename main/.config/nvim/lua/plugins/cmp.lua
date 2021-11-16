@@ -24,14 +24,6 @@ local lua_sources = {
   { name = 'neorg' },
 }
 
-local cmd_sources = {
-  { name = 'cmdline' },
-  { name = 'path' },
-  { name = 'buffer' },
-  -- { name = 'fuzzy_path' },
-  -- { name = 'fuzzy_buffer' },
-}
-
 local symbolic = require('symbols').symbolic
 
 cmp.setup {
@@ -40,6 +32,7 @@ cmp.setup {
       require('luasnip').lsp_expand(args.body)
     end,
   },
+  dcumentation = {},
   formatting = {
     format = function(entry, vim_item)
       vim_item.kind = symbolic(vim_item.kind)
@@ -54,10 +47,18 @@ cmp.setup {
   },
 }
 
-require('cmp').setup.cmdline(':', {
-  sources = cmd_sources,
+cmp.setup.cmdline('/', {
+  sources = {
+    { name = 'buffer' },
+  },
 })
 
+require('cmp').setup.cmdline(':', {
+  sources = {
+    { name = 'cmdline' },
+    { name = 'buffer' },
+  },
+})
 
 require('utils').augroup('CmpNvimLua', {
   {

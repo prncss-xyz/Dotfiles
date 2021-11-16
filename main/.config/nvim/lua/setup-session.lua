@@ -1,4 +1,4 @@
-local m = {}
+local M = {}
 
 local scheme = { type = 'unknown' }
 
@@ -73,13 +73,13 @@ require('utils').augroup('SetupSession', {
   },
 })
 
-function m.launch()
+function M.launch()
   if scheme.port then
     require('browser').open(string.format('http://localhost:%d', scheme.port))
   end
 end
 
-function m.develop()
+function M.develop()
   setup(scheme.port, scheme.develop)
 end
 
@@ -87,4 +87,4 @@ require('utils').command('SetupSessionInfo', {}, function()
   require('utils').dump(scheme)
 end)
 
-return m
+return M

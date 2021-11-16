@@ -1,4 +1,3 @@
-local deep_merge = require('utils').deep_merge
 local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
 
 parser_configs.norg = {
@@ -19,77 +18,73 @@ parser_configs.norg = {
 
 local full = require('pager').full
 
-require('nvim-treesitter.configs').setup(
-  deep_merge(require('bindings').plugins.treesitter, {
-    rainbow = {
-      enable = true,
-      extended_mode = true,
-    },
-    autotag = {
-      enable = true,
-    },
-    ensure_installed = {
-      'norg',
-      -- 'markdown',
-      'bash',
-      'c',
-      'cpp',
-      'css',
-      'elm',
-      'fish',
-      'go',
-      'graphql',
-      'html',
-      'javascript',
-      'jsdoc',
-      'json',
-      'latex',
-      'lua',
-      'php',
-      'python',
-      'ql',
-      'regex',
-      'rust',
-      'scss',
-      'svelte',
-      'toml',
-      'tsx',
-      'typescript',
-      'vue',
-      'yaml',
-    },
-    -- ensure_installed = "maintained",
-    highlight = {
-      enable = true,
-      use_languagetree = true,
-    },
-    incremental_selection = {
-      enable = false,
-    },
-    indent = {
+local conf = {
+  rainbow = {
+    enable = true,
+    extended_mode = true,
+  },
+  autotag = {
+    enable = true,
+  },
+  ensure_installed = {
+    -- 'norg',
+    -- 'markdown',
+    'bash',
+    'c',
+    'cpp',
+    'css',
+    'elm',
+    'fish',
+    'go',
+    'graphql',
+    'html',
+    'javascript',
+    'jsdoc',
+    'json',
+    'latex',
+    'lua',
+    'php',
+    'python',
+    'ql',
+    'regex',
+    'rust',
+    'scss',
+    'svelte',
+    'toml',
+    'tsx',
+    'typescript',
+    'vue',
+    'yaml',
+  },
+  -- ensure_installed = "maintained",
+  highlight = {
+    enable = true,
+    use_languagetree = true,
+  },
+  incremental_selection = {
+    enable = false,
+  },
+  indent = {
+    enable = full,
+  },
+  context_commentstring = {
+    enable = full,
+    enable_autocommand = false,
+  },
+  matchup = {
+    enable = true,
+  },
+  textobjects = {
+    select = {
       enable = full,
+      lookahead = true,
     },
-    context_commentstring = {
+    move = {
       enable = full,
-      enable_autocommand = false,
+      set_jumps = true,
     },
-    matchup = {
-      enable = true,
-    },
-    textsubjects = {
-      enable = false,
-    },
-    textobjects = {
-      select = {
-        enable = full,
-      },
-      swap = {
-        enable = full,
-      },
-      move = {
-        enable = full,
-        set_jumps = full,
-      },
-    },
-  })
-)
+  },
+}
+
+conf = require('utils').deep_merge(conf, require('binder').captures.treesitter)
+require('nvim-treesitter.configs').setup(conf)

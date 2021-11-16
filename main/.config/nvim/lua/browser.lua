@@ -1,8 +1,8 @@
-local m = {}
+local M = {}
 
 local browser = os.getenv 'BROWSER'
 
-function m.open(url)
+function M.open(url)
   require('plenary.job')
     :new({
       command = browser,
@@ -11,52 +11,28 @@ function m.open(url)
     :start()
 end
 
-function m.mapBrowserSearch(prefix, name, mappings)
-  local register = require 'which-key-fallback'.register
-  register { [prefix] = { name = name } }
-  for abbr, value in pairs(mappings) do
-    local url, help = unpack(value)
-    register({
-      [abbr] = {
-        string.format('<cmd>lua require"browser".searchCword(%q)<cr>', url),
-        help,
-      },
-    }, {
-      prefix = prefix,
-    })
-    register({
-      [abbr] = {
-        string.format('"zy<cmd>lua require"browser".searchZ(%q)<cr>', url),
-        help,
-      },
-    }, {
-      prefix = prefix,
-      mode = 'x',
-    })
-  end
-end
-
-function m.searchCword(base)
+function M.search_cword(base)
   local word = vim.fn.expand '<cword>'
   local qs = require('utils').encode_uri(word)
-  m.open(base .. qs)
+  M.open(base .. qs)
 end
 
-function m.openCfile()
+function M.open_file()
   local word = vim.fn.expand '<cfile>'
   if word:match '^[^/]+/[^/]+$' then
     word = 'www.github.com/' .. word
   end
-  m.open(word)
+  M.open(word)
 end
 
-function m.searchZ(base)
+function M.search_visual(base)
+  vim.fn.feedkeys('"zy', 'n')
   local word = vim.fn.getreg 'z'
   local qs = require('utils').encode_uri(word)
-  m.open(base .. qs)
+  M.open(base .. qs)
 end
 
-function m.man()
+function M.man()
   local file = require('io').open('/tmp/sway-mega-hotkeys', 'a')
   file:write 'next browser'
   file:close()
@@ -69,4 +45,4 @@ function m.man()
     :start()
 end
 
-return m
+return M

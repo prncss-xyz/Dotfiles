@@ -1,5 +1,4 @@
 local M = {}
-local deep_merge = require('utils').deep_merge
 
 function M.setup()
   require('gitsigns').setup {

@@ -1,4 +1,4 @@
-version = '0.15.2'
+version = '0.16.2'
 package.path = os.getenv 'HOME' .. '/.config/xplr/plugins/?.xplr/src/init.lua'
 require('comex').setup { compress_key = 'c', extract_key = 'x' }
 require('type-to-nav').setup()
@@ -45,7 +45,7 @@ local copy_here = {
   unpack(xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages),
 }
 
-for _,key in ipairs{'space', 'v', 'h', 'j', 'k', 'l'} do
+for _, key in ipairs { 'space', 'v', 'h', 'j', 'k', 'l' } do
   xplr.config.modes.builtin.default.key_bindings.on_key[key] = nil
 end
 
@@ -82,7 +82,9 @@ local common = {
     help = 'help',
     -- TODO: position to active mode
     messages = {
-      { BashExec = 'nvim_paging markdown -R "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"' },
+      {
+        BashExec = 'nvim_paging markdown -R "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"',
+      },
     },
   },
   esc = nop,

@@ -1,5 +1,5 @@
 pcall(function() -- needed to enable first installation
-  -- require('impatient').enable_profile()
+  require('impatient').enable_profile()
 end)
 
 local g = vim.g
@@ -36,6 +36,9 @@ g.did_load_filetypes = 1 -- nathom/filetype.nvim
 
 vim.cmd 'cmapclear'
 vim.cmd 'imapclear'
+vim.cmd 'omapclear'
+vim.cmd 'vmapclear'
+vim.cmd 'nmapclear'
 require 'options'
 require('bindings').setup()
 require 'plugins'

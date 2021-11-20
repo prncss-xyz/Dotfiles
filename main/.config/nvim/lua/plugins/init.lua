@@ -89,7 +89,7 @@ return require('packer').startup {
       -- shows the context of the currently visible buffer contents
       'romgrk/nvim-treesitter-context',
       after = 'nvim-treesitter',
-      cond = full,
+      cond = never,
       disable = true,
       config = function()
         require('treesitter-context').setup {}
@@ -229,17 +229,6 @@ return require('packer').startup {
       end,
     }
     use {
-      'kosayoda/nvim-lightbulb',
-      after = 'nvim-lspconfig',
-      config = function()
-        vim.fn.sign_define(
-          'LightBulbSign',
-          { text = '', texthl = '', linehl = '', numhl = '' }
-        )
-        vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
-      end,
-    }
-    use {
       'simrat39/symbols-outline.nvim',
       cmd = 'SymbolsOutline',
       setup = function()
@@ -288,12 +277,12 @@ return require('packer').startup {
       'ThePrimeagen/refactoring.nvim',
       module = 'refactoring',
       config = function()
-        local refactor = require 'refactoring'
-        refactor.setup()
+        require('refactoring').setup {}
       end,
     }
     require('packer').use {
       'weilbith/nvim-code-action-menu',
+      wants = 'telescope.nvim',
       cmd = 'CodeActionMenu',
     }
     -- TODO:
@@ -337,7 +326,16 @@ return require('packer').startup {
       end,
     }
 
+    -- Multiple
+    use {
+      'echasnovski/mini.nvim',
+      config = function()
+        require('plugins.mini').setup()
+      end,
+    }
+
     -- Tracking
+    -- use { 'ThePrimeagen/vim-apm' } -- not working
     use { 'git-time-metric/gtm-vim-plugin', cond = full }
     use {
       'chrisbra/BufTimer',
@@ -352,7 +350,8 @@ return require('packer').startup {
     -- Git
     use {
       'lewis6991/gitsigns.nvim',
-      module = 'gitsigns',
+      -- module = 'gitsigns',
+      event = 'BufReadPost',
       wants = 'plenary.nvim',
       requires = { 'nvim-lua/plenary.nvim' },
       cond = full,
@@ -426,11 +425,29 @@ return require('packer').startup {
         }
       end,
     }
+    use {
+      'filipdutescu/renamer.nvim',
+      branch = 'master',
+      requires = { 'nvim-lua/plenary.nvim' },
+      module = 'renamer',
+      config = function()
+        local mappings_utils = require 'renamer.mappings.utils'
+        local mappings = {}
+        for k, v in pairs(require('bindings').plugins.renamer) do
+          mappings[k] = mappings_utils[v]
+        end
+        require('renamer').setup {
+          title = 'rename',
+          mappings = mappings,
+        }
+      end,
+    }
 
     -- navigation
     use {
       'folke/trouble.nvim',
-      module = 'trouble.providers.telescope',
+      -- module = 'trouble.providers.telescope',
+      wants = 'telescope.nvim',
       cmd = {
         'TodoQuickFix',
         'TodoLocList',
@@ -447,6 +464,7 @@ return require('packer').startup {
     }
     use {
       'folke/todo-comments.nvim',
+      wants = 'trouble.nvim',
       event = 'BufReadPost',
       cmd = { 'TodoTrouble', 'TodoTelescope' },
       config = function()
@@ -548,16 +566,6 @@ return require('packer').startup {
         require('tabout').setup {
           tabkey = '',
           backwards_tabkey = '',
-        }
-      end,
-    }
-    use {
-      'max397574/better-escape.nvim',
-      config = function()
-        require('better_escape').setup {
-          mapping = { 'ff' },
-
-          clear_empty_lines = true,
         }
       end,
     }
@@ -726,43 +734,16 @@ return require('packer').startup {
       'tpope/vim-repeat',
       cond = full,
     }
-    -- TODO: https://github.com/numToStr/Comment.nvim
-    -- use {
-    --   'numToStr/Comment.nvim',
-
-    -- }
     use {
-      'b3nj5m1n/kommentary',
-      -- keys = { 'mmc', 'mc' },
+      'numToStr/Comment.nvim',
       cond = full,
       wants = 'nvim-ts-context-commentstring',
       requires = { 'JoosepAlviste/nvim-ts-context-commentstring' },
-      setup = function()
-        vim.g.kommentary_create_default_mappings = false
-      end,
       config = function()
-        require('kommentary.config').configure_language('default', {
-          prefer_single_line_comments = true,
-        })
-        require('kommentary.config').configure_language('javascriptreact', {
-          single_line_comment_string = 'auto',
-          multi_line_comment_strings = 'auto',
-          hook_function = function()
-            require('ts_context_commentstring.internal').update_commentstring()
-          end,
-        })
-        require('kommentary.config').configure_language('typescriptreact', {
-          single_line_comment_string = 'auto',
-          multi_line_comment_strings = 'auto',
-          hook_function = function()
-            require('ts_context_commentstring.internal').update_commentstring()
-          end,
-        })
-        require('kommentary.config').configure_language('fish', {
-          single_line_comment_string = '#',
-        })
+        require('plugins.comment').setup()
       end,
     }
+
     -- TODO: https://github.com/AndrewRadev/splitjoin.vim
     use {
       'AckslD/nvim-revJ.lua',
@@ -806,19 +787,15 @@ return require('packer').startup {
         --   end,
         -- },
         { 'kana/vim-textobj-entire', cond = full },
-        -- { 'michaeljsmith/vim-indent-object', cond = full },
+        { local_repo 'vim-indent-object', cond = full },
         -- breaks completion through 'v' mappings
       },
     }
     use {
       'wellle/targets.vim',
-      -- cond = full,
-      opt = true,
+      cond = full,
       require = {
-        use 'wellle/line-targets.vim',
-        -- cond = full,
-        opt = true,
-        after = 'targets.vim',
+        use { 'wellle/line-targets.vim', cond = full },
       },
     }
     use {

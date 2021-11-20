@@ -1,5 +1,6 @@
 local M = {}
 
+local get_visual_selection = require('utils').get_visual_selection
 local browser = os.getenv 'BROWSER'
 
 function M.open(url)
@@ -26,10 +27,10 @@ function M.open_file()
 end
 
 function M.search_visual(base)
-  vim.fn.feedkeys('"zy', 'n')
-  local word = vim.fn.getreg 'z'
-  local qs = require('utils').encode_uri(word)
-  M.open(base .. qs)
+  get_visual_selection(function(word)
+    local qs = require('utils').encode_uri(word)
+    M.open(base .. qs)
+  end)
 end
 
 function M.man()

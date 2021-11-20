@@ -61,8 +61,32 @@ local function set_title(branch)
   if branch then
     titlestring = titlestring .. ' — ' .. branch
   end
-  vim.cmd(string.format('let &titlestring=%q', titlestring)) -- FIXME:
+  vim.cmd(string.format('let &titlestring=%q', titlestring))
 end
+
+-- keep cursor in place while yankink
+local cursor
+augroup('CursorGet', {
+  {
+    events = { 'VimEnter', 'CursorMoved' },
+    targets = { '*' },
+    command = function()
+      cursor = vim.fn.getpos('.')
+    end,
+  },
+})
+augroup('CursorSet', {
+  {
+    events = { 'TextYankPost' },
+    targets = { '*' },
+    command = function()
+     if vim.fn.eval('v:event').operator == 'y' then
+        vim.fn.setpos('.', cursor)
+      end
+    end,
+  },
+})
+-- for operators: https://vimways.org/2019/making-things-flow/
 
 local function set_title_git_plenary()
   local job = require 'plenary.job'

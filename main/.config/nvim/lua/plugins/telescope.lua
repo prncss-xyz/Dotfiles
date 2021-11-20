@@ -1,11 +1,11 @@
 local M = {}
 
 function M.setup()
-  local actions = require 'telescope.actions'
-  local deep_merge = require('utils').deep_merge
   local telescope = require 'telescope'
-  telescope.setup(deep_merge(require('bindings').plugins.telescope(), {
+  local mappings = require('bindings').plugins.telescope()
+  telescope.setup{
     defaults = {
+      mappings = mappings,
       vimgrep_arguments = {
         'rg',
         '--color=never',
@@ -23,7 +23,7 @@ function M.setup()
         'node_modules/*',
       },
     },
-  }))
+  }
 
   -- local telescope extensions
   telescope.load_extension 'md_help'
@@ -32,6 +32,7 @@ function M.setup()
   telescope.load_extension 'my_projects'
   telescope.load_extension 'modules'
   telescope.load_extension 'refactoring'
+  telescope.load_extension 'installed_plugins'
 end
 
 return M

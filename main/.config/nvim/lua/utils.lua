@@ -1,5 +1,15 @@
 local M = {}
 
+function M.get_visual_selection(cb)
+  local old = vim.fn.getreg 'z'
+  vim.fn.feedkeys('"zy', 'n')
+  vim.schedule(function()
+    local selection = vim.fn.getreg 'z'
+    vim.fn.setreg('z', old)
+    return cb(selection)
+  end)
+end
+
 function M.split_string(str, delimiter)
   local result = {}
   local from = 1

@@ -14,38 +14,33 @@ local function alt(key)
 end
 
 local a = invert {
-  m = 'edit',
   g = 'jump',
-  h = 'move',
-  M = 'mark',
+  H = 'help',
+  h = 'edit',
+  M = 'move',
+  m = 'mark',
   Q = 'macro',
   q = 'editor',
-  H = 'help',
   Y = 'browser',
+  z = 'various',
   [' '] = 'leader',
 }
 local dd = invert {
-  [';'] = 'right',
-  l = 'left',
-  k = 'down',
-  j = 'up',
   a = 'diagnostic',
+  b = 'join',
+  c = 'comment',
+  g = 'ninja',
+  j = 'up',
+  k = 'down',
+  L = 'loclist',
+  l = 'left',
   s = 'symbol',
   z = 'spell',
   ['é'] = 'search',
-  L = 'loclist',
-  b = 'join',
-  n = 'ninja',
-  c = 'comment',
+  [';'] = 'right',
   ['<c-j>'] = 'next_search',
   ['<c-x>'] = 'prev_search',
 }
-
--- local r = invert {
---   a = 'outer',
---   i = 'inner',
--- }
---
 
 local function plug(t)
   if type(t) == 'string' then
@@ -89,7 +84,6 @@ local function map_command_insert()
         ['<c-n>'] = '<down>',
         ['<c-p>'] = '<up>',
         ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
-        ['<c-s>'] = { '<cmd>update!<cr>', 'save' },
       },
       l = {
         ['<c-a>'] = '<home>',
@@ -135,7 +129,7 @@ local function map_search(url, help)
         end,
         help,
       },
-      i = {
+      x = {
         function()
           require('browser').search_visual(url)
         end,
@@ -153,6 +147,8 @@ local function map_basic()
   -- il = { '<Plug>(textobj-line-i)', 'line' },
   local reg = require('binder').reg
   reg {
+    A = 'A',
+    a = 'a',
     B = plug { '(matchup-g%)', 'matchup cycle backward', modes = 'nxo' },
     b = plug { '(matchup-%)', 'matchup cycle forward', modes = 'nxo' },
     C = { '""C', modes = 'nx' },
@@ -174,32 +170,28 @@ local function map_basic()
       expr = true,
       modes = 'nxo',
     },
-    J = {
-      capture = {
-        'neoscroll',
-        value = {
-          'scroll',
-          { '-vim.wo.scroll', 'true', '250' },
-        },
-      },
-    },
-    K = {
-      capture = {
-        'neoscroll',
-        value = {
-          'scroll',
-          { 'vim.wo.scroll', 'true', '250' },
-        },
-      },
-    },
+    I = 'I',
+    i = 'i',
     N = {
-      "<cmd>execute('normal! ' . v:count1 . 'N')<cr><cmd>lua require('hlslens').start()<cr>",
-      'search previous',
+      modes = {
+        nx = {
+          "<cmd>execute('normal! ' . v:count1 . 'N')<cr><cmd>lua require('hlslens').start()<cr>",
+          'search previous',
+        },
+        o = 'gN',
+      },
     },
     n = {
-      "<cmd>execute('normal! ' . v:count1 . 'n')<cr><cmd>lua require('hlslens').start()<cr>",
-      'search next',
+      modes = {
+        nx = {
+          "<cmd>execute('normal! ' . v:count1 . 'n')<cr><cmd>lua require('hlslens').start()<cr>",
+          'search previous',
+        },
+        o = 'gn',
+      },
     },
+    O = { 'O', modes = 'nx' },
+    o = { 'o', modes = 'nx' },
     p = { 'p', modes = 'nx' },
     R = { 'R', modes = 'nx' },
     r = { 'r', modes = 'nx' },
@@ -217,6 +209,8 @@ local function map_basic()
       expr = true,
       modes = 'nxo',
     },
+    U = 'U',
+    u = 'u',
     V = { '<c-v>', modes = 'nxo' },
     v = { modes = {
       x = 'V',
@@ -230,23 +224,46 @@ local function map_basic()
     cc = '""S',
     dd = '""dd',
     xx = '"+dd',
-    zt = { capture = { 'neoscroll', value = { 'zt', { '250' } } } },
-    zz = { capture = { 'neoscroll', value = { 'zz', { '250' } } } },
-    zb = { capture = { 'neoscroll', value = { 'zb', { '250' } } } },
     ['É'] = { '?', modes = 'nxo' },
     ['é'] = { '/', modes = 'nxo' },
+    ['.'] = '.',
+    ['!'] = { '!', modes = 'nx' },
+    ['!!'] = { '!!', modes = 'nx' },
+    ['='] = { '=', modes = 'nx' },
+    ['=='] = { '==', modes = 'nx' },
+    ['"'] = '"',
     [','] = {
-      function()
-        require('tsht').nodes()
-      end,
-      'hint',
-      noremap = false,
-      modes = 'nxo',
+      name = 'hint',
+      modes = {
+        n = '`',
+        x = ':lua require("tsht").nodes()<CR>',
+        o = function()
+          require('tsht').nodes()
+        end,
+      },
+      [','] = { require('alt-jump').toggle, 'alt-jump' },
     },
     [dd.right] = { 'l', 'right', modes = 'nxo' },
     [dd.left] = { 'h', 'left', modes = 'nxo' },
     [dd.up] = { 'k', 'up', modes = 'nxo' },
     [dd.down] = { 'j', 'down', modes = 'nxo' },
+    ['<c-d>'] = {
+      capture = {
+        'neoscroll',
+        value = {
+          'scroll',
+          { 'vim.wo.scroll', 'true', '250' },
+        },
+      },
+    },
+    ['<c-f>'] = plug {
+      'Lightspeed_,_ft',
+      modes = 'nxo',
+    },
+    ['<c-g>'] = plug {
+      'Lightspeed_;_ft',
+      modes = 'nxo',
+    },
     ['<c-n>'] = {
       function()
         require('bufjump').forward()
@@ -259,6 +276,17 @@ local function map_basic()
       end,
       'jump previous buffer',
     },
+    ['<c-r>'] = '<c-r>',
+    ['<c-s>'] = {
+      capture = {
+        'neoscroll',
+        value = {
+          'scroll',
+          { '-vim.wo.scroll', 'true', '250' },
+        },
+      },
+    },
+    ['<c-v>'] = { 'gp', modes = 'nv' },
     ['<c-w>'] = {
       r = plug { '(Visual-Split-VSResize)', modes = 'x' },
       S = plug { '(Visual-Split-VSSplit)', modes = 'x' },
@@ -267,7 +295,6 @@ local function map_basic()
     },
     ['<a-a>'] = cmd { 'e#', 'previous buffer' },
     ['<a-b>'] = cmd { 'wincmd p', 'window back' },
-    ['<c-v>'] = { 'gp', modes = 'nv' },
     ['<a-w>'] = cmd { 'q', 'close window' },
     [dd.prev_search] = {
       "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
@@ -285,6 +312,14 @@ local function map_basic()
     [alt(dd.down)] = { require('wrap_win').down, 'window down' },
     [alt(dd.up)] = { require('wrap_win').up, 'window up' },
     [alt(dd.right)] = { require('wrap_win').right, 'window right' },
+    [a.various] = {
+      n = 'gn',
+      N = 'gN',
+      v = 'gv',
+      t = { capture = { 'neoscroll', value = { 'zt', { '250' } } } },
+      z = { capture = { 'neoscroll', value = { 'zz', { '250' } } } },
+      b = { capture = { 'neoscroll', value = { 'zb', { '250' } } } },
+    },
     [a.jump] = {
       A = { vim.lsp.diagnostic.goto_prev, 'go previous diagnostic' },
       a = { vim.lsp.diagnostic.goto_next, 'go next diagnostic' },
@@ -318,10 +353,10 @@ local function map_basic()
       y = { '(matchup-]%)', 'matchup forward', modes = 'nxo' },
       -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
       -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
-      Z = { '[s', 'prevous misspelled' },
-      z = { ']s', 'next misspelled' },
       [':'] = { 'g,', 'newer change' },
       [';'] = { 'g;', 'older changer' },
+      [s(dd.spell)] = { '[s', 'prevous misspelled' },
+      [dd.spell] = { ']s', 'next misspelled' },
       [dd.search] = cmd {
         'Telescope current_buffer_fuzzy_find',
         modes = 'nxo',
@@ -360,7 +395,14 @@ local function map_basic()
         'sandwich replace',
         modes = 'nx',
       },
-      s = { vim.lsp.buf.rename, 'rename', modes = 'nx' },
+      s = {
+        function()
+          require('renamer').rename { empty = false }
+        end,
+        'rename',
+        modes = 'nx',
+      },
+      -- s = { vim.lsp.buf.rename, 'rename', modes = 'nx' },
       t = { '<<', 'dedent', modes = 'nx' },
       U = { 'gU', 'uppercase', modes = 'nx' },
       u = { 'gu', 'lowercase', modes = 'nx' },
@@ -391,8 +433,10 @@ local function map_basic()
         },
       },
       Y = plug { '(operator-sandwich-delete)', modes = 'nx' },
-      y = plug { '(operator-sandwich-add)', modes = 'nx' },
-      z = {
+      y = plug { '(u-surround-add)', modes = 'nx' },
+      [','] = cmd 'ISwapWith',
+      ['='] = { modes = { n = { vim.lsp.buf.formatting_sync }, x = '=' } },
+      [dd.spell] = {
         function()
           require('telescope.builtin').spell_suggest(
             require('telescope.themes').get_cursor {}
@@ -401,16 +445,17 @@ local function map_basic()
         'spell suggest',
         modes = 'nx',
       },
+      [s(dd.comment)] = plug { '(u-comment-opleader-block)', modes = 'nx' },
       [dd.comment] = {
         modes = {
-          n = plug 'kommentary_motion_default',
-          x = plug 'kommentary_visual_default',
-        },
-      },
-      [dd.comment] = {
-        modes = {
-          n = plug 'kommentary_motion_default',
-          x = plug 'kommentary_visual_default',
+          n = {
+            o = cmd 'lua ___comment_norm_o()',
+            O = cmd 'lua ___comment_norm_O()',
+            A = cmd 'lua ___comment_norm_A()',
+          },
+          nx = {
+            [''] = plug '(u-comment-opleader-line)',
+          },
         },
       },
       [s(dd.join)] = { 'J', 'join', modes = 'nx' },
@@ -425,8 +470,18 @@ local function map_basic()
           },
         },
       },
-      [s(dd.ninja)] = plug '(ninja-insert)',
-      [dd.ninja] = plug '(ninja-append)',
+      [s(dd.ninja)] = {
+        modes = {
+          n = plug '(ninja-insert)',
+          x = require('bindutils').pre,
+        },
+      },
+      [dd.ninja] = {
+        modes = {
+          n = plug '(ninja-append)',
+          x = require('bindutils').post,
+        },
+      },
       [dd.left] = {
         name = 'move left',
         modes = {
@@ -459,35 +514,39 @@ local function map_basic()
       [dd.next_search] = plug { '(dial-decrement-additional)', modes = 'x' },
       [a.edit] = {
         name = '+line',
+        ['='] = '==',
         [dd.join] = { capture = { 'revJ', 'line' } },
-        [dd.comment] = plug 'kommentary_line_default',
+        [s(dd.comment)] = plug { '(u-comment-toggler-block)', modex = 'nx' },
+        [dd.comment] = plug { '(u-comment-toggler-line)', modes = 'nx' },
       },
     },
     [a.mark] = {
-      V = { '`<', modes = 'nxo' },
-      v = { '`>', modes = 'nxo' },
-      P = { '`[', modes = 'nxo' },
-      p = { '`]', modes = 'nxo' },
-      t = {
-        capture = { 'marks', 'toggle' },
-        name = 'toggle next available mark at cursor',
+      D = {
+        capture = { 'marks', 'delete_buf' },
+        name = 'Deletes all marks in current buffer.',
       },
       d = {
         capture = { 'marks', 'delete_line' },
         name = 'Deletes all marks on current line.',
       },
-      D = {
-        capture = { 'marks', 'delete_buf' },
-        name = 'Deletes all marks in current buffer.',
+      i = { 'gi' },
+      P = { '`[', modes = 'nxo' },
+      p = { '`]', modes = 'nxo' },
+      S = {
+        capture = { 'marks', 'delete' },
+        name = 'Delete a letter mark (will wait for input).',
       },
       s = {
         capture = { 'marks', 'set' },
         name = 'Sets a letter mark (will wait for input).',
       },
-      S = {
-        capture = { 'marks', 'delete' },
-        name = 'Delete a letter mark (will wait for input).',
+      t = {
+        capture = { 'marks', 'toggle' },
+        name = 'toggle next available mark at cursor',
       },
+      V = { '`<', modes = 'nxo' },
+      v = { '`>', modes = 'nxo' },
+      [','] = { require('alt-jump').reset, 'alt-jump reset' },
       [a.mark] = {
         capture = { 'marks', 'preview' },
         name = 'Previews mark (will wait for user input). press <cr> to just preview the next mark.',
@@ -495,23 +554,11 @@ local function map_basic()
     },
     [a.move] = {
       name = '+move',
-      b = cmd 'Telescope buffers',
       D = cmd 'Telescope lsp_type_definitions', -- also, trouble
       d = cmd 'Telescope lsp_definitions', -- also, trouble
-      E = {
-        function()
-          require('alt-jump').reset()
-        end,
-        'alt-jump reset',
-      },
-      e = {
-        function()
-          require('alt-jump').toggle()
-        end,
-        'alt-jump',
-      },
       I = { vim.lsp.buf.declaration, 'go declaration' }, -- FIXME:
       i = cmd 'Telescope lsp_implementations', -- also, trouble
+      m = cmd 'Telescope buffers',
       o = cmd 'Telescope oldfiles only_cwd=true',
       -- "Telescope lsp_references"
       p = cmd 'TodoTrouble',
@@ -530,20 +577,10 @@ local function map_basic()
         'trouble, next',
       },
       [dd.search] = cmd { 'Telescope live_grep', 'live grep' },
-      [a.move] = {
-        function()
-          require('bindutils').project_files()
-        end,
-        'project file',
-      },
+      [a.move] = { require('bindutils').project_files, 'project file' },
     },
     [a.help] = {
-      d = {
-        function()
-          require('bindutils').docu_current()
-        end,
-        'filetype docu',
-      },
+      d = { require('bindutils').docu_current, 'filetype docu' },
       h = cmd {
         'e ~/Dotfiles/bindings-qwerty/.config/nvim/lua/bindings.lua',
         'bindings',
@@ -575,49 +612,29 @@ local function map_basic()
       },
       d = cmd { 'DiffviewOpen', 'diffview open' },
       D = cmd { 'DiffviewClose', 'diffview close' },
-      e = {
-        function()
-          require('bindutils').edit_current()
-        end,
-        'current in new editor',
-      },
+      e = { require('bindutils').edit_current, 'current in new editor' },
       f = cmd { 'NvimTreeOpen', 'file tree' }, -- FIXME: find a way to focus current file on opening
       F = cmd { 'NvimTreeClose', 'file tree' },
       g = cmd { 'Neogit', 'neogit' },
       G = cmd { 'Gitsigns setqflist', 'trouble hunk' },
       h = cmd { 'DiffviewFileHistory', 'diffview open' },
       H = cmd { 'DiffviewClose', 'diffview close' },
-      i = cmd { "lua require'dapui'.toggle()", 'toggle dapui' },
+      i = {
+        function()
+          require('dapui').toggle()
+        end,
+        'toggle dapui',
+      },
       m = cmd { 'Telescope installed_plugins', 'plugins' },
       n = cmd { 'Telescope modules', 'node modules' },
-      o = {
-        function()
-          require('bindutils').open_current()
-        end,
-        'open current external',
-      },
-      p = {
-        function()
-          require('setup-session').develop()
-        end,
-        'session develop',
-      },
+      o = { require('bindutils').open_current, 'open current external' },
+      p = { require('setup-session').develop, 'session develop' },
       q = cmd { 'TroubleToggle quickfix', 'quickfix' },
       Q = cmd { 'TroubleClose', 'trouble close' },
       r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
-      s = {
-        function()
-          require('bindutils').outliner()
-        end,
-        'outliner',
-      },
+      s = { require('bindutils').outliner, 'outliner' },
       S = cmd { 'TroubleToggle lsp_references', 'lsp reference' },
-      t = {
-        function()
-          require('bindutils').term()
-        end,
-        'new terminal',
-      },
+      t = { require('bindutils').term, 'new terminal' },
       u = cmd { 'UndotreeToggleTree', 'undo tree' },
       w = cmd { 'Telescope my_projects', 'sessions' },
       W = cmd { 'Telescope project_directory', 'projects' },
@@ -628,24 +645,14 @@ local function map_basic()
         'xplr',
       },
       z = cmd { 'ZenMode', 'zen mode' },
-      ['.'] = {
-        function()
-          require('bindutils').dotfiles()
-        end,
-        'dotfiles',
-      },
+      ['.'] = { require('bindutils').dotfiles, 'dotfiles' },
       ['"'] = {
         function()
           require('nononotes').prompt('edit', false, 'all')
         end,
         'pick note',
       },
-      [' '] = {
-        function()
-          require('telescope.builtin').commands()
-        end,
-        'commands',
-      },
+      [' '] = cmd { 'Telescope commands', 'commands' },
     },
     [a.browser] = {
       arch = map_search(
@@ -743,11 +750,17 @@ local function map_basic()
           'stop active clients',
         },
       },
-      z = {
+      t = {
+        require('bindutils').shrink,
+        'experiments!',
+        modes = 'x',
+      },
+      [dd.spell] = {
         name = '+Spell',
         b = cmd { 'setlocal spell spelllang=en_us,fr,cjk', 'en fr' },
         e = cmd { 'setlocal spell spelllang=en_us,cjk', 'en' },
         f = cmd { 'setlocal spell spelllang=fr,cjk', 'fr' },
+        g = cmd { 'zg', 'add to spellfile' },
         x = cmd { 'setlocal nospell spelllang=', 'none' },
       },
       d = {
@@ -812,70 +825,186 @@ local function map_basic()
   }
 end
 
-local function map_to(key, inner, outer)
+local function map_textobj_add_name(t, name)
+  if type(t) ~= 'table' then
+    t = { t }
+  end
+  t.name = t.name or name
+  return t
+end
+
+local function map_textobj(key, inner, outer, name)
   local reg = require('binder').reg
   reg {
     modes = {
       ox = {
-        ['i' .. key] = inner,
-        ['a' .. key] = outer,
+        ['i' .. key] = map_textobj_add_name(inner, name),
+        ['a' .. key] = map_textobj_add_name(outer, name),
       },
     },
   }
 end
 
+local function map_ts_textobj(key, name)
+  -- TODO: accept count argument
+  -- make indepenent of mappings
+  map_textobj(
+    key,
+    plug(string.format('(%s-inner)', name)),
+    plug(string.format('(%s-outer)', name))
+  )
+  require('binder').reg {
+    [' gi' .. key] = plug(string.format('(gns-%s-inner)', name)),
+    [' gi' .. s(key)] = plug(string.format('(gpe-%s-inner)', name)),
+    [' go' .. key] = plug(string.format('(gns-%s-outer)', name)),
+    [' go' .. s(key)] = plug(string.format('(gpe-%s-outer)', name)),
+  }
+  map_textobj('N' .. key, {
+    string.format('<esc><Plug>(gpe-%s-inner)v<Plug>(%s-inner)', name, name),
+    noremap = false,
+  }, {
+    string.format('<esc><Plug>(gpe-%s-outer)v<Plug>(%s-outer)', name, name),
+    noremap = false,
+  })
+  map_textobj('n' .. key, {
+    string.format('<esc><Plug>(gns-%s-inner)v<Plug>(%s-inner)', name, name),
+    noremap = false,
+  }, {
+    string.format('<esc><Plug>(gns-%s-outer)v<Plug>(%s-outer)', name, name),
+    noremap = false,
+  })
+end
+
+-- FIXME: not working in visual mode: comment, ninja
+-- a: argument (targets)
+-- A: parameter (ts)
+-- b: brackets (targets)
+-- c: comment
+-- d: datetime
+-- e: entire buffer
+-- f: funtion (ts)
+-- h: gitsigns
+-- i: indent
+-- j: block (ts)
+-- k: call (ts)
+-- l: line
+-- m: parameter (ts)
+-- p: paragraph (builtin)
+-- q: quotes (targets)
+-- s: sentence
+-- t: tag (targets)
+-- v: variable segment
+-- y: conditional (ts)
+-- é: detect (sandwich)
+-- z: loop (ts)
+-- wW: word (vim)
+-- IA (targets)
+
+-- ts: Ajktyz
+
+-- nN: next/last (targets)
+-- gG: ninja
+
+-- , hint
+
 local function map_textobjects()
+  map_textobj('p', 'ip', 'ap')
+  map_textobj('w', 'iw', 'aw')
+  map_textobj('W', 'iW', 'aw')
+  map_ts_textobj('a', 'parameter')
+  map_ts_textobj('Q', 'string')
+  map_ts_textobj('f', 'function')
+  map_ts_textobj('k', 'call')
+  map_ts_textobj('j', 'block')
+  map_ts_textobj('y', 'conditional')
+  map_ts_textobj('z', 'loop')
   vim.g.targets_nl = 'nN'
-  require('utils').augroup('TargetsLine', {
+  require('utils').augroup('targetsline', {
     {
-      events = { 'User' },
+      events = { 'user' },
       targets = { 'targets#mappings#user' },
       command = function()
         vim.fn.call('targets#mappings#extend', {
           {
             ['-'] = { separator = { { d = '-' } } },
             l = { line = { { c = 1 } } },
+            A = { argument = { { o = '[([]', c = '[])]', s = ',' } } },
           },
         })
       end,
     },
   })
-  map_to('f', {
-    capture = {
-      'treesitter',
-      'textobjects',
-      'select',
-      'keymaps',
-      value = '@function.inner',
-    },
-  }, {
-    capture = {
-      'treesitter',
-      'textobjects',
-      'select',
-      'keymaps',
-      value = '@function.outer',
-    },
-  })
-  -- conflict with targets.vim
-  -- map_to(s(dd.ninja), {
-  --   '<Plug>(ninja-right-foot-inner)',
-  --   'ninja right foot',
-  --   noremap = false,
-  -- }, {
-  --   '<Plug>(ninja-right-foot-a)',
-  --   'ninja right foot',
-  --   noremap = false,
-  -- })
-  -- map_to(dd.ninja, {
-  --   '<Plug>(ninja-right-foot-inner)',
-  --   'ninja right foot',
-  --   noremap = false,
-  -- }, {
-  --   '<Plug>(ninja-right-foot-a)',
-  --   'ninja right foot',
-  --   noremap = false,
-  -- })
+  map_textobj(
+    dd.comment,
+    plug '(u-comment-textobj)',
+    plug '(u-comment-textobj)'
+  )
+  -- todo: should be ii / ai for certain filetypes (markdown, python)
+  map_textobj('i', plug '(indent-object-ii)', plug '(indent-object-ai)')
+  -- FIXME:
+  map_textobj(
+    s(dd.ninja),
+    plug '(ninja-left-foot-inner)',
+    plug '(ninja-left-foot-a)',
+    'ninja left foot'
+  )
+  map_textobj(
+    dd.ninja,
+    plug '(ninja-right-foot-inner)',
+    plug '(ninja-right-foot-a)',
+    'ninja right foot'
+  )
+  local map = require('utils').map
+  -- for _, qual in ipairs { '', 'n', 'N' } do
+  --   for _, obj in ipairs { 'f', 'j', 'k', 'y', 'z' } do
+  --     local post = qual .. obj
+  --     map('nx', 'hx' .. i .. post, 'hx' .. 'a' .. post, { noremap = false })
+  --   end
+  -- end
+  -- map('nx', 'hYé', 'hYaé', { noremap = false })
+  -- map('nx', 'hré', 'hraé', { noremap = false })
+  -- map('nx', 'hYt', 'hYat', { noremap = false })
+  -- -- for _, qual in ipairs { '', 'n', 'N' } do
+  -- --   map('nx', 'hrt', 'vato<esc>ci\\<', { noremap = false })
+  -- -- end
+  map('nx', a.edit .. 'yw', a.edit .. 'yiw', { noremap = false })
+  map('nx', a.edit .. 'ywq', a.edit .. "yiw'", { noremap = false })
+  map('nx', a.edit .. 'ywb', a.edit .. 'yiw(', { noremap = false })
+  map('nx', a.edit .. 'yW', a.edit .. 'yiW', { noremap = false })
+  map('nx', a.edit .. 'yWq', a.edit .. 'yiW"', { noremap = false })
+  map('nx', a.edit .. 'yWb', a.edit .. 'yiW(', { noremap = false })
+  map('nx', a.edit .. 'yl', a.edit .. 'yil', { noremap = false })
+  map('nx', a.edit .. 'ylq', a.edit .. "yil'", { noremap = false })
+  map('nx', a.edit .. 'ylb', a.edit .. 'yil{', { noremap = false })
+  map('nx', a.edit .. 'ynl', a.edit .. 'yinl', { noremap = false })
+  map('nx', a.edit .. 'ynlq', a.edit .. "yinl'", { noremap = false })
+  map('nx', a.edit .. 'ynlb', a.edit .. 'yinl{', { noremap = false })
+  map('nx', a.edit .. 'yNl', a.edit .. 'yiNl', { noremap = false })
+  map('nx', a.edit .. 'yNlq', a.edit .. "yiNl'", { noremap = false })
+  map('nx', a.edit .. 'yNlb', a.edit .. 'yiNl{', { noremap = false })
+  for opr in string.gmatch('Yr', '.') do
+    for _, qual in ipairs { '', 'n', 'N' } do
+      for _, obj in ipairs {
+        'b',
+        'q',
+        '(',
+        ')',
+        '[',
+        ']',
+        '{',
+        '}',
+        'B',
+        '"',
+        "'",
+        '`',
+      } do
+        local o = a.edit .. opr
+        local post = qual .. obj
+        map('nx', o .. post, o .. 'a' .. post, { noremap = false })
+        -- print('nx', o .. post, o .. 'a' .. post, { noremap = false })
+      end
+    end
+  end
 end
 
 local function map_markdown()
@@ -928,43 +1057,6 @@ local function map_readonly()
   }
 end
 
---[[
-## Text objects (ai)
-| key                                       | Description           | source                |
-| ----------------------------------------- | --------------------- | --------------------- |
-| a                                         | argument              | targets               |
-| b                                         | brackets              | vim, targets          |
-| B                                         | block                 | vim, targets          |
-| d                                         | datetimem ft:markdown | datetimee             |
-| e                                         | entire buffer         | entire                |
-| f                                         | function              | ts                    |
-| g                                         | parameter             | ts                    | inner only
-| i                                         | indent                | indent                |
-| I                                         | indent                | indent                |
-| l                                         | line                  | -                     | ?? conflict with targers
-| p                                         | paragraph             | vim                   |
-| q                                         | quotes                | targets               |
-| s                                         | sentence, ft:markdown | sentence, conflict    |
-| t                                         | tag (html)            | vim                   |
-| v                                         | variable segment      | -                     |
-| w                                         | word                  | vim                   |
-| W                                         | bigword               | vim                   |
-| ,                                         | parameter             | conflict with targets |
-| `{count}ih` nth surrounding open to close |
-| n                                         | next                  | targets               |
-| l                                         | last                  | targets               |
-
-- sentence: as, is, gS, gs
-- line: al, il
-
-| Key binder | Description                                                 |
-| ------------ | ----------------------------------------------------------- |
-| `<count>ai`  | **A**n **I**ndentation level and line above.                |
-| `<count>ii`  | **I**nner **I**ndentation level (**no line above**).        |
-| `<count>aI`  | **A**n **I**ndentation level and lines above/below.         |
-| `<count>iI`  | **I**nner **I**ndentation level (**no lines above/below**). |
---]]
-
 function M.setup()
   local map = require('utils').map
   map('nxo', 'q', '<nop>')
@@ -1004,16 +1096,26 @@ function M.setup()
   map_basic()
   map_textobjects()
   local captures = require('binder').captures
-  -- require('utils').dump(captures)
+  --  require('utils').dump(captures)
   require('neoscroll.config').set_mappings(captures.neoscroll)
+  -- require('utils').dump(require('binder').counters)
 end
 
 local vim = vim
 
 M.plugins = {
+  renamer = {
+    ['<c-a>'] = 'set_cursor_to_end',
+    ['<c-i>'] = 'set_cursor_to_start',
+    ['<c-e>'] = 'set_cursor_to_word_end',
+    ['<c-b>'] = 'set_cursor_to_word_start',
+    ['<c-c>'] = 'clear_line',
+    ['<c-u>'] = 'undo',
+    ['<c-r>'] = 'redo',
+  },
   lightspeed = invert {
-    n = 'instant_repeat_fwd_key',
-    N = 'instant_repeat_bwd_key',
+    [';'] = 'instant_repeat_fwd_key',
+    l = 'instant_repeat_bwd_key',
     c = 'cycle_group_fwd_key',
     C = 'cycle_group_bwd_key',
   },
@@ -1031,23 +1133,19 @@ M.plugins = {
     local actions = require 'telescope.actions'
     local trouble = require 'trouble.providers.telescope'
     return {
-      defaults = {
-        mappings = {
-          i = {
-            ['<c-q>'] = actions.send_to_qflist,
-            ['<c-l>'] = actions.send_to_loclist,
-            ['<c-t>'] = trouble.open_with_trouble,
-            ['<c-c>'] = function()
-              vim.cmd 'stopinsert'
-            end,
-          },
-          n = {
-            ['<c-j>'] = actions.file_split,
-            ['<c-l>'] = actions.file_vsplit,
-            ['<c-t>'] = trouble.open_ith_trouble,
-            ['<c-c>'] = actions.close,
-          },
-        },
+      i = {
+        ['<c-q>'] = actions.send_to_qflist,
+        ['<c-l>'] = actions.send_to_loclist,
+        ['<c-t>'] = trouble.open_with_trouble,
+        ['<c-c>'] = function()
+          vim.cmd 'stopinsert'
+        end,
+      },
+      n = {
+        ['<c-j>'] = actions.file_split,
+        ['<c-l>'] = actions.file_vsplit,
+        ['<c-t>'] = trouble.open_ith_trouble,
+        ['<c-c>'] = actions.close,
       },
     }
   end,

@@ -85,6 +85,13 @@ local function create(f, help)
   return string.format('<cmd>lua require%q.store[%d]()<cr>', module, id)
 end
 
+M.counters = {}
+
+local function count(mode)
+  M.counters[mode] = M.counters[mode] or 0
+  M.counters[mode] = M.counters[mode] + 1
+end
+
 M.captures = {}
 local captures = M.captures
 
@@ -133,6 +140,7 @@ local function reg(t, bufnr, acc)
     end
     local modes = t.modes or acc.modes or 'n'
     for mode in string.gmatch(modes, '.') do
+      count(mode)
       map_defer(bufnr, mode, acc.keys, rhs, map_opts)
     end
     return

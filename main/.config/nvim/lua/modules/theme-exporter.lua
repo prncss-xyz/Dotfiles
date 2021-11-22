@@ -62,4 +62,10 @@ function M.export_theme(name)
   dest:close()
 end
 
+function M.setup()
+  require('modules.utils').command('ExportTheme', { nargs = 1 }, function(name)
+    require('theme-exporter').export_theme(name)
+  end)
+end
+
 return M

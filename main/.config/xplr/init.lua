@@ -13,7 +13,7 @@ require('trash-cli').setup()
 -- require('type-to-nav').setup()
 require('icons').setup()
 
--- local utils = require 'utils'
+-- local modules.utils = require 'utils'
 
 -- TODO merge arrays
 local function deep_merge(t1, t2)

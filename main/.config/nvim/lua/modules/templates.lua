@@ -55,19 +55,20 @@ function M.template_match()
     local snippet = (template.value):copy()
     snippet.trigger = ''
     snippet:trigger_expand(
-      require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
+      require('luasnip').session.current_nodes[vim.api.nvim_get_current_buf()]
     )
   end
 end
 
-load_templates()
-
-require('utils').augroup('Templates', {
-  {
-    events = { 'BufNewFile' },
-    targets = { '*' },
-    command = 'lua require "templates".template_match()',
-  },
-})
+function M.setup()
+  load_templates()
+  require('modules.utils').augroup('Templates', {
+    {
+      events = { 'BufNewFile' },
+      targets = { '*' },
+      command = 'lua require "templates".template_match()',
+    },
+  })
+end
 
 return M

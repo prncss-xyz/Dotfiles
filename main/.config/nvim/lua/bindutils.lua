@@ -1,6 +1,8 @@
-local m = {}
+local M = {}
 
-local get_visual_selection = require('utils').get_visual_selection
+-- small commands directly meant for bindings
+
+local get_visual_selection = require('modules.utils').get_visual_selection
 
 -- TODO: toggle side panel
 
@@ -8,7 +10,7 @@ local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-function m.ro_quit_else(lhs, mode)
+function M.ro_quit_else(lhs, mode)
   if vim.bo.readonly then
     vim.cmd ':q'
   else
@@ -16,19 +18,20 @@ function m.ro_quit_else(lhs, mode)
   end
 end
 
-function m.repeatable(rhs)
+function M.repeatable(rhs)
   return string.format('%s<cmd>call repeat#set(%q, v:count)<cr>', rhs, t(rhs))
 end
 
-function m.outliner()
+function M.outliner()
   if vim.bo.filetype == 'markdown' then
+    require'modules.toggler'.open('Toc', nil)
     vim.cmd 'Toc'
   else
-    vim.cmd 'SymbolsOutline'
+    require'modules.toggler'.open('SymbolsOutlineOpen', 'SymbolsOutlineClose')
   end
 end
 
-function m.project_files()
+function M.project_files()
   if vim.fn.getcwd() == os.getenv 'HOME' .. '/Personal/neuron' then
     require('nononotes').prompt('edit', false, 'all')
     return
@@ -40,7 +43,7 @@ function m.project_files()
   require('telescope.builtin').find_files()
 end
 
-function m.toggle_cmp()
+function M.toggle_cmp()
   local cmp = require 'cmp'
   if cmp.visible() then
     cmp.close()
@@ -49,7 +52,7 @@ function m.toggle_cmp()
   end
 end
 
-function m.up()
+function M.up()
   local cmp = require 'cmp'
   if cmp.visible() then
     cmp.select_prev_item()
@@ -58,7 +61,7 @@ function m.up()
   vim.fn.feedkeys(t '<up>', '')
 end
 
-function m.tab_complete()
+function M.tab_complete()
   local cmp = require 'cmp'
   if cmp.visible() then
     cmp.confirm {
@@ -80,7 +83,7 @@ function m.tab_complete()
 end
 
 --- <s-tab> to jump to next snippet's placeholder
-function m.s_tab_complete()
+function M.s_tab_complete()
   local r = require('luasnip').jump(-1)
   if r then
     return
@@ -88,7 +91,7 @@ function m.s_tab_complete()
   vim.fn.feedkeys(t '<Plug>(TaboutBackMulti)', '')
 end
 
-function m.spell_next(dir)
+function M.spell_next(dir)
   local word = vim.fn.expand '<cword>'
   local res = vim.fn.spellbadword(word)
   if dir == -1 then
@@ -101,7 +104,7 @@ function m.spell_next(dir)
   )
 end
 
-function m.onlyBuffer()
+function M.onlyBuffer()
   local cur_buf = vim.api.nvim_get_current_buf()
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if cur_buf ~= buf then
@@ -123,14 +126,14 @@ local function get_alt(file)
   end
 end
 
-function m.edit_alt()
+function M.edit_alt()
   local alt = get_alt(vim.fn.expand '%')
   if alt then
     vim.cmd('e ' .. alt)
   end
 end
 
-function m.term()
+function M.term()
   require('plenary.job')
     :new({
       command = vim.env.TERMINAL,
@@ -139,7 +142,7 @@ function m.term()
     :start()
 end
 
-function m.term_launch(args0)
+function M.term_launch(args0)
   local args = { '-e', unpack(args0) }
   require('plenary.job')
     :new({
@@ -149,7 +152,7 @@ function m.term_launch(args0)
     :start()
 end
 
-function m.open_current()
+function M.open_current()
   require('plenary.job')
     :new({
       command = 'xdg-open',
@@ -158,46 +161,11 @@ function m.open_current()
     :start()
 end
 
--- visual mode
--- shrink selection by one character
--- vim.schedule causes exiting visual selection
-function m.shrink()
-  get_visual_selection(function(selection)
-    -- if selection:match '^%[%[.*%]%]$' then
-    --   vim.fn.feedkeys(t 'hhollo', 'n')
-    -- else
-    vim.fn.feedkeys(t 'holo', 'n')
-    -- end
-  end)
-end
-
-function m.pre()
-  local prefix = ''
-  local p0 = vim.fn.getpos 'v'
-  local p1 = vim.fn.getpos '.'
-  if p0[2] < p1[2] or p0[2] == p1[2] and p0[3] < p1[3] then
-    prefix = 'o'
-  end
-  local postfix = true and 'i' or 'I' -- TODO: detect selection mode
-  vim.fn.feedkeys(t(prefix .. '<esc>' .. postfix))
-end
-
-function m.post()
-  local prefix = ''
-  local p0 = vim.fn.getpos 'v'
-  local p1 = vim.fn.getpos '.'
-  local postfix = true and 'a' or 'A' -- TODO: detect selection mode
-  if p0[2] > p1[2] or p0[2] == p1[2] and p0[3] > p1[3] then
-    prefix = 'o'
-  end
-  vim.fn.feedkeys(t(prefix .. '<esc>' .. postfix))
-end
-
-function m.dotfiles()
+function M.dotfiles()
   require('telescope.builtin').git_files { cwd = os.getenv 'DOTFILES' }
 end
 
-function m.docu_current()
+function M.docu_current()
   require('plenary.job')
     :new({
       command = vim.env.TERMINAL,
@@ -212,15 +180,15 @@ function m.docu_current()
     :start()
 end
 
-function m.edit_current()
+function M.edit_current()
   local current = vim.fn.expand '%'
-  m.term_launch { 'nvim', current }
+  M.term_launch { 'nvim', current }
 end
 
-function m.searchCword(base)
+function M.searchCword(base)
   local word = vim.fn.expand '<cword>'
-  local qs = require('utils').encode_uri(word)
-  m.open(base .. qs)
+  local qs = require('modules.utils').encode_uri(word)
+  M.open(base .. qs)
 end
 
-return m
+return M

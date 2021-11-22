@@ -1,3 +1,5 @@
+-- if `.gitignore` exists, just opens it; if not pick a gitignore files and copy it before opening
+--
  -- TODO: https://github.com/github/choosealicense.com/blob/gh-pages/_licenses/gpl-3.0.txt
 
 local telescope = require 'telescope'

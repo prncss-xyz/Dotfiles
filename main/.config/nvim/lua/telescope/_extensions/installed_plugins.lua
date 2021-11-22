@@ -1,3 +1,5 @@
+-- opens an installed plugin repo
+
 local telescope = require 'telescope'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'

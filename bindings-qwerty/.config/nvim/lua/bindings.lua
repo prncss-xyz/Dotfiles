@@ -1,5 +1,5 @@
 local M = {}
-local invert = require('utils').invert
+local invert = require('modules.utils').invert
 
 -- mapclear
 
@@ -75,7 +75,7 @@ local function map_command_insert()
   -- - dedent
   -- - remap cmp c-e
   -- - map('i', '<a-t>', '<esc>"zdh"zpa') -- transpose
-  local reg = require('binder').reg
+  local reg = require('modules.binder').reg
   reg {
     modes = {
       -- TODO: l is not what I thought
@@ -125,13 +125,13 @@ local function map_search(url, help)
     modes = {
       n = {
         function()
-          require('browser').search_cword(url)
+          require('modules.browser').search_cword(url)
         end,
         help,
       },
       x = {
         function()
-          require('browser').search_visual(url)
+          require('modules.browser').search_visual(url)
         end,
         help,
       },
@@ -145,15 +145,15 @@ local function map_basic()
   -- - map reselect "gv"
   -- al = { '<Plug>(textobj-line-a)', 'line' },
   -- il = { '<Plug>(textobj-line-i)', 'line' },
-  local reg = require('binder').reg
+  local reg = require('modules.binder').reg
   reg {
     A = 'A',
     a = 'a',
     B = plug { '(matchup-g%)', 'matchup cycle backward', modes = 'nxo' },
     b = plug { '(matchup-%)', 'matchup cycle forward', modes = 'nxo' },
-    C = { '""C', modes = 'nx' },
+    C = { '<nop>', modes = 'nx' },
     c = { '""c', modes = 'nx' },
-    D = { '""D', modes = 'nx' },
+    D = { '<nop>', modes = 'nx' },
     d = { '""d', modes = 'nx' },
     E = { 'E', 'previous bigword', modes = 'nxo' },
     -- e = { 'e', 'next word ', modes = 'nxo' },
@@ -241,29 +241,20 @@ local function map_basic()
           require('tsht').nodes()
         end,
       },
-      [','] = { require('alt-jump').toggle, 'alt-jump' },
+      [','] = { require('modules.alt-jump').toggle, 'alt-jump' },
     },
     [dd.right] = { 'l', 'right', modes = 'nxo' },
     [dd.left] = { 'h', 'left', modes = 'nxo' },
     [dd.up] = { 'k', 'up', modes = 'nxo' },
     [dd.down] = { 'j', 'down', modes = 'nxo' },
-    ['<c-d>'] = {
-      capture = {
-        'neoscroll',
-        value = {
-          'scroll',
-          { 'vim.wo.scroll', 'true', '250' },
-        },
-      },
-    },
-    ['<c-f>'] = plug {
-      'Lightspeed_,_ft',
-      modes = 'nxo',
-    },
-    ['<c-g>'] = plug {
-      'Lightspeed_;_ft',
-      modes = 'nxo',
-    },
+    ['<c-d>'] = function()
+      require('neoscroll').scroll(0.9, true, 250)
+    end,
+    ['<c-f>'] = plug { 'Lightspeed_,_ft', modes = 'nxo' },
+    ['<c-g>'] = plug { 'Lightspeed_;_ft', modes = 'nxo' },
+    ['<c-i>'] = function()
+      require('neoscroll').scroll(-0.9, true, 250)
+    end,
     ['<c-n>'] = {
       function()
         require('bufjump').forward()
@@ -277,15 +268,7 @@ local function map_basic()
       'jump previous buffer',
     },
     ['<c-r>'] = '<c-r>',
-    ['<c-s>'] = {
-      capture = {
-        'neoscroll',
-        value = {
-          'scroll',
-          { '-vim.wo.scroll', 'true', '250' },
-        },
-      },
-    },
+    ['<c-s>'] = { vim.lsp.buf.formatting_sync, modes = 'ni' },
     ['<c-v>'] = { 'gp', modes = 'nv' },
     ['<c-w>'] = {
       r = plug { '(Visual-Split-VSResize)', modes = 'x' },
@@ -308,17 +291,23 @@ local function map_basic()
       expr = true,
       modes = 'nx',
     },
-    [alt(dd.left)] = { require('wrap_win').left, 'window left' },
-    [alt(dd.down)] = { require('wrap_win').down, 'window down' },
-    [alt(dd.up)] = { require('wrap_win').up, 'window up' },
-    [alt(dd.right)] = { require('wrap_win').right, 'window right' },
+    [alt(dd.left)] = { require('modules.wrap_win').left, 'window left' },
+    [alt(dd.down)] = { require('modules.wrap_win').down, 'window down' },
+    [alt(dd.up)] = { require('modules.wrap_win').up, 'window up' },
+    [alt(dd.right)] = { require('modules.wrap_win').right, 'window right' },
     [a.various] = {
       n = 'gn',
       N = 'gN',
       v = 'gv',
-      t = { capture = { 'neoscroll', value = { 'zt', { '250' } } } },
-      z = { capture = { 'neoscroll', value = { 'zz', { '250' } } } },
-      b = { capture = { 'neoscroll', value = { 'zb', { '250' } } } },
+      t = function()
+        require('neoscroll').scroll('zt', { '250' })
+      end,
+      z = function()
+        require('neoscroll').scroll('zz', { '250' })
+      end,
+      b = function()
+        require('neoscroll').scroll('zb', { '250' })
+      end,
     },
     [a.jump] = {
       A = { vim.lsp.diagnostic.goto_prev, 'go previous diagnostic' },
@@ -390,11 +379,11 @@ local function map_basic()
         },
       },
       i = { '>>', 'indent', modes = 'nx' },
-      r = plug {
-        '(operator-sandwich-replace)',
-        'sandwich replace',
-        modes = 'nx',
-      },
+      -- r = plug {
+      --   '(operator-sandwich-replace)',
+      --   'sandwich replace',
+      --   modes = 'x',
+      -- },
       s = {
         function()
           require('renamer').rename { empty = false }
@@ -432,10 +421,8 @@ local function map_basic()
           n = plug '(ExchangeLine)',
         },
       },
-      Y = plug { '(operator-sandwich-delete)', modes = 'nx' },
-      y = plug { '(u-surround-add)', modes = 'nx' },
+      -- y = plug { '(u-surround-add)', modes = 'x' },
       [','] = cmd 'ISwapWith',
-      ['='] = { modes = { n = { vim.lsp.buf.formatting_sync }, x = '=' } },
       [dd.spell] = {
         function()
           require('telescope.builtin').spell_suggest(
@@ -460,8 +447,8 @@ local function map_basic()
       },
       [s(dd.join)] = { 'J', 'join', modes = 'nx' },
       [dd.join] = {
-        capture = { 'revJ', 'operator' },
         modes = {
+          n = '<Plug>(u-revj-operator)',
           x = {
             function()
               require('revj').format_visual()
@@ -514,8 +501,7 @@ local function map_basic()
       [dd.next_search] = plug { '(dial-decrement-additional)', modes = 'x' },
       [a.edit] = {
         name = '+line',
-        ['='] = '==',
-        [dd.join] = { capture = { 'revJ', 'line' } },
+        [dd.join] = plug '(u-revj-line)',
         [s(dd.comment)] = plug { '(u-comment-toggler-block)', modex = 'nx' },
         [dd.comment] = plug { '(u-comment-toggler-line)', modes = 'nx' },
       },
@@ -546,7 +532,7 @@ local function map_basic()
       },
       V = { '`<', modes = 'nxo' },
       v = { '`>', modes = 'nxo' },
-      [','] = { require('alt-jump').reset, 'alt-jump reset' },
+      [','] = { require('modules.alt-jump').reset, 'alt-jump reset' },
       [a.mark] = {
         capture = { 'marks', 'preview' },
         name = 'Previews mark (will wait for user input). press <cr> to just preview the next mark.',
@@ -554,11 +540,21 @@ local function map_basic()
     },
     [a.move] = {
       name = '+move',
+      b = cmd 'Telescope buffers',
       D = cmd 'Telescope lsp_type_definitions', -- also, trouble
       d = cmd 'Telescope lsp_definitions', -- also, trouble
       I = { vim.lsp.buf.declaration, 'go declaration' }, -- FIXME:
       i = cmd 'Telescope lsp_implementations', -- also, trouble
-      m = cmd 'Telescope buffers',
+      -- m = function()
+      --   require('telescope.builtin').find_files {
+      --     cwd = vim.fn.expand '%:p:h',
+      --   }
+      -- end,
+      m = function()
+        require('telescope.builtin').file_browser {
+          cwd = vim.fn.expand '%:p:h',
+        }
+      end,
       o = cmd 'Telescope oldfiles only_cwd=true',
       -- "Telescope lsp_references"
       p = cmd 'TodoTrouble',
@@ -590,19 +586,23 @@ local function map_basic()
       v = cmd { 'Telescope help_tags', 'help tags' },
     },
     [a.editor] = {
-      a = cmd {
-        'TroubleToggle lsp_workspace_diagnostics',
-        'lsp diagnostics',
-      },
-      A = cmd {
-        'TroubleToggle lsp_document_diagnostics',
+      A = {
+        function()
+          require('modules.toggler').open(
+            'Trouble lsp_document_diagnostics',
+            'TroubleClose'
+          )
+        end,
         'lsp document diagnostics',
       },
-      b = { -- FIXME:
+      a = {
         function()
-          require('bufjump').forward(require('bufjump').not_under_cwd)
+          require('modules.toggler').open(
+            'Trouble lsp_workspace_diagnostics',
+            'TroubleClose'
+          )
         end,
-        'next workspace',
+        'lsp worspace diagnostics',
       },
       B = { -- FIXME:
         function()
@@ -610,32 +610,67 @@ local function map_basic()
         end,
         'previous workspace',
       },
-      d = cmd { 'DiffviewOpen', 'diffview open' },
-      D = cmd { 'DiffviewClose', 'diffview close' },
+      b = { -- FIXME:
+        function()
+          require('bufjump').forward(require('bufjump').not_under_cwd)
+        end,
+        'next workspace',
+      },
+      d = function()
+        require('modules.toggler').open('DiffviewOpen', 'DiffviewClose')
+      end,
       e = { require('bindutils').edit_current, 'current in new editor' },
-      f = cmd { 'NvimTreeOpen', 'file tree' }, -- FIXME: find a way to focus current file on opening
-      F = cmd { 'NvimTreeClose', 'file tree' },
-      g = cmd { 'Neogit', 'neogit' },
-      G = cmd { 'Gitsigns setqflist', 'trouble hunk' },
-      h = cmd { 'DiffviewFileHistory', 'diffview open' },
+      f = {
+        function()
+          require('modules.toggler').open('NvimTreeOpen', 'NvimTreeClose')
+        end,
+        'nvim tree',
+      },
+      G = {
+        function()
+          require('modules.toggler').open('Gitsigns setqflist', 'TroubleClose')
+        end,
+        'hunks',
+      },
+      g = function()
+        require('modules.toggler').open('Neogit', ':q')
+      end,
       H = cmd { 'DiffviewClose', 'diffview close' },
+      h = cmd { 'DiffviewFileHistory', 'diffview open' },
       i = {
         function()
           require('dapui').toggle()
         end,
         'toggle dapui',
       },
+      k = {
+        function()
+          require('modules.toggler').open('Trouble quickfix', 'TroubleClose')
+        end,
+        'quickfix',
+      },
       m = cmd { 'Telescope installed_plugins', 'plugins' },
       n = cmd { 'Telescope modules', 'node modules' },
       o = { require('bindutils').open_current, 'open current external' },
-      p = { require('setup-session').develop, 'session develop' },
-      q = cmd { 'TroubleToggle quickfix', 'quickfix' },
-      Q = cmd { 'TroubleClose', 'trouble close' },
+      p = { require('modules.setup-session').develop, 'session develop' },
       r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
       s = { require('bindutils').outliner, 'outliner' },
-      S = cmd { 'TroubleToggle lsp_references', 'lsp reference' },
+      S = {
+        function()
+          require('modules.toggler').open(
+            'TroubleToggle lsp_references',
+            'TroubleClose'
+          )
+        end,
+        'lsp references',
+      },
       t = { require('bindutils').term, 'new terminal' },
-      u = cmd { 'UndotreeToggleTree', 'undo tree' },
+      u = {
+        function()
+          require('modules.toggler').open('UndotreeToggle', 'UndotreeToggle')
+        end,
+        'undo tree',
+      },
       w = cmd { 'Telescope my_projects', 'sessions' },
       W = cmd { 'Telescope project_directory', 'projects' },
       x = {
@@ -644,7 +679,9 @@ local function map_basic()
         end,
         'xplr',
       },
-      z = cmd { 'ZenMode', 'zen mode' },
+      z = function()
+        require('modules.toggler').open('ZenMode', 'zen mode')
+      end,
       ['.'] = { require('bindutils').dotfiles, 'dotfiles' },
       ['"'] = {
         function()
@@ -653,13 +690,18 @@ local function map_basic()
         'pick note',
       },
       [' '] = cmd { 'Telescope commands', 'commands' },
+      [s(a.editor)] = { require('modules.toggler').back, 'toggle' },
+      [a.editor] = { require('modules.toggler').toggle, 'toggle' },
     },
     [a.browser] = {
       arch = map_search(
         'https://wiki.archlinux.org/index.php?search=',
         'archlinux wiki'
       ),
-      aur = map_search('https://aur.archlinux.org/packages/?K=', 'aur packages'),
+      aur = map_search(
+        'https://aur.archlinux.org/packages/?K=',
+        'aur packages'
+      ),
       ca = map_search(
         'https://www.cairn.info/resultats_recherche.php?searchTerm=',
         'cairn'
@@ -677,7 +719,7 @@ local function map_basic()
       gh = map_search('https://github.com/search?q=', 'github'),
       go = map_search('https://google.ca/search?q=', 'google'),
       lh = map_search('https://www.libhunt.com/search?query=', 'libhunt'),
-      man = { require('browser').man, 'man page' },
+      man = { require('modules.browser').man, 'man page' },
       mdn = map_search('https://developer.mozilla.org/en-US/search?q=', 'mdn'),
       nell = map_search(
         'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
@@ -688,7 +730,7 @@ local function map_basic()
         '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
         'open current file',
       },
-      P = { require('setup-session').launch, 'session lauch' },
+      P = { require('modules.setup-session').launch, 'session lauch' },
       pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
       sea = map_search('https://www.seriouseats.com/search?q=', 'seriouseats'),
       sep = map_search(
@@ -696,14 +738,20 @@ local function map_basic()
         'sep'
       ),
       sp = map_search('https://www.persee.fr/search?ta=article&q=', 'persée'),
-      st = map_search('https://usito.usherbrooke.ca/d%C3%A9finitions/', 'usito'),
+      st = map_search(
+        'https://usito.usherbrooke.ca/d%C3%A9finitions/',
+        'usito'
+      ),
       u = {
-        require('browser').open_file,
+        require('modules.browser').open_file,
         'open current file',
       },
       we = map_search('https://en.wikipedia.org/wiki/', 'wikipidia en'),
       wf = map_search('https://fr.wikipedia.org/wiki/', 'wikipidia fr'),
-      y = map_search('https://www.youtube.com/results?search_query=', 'youtube'),
+      y = map_search(
+        'https://www.youtube.com/results?search_query=',
+        'youtube'
+      ),
     },
     [a.macro] = {
       r = plug '(Mac_RecordNew)',
@@ -751,7 +799,7 @@ local function map_basic()
         },
       },
       t = {
-        require('bindutils').shrink,
+        require('modules.palette').shrink,
         'experiments!',
         modes = 'x',
       },
@@ -834,7 +882,7 @@ local function map_textobj_add_name(t, name)
 end
 
 local function map_textobj(key, inner, outer, name)
-  local reg = require('binder').reg
+  local reg = require('modules.binder').reg
   reg {
     modes = {
       ox = {
@@ -853,7 +901,7 @@ local function map_ts_textobj(key, name)
     plug(string.format('(%s-inner)', name)),
     plug(string.format('(%s-outer)', name))
   )
-  require('binder').reg {
+  require('modules.binder').reg {
     [' gi' .. key] = plug(string.format('(gns-%s-inner)', name)),
     [' gi' .. s(key)] = plug(string.format('(gpe-%s-inner)', name)),
     [' go' .. key] = plug(string.format('(gns-%s-outer)', name)),
@@ -919,7 +967,7 @@ local function map_textobjects()
   map_ts_textobj('y', 'conditional')
   map_ts_textobj('z', 'loop')
   vim.g.targets_nl = 'nN'
-  require('utils').augroup('targetsline', {
+  require('modules.utils').augroup('targetsline', {
     {
       events = { 'user' },
       targets = { 'targets#mappings#user' },
@@ -954,61 +1002,195 @@ local function map_textobjects()
     plug '(ninja-right-foot-a)',
     'ninja right foot'
   )
-  local map = require('utils').map
-  -- for _, qual in ipairs { '', 'n', 'N' } do
-  --   for _, obj in ipairs { 'f', 'j', 'k', 'y', 'z' } do
-  --     local post = qual .. obj
-  --     map('nx', 'hx' .. i .. post, 'hx' .. 'a' .. post, { noremap = false })
-  --   end
-  -- end
-  -- map('nx', 'hYé', 'hYaé', { noremap = false })
-  -- map('nx', 'hré', 'hraé', { noremap = false })
-  -- map('nx', 'hYt', 'hYat', { noremap = false })
+  local map = require('modules.utils').map
+  map('o', 'z', '<Plug>Lightspeed_x', { noremap = false })
+  map('o', 'Z', '<Plug>Lightspeed_x', { noremap = false })
   -- -- for _, qual in ipairs { '', 'n', 'N' } do
   -- --   map('nx', 'hrt', 'vato<esc>ci\\<', { noremap = false })
-  -- -- end
-  map('nx', a.edit .. 'yw', a.edit .. 'yiw', { noremap = false })
-  map('nx', a.edit .. 'ywq', a.edit .. "yiw'", { noremap = false })
-  map('nx', a.edit .. 'ywb', a.edit .. 'yiw(', { noremap = false })
-  map('nx', a.edit .. 'yW', a.edit .. 'yiW', { noremap = false })
-  map('nx', a.edit .. 'yWq', a.edit .. 'yiW"', { noremap = false })
-  map('nx', a.edit .. 'yWb', a.edit .. 'yiW(', { noremap = false })
-  map('nx', a.edit .. 'yl', a.edit .. 'yil', { noremap = false })
-  map('nx', a.edit .. 'ylq', a.edit .. "yil'", { noremap = false })
-  map('nx', a.edit .. 'ylb', a.edit .. 'yil{', { noremap = false })
-  map('nx', a.edit .. 'ynl', a.edit .. 'yinl', { noremap = false })
-  map('nx', a.edit .. 'ynlq', a.edit .. "yinl'", { noremap = false })
-  map('nx', a.edit .. 'ynlb', a.edit .. 'yinl{', { noremap = false })
-  map('nx', a.edit .. 'yNl', a.edit .. 'yiNl', { noremap = false })
-  map('nx', a.edit .. 'yNlq', a.edit .. "yiNl'", { noremap = false })
-  map('nx', a.edit .. 'yNlb', a.edit .. 'yiNl{', { noremap = false })
-  for opr in string.gmatch('Yr', '.') do
-    for _, qual in ipairs { '', 'n', 'N' } do
-      for _, obj in ipairs {
-        'b',
-        'q',
-        '(',
-        ')',
-        '[',
-        ']',
-        '{',
-        '}',
-        'B',
-        '"',
-        "'",
-        '`',
-      } do
-        local o = a.edit .. opr
-        local post = qual .. obj
-        map('nx', o .. post, o .. 'a' .. post, { noremap = false })
-        -- print('nx', o .. post, o .. 'a' .. post, { noremap = false })
+  local conf = {
+    leader_add = a.edit .. 'y',
+    leader_delete = a.edit .. 'Y',
+    leader_replace = a.edit .. 'r',
+    leader_extact = a.edit .. 'R',
+    previous = 'N',
+    next = 'n',
+    inner = 'i',
+    outer = 'a',
+    add = {
+      q = "'",
+      Q = '`',
+      ["'"] = "'",
+      ['"'] = '"',
+      ['`'] = '`',
+      ['('] = '(',
+      [')'] = '(',
+      b = '(',
+      B = '{',
+      ['{'] = '{',
+      ['}'] = '{',
+      ['['] = '[',
+      [']'] = '[',
+      ['<'] = '<',
+      ['>'] = '<',
+      a = ',',
+      [','] = ',',
+      i = 'i', -- interactive (prompt left then right char)
+      t = 't', -- xml tag
+      k = 'f', -- function call
+      ['.'] = '.',
+      [';'] = ';',
+      [':'] = ':',
+      ['+'] = '+',
+      ['-'] = '-',
+      ['='] = '=',
+      ['~'] = '~',
+      ['_'] = '_',
+      ['*'] = '*',
+      ['#'] = '#',
+      ['/'] = '/',
+      ['\\'] = '\\',
+      ['|'] = '|',
+      ['&'] = '&',
+      ['$'] = '$',
+    },
+  }
+  map(
+    'x',
+    conf.leader_delete,
+    '<Plug>(operator-sandwich-delete)',
+    { noremap = false }
+  )
+  -- map( TODO:
+  --   'x',
+  --   conf.leader_extact,
+  --   '<Plug>(extract)',
+  --   { noremap = false }
+  -- )
+  for k, v in pairs(conf.add) do
+    map(
+      'x',
+      conf.leader_add .. k,
+      '<Plug>(operator-sandwich-add)' .. v,
+      -- '<Plug>(u-surround-add)' .. v,
+      { noremap = false }
+    )
+    map(
+      'x',
+      conf.leader_replace .. k,
+      '<Plug>(operator-sandwich-replace)' .. v,
+      { noremap = false }
+    )
+  end
+  local function sandwich(key, add, delete)
+    if delete then
+      map(
+        'n',
+        conf.leader_delete .. key,
+        '<Plug>(operator-sandwich-delete)' .. delete,
+        { noremap = false }
+      )
+    end
+    for k, v in pairs(conf.add) do
+      map(
+        'n',
+        conf.leader_add .. key .. k,
+        '<Plug>(operator-sandwich-add)' .. add .. v,
+        -- '<Plug>(u-surround-add)' .. add .. v,
+        { noremap = false }
+      )
+      if delete then
+        map(
+          'n',
+          conf.leader_replace .. key .. k,
+          '<Plug>(operator-sandwich-replace)' .. delete .. v,
+          { noremap = false }
+        )
       end
     end
+  end
+  -- TODO: tag, ts-objects
+  local function sandwich_target(key, ia, obj)
+    obj = obj or key
+    ia = ia or conf.outer
+    sandwich(key, ia .. obj, ia .. obj)
+    if conf.previous then
+      sandwich(
+        conf.previous .. key,
+        ia .. conf.previous .. obj,
+        ia .. conf.previous .. obj
+      )
+    end
+    if conf.next then
+      sandwich(conf.next .. key, ia .. conf.next .. obj, ia .. conf.next .. obj)
+    end
+  end
+  -- TODO: delete
+  sandwich('v', 'iv', nil)
+  sandwich('w', 'iw', nil)
+  map('n', conf.leader_extact .. 'v', 'yiv"_dav', { noremap = false })
+  sandwich('W', 'iW', nil)
+  map('n', conf.leader_extact .. 'w', 'yiw"_daw', { noremap = false })
+  map('n', conf.leader_extact .. 'W', 'yiw"_daW', { noremap = false })
+  sandwich_target('l', conf.inner, 'l')
+  map('n', conf.leader_extact .. 'w', 'yil"_dal', { noremap = false })
+  for _, k in ipairs {
+    'q',
+    "'",
+    '"',
+    '`',
+    '(',
+    ')',
+    'b',
+    'B',
+    '{',
+    '}',
+    '[',
+    ']',
+    '<',
+    '>',
+    'a',
+    ',',
+    '.',
+    ';',
+    ':',
+    '+',
+    '-',
+    '=',
+    '~',
+    '_',
+    '*',
+    '#',
+    '/',
+    '\\',
+    '|',
+    '&',
+    '$',
+  } do
+    sandwich_target(k, conf.outer, k)
+    map(
+      'n',
+      conf.leader_extact .. k,
+      'yi' .. k .. '"_da' .. k,
+      { noremap = false }
+    )
+    map(
+      'n',
+      conf.leader_extact .. 'n' .. k,
+      'yin' .. k .. '"_da' .. k,
+      { noremap = false }
+    )
+    map(
+      'n',
+      conf.leader_extact .. 'N' .. k,
+      'yiN' .. k .. '"_da' .. k,
+      { noremap = false }
+    )
+    -- conf.add
   end
 end
 
 local function map_markdown()
-  local reg = require('binder').reg_local
+  local reg = require('modules.binder').reg_local
   reg {
     ['<c-a>'] = { modes = { nvo = 'g^', i = '<c-o>g^' } },
     ['<c-e>'] = { modes = { nvo = 'g$', i = '<c-o>g$' } },
@@ -1049,7 +1231,7 @@ local function map_readonly()
   if not vim.bo.readonly then
     return
   end
-  local reg = require('binder').reg_local
+  local reg = require('modules.binder').reg_local
   reg {
     x = { '<cmd>q<cr>', nowait = true },
     u = { '<c-u>', noremap = false, nowait = true },
@@ -1058,7 +1240,7 @@ local function map_readonly()
 end
 
 function M.setup()
-  local map = require('utils').map
+  local map = require('modules.utils').map
   map('nxo', 'q', '<nop>')
   map('nxo', a.edit, '<nop>')
   map('nxo', a.jump, '<nop>')
@@ -1078,27 +1260,28 @@ function M.setup()
   map('nxo', 'gg', '<nop>')
   map('', '<c-u>', '<nop>')
   map('', '<c-d>', '<nop>')
-  require('utils').augroup('ReadonlyMappings', {
+  require('modules.utils').augroup('ReadonlyMappings', {
     {
       events = { 'BufReadPost' },
       targets = { '*' },
       command = map_readonly,
     },
   })
-  require('utils').augroup('MarkdownBindings', {
+  require('modules.utils').augroup('MarkdownBindings', {
     {
       events = { 'FileType' },
       targets = { 'markdown' },
       command = map_markdown,
     },
   })
+  -- ordering of the matters for: i) overriding, ii) captures
   map_command_insert()
   map_basic()
   map_textobjects()
-  local captures = require('binder').captures
-  --  require('utils').dump(captures)
-  require('neoscroll.config').set_mappings(captures.neoscroll)
-  -- require('utils').dump(require('binder').counters)
+  -- local captures = require('modules.binder').captures
+  --  require('modules.utils').dump(captures)
+  -- require('neoscroll.config').set_mappings(captures.neoscroll)
+  -- require('modules.utils').dump(require('modules.binder').counters)
 end
 
 local vim = vim
@@ -1131,12 +1314,13 @@ M.plugins = {
   },
   telescope = function()
     local actions = require 'telescope.actions'
-    local trouble = require 'trouble.providers.telescope'
     return {
       i = {
         ['<c-q>'] = actions.send_to_qflist,
         ['<c-l>'] = actions.send_to_loclist,
-        ['<c-t>'] = trouble.open_with_trouble,
+        ['<c-t>'] = function(...)
+          require('trouble.providers.telescope').open_with_trouble(...)
+        end,
         ['<c-c>'] = function()
           vim.cmd 'stopinsert'
         end,
@@ -1144,7 +1328,9 @@ M.plugins = {
       n = {
         ['<c-j>'] = actions.file_split,
         ['<c-l>'] = actions.file_vsplit,
-        ['<c-t>'] = trouble.open_ith_trouble,
+        ['<c-t>'] = function(...)
+          require('trouble.providers.telescope').open_with_trouble(...)
+        end,
         ['<c-c>'] = actions.close,
       },
     }

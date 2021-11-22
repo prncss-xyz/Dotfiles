@@ -204,7 +204,7 @@ local colors = {
 
 local theme = require 'theme'
 if theme.galaxyline then
-  require('utils').deep_merge(colors, theme.galaxyline)
+  require('modules.utils').deep_merge(colors, theme.galaxyline)
 end
 
 local text = colors.text

@@ -1,5 +1,5 @@
 pcall(function() -- needed to enable first installation
-  require('impatient').enable_profile()
+ require('impatient').enable_profile()
 end)
 
 local g = vim.g
@@ -42,15 +42,8 @@ vim.cmd 'nmapclear'
 require 'options'
 require('bindings').setup()
 require 'plugins'
-require('binder').setup_mappings()
+require('modules.binder').setup_mappings()
+require 'modules'
 require 'commands'
 require 'autocommands'
 require('theme').setup()
-require 'setup-session'
-
-vim.cmd [[
-if exists(':GuiFont')
-    " Use GuiFont! to ignore font errors
-    " GuiFont Montserrat:8
-endif
-]]

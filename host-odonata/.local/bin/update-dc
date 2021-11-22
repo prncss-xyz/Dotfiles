@@ -1,4 +1,3 @@
 #!/usr/bin/env sh
 
-sudo dracut --force /boot/efi/dracut.efi --kver=5.15.2-arch-1-1
-
+sudo dracut --force /boot/efi/dracut.efi --kver="$(ls /lib/modules)"

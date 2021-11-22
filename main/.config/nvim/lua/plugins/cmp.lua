@@ -60,7 +60,8 @@ require('cmp').setup.cmdline(':', {
   },
 })
 
-require('utils').augroup('CmpNvimLua', {
+if false then
+require('modules.utils').augroup('CmpNvimLua', {
   {
     events = { 'FileType' },
     targets = { 'lua' },
@@ -71,3 +72,4 @@ require('utils').augroup('CmpNvimLua', {
     end,
   },
 })
+end

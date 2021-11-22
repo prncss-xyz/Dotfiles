@@ -7,6 +7,7 @@ local goto_next_start = {}
 local goto_previous_end = {}
 -- @scopename.inner
 -- @statement.outer
+-- @iswap-list
 for _, name in ipairs {
   'block',
   'call',
@@ -39,6 +40,7 @@ for _, name in ipairs {
       )
   end
 end
+keymaps['aL'] = '@iswap-list'
 
 local textobjects = {
   select = {
@@ -129,5 +131,5 @@ local conf = {
   textobjects = textobjects,
 }
 
--- conf = require('utils').deep_merge(conf, require('binder').captures.treesitter)
+-- conf = require('modules.utils').deep_merge(conf, require('modules.binder').captures.treesitter)
 require('nvim-treesitter.configs').setup(conf)

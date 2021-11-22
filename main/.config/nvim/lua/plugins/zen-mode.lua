@@ -11,13 +11,6 @@ function M.setup()
       gitsigns = { enabled = true },
       twilight = { enable = true },
     },
-    on_open = function()
-      vim.cmd 'TSContextDisable'
-      vim.cmd 'echo ""'
-    end,
-    on_close = function()
-      vim.cmd 'TSContextEnable'
-    end,
   }
 end
 return M

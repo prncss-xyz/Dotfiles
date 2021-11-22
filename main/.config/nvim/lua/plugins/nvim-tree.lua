@@ -1,7 +1,7 @@
 local M = {}
 
 M.setup = function()
-  require('utils').deep_merge(vim.g, {
+  require('modules.utils').deep_merge(vim.g, {
     nvim_tree_gitignore = 1,
     nvim_tree_ignore_ft = {},
     -- nvim_tree_quit_on_open = 1,
@@ -49,7 +49,7 @@ local function custom_setup()
   setup_bindings(buf_id)
 end
 
-require('utils').augroup('NvimTreeConfig', {
+require('modules.utils').augroup('NvimTreeConfig', {
   {
     events = { 'FileType' },
     targets = { 'NvimTree' },
@@ -96,7 +96,7 @@ M.config = function()
       end
     end
     vim.cmd(string.format('e %s', fname))
-    require('templates').template_match()
+    require('modules.templates').template_match()
   end)
 end
 

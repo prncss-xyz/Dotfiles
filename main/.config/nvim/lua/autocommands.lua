@@ -1,4 +1,4 @@
-local augroup = require('utils').augroup
+local augroup = require('modules.utils').augroup
 local dotfiles = os.getenv 'DOTFILES'
 
 augroup('TmpFiles', {
@@ -81,7 +81,7 @@ augroup('CursorSet', {
     targets = { '*' },
     command = function()
      if vim.fn.eval('v:event').operator == 'y' then
-        vim.fn.setpos('.', cursor)
+        -- vim.fn.setpos('.', cursor)
       end
     end,
   },

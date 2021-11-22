@@ -17,7 +17,7 @@ local function project_directory(opts)
   opts = opts or {}
   local cwd = os.getenv 'PROJECTS'
   pickers.new({
-    prompt_title = 'installed plugins',
+    prompt_title = 'projects',
     finder = finders.new_oneshot_job(
       { 'fd', '--type', 'd', '--max-depth', '1' },
       { cwd = cwd }

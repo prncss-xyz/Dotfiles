@@ -1,7 +1,7 @@
 local ls = require 'luasnip'
 require('luasnip/loaders/from_vscode').lazy_load()
 
-local split_string = require('utils').split_string
+local split_string = require('modules.utils').split_string
 
 local s = ls.snippet
 local sn = ls.snippet_node
@@ -147,4 +147,4 @@ ls.snippets = {
   },
 }
 
-require 'templates'
+require('modules.templates').setup()

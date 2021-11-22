@@ -161,8 +161,8 @@ function M.setup()
     },
   }
   nvim_lsp['null-ls'].setup { on_attach = format_on_attach, debounce = 500 }
-  require('grammar-guard').init()
-  nvim_lsp.grammar_guard.setup {}
+  -- require('grammar-guard').init()
+  -- nvim_lsp.grammar_guard.setup {}
   -- TODO: emmet-ls (jsx branch)
 end
 

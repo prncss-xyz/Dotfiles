@@ -3,7 +3,7 @@ local full = require('pager').full
 if not full then
   vim.cmd 'set shada="NONE"'
 end
-local deep_merge = require('utils').deep_merge
+local deep_merge = require('modules.utils').deep_merge
 local indent = 2
 deep_merge(vim, {
   bo = {
@@ -35,7 +35,7 @@ deep_merge(vim, {
     shortmess = vim.o.shortmess .. 'c',
     showmode = false,
     sidescrolloff = 5,
-    scrolloff = 10,
+    scrolloff = 5,
     smartcase = true,
     smarttab = true,
     softtabstop = 0,
@@ -112,7 +112,7 @@ deep_merge(vim, {
   env = {},
 })
 
-require('utils').augroup('MarkdownOptions', {
+require('modules.utils').augroup('MarkdownOptions', {
   {
     events = { 'FileType' },
     targets = { 'markdown' },

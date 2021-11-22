@@ -1,4 +1,4 @@
-local augroup = require('utils').augroup
+local augroup = require('modules.utils').augroup
 local full
 local nvim_paging = os.getenv 'NVIM_PAGING'
 if nvim_paging then

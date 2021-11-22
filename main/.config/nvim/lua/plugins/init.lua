@@ -86,16 +86,6 @@ return require('packer').startup {
       end,
     }
     use {
-      -- shows the context of the currently visible buffer contents
-      'romgrk/nvim-treesitter-context',
-      after = 'nvim-treesitter',
-      cond = never,
-      disable = true,
-      config = function()
-        require('treesitter-context').setup {}
-      end,
-    }
-    use {
       -- annotation toolkit
       'danymat/neogen',
       module = 'neogen',
@@ -108,13 +98,6 @@ return require('packer').startup {
       requires = 'nvim-treesitter/nvim-treesitter',
     }
     use { 'SmiteshP/nvim-gps', module = 'nvim-gps' }
-    use {
-      'haringsrob/nvim_context_vt',
-      after = 'nvim-treesitter',
-      config = function()
-        require('nvim_context_vt').setup()
-      end,
-    }
     use {
       'mizlan/iswap.nvim',
       cmd = { 'ISwap', 'ISwapWith' },
@@ -213,7 +196,11 @@ return require('packer').startup {
       'jose-elias-alvarez/null-ls.nvim',
       module = 'null-ls',
     }
-    use { 'brymer-meneses/grammar-guard.nvim', module = 'grammar-guard' }
+    use {
+      'brymer-meneses/grammar-guard.nvim',
+      module = 'grammar-guard',
+      cmd = 'GrammarInstall',
+    }
     use { 'folke/lua-dev.nvim', module = 'lua-dev' }
     use { 'b0o/schemastore.nvim', module = 'schemastore' }
     use {
@@ -230,7 +217,7 @@ return require('packer').startup {
     }
     use {
       'simrat39/symbols-outline.nvim',
-      cmd = 'SymbolsOutline',
+      cmd = { 'SymbolsOutline', 'SymbolsOutlineOpen' },
       setup = function()
         local symbols = require('symbols').symbols
         vim.g.symbols_outline = {
@@ -423,6 +410,19 @@ return require('packer').startup {
         require('neoscroll').setup {
           mappings = {},
         }
+        -- require('neoscroll.config').set_mappings {
+        --   ['<Plug>(u-neoscroll-up)'] = {
+        --     'scroll',
+        --     { '-0.10', 'true', '250' },
+        --   },
+        --   ['<Plug>(u-neoscroll-down)'] = {
+        --     'scroll',
+        --     { '0.10', 'true', '250' },
+        --   },
+        --   ['<Plug>(u-neoscroll-zt)'] = { 'zt', { '250' } },
+        --   ['<Plug>(u-neoscroll-zz)'] = { 'zz', { '250' } },
+        --   ['<Plug>(u-neoscroll-zb)'] = { 'zb', { '250' } },
+        -- }
       end,
     }
     use {
@@ -540,7 +540,7 @@ return require('packer').startup {
       config = function()
         require('marks').setup {
           default_mappings = false,
-          mappings = require('binder').captures.marks,
+          mappings = require('modules.binder').captures.marks,
         }
       end,
     }
@@ -746,15 +746,6 @@ return require('packer').startup {
 
     -- TODO: https://github.com/AndrewRadev/splitjoin.vim
     use {
-      'AckslD/nvim-revJ.lua',
-      cond = full,
-      config = function()
-        require('revj').setup {
-          keymaps = require('binder').captures.revJ,
-        }
-      end,
-    }
-    use {
       'bkad/CamelCaseMotion',
       cond = full,
     }
@@ -762,7 +753,7 @@ return require('packer').startup {
       'kana/vim-textobj-user',
       cond = full,
       setup = function()
-        require('utils').deep_merge(vim, require('bindings').plugins)
+        require('modules.utils').deep_merge(vim, require('bindings').plugins)
       end,
       requires = {
         {

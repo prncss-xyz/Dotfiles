@@ -1,7 +1,7 @@
 local m = {}
 
 function m.setup()
-  require('utils').deep_merge(vim.g, {
+  require('modules.utils').deep_merge(vim.g, {
     ultest_use_pty = 1,
     ultest_env = {
       NODE_OPTIONS = '--experimental-vm-modules',
@@ -15,7 +15,7 @@ function m.config()
       ['javascript#jest'] = function(cmd)
         local filename = cmd[#cmd]
         print(filename)
-        -- require('utils').dump(cmd)
+        -- require('modules.utils').dump(cmd)
         return {
           dap = {
             type = 'node2',

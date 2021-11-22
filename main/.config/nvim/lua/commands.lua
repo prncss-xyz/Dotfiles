@@ -1,15 +1,9 @@
-local utils = require 'utils'
+local utils = require 'modules.utils'
 local command = utils.command
 
-command('ExportTheme', { nargs = 1 }, function(name)
-  require('theme-exporter').export_theme(name)
-end)
-
 command('Lua', { nargs = 1 }, function(name)
-  vim.cmd(string.format('lua require"utils".dump(%s)', name))
+  vim.cmd(string.format('lua require"modules.utils".dump(%s)', name))
 end)
-
-command('GhostNvim', {}, function() end)
 
 command('LaunchOSV', {}, function()
   local filetype = vim.bo.filetype
@@ -28,6 +22,7 @@ command('EditSnippet', {}, function()
   )
 end)
 
+-- trying to figure it out
 command('Conceal', {}, function()
   vim.cmd [[
     syntax match True "true" conceal cchar=⊤

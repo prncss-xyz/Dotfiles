@@ -109,7 +109,7 @@ function M.command(name, opts, rhs)
   if type(rhs) == 'function' then
     local fn_id = create(rhs)
     rhs = string.format(
-      "lua require'utils'._execute(%d%s)",
+      "lua require'modules.utils'._execute(%d%s)",
       fn_id,
       nargs > 0 and ', <f-args>' or ''
     )
@@ -134,7 +134,7 @@ function M.augroup(name, commands)
     local command = c.command
     if type(command) == 'function' then
       local fn_id = create(command)
-      command = string.format("lua require'utils'._execute(%s)", fn_id)
+      command = string.format("lua require'modules.utils'._execute(%s)", fn_id)
     end
     vim.cmd(
       string.format(
@@ -151,7 +151,7 @@ end
 
 function M.lambda(cb)
   local fn_id = create(cb)
-  return string.format("lua require'utils'._execute(%d)", fn_id)
+  return string.format("lua require'modules.utils'._execute(%d)", fn_id)
 end
 
 -- http://lua-users.org/wiki/StringRecipes

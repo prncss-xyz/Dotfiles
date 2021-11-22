@@ -1,3 +1,12 @@
+-- setup a developpement session, with pass integration
+-- currently only gatsby is supported, but the system should be easy to reuse
+--
+-- launch a terminal
+-- if a 'session/dirname' entry exists, is sourced in terminal's environment
+-- exports a PORT value that is not in use on the localhost
+-- launch a task determined by the working directory (currently, only gatsby is supported)
+-- when tasks terminate, a notification is send and a shell session starts
+
 local M = {}
 
 local scheme = { type = 'unknown' }
@@ -32,6 +41,11 @@ local function setup(port, command)
   file:write(string.format('export PORT=%q\n', port))
   file:write(string.format('source <(pass show %q)\n', scheme.pass))
   file:write(command .. '\n')
+  file:write(
+    string.format 'notify-send %q\n',
+    dirname .. ' — ' .. command .. ' done'
+  )
+  file:write(os.getenv 'SHELL' .. '\n')
   file:write 'sleep inf\n'
   file:close()
 end
@@ -65,17 +79,9 @@ local function setup_scheme()
   end
 end
 
-require('utils').augroup('SetupSession', {
-  {
-    events = { 'VimEnter', 'DirChanged' },
-    targets = { '*' },
-    command = setup_scheme,
-  },
-})
-
 function M.launch()
   if scheme.port then
-    require('browser').open(string.format('http://localhost:%d', scheme.port))
+    conf.browser(string.format('http://localhost:%d', scheme.port))
   end
 end
 
@@ -83,8 +89,21 @@ function M.develop()
   setup(scheme.port, scheme.develop)
 end
 
-require('utils').command('SetupSessionInfo', {}, function()
-  require('utils').dump(scheme)
-end)
+local conf = {}
+
+function M.setup(conf0)
+  conf = conf0
+  require('modules.utils').augroup('SetupSession', {
+    {
+      events = { 'VimEnter', 'DirChanged' },
+      targets = { '*' },
+      command = setup_scheme,
+    },
+  })
+
+  require('modules.utils').command('SetupSessionInfo', {}, function()
+    require('modules.utils').dump(scheme)
+  end)
+end
 
 return M

@@ -1,5 +1,7 @@
 local m = {}
 
+-- symbols to have keep consistancy between Outiliner, cmp and gps
+
 m.symbols = {
   -- LSP kind
   Array = '',

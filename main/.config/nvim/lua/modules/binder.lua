@@ -62,6 +62,15 @@ local function map(bufnr, mode, keys, rhs, map_opts)
   if bufnr then
     vim.api.nvim_buf_set_keymap(bufnr, mode, keys, rhs, map_opts)
   else
+    local raw_key = keys
+    -- vim.fn['which_key#register'](raw_key, textmap)
+    -- keys = vim.fn.escape(raw_key, '\\')
+    -- vim.api.nvim_set_keymap(
+    --   mode,
+    --   keys,
+    --   ':<c-u> :WhichKey "' .. raw_key .. '"<CR>',
+   --   { silent = true, noremap = true }
+    -- )
     vim.api.nvim_set_keymap(mode, keys, rhs, map_opts)
   end
 end

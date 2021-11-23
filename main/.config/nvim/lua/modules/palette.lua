@@ -1,5 +1,8 @@
 local M = {}
 
+local function t(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
 
 -- visual mode
 -- shrink selection by one character
@@ -35,6 +38,5 @@ function M.post()
   end
   vim.fn.feedkeys(t(prefix .. '<esc>' .. postfix))
 end
-
 
 return M

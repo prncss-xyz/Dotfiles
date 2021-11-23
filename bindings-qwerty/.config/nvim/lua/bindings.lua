@@ -1002,6 +1002,7 @@ local function map_textobjects()
     plug '(ninja-right-foot-a)',
     'ninja right foot'
   )
+  -- this is fun as an experimentation, but aweful for startup time!
   local map = require('modules.utils').map
   map('o', 'z', '<Plug>Lightspeed_x', { noremap = false })
   map('o', 'Z', '<Plug>Lightspeed_x', { noremap = false })
@@ -1278,9 +1279,6 @@ function M.setup()
   map_command_insert()
   map_basic()
   map_textobjects()
-  -- local captures = require('modules.binder').captures
-  --  require('modules.utils').dump(captures)
-  -- require('neoscroll.config').set_mappings(captures.neoscroll)
   -- require('modules.utils').dump(require('modules.binder').counters)
 end
 

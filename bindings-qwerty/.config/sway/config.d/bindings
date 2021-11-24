@@ -38,13 +38,13 @@ bindsym $mod+y exec echo next browser > /tmp/sway-mega-hotkeys
 bindsym $mod+shift+y exec echo previous browser > /tmp/sway-mega-hotkeys
 bindsym $mod+z mode mouse3
 
-bindsym $mod+a workspace number 0, mode default
+bindsym $mod+a workspace --no-auto-back-and-forth number 0
 bindsym $mod+shift+a move container to workspace number 0 
-bindsym $mod+s workspace number 1, mode default
+bindsym $mod+s workspace --no-auto-back-and-forth number 1
 bindsym $mod+shift+s move container to workspace number 1 
-bindsym $mod+d workspace number 2, mode default
+bindsym $mod+d workspace --no-auto-back-and-forth number 2
 bindsym $mod+shift+d move container to workspace number 2 
-bindsym $mod+f workspace number 3, mode default
+bindsym $mod+f workspace --no-auto-back-and-forth number 3
 bindsym $mod+shift+f move container to workspace number 3 
 
 bindsym $mod+space focus mode_toggle

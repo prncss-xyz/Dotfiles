@@ -300,13 +300,13 @@ local function map_basic()
       N = 'gN',
       v = 'gv',
       t = function()
-        require('neoscroll').scroll('zt', { '250' })
+        require('neoscroll').zt(250)
       end,
       z = function()
-        require('neoscroll').scroll('zz', { '250' })
+        require('neoscroll').zz(250)
       end,
       b = function()
-        require('neoscroll').scroll('zb', { '250' })
+        require('neoscroll').zb(250)
       end,
     },
     [a.jump] = {
@@ -379,11 +379,16 @@ local function map_basic()
         },
       },
       i = { '>>', 'indent', modes = 'nx' },
-      -- r = plug {
-      --   '(operator-sandwich-replace)',
-      --   'sandwich replace',
-      --   modes = 'x',
-      -- },
+      r = plug {
+        '(buffet-operator-replace)',
+        'buffet replace',
+        modes = 'nx',
+      },
+      R = plug {
+        '(buffet-operator-extract)',
+        'buffet extract',
+        modes = 'nx',
+      },
       s = {
         function()
           require('renamer').rename { empty = false }
@@ -421,7 +426,8 @@ local function map_basic()
           n = plug '(ExchangeLine)',
         },
       },
-      -- y = plug { '(u-surround-add)', modes = 'x' },
+      Y = plug { '(buffet-operator-delete)', modes = 'nx' },
+      y = plug { '(buffet-operator-add)', modes = 'nx' },
       [','] = cmd 'ISwapWith',
       [dd.spell] = {
         function()
@@ -501,9 +507,13 @@ local function map_basic()
       [dd.next_search] = plug { '(dial-decrement-additional)', modes = 'x' },
       [a.edit] = {
         name = '+line',
+        Y = {'<Plug>(buffet-operator-delete)il', noremap=false},
+        y = {'<Plug>(buffet-operator-add)il', noremap=false},
+        R = {'<Plug>(buffet-operator-extract)il', noremap=false},
+        r = {'<Plug>(buffet-operator-replace)il', noremap=false},
         [dd.join] = plug '(u-revj-line)',
-        [s(dd.comment)] = plug { '(u-comment-toggler-block)', modex = 'nx' },
-        [dd.comment] = plug { '(u-comment-toggler-line)', modes = 'nx' },
+        [s(dd.comment)] = plug '(u-comment-toggler-block)',
+        [dd.comment] = plug '(u-comment-toggler-line)',
       },
     },
     [a.mark] = {
@@ -1002,192 +1012,9 @@ local function map_textobjects()
     plug '(ninja-right-foot-a)',
     'ninja right foot'
   )
-  -- this is fun as an experimentation, but aweful for startup time!
   local map = require('modules.utils').map
   map('o', 'z', '<Plug>Lightspeed_x', { noremap = false })
   map('o', 'Z', '<Plug>Lightspeed_x', { noremap = false })
-  -- -- for _, qual in ipairs { '', 'n', 'N' } do
-  -- --   map('nx', 'hrt', 'vato<esc>ci\\<', { noremap = false })
-  local conf = {
-    leader_add = a.edit .. 'y',
-    leader_delete = a.edit .. 'Y',
-    leader_replace = a.edit .. 'r',
-    leader_extact = a.edit .. 'R',
-    previous = 'N',
-    next = 'n',
-    inner = 'i',
-    outer = 'a',
-    add = {
-      q = "'",
-      Q = '`',
-      ["'"] = "'",
-      ['"'] = '"',
-      ['`'] = '`',
-      ['('] = '(',
-      [')'] = '(',
-      b = '(',
-      B = '{',
-      ['{'] = '{',
-      ['}'] = '{',
-      ['['] = '[',
-      [']'] = '[',
-      ['<'] = '<',
-      ['>'] = '<',
-      a = ',',
-      [','] = ',',
-      i = 'i', -- interactive (prompt left then right char)
-      t = 't', -- xml tag
-      k = 'f', -- function call
-      ['.'] = '.',
-      [';'] = ';',
-      [':'] = ':',
-      ['+'] = '+',
-      ['-'] = '-',
-      ['='] = '=',
-      ['~'] = '~',
-      ['_'] = '_',
-      ['*'] = '*',
-      ['#'] = '#',
-      ['/'] = '/',
-      ['\\'] = '\\',
-      ['|'] = '|',
-      ['&'] = '&',
-      ['$'] = '$',
-    },
-  }
-  map(
-    'x',
-    conf.leader_delete,
-    '<Plug>(operator-sandwich-delete)',
-    { noremap = false }
-  )
-  -- map( TODO:
-  --   'x',
-  --   conf.leader_extact,
-  --   '<Plug>(extract)',
-  --   { noremap = false }
-  -- )
-  for k, v in pairs(conf.add) do
-    map(
-      'x',
-      conf.leader_add .. k,
-      '<Plug>(operator-sandwich-add)' .. v,
-      -- '<Plug>(u-surround-add)' .. v,
-      { noremap = false }
-    )
-    map(
-      'x',
-      conf.leader_replace .. k,
-      '<Plug>(operator-sandwich-replace)' .. v,
-      { noremap = false }
-    )
-  end
-  local function sandwich(key, add, delete)
-    if delete then
-      map(
-        'n',
-        conf.leader_delete .. key,
-        '<Plug>(operator-sandwich-delete)' .. delete,
-        { noremap = false }
-      )
-    end
-    for k, v in pairs(conf.add) do
-      map(
-        'n',
-        conf.leader_add .. key .. k,
-        '<Plug>(operator-sandwich-add)' .. add .. v,
-        -- '<Plug>(u-surround-add)' .. add .. v,
-        { noremap = false }
-      )
-      if delete then
-        map(
-          'n',
-          conf.leader_replace .. key .. k,
-          '<Plug>(operator-sandwich-replace)' .. delete .. v,
-          { noremap = false }
-        )
-      end
-    end
-  end
-  -- TODO: tag, ts-objects
-  local function sandwich_target(key, ia, obj)
-    obj = obj or key
-    ia = ia or conf.outer
-    sandwich(key, ia .. obj, ia .. obj)
-    if conf.previous then
-      sandwich(
-        conf.previous .. key,
-        ia .. conf.previous .. obj,
-        ia .. conf.previous .. obj
-      )
-    end
-    if conf.next then
-      sandwich(conf.next .. key, ia .. conf.next .. obj, ia .. conf.next .. obj)
-    end
-  end
-  -- TODO: delete
-  sandwich('v', 'iv', nil)
-  sandwich('w', 'iw', nil)
-  map('n', conf.leader_extact .. 'v', 'yiv"_dav', { noremap = false })
-  sandwich('W', 'iW', nil)
-  map('n', conf.leader_extact .. 'w', 'yiw"_daw', { noremap = false })
-  map('n', conf.leader_extact .. 'W', 'yiw"_daW', { noremap = false })
-  sandwich_target('l', conf.inner, 'l')
-  map('n', conf.leader_extact .. 'w', 'yil"_dal', { noremap = false })
-  for _, k in ipairs {
-    'q',
-    "'",
-    '"',
-    '`',
-    '(',
-    ')',
-    'b',
-    'B',
-    '{',
-    '}',
-    '[',
-    ']',
-    '<',
-    '>',
-    'a',
-    ',',
-    '.',
-    ';',
-    ':',
-    '+',
-    '-',
-    '=',
-    '~',
-    '_',
-    '*',
-    '#',
-    '/',
-    '\\',
-    '|',
-    '&',
-    '$',
-  } do
-    sandwich_target(k, conf.outer, k)
-    map(
-      'n',
-      conf.leader_extact .. k,
-      'yi' .. k .. '"_da' .. k,
-      { noremap = false }
-    )
-    map(
-      'n',
-      conf.leader_extact .. 'n' .. k,
-      'yin' .. k .. '"_da' .. k,
-      { noremap = false }
-    )
-    map(
-      'n',
-      conf.leader_extact .. 'N' .. k,
-      'yiN' .. k .. '"_da' .. k,
-      { noremap = false }
-    )
-    -- conf.add
-  end
 end
 
 local function map_markdown()

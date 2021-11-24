@@ -1,23 +1,40 @@
+-- TODO: predot, dot (cf. sandwich)
+
 local M = {}
 
--- TODO: filetype specific
+  -- map('n', conf.leader_extact .. 'v', 'yiv"_dav', { noremap = false })
+  -- map('n', conf.leader_extact .. 'w', 'yiw"_daw', { noremap = false })
+  -- map('n', conf.leader_extact .. 'W', 'yiw"_daW', { noremap = false })
+  -- sandwich_target('l', conf.inner, 'l')
+  -- map('n', conf.leader_extact .. 'w', 'yil"_dal', { noremap = false })
+
+local G = {}
 
 local conf = {
-  previous = 'N',
-  next = 'n',
-  inner = 'i',
-  outer = 'a',
-  add_query = {
+  query = {
     w = 'iw',
     W = 'iW',
+    q = 'aq',
+    nq = 'anq',
+    Nq = 'aNq',
+    b = 'ab',
+    nb = 'anb',
+    Nb = 'aNb',
+    l = 'il',
+    nl = 'inl',
+    Nl = 'iNl',
   },
-  textojb_prefix = { 'n', 'N' },
-  pairs = {
-    { '(', ')' },
-    { '{', '}' },
+  recipies = {
+    { '[[', ']]', key = 'B', filetype = 'lua' },
+    { '(', ')', key = 'b' },
+    { '{', '}', key = 'B' },
     { '[', ']' },
     { '<', '>' },
-    { '[[', ']]' },
+    { ',', key = 'a' },
+    { '`', key = 'q' },
+    -- regex = true,
+    -- query = 'w',
+    -- key = '',
   },
   add = {
     q = "'",
@@ -25,7 +42,7 @@ local conf = {
     ['('] = { '(', ')' },
     [')'] = { '(', ')' },
     b = { '(', ')' },
-    B = { '[[', ']]' },
+    G = { '[[', ']]' },
     ['{'] = { '{', '}' },
     ['}'] = { '{', '}' },
     ['['] = { '[', ']' },
@@ -51,16 +68,25 @@ local function includes(a, t)
   end
 end
 
+local function starts_with(str, start)
+  return str:sub(1, #start) == start
+end
+
+local function ends_with(str, ending)
+  return ending == '' or str:sub(-#ending) == ending
+end
+
+local needs_help_msg
 local function input_char(msg)
-  M.needs_help_msg = true
+  needs_help_msg = true
   vim.defer_fn(function()
-    if not M.needs_help_msg then
+    if not needs_help_msg then
       return
     end
     vim.notify(msg)
   end, 1000)
   local char = vim.fn.getchar()
-  M.needs_help_msg = false
+  needs_help_msg = false
 
   -- Terminate if input is `<Esc>`
   if char == 27 then
@@ -150,6 +176,18 @@ local function delete_linepart(linepart)
   vim.fn.setline(linepart.line, new_line)
 end
 
+local function delete_line_after(pos)
+  local line = vim.fn.getline(pos.line)
+  local new_line = line:sub(1, pos.col - 1)
+  vim.fn.setline(pos.line, new_line)
+end
+
+local function delete_line_before(pos)
+  local line = vim.fn.getline(pos.line)
+  local new_line = line:sub(pos.col + 1)
+  vim.fn.setline(pos.line, new_line)
+end
+
 local function insert_into_line(line_num, col, text)
   -- Important to remember when working with multibyte characters: `col` here
   -- represents byte index, not character
@@ -158,16 +196,7 @@ local function insert_into_line(line_num, col, text)
   vim.fn.setline(line_num, new_line)
 end
 
-local function starts_with(str, start)
-  return str:sub(1, #start) == start
-end
-
-local function ends_with(str, ending)
-  return ending == '' or str:sub(-#ending) == ending
-end
-
-
-function M.sandwich_add(mode, char)
+local function add(mode, char)
   char = conf.add[char] or char
   local surr_info
   if type(char) == 'table' then
@@ -178,19 +207,14 @@ function M.sandwich_add(mode, char)
   end
   local marks = get_marks_pos(mode)
   -- Add surrounding. Begin insert with 'end' to not break column numbers
-  ---- Insert after the right mark (`+ 1` is for that)
-
-  if true then
-    insert_into_line(marks.second.line, marks.second.col + 1, surr_info.right)
-    insert_into_line(marks.first.line, marks.first.col, surr_info.left)
-    --
-    -- -- Tweak cursor position
-    cursor_adjust(marks.first.line, marks.first.col + surr_info.left:len())
-  end
+  -- Insert after the right mark (`+ 1` is for that)
+  insert_into_line(marks.second.line, marks.second.col + 1, surr_info.right)
+  insert_into_line(marks.first.line, marks.first.col, surr_info.left)
+  -- Tweak cursor position
+  cursor_adjust(marks.first.line, marks.first.col + surr_info.left:len())
 end
 
--- TODO: understand why it works fine with right to left selection
-function M.sandwich_delete(mode)
+local function find_outer(mode)
   local marks = get_marks_pos(mode)
   local line_left = vim.fn.getline(marks.first.line)
   local line_right = vim.fn.getline(marks.second.line)
@@ -203,11 +227,15 @@ function M.sandwich_delete(mode)
   if char_right == char_left then
     len_right = 1
   end
-  for _, p in ipairs(conf.pairs) do
-    if starts_with(chars_left, p[1]) and ends_with(chars_right, p[2]) then
-      len_left = p[1]:len()
-      len_right = p[2]:len()
-      break
+  for _, p in ipairs(conf.recipies) do
+    if #p == 2 then
+      if not p.filetype or p.filetype == vim.bo.filetype then
+        if starts_with(chars_left, p[1]) and ends_with(chars_right, p[2]) then
+          len_left = p[1]:len()
+          len_right = p[2]:len()
+          break
+        end
+      end
     end
   end
   local right = {
@@ -220,139 +248,164 @@ function M.sandwich_delete(mode)
     from = marks.first.col,
     to = marks.first.col + len_left - 1,
   }
+  return left, right
+end
+
+local function delete(mode)
+  local left, right = find_outer(mode)
   delete_linepart(right)
   delete_linepart(left)
-  cursor_adjust(left.right, left.from)
+  cursor_adjust(left.line, left.from)
+end
+
+-- TODO: get desired register
+local function extract(mode, reg)
+  local left, right = find_outer(mode)
+  local lines = vim.api.nvim_buf_get_lines(0, left.line - 1, right.line, true)
+  lines[1] = lines[1]:sub(left.to+1)
+  lines[#lines] = lines[#lines]:sub(1, right.from-2)
+  vim.fn.setreg(reg or '+', table.concat(lines, '\n'))
+  local marks = get_marks_pos(mode)
+  vim.api.nvim_buf_set_text(
+    0,
+    marks.first.line - 1,
+    marks.first.col - 1,
+    marks.second.line - 1,
+    marks.second.col,
+    { '' }
+  )
 end
 
 local last_char
-function M.sandwich_add_char(mode)
+local function ask_char(mode)
   local char
   if last_char and mode ~= 'visual' then
     char = last_char
   else
-    char = input_char '[buffet] enter char: '
+    char = input_char '[buffet add] enter char: '
     if not char then
       return
     end
     last_char = char
   end
-  sandwich_add(mode, char)
+  return char
 end
 
-function M.sandwich_add_query()
-  local char = input_char '[buffet] enter query: '
+local opfunc = {}
+G.opfunc = opfunc
+
+function G.opfunc.add(mode)
+  local char = ask_char(mode)
   if not char then
     return
   end
-  -- todo: count, multiple char textojb
-  local res
-  if conf.add_query[char] then
-    res = conf.add_query[char]
-  elseif includes(conf.textojb_prefix, char) then
-    res = conf.outer .. char
-    char = input_char '[buffet] enter query: '
+  add(mode, char)
+end
+
+function G.opfunc.delete(mode)
+  delete(mode)
+end
+
+function G.opfunc.extract(mode)
+  extract(mode)
+end
+
+function G.opfunc.replace(mode)
+  local char = ask_char(mode)
+  if not char then
+    return
+  end
+  delete(mode)
+  add(mode, char)
+end
+
+local function is_ambiguous(t, k)
+  for key in pairs(t) do
+    if starts_with(key, k) then
+      return true
+    end
+  end
+end
+
+-- TODO: count: currently you can enter count before operator; it would be nice to add it just before query
+function G.query(operator)
+  local res = ''
+  while true do
+    local char = input_char '[buffet add] enter query: '
     if not char then
       return
     end
     res = res .. char
-  else
-    res = conf.outer .. char
-  end
-  last_char = nil
-  vim.cmd(string.format 'set operatorfunc=v:lua.SandwichAddChar')
-  return 'g@' .. res
-end
-
--- [sad]
-
-function M.sandwich_delete_query()
-  local char = input_char '[buffet] enter query: '
-  if not char then
-    return
-  end
-  -- TODO: count, multiple char textojb
-  local res
-  if conf.add_query[char] then
-    res = conf.add_query[char]
-  elseif includes(conf.textojb_prefix, char) then
-    res = conf.outer .. char
-    char = input_char '[buffet] enter query: '
-    if not char then
-      return
+    if conf.query[res] then
+      res = conf.query[res]
+      break
     end
-    res = res .. char
-  else
-    res = conf.outer .. char
+    if not is_ambiguous(conf.query, res) then
+      break
+    end
   end
   last_char = nil
-  vim.cmd(string.format 'set operatorfunc=v:lua.SandwichDelete')
+  vim.cmd('set operatorfunc=v:lua.Buffet.opfunc.' .. operator)
   return 'g@' .. res
 end
-
--- [ sdf ]
 
 function M.setup()
-  _G.SandwichAddChar = M.sandwich_add_char
-  _G.SandwichAddQuery = M.sandwich_add_query
-  _G.SandwichDelete = M.sandwich_delete
-  _G.SandwichDeleteQuery = M.sandwich_delete_query
+  _G.Buffet = G
+  -- Add
   vim.api.nvim_set_keymap(
     'n',
-    '<Plug>(u-sandwich-operator-add)',
-    'v:lua.SandwichAddQuery()',
+    '<Plug>(buffet-operator-add)',
+    'v:lua.Buffet.query("add")',
     { noremap = false, expr = true }
   )
   vim.api.nvim_set_keymap(
     'x',
-    '<Plug>(u-sandwich-operator-add)',
-    ':<c-u>lua require"modules.buffet".sandwich_add_char"visual"<cr>',
+    '<Plug>(buffet-operator-add)',
+    ':<c-u>lua Buffet.opfunc.add("visual")<cr>',
     {}
   )
+
+  -- Delete
   vim.api.nvim_set_keymap(
     'n',
-    '<Plug>(u-sandwich-operator-delete)',
-    'v:lua.SandwichDeleteQuery()',
+    '<Plug>(buffet-operator-delete)',
+    'v:lua.Buffet.query("delete")',
     { noremap = false, expr = true }
   )
   vim.api.nvim_set_keymap(
     'x',
-    '<Plug>(u-sandwich-operator-delete)',
-    ':<c-u>lua require"modules.buffet".sandwich_delete_char"visual"<cr>',
+    '<Plug>(buffet-operator-delete)',
+    ':<c-u>lua Buffet.opfunc.delete("visual")<cr>',
     {}
   )
+
+  -- Replace
   vim.api.nvim_set_keymap(
     'n',
-    ' x',
-    '<Plug>(u-sandwich-operator-add)',
-    { noremap = false }
+    '<Plug>(buffet-operator-replace)',
+    'v:lua.Buffet.query("replace")',
+    { noremap = false, expr = true }
   )
   vim.api.nvim_set_keymap(
     'x',
-    '<Plug>(u-sandwich-operator-delete)',
-    ':<c-u>lua require"modules.buffet".sandwich_delete"visual"<cr>',
+    '<Plug>(buffet-operator-replace)',
+    ':<c-u>lua Buffet.opfunc.replace("visual")<cr>',
     {}
   )
-  vim.api.nvim_set_keymap(
-    'x',
-    ' x',
-    '<Plug>(u-sandwich-operator-delete)',
-    { noremap = false }
-  )
+
+  -- Extract
   vim.api.nvim_set_keymap(
     'n',
-    ' y',
-    '<Plug>(u-sandwich-operator-delete)',
-    { noremap = false }
+    '<Plug>(buffet-operator-extract)',
+    'v:lua.Buffet.query("extract")',
+    { noremap = false, expr = true }
   )
   vim.api.nvim_set_keymap(
     'x',
-    ' y',
-    '<Plug>(u-sandwich-operator-delete)',
-    { noremap = false }
+    '<Plug>(buffet-operator-extract)',
+    ':<c-u>lua Buffet.opfunc.extract("visual")<cr>',
+    {}
   )
 end
-
-M.setup()
 
 return M

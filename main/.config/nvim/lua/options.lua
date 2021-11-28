@@ -45,6 +45,7 @@ deep_merge(vim, {
     syntax = 'on',
     tabstop = indent,
     termguicolors = true,
+    textwidth = 80,
     undofile = false,
     updatetime = 300,
     -- timeoutlen = 300,
@@ -91,19 +92,21 @@ deep_merge(vim, {
     --  shada = '0,f0',
     -- The '0,f0 are the important bits, it says to not save file marks as well as save 0 marks in shada
     -- @Akinsho https://www.reddit.com/r/neovim/comments/q7bgwo/marksnvim_a_plugin_for_viewing_and_interacting/
+    cc='+1',
     conceallevel = 2,
-    laststatus = 0,
-    -- laststatus = full and 2 or 0,
-    secure = true, -- disable autocmd etc for project local vimrc files
     exrc = false, -- allow project local vimrc files example .nvimrc see :h exrc
-    virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
-    lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
-    -- spelloptions = "camel",
     fillchars = 'eob: ',
-    sessionoptions = 'curdir,folds,tabpages,winsize',
     foldlevel = 20,
     -- foldlevelstart=20,
+    laststatus = 0,
+    -- laststatus = full and 2 or 0,
+    lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
+    secure = true, -- disable autocmd etc for project local vimrc files
+    sessionoptions = 'curdir,folds,tabpages,winsize',
+    -- spelloptions = "camel",
+    textwidth = 80,
     undofile = full,
+    virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
   },
   -- like setglobal
   opt_global = {},

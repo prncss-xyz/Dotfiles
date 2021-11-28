@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-export NVIM_PAGING=man
+export NVIM_PAGING=1
 
 if [ -n "$1" ]; then
   nvim -R "$@"

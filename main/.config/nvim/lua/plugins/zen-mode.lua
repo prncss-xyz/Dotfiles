@@ -1,14 +1,16 @@
 local M = {}
 function M.setup()
   require('zen-mode').setup {
-    height = 0.9,
-    width = 90,
+    window = {
+      height = 1,
+      width = 81,
+    },
     plugins = {
       options = {
         ruler = true,
-        showcmd = true,
+        showcmd = false,
       },
-      gitsigns = { enabled = true },
+      gitsigns = { enabled = false },
       twilight = { enable = true },
     },
   }

@@ -1,10 +1,33 @@
-local M = {}
-
 -- small commands directly meant for bindings
+
+local M = {}
 
 local get_visual_selection = require('modules.utils').get_visual_selection
 
--- TODO: toggle side panel
+-- FIXME:
+-- https://github.com/neovim/neovim/pull/12368
+
+local function preview_location_callback(_, method, result)
+  if result == nil or vim.tbl_isempty(result) then
+    vim.lsp.log.info(method, 'No location found')
+    return nil
+  end
+  if vim.tbl_islist(result) then
+    vim.lsp.util.preview_location(result[1])
+  else
+    vim.lsp.util.preview_location(result)
+  end
+end
+
+function M.peek_definition()
+  local params = vim.lsp.util.make_position_params()
+  return vim.lsp.buf_request(
+    0,
+    'textDocument/definition',
+    params,
+    preview_location_callback
+  )
+end
 
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
@@ -24,10 +47,10 @@ end
 
 function M.outliner()
   if vim.bo.filetype == 'markdown' then
-    require'modules.toggler'.open('Toc', nil)
+    require('modules.toggler').open('Toc', nil)
     vim.cmd 'Toc'
   else
-    require'modules.toggler'.open('SymbolsOutlineOpen', 'SymbolsOutlineClose')
+    require('modules.toggler').open('SymbolsOutlineOpen', 'SymbolsOutlineClose')
   end
 end
 
@@ -43,7 +66,7 @@ function M.project_files()
   require('telescope.builtin').find_files()
 end
 
-function M.toggle_cmp()
+function M.cmp_toggle()
   local cmp = require 'cmp'
   if cmp.visible() then
     cmp.close()
@@ -61,7 +84,7 @@ function M.up()
   vim.fn.feedkeys(t '<up>', '')
 end
 
-function M.tab_complete()
+function M.cmp_confirm()
   local cmp = require 'cmp'
   if cmp.visible() then
     cmp.confirm {
@@ -70,12 +93,16 @@ function M.tab_complete()
     }
     return
   end
+end
+
+function M.tab()
   local r = require('luasnip').jump(1)
   if r then
     return
   end
   local neogen = require 'neogen'
   if neogen.jumpable() then
+    -- there is no correspondig "jump_previous"
     neogen.jump_next()
     return
   end
@@ -83,7 +110,7 @@ function M.tab_complete()
 end
 
 --- <s-tab> to jump to next snippet's placeholder
-function M.s_tab_complete()
+function M.s_tab()
   local r = require('luasnip').jump(-1)
   if r then
     return
@@ -182,7 +209,8 @@ end
 
 function M.edit_current()
   local current = vim.fn.expand '%'
-  M.term_launch { 'nvim', current }
+  -- needs this delay for proper display; is it dued to sway or foot
+  M.term_launch { 'sh', '-c', 'sleep 0.1; nvim', current }
 end
 
 function M.searchCword(base)

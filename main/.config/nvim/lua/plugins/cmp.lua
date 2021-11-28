@@ -1,10 +1,10 @@
 require 'plugins.luasnip'
-
+require("luasnip").config.setup({history = true})
 local cmp = require 'cmp'
 
 local sources = {
   { name = 'luasnip' },
-  -- { name = 'nvim_lsp' },
+  { name = 'nvim_lsp' },
   { name = 'spell' },
   { name = 'path' },
   { name = 'buffer' },
@@ -42,8 +42,14 @@ cmp.setup {
   },
   sources = sources,
   mapping = {
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<c-x>'] = cmp.mapping.select_prev_item {
+      behavior = cmp.SelectBehavior.Select,
+    },
+    ['<c-j>'] = cmp.mapping.select_next_item {
+      behavior = cmp.SelectBehavior.Select,
+    },
+    -- ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    -- ['<C-f>'] = cmp.mapping.scroll_docs(4),
   },
 }
 
@@ -56,20 +62,20 @@ cmp.setup.cmdline('/', {
 require('cmp').setup.cmdline(':', {
   sources = {
     { name = 'cmdline' },
-    { name = 'buffer' },
+    { name = 'path' },
   },
 })
 
 if false then
-require('modules.utils').augroup('CmpNvimLua', {
-  {
-    events = { 'FileType' },
-    targets = { 'lua' },
-    command = function()
-      require('cmp').setup.buffer {
-        sources = lua_sources,
-      }
-    end,
-  },
-})
+  require('modules.utils').augroup('CmpNvimLua', {
+    {
+      events = { 'FileType' },
+      targets = { 'lua' },
+      command = function()
+        require('cmp').setup.buffer {
+          sources = lua_sources,
+        }
+      end,
+    },
+  })
 end

@@ -64,6 +64,8 @@ function M.setup()
   local nvim_lsp = require 'lspconfig'
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+  capabilities.textDocument.completion.completionItem.snippetSupport = true
+
   local flags = {
     debounce_text_changes = 500,
     allow_incremental_sync = true,
@@ -161,9 +163,13 @@ function M.setup()
     },
   }
   nvim_lsp['null-ls'].setup { on_attach = format_on_attach, debounce = 500 }
+
+  -- FIXME: trigger text is not deleted
+  -- TODO: wait for jsx support
+  -- nvim_lsp.emmet_ls.setup {}
+
   -- require('grammar-guard').init()
   -- nvim_lsp.grammar_guard.setup {}
-  -- TODO: emmet-ls (jsx branch)
 end
 
 return M

@@ -66,7 +66,7 @@ function M.setup()
     {
       events = { 'BufNewFile' },
       targets = { '*' },
-      command = 'lua require "templates".template_match()',
+      command = 'lua require "modules.templates".template_match()',
     },
   })
 end

@@ -1,17 +1,26 @@
--- TODO: predot, dot (cf. sandwich)
+-- inner as it's own textobject
+--[[
+--available()`: return a table of all snippets defined for the current
+    filetypes(s) (`{ft1={snip1, snip2}, ft2={snip3, snip4}}`).
+lsp_expand(snip_string)`: expand the lsp-syntax-snippet defined via
+    `snip_string` at the cursor
+]]
 
+-- TODO: linewise indent
+-- TODO: user input register
+-- TODO: refactor
 local M = {}
-
-  -- map('n', conf.leader_extact .. 'v', 'yiv"_dav', { noremap = false })
-  -- map('n', conf.leader_extact .. 'w', 'yiw"_daw', { noremap = false })
-  -- map('n', conf.leader_extact .. 'W', 'yiw"_daW', { noremap = false })
-  -- sandwich_target('l', conf.inner, 'l')
-  -- map('n', conf.leader_extact .. 'w', 'yil"_dal', { noremap = false })
-
 local G = {}
-
 local conf = {
+  dot = '.',
+  register = '+',
   query = {
+    av = { 'av', 'iv' },
+    aw = { 'aw', 'iw' },
+    aW = { 'aW', 'iW' },
+    f = { 'af', 'if' },
+    Nf = { 'Naf', 'if' },
+    nf = { 'naf', 'if' },
     w = 'iw',
     W = 'iW',
     q = 'aq',
@@ -25,6 +34,10 @@ local conf = {
     Nl = 'iNl',
   },
   recipies = {
+    { '', ' ', key = 'w'},
+    { ', ', '', key = 'a'},
+    { '', '_', key = 'v'},
+    { '', '.', key = 's'},
     { '[[', ']]', key = 'B', filetype = 'lua' },
     { '(', ')', key = 'b' },
     { '{', '}', key = 'B' },
@@ -37,6 +50,10 @@ local conf = {
     -- key = '',
   },
   add = {
+    w = {'', ' '},
+    a = {',', ''},
+    v = {'', '_'},
+    s = {'', '.'},
     q = "'",
     Q = '`',
     ['('] = { '(', ')' },
@@ -49,12 +66,18 @@ local conf = {
     [']'] = { '[', ']' },
     ['<'] = { '<', '>' },
     ['>'] = { '<', '>' },
-    a = ',',
     -- i = 'i', -- interactive (prompt left then right char)
     -- t = 't', -- xml tag
     -- k = 'f', -- function call
   },
 }
+
+local trigger_char = 'x'
+local query
+local last_char
+local rep
+local will_rep
+local snips
 
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
@@ -176,18 +199,6 @@ local function delete_linepart(linepart)
   vim.fn.setline(linepart.line, new_line)
 end
 
-local function delete_line_after(pos)
-  local line = vim.fn.getline(pos.line)
-  local new_line = line:sub(1, pos.col - 1)
-  vim.fn.setline(pos.line, new_line)
-end
-
-local function delete_line_before(pos)
-  local line = vim.fn.getline(pos.line)
-  local new_line = line:sub(pos.col + 1)
-  vim.fn.setline(pos.line, new_line)
-end
-
 local function insert_into_line(line_num, col, text)
   -- Important to remember when working with multibyte characters: `col` here
   -- represents byte index, not character
@@ -196,16 +207,79 @@ local function insert_into_line(line_num, col, text)
   vim.fn.setline(line_num, new_line)
 end
 
-local function add(mode, char)
-  char = conf.add[char] or char
+local function add(char, marks, line_wise)
+  local snip = snips
+    and (snips[vim.bo.filetype .. ':' .. char] or snips['all:' .. char])
+  if snip then
+    local lines = vim.api.nvim_buf_get_lines(
+      0,
+      marks.first.line - 1,
+      marks.second.line,
+      true
+    )
+    local trailing = lines[#lines]:len() == marks.second.col
+    lines[#lines] = lines[#lines]:sub(1, marks.second.col)
+    lines[1] = lines[1]:sub(marks.first.col)
+    M.contents = lines
+    -- trailing space is needed snippet's trigger is the last character of the line
+    local chars = trigger_char
+    if trailing then
+      chars = chars .. ' '
+    end
+    vim.api.nvim_buf_set_text(
+      0,
+      marks.first.line - 1,
+      marks.first.col - 1,
+      marks.second.line - 1,
+      marks.second.col,
+      { chars }
+    )
+    -- print '--'
+    -- require('modules.utils').dump(marks)
+    vim.api.nvim_win_set_cursor(0, { marks.first.line, marks.first.col })
+    local snippet = snip:copy()
+    snippet:trigger_expand(
+      require('luasnip').session.current_nodes[vim.api.nvim_get_current_buf()]
+    )
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    -- require('modules.utils').dump(cursor)
+    -- require('modules.utils').dump(marks)
+    local line = cursor[1]
+    -- local len = cursor[2]
+    -- local line = marks.second.line
+    if trailing then
+      local len = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:len()
+      -- removing previously added trainling space
+      -- print(len)
+      vim.api.nvim_buf_set_text(0, line - 1, len - 1, line - 1, len, { '' })
+    end
+    return
+  end
   local surr_info
+  char = conf.add[char] or char
   if type(char) == 'table' then
     surr_info = { left = char[1], right = char[2] }
   end
   if type(char) == 'string' then
     surr_info = { left = char, right = char }
   end
-  local marks = get_marks_pos(mode)
+  if line_wise then
+    vim.api.nvim_buf_set_lines(
+      0,
+      marks.second.line,
+      marks.second.line,
+      true,
+      { surr_info.right }
+    )
+    vim.api.nvim_buf_set_lines(
+      0,
+      marks.first.line - 1,
+      marks.first.line - 1,
+      true,
+      { surr_info.left }
+    )
+    return
+  end
   -- Add surrounding. Begin insert with 'end' to not break column numbers
   -- Insert after the right mark (`+ 1` is for that)
   insert_into_line(marks.second.line, marks.second.col + 1, surr_info.right)
@@ -223,10 +297,11 @@ local function find_outer(mode)
   local char_left = chars_left:sub(1, 1)
   local char_right = chars_right:sub(chars_right:len(), chars_right:len())
   local len_right = 0
-  local len_left = 1
-  if char_right == char_left then
-    len_right = 1
-  end
+  local len_left = 0
+  -- local len_left = 1
+  -- if char_right == char_left then
+  --   len_right = 1
+  -- end
   for _, p in ipairs(conf.recipies) do
     if #p == 2 then
       if not p.filetype or p.filetype == vim.bo.filetype then
@@ -251,21 +326,97 @@ local function find_outer(mode)
   return left, right
 end
 
+local marks_a
+function M.delete_query()
+  local marks_i = get_marks_pos 'visual'
+  vim.api.nvim_buf_set_text(
+    0,
+    marks_i.second.line - 1,
+    marks_i.second.col,
+    marks_a.second.line - 1,
+    marks_a.second.col,
+    { '' }
+  )
+  local line_wise = marks_a.first.line < marks_i.first.line
+  vim.api.nvim_buf_set_text(
+    0,
+    marks_a.first.line - 1,
+    marks_a.first.col - 1,
+    marks_i.first.line - 1,
+    line_wise and 0 or marks_i.first.col - 1,
+    { '' }
+  )
+  -- calculates the position of the remaining text
+  -- it starts where the outer textobject started, and keeps the dimensions of
+  -- inner textobject
+  local marks = {
+    first = marks_a.first,
+    second = {
+      line = marks_a.first.line + marks_i.second.line - marks_i.first.line,
+      col = line_wise
+          and marks_a.first.col + marks_i.second.col - marks_i.first.col
+        or marks_i.second.col,
+    },
+  }
+  return marks, line_wise
+end
+
+function M.replace_query()
+  local snip = snips
+    and (
+      snips[vim.bo.filetype .. ':' .. last_char]
+      or snips['all:' .. last_char]
+    )
+  if snip then
+    local left, right = find_outer()
+    local lines = vim.api.nvim_buf_get_lines(0, left.line - 1, right.line, true)
+    lines[#lines] = lines[#lines]:sub(1, right.from - 1)
+    lines[1] = lines[1]:sub(left.to + 1)
+    M.contents = lines
+    local marks = get_marks_pos()
+    vim.api.nvim_buf_set_text(
+      0,
+      marks.first.line - 1,
+      marks.first.col - 1,
+      marks.second.line - 1,
+      marks.second.col,
+      { 'x ' }
+    )
+    local snippet = snip:copy()
+    snippet:trigger_expand(
+      require('luasnip').session.current_nodes[vim.api.nvim_get_current_buf()]
+    )
+    vim.api.nvim_buf_set_text(
+      0,
+      marks.second.line - 1,
+      marks.second.col,
+      marks.second.line - 1,
+      marks.second.col + 1,
+      { '' }
+    )
+    return
+  end
+  local marks, line_wise = M.delete_query()
+  add(last_char, marks, line_wise)
+end
+
 local function delete(mode)
   local left, right = find_outer(mode)
   delete_linepart(right)
+  -- TODO:
   delete_linepart(left)
   cursor_adjust(left.line, left.from)
 end
 
 -- TODO: get desired register
-local function extract(mode, reg)
+local function extract(mode)
   local left, right = find_outer(mode)
   local lines = vim.api.nvim_buf_get_lines(0, left.line - 1, right.line, true)
-  lines[1] = lines[1]:sub(left.to+1)
-  lines[#lines] = lines[#lines]:sub(1, right.from-2)
-  vim.fn.setreg(reg or '+', table.concat(lines, '\n'))
+  lines[#lines] = lines[#lines]:sub(1, right.from - 1)
+  lines[1] = lines[1]:sub(left.to + 1)
+  vim.fn.setreg(conf.register, table.concat(lines, '\n'))
   local marks = get_marks_pos(mode)
+
   vim.api.nvim_buf_set_text(
     0,
     marks.first.line - 1,
@@ -276,47 +427,90 @@ local function extract(mode, reg)
   )
 end
 
-local last_char
-local function ask_char(mode)
-  local char
-  if last_char and mode ~= 'visual' then
-    char = last_char
-  else
+function M.extract_query(reg)
+  local marks_i = get_marks_pos 'visual'
+  local left = marks_i.first
+  local right = marks_i.second
+  local line_wise = marks_a.first.line < marks_i.first.line
+  local lines = vim.api.nvim_buf_get_lines(0, left.line - 1, right.line, true)
+  if not line_wise then
+    lines[#lines] = lines[#lines]:sub(1, right.col)
+    lines[1] = lines[1]:sub(left.col)
+  end
+  vim.fn.setreg(reg or '+', table.concat(lines, '\n'))
+  vim.api.nvim_buf_set_text(
+    0,
+    marks_a.first.line - 1,
+    marks_a.first.col - 1,
+    marks_a.second.line - 1,
+    marks_a.second.col,
+    { '' }
+  )
+end
+
+local function ask_char()
+  rep = will_rep
+  will_rep = false
+  if not (rep and last_char) then
+    local char
     char = input_char '[buffet add] enter char: '
     if not char then
       return
     end
     last_char = char
   end
-  return char
+  return last_char
 end
 
 local opfunc = {}
 G.opfunc = opfunc
 
 function G.opfunc.add(mode)
-  local char = ask_char(mode)
+  local char = ask_char()
   if not char then
     return
   end
-  add(mode, char)
+  local marks = get_marks_pos(mode)
+  add(char, marks)
 end
 
 function G.opfunc.delete(mode)
+  if query then
+    marks_a = get_marks_pos 'visual'
+    vim.fn.feedkeys('v', 'n')
+    vim.fn.feedkeys(query)
+    vim.fn.feedkeys(t ':<c-u>lua require"modules.buffet".delete_query()<cr>')
+    return
+  end
   delete(mode)
 end
 
 function G.opfunc.extract(mode)
+  if query then
+    marks_a = get_marks_pos 'visual'
+    vim.fn.feedkeys('v', 'n')
+    vim.fn.feedkeys(query)
+    vim.fn.feedkeys(t ':<c-u>lua require"modules.buffet".extract_query()<cr>')
+    return
+  end
   extract(mode)
 end
 
 function G.opfunc.replace(mode)
-  local char = ask_char(mode)
+  local char = ask_char()
   if not char then
     return
   end
+  if query then
+    marks_a = get_marks_pos 'visual'
+    vim.fn.feedkeys('v', 'n')
+    vim.fn.feedkeys(query)
+    vim.fn.feedkeys(t ':<c-u>lua require"modules.buffet".replace_query()<cr>')
+    return
+  end
   delete(mode)
-  add(mode, char)
+  local marks = get_marks_pos(mode)
+  add(char, marks)
 end
 
 local function is_ambiguous(t, k)
@@ -330,14 +524,21 @@ end
 -- TODO: count: currently you can enter count before operator; it would be nice to add it just before query
 function G.query(operator)
   local res = ''
+  query = nil
   while true do
     local char = input_char '[buffet add] enter query: '
     if not char then
       return
     end
     res = res .. char
-    if conf.query[res] then
-      res = conf.query[res]
+    local val = conf.query[res]
+    if val then
+      if type(val) == 'table' then
+        res = val[1]
+        query = val[2]
+      else
+        res = val
+      end
       break
     end
     if not is_ambiguous(conf.query, res) then
@@ -349,8 +550,30 @@ function G.query(operator)
   return 'g@' .. res
 end
 
+function G.predot()
+  will_rep = true
+  return conf.dot
+end
+
+function M.load_snippets()
+  snips = {}
+  local ls = require 'luasnip'
+  for _, value in pairs(ls.snippets.BUFFET) do
+    snips[value.trigger] = value
+    value.trigger = trigger_char
+  end
+end
+
 function M.setup()
   _G.Buffet = G
+
+  vim.api.nvim_set_keymap(
+    'n',
+    conf.dot,
+    'v:lua.Buffet.predot()',
+    { expr = true, noremap = false }
+  )
+
   -- Add
   vim.api.nvim_set_keymap(
     'n',

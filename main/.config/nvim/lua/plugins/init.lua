@@ -112,9 +112,11 @@ return require('packer').startup {
     use {
       -- weirdly seems required to format yaml frontmatter
       'godlygeek/tabular',
+      ft = 'markdown',
       requires = {
         'plasticboy/vim-markdown',
         ft = 'markdown',
+        after = 'tablular',
         -- unsuccessful setting options here, using options.lua instead
       },
     }
@@ -313,14 +315,6 @@ return require('packer').startup {
       end,
     }
 
-    -- Multiple
-    use {
-      'echasnovski/mini.nvim',
-      config = function()
-        require('plugins.mini').setup()
-      end,
-    }
-
     -- Tracking
     -- use { 'ThePrimeagen/vim-apm' } -- not working
     use { 'git-time-metric/gtm-vim-plugin', cond = full }
@@ -410,19 +404,6 @@ return require('packer').startup {
         require('neoscroll').setup {
           mappings = {},
         }
-        -- require('neoscroll.config').set_mappings {
-        --   ['<Plug>(u-neoscroll-up)'] = {
-        --     'scroll',
-        --     { '-0.10', 'true', '250' },
-        --   },
-        --   ['<Plug>(u-neoscroll-down)'] = {
-        --     'scroll',
-        --     { '0.10', 'true', '250' },
-        --   },
-        --   ['<Plug>(u-neoscroll-zt)'] = { 'zt', { '250' } },
-        --   ['<Plug>(u-neoscroll-zz)'] = { 'zz', { '250' } },
-        --   ['<Plug>(u-neoscroll-zb)'] = { 'zb', { '250' } },
-        -- }
       end,
     }
     use {
@@ -459,6 +440,7 @@ return require('packer').startup {
           position = 'bottom',
           -- width = 30,
           use_lsp_diagnostic_signs = true,
+          action_keys = require('bindings').plugins.trouble,
         }
       end,
     }
@@ -498,14 +480,19 @@ return require('packer').startup {
     }
     use {
       'folke/twilight.nvim',
-      wants = 'twilight.nvim',
-      requires = { 'folke/twilight.nvim' },
       config = function()
         require('twilight').setup {}
       end,
       cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
     }
-    use { 'wellle/visual-split.vim', cond = full }
+    use {
+      'wellle/visual-split.vim',
+      keys = {
+        '<Plug>(Visual-Split-VSSplit)',
+        '<Plug>(Visual-Split-VSSplitAbove)',
+        '<Plug>(Visual-Split-VSSplitBelow)',
+      },
+    }
     use {
       'kyazdani42/nvim-tree.lua',
       requires = 'kyazdani42/nvim-web-devicons',
@@ -537,6 +524,8 @@ return require('packer').startup {
     }
     use {
       'chentau/marks.nvim',
+      event = 'BufReadPost',
+      -- cond = full,
       config = function()
         require('marks').setup {
           default_mappings = false,
@@ -546,7 +535,8 @@ return require('packer').startup {
     }
     use {
       'andymass/vim-matchup',
-      cond = full,
+      event = 'BufReadPost',
+      -- cond = full,
       setup = function()
         vim.g.matchup_matchparen_offscreen = { method = 'status' }
       end,
@@ -556,12 +546,20 @@ return require('packer').startup {
       disable = false,
       event = 'BufReadPost',
       config = function()
-        require('lightspeed').setup(require('bindings').plugins.lightspeed)
+        local conf = {
+          highlight_unique_chars = false,
+          safe_labels = {},
+        }
+        require('modules.utils').deep_merge(
+          conf,
+          require('bindings').plugins.lightspeed
+        )
+        require('lightspeed').setup(conf)
       end,
     }
     use {
       'abecodes/tabout.nvim',
-      cond = full,
+      event = 'InsertEnter',
       config = function()
         require('tabout').setup {
           tabkey = '',
@@ -687,56 +685,47 @@ return require('packer').startup {
     -- edition
     use {
       'JoseConseco/vim-case-change',
-      cond = full,
+      event = 'BufReadPost',
       setup = function()
         vim.g.casechange_nomap = 1
       end,
     }
     use {
       'matze/vim-move',
-      cond = full,
+      event = 'BufReadPost',
       setup = function()
         vim.g.move_map_keys = 0
       end,
     }
     use {
       'monaqa/dial.nvim',
-      cond = full,
+      event = 'BufReadPost',
       config = function()
         require 'plugins.dial'
       end,
     }
     use {
       'tommcdo/vim-exchange',
-      cond = full,
+      event = 'BufReadPost',
       setup = function()
         vim.g.exchange_no_mappings = 1
-      end,
-    }
-    use {
-      'machakann/vim-sandwich',
-      cond = full,
-      setup = function()
-        vim.g.sandwich_no_default_key_mappings = 1
-        vim.g.operator_sandwich_no_default_key_mappings = 1
-        vim.g.textobj_sandwich_no_default_key_mappings = 1
       end,
     }
     local mac_repo = local_repo 'macrobatics'
     use {
       'svermeulen/vim-macrobatics',
-      cond = full,
+      event = 'BufReadPost',
       setup = function()
         vim.g.Mac_NamedMacrosDirectory = mac_repo
       end,
     }
     use {
       'tpope/vim-repeat',
-      cond = full,
+      event = 'BufReadPost',
     }
     use {
       'numToStr/Comment.nvim',
-      cond = full,
+      event = 'BufReadPost',
       wants = 'nvim-ts-context-commentstring',
       requires = { 'JoosepAlviste/nvim-ts-context-commentstring' },
       config = function()
@@ -747,11 +736,11 @@ return require('packer').startup {
     -- TODO: https://github.com/AndrewRadev/splitjoin.vim
     use {
       'bkad/CamelCaseMotion',
-      cond = full,
+      event = 'BufReadPost',
     }
     use {
       'kana/vim-textobj-user',
-      cond = full,
+      event = 'BufReadPost',
       setup = function()
         require('modules.utils').deep_merge(vim, require('bindings').plugins)
       end,
@@ -759,17 +748,19 @@ return require('packer').startup {
         {
           'Julian/vim-textobj-variable-segment',
           opt = true,
-          -- cond = full, -- FIXME:
           after = 'vim-textobj-user',
         },
         {
           'kana/vim-textobj-datetime',
-          cond = full,
+          after = 'vim-textobj-user',
           setup = function()
             vim.g.textobj_datetime_no_default_key_mappings = 0
           end,
         },
-        { 'preservim/vim-textobj-sentence', cond = full },
+        {
+          'preservim/vim-textobj-sentence',
+          after = 'vim-textobj-user',
+        },
         -- {
         --   'kana/vim-textobj-line',
         --   cond = full,
@@ -777,21 +768,27 @@ return require('packer').startup {
         --     vim.g.textobj_line_no_default_key_mappings = 1
         --   end,
         -- },
-        { 'kana/vim-textobj-entire', cond = full },
-        { local_repo 'vim-indent-object', cond = full },
-        -- breaks completion through 'v' mappings
+        {
+          'kana/vim-textobj-entire',
+          after = 'vim-textobj-user',
+        },
+        -- original breaks completion by mapping in v mode
+        {
+          local_repo 'vim-indent-object',
+          after = 'vim-textobj-user',
+        },
       },
     }
     use {
       'wellle/targets.vim',
-      cond = full,
+      event = 'BufReadPost',
       require = {
-        use { 'wellle/line-targets.vim', cond = full },
+        use { 'wellle/line-targets.vim', after = 'targets.vim' },
       },
     }
     use {
       'tommcdo/vim-ninja-feet',
-      cond = full,
+      event = 'BufReadPost',
       setup = function()
         vim.g.ninja_feet_no_mappings = 1
       end,
@@ -816,7 +813,7 @@ return require('packer').startup {
     }
     use {
       'ethanholz/nvim-lastplace',
-      -- TODO: lazy
+      event = 'BufReadPre',
       config = function()
         require('nvim-lastplace').setup {
           lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
@@ -863,7 +860,6 @@ return require('packer').startup {
         'Wall',
       },
     }
-
     use { 'dstein64/vim-startuptime' }
     use {
       'henriquehbr/nvim-startup.lua',

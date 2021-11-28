@@ -6,6 +6,7 @@ local split_string = require('modules.utils').split_string
 local s = ls.snippet
 local sn = ls.snippet_node
 local t = ls.text_node
+local isn = ls.indent_snippet_node
 local i = ls.insert_node
 local f = ls.function_node
 local c = ls.choice_node
@@ -79,6 +80,7 @@ local eslintrc = [[ module.exports = {
 };]]
 
 ls.snippets = {
+  BUFFET = require 'plugins.luasnip.buffet',
   TEMPLATES = {
     s({ trig = '.prettierrc.yaml' }, { t(split_string(prettierrc, '\n')) }),
     s({ trig = '.eslintrc.js' }, { t(split_string(eslintrc, '\n')) }),
@@ -105,6 +107,29 @@ ls.snippets = {
     }),
   },
   all = {
+    s('isn', {
+      isn(2, {
+        t {
+          'This is indented as deep as the trigger',
+          'and this is at the beginning of the next line',
+        },
+      }, ''), i(1, 'caca'),
+    }),
+    s({ trig = 'lua:f' }, {
+      t 'local function ',
+      i(1, 'name'),
+      t '()',
+      isn(
+        1,
+        f(function()
+          return { '', 'caca', '' }
+        end, {}),
+        ''
+      ),
+      i(1),
+      t { '', 'end', '' },
+      i(0),
+    }),
     s('date', p(os.date, '%x')),
     s('time', p(os.date, '%H:%M')),
     s('datetime', p(os.date, '%x, %H:%M')),
@@ -148,3 +173,4 @@ ls.snippets = {
 }
 
 require('modules.templates').setup()
+require('modules.buffet').load_snippets()

@@ -21,6 +21,14 @@ end
 
 local function setup_bindings(buf_id)
   local cb = require('nvim-tree.config').nvim_tree_callback
+  -- FIXME:
+  vim.api.nvim_buf_set_keymap(
+    buf_id,
+    'n',
+    'q',
+    'lua require("modules.toggler").toggle()',
+    { noremap = true, silent = true, nowait = true }
+  )
   for key, value in pairs(require('bindings').plugins.nvim_tree) do
     vim.api.nvim_buf_set_keymap(
       buf_id,

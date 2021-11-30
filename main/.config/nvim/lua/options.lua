@@ -45,7 +45,6 @@ deep_merge(vim, {
     syntax = 'on',
     tabstop = indent,
     termguicolors = true,
-    textwidth = 80,
     undofile = false,
     updatetime = 300,
     -- timeoutlen = 300,
@@ -104,7 +103,7 @@ deep_merge(vim, {
     secure = true, -- disable autocmd etc for project local vimrc files
     sessionoptions = 'curdir,folds,tabpages,winsize',
     -- spelloptions = "camel",
-    textwidth = 80,
+    -- textwidth = 80,
     undofile = full,
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
   },

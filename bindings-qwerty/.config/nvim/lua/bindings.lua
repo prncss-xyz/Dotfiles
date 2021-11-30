@@ -528,7 +528,7 @@ local function map_basic()
         name = 'exchange',
         modes = {
           x = plug '(Exchange)',
-          n = plug '(ExchangeLine)',
+          n = plug '(Exchange)',
         },
       },
       Y = plug { '(buffet-operator-delete)', modes = 'nx' },
@@ -616,6 +616,7 @@ local function map_basic()
         y = { '<Plug>(buffet-operator-add)il', noremap = false },
         R = { '<Plug>(buffet-operator-extract)il', noremap = false },
         r = { '<Plug>(buffet-operator-replace)il', noremap = false },
+        x = plug '(ExchangeLine)',
         [dd.join] = plug '(u-revj-line)',
         [s(dd.comment)] = plug '(u-comment-toggler-block)',
         [dd.comment] = plug '(u-comment-toggler-line)',
@@ -953,6 +954,7 @@ local function map_ts_textobj(key, name)
     string.format('<esc><Plug>(gns-%s-outer)v<Plug>(%s-outer)', name, name),
     noremap = false,
   })
+  require('modules.flies').setup()
 end
 
 -- FIXME: not working in visual mode: comment, ninja
@@ -992,12 +994,12 @@ local function map_textobjects()
   map_textobj('w', 'iw', 'aw')
   map_textobj('W', 'iW', 'aw')
   map_ts_textobj('a', 'parameter')
-  map_ts_textobj('Q', 'string')
-  map_ts_textobj('f', 'function')
-  map_ts_textobj('k', 'call')
-  map_ts_textobj('j', 'block')
-  map_ts_textobj('y', 'conditional')
-  map_ts_textobj('z', 'loop')
+  -- map_ts_textobj('Q', 'string')
+  -- map_ts_textobj('f', 'function')
+  -- map_ts_textobj('k', 'call')
+  -- map_ts_textobj('j', 'block')
+  -- map_ts_textobj('y', 'conditional')
+  -- map_ts_textobj('z', 'loop')
   vim.g.targets_nl = 'nN'
   require('modules.utils').augroup('targetsline', {
     {
@@ -1067,7 +1069,7 @@ local function map_markdown()
     },
   }
   if require('pager').full then
-    vim.fn.call('textobj#sentence#init', {})
+    -- vim.fn.call('textobj#sentence#init', {})
     reg {
       -- both are identical
       ad = { '<Plug>(textobj-datetime-auto)', noremap = false, modes = 'ox' },

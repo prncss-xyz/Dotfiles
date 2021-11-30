@@ -557,6 +557,14 @@ return require('packer').startup {
         require('lightspeed').setup(conf)
       end,
     }
+    -- yup, hop for the extensions
+    use {
+      'phaazon/hop.nvim',
+      config = function()
+        require('hop').setup()
+      end,
+    }
+    use 'indianboy42/hop-extensions'
     use {
       'abecodes/tabout.nvim',
       event = 'InsertEnter',

@@ -18,7 +18,7 @@ for _, name in ipairs {
   'function',
   'loop',
   'parameter',
-  'string',
+  -- 'string',
 } do
   for _, scope in pairs { 'inner', 'outer' } do
     keymaps[string.format('<Plug>(%s-%s)', name, scope)] = string.format(

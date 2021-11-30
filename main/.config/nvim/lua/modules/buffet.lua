@@ -294,8 +294,8 @@ local function find_outer(mode)
   local line_right = vim.fn.getline(marks.second.line)
   local chars_left = line_left:sub(marks.first.col)
   local chars_right = line_right:sub(1, marks.second.col)
-  local char_left = chars_left:sub(1, 1)
-  local char_right = chars_right:sub(chars_right:len(), chars_right:len())
+  -- local char_left = chars_left:sub(1, 1)
+  -- local char_right = chars_right:sub(chars_right:len(), chars_right:len())
   local len_right = 0
   local len_left = 0
   -- local len_left = 1

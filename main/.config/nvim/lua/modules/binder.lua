@@ -69,7 +69,7 @@ local function map(bufnr, mode, keys, rhs, map_opts)
     --   mode,
     --   keys,
     --   ':<c-u> :WhichKey "' .. raw_key .. '"<CR>',
-   --   { silent = true, noremap = true }
+    --   { silent = true, noremap = true }
     -- )
     vim.api.nvim_set_keymap(mode, keys, rhs, map_opts)
   end
@@ -91,7 +91,31 @@ local function create(f, help)
   table.insert(M.store, f)
   local id = #M.store
   M.help[id] = help
-  return string.format('<cmd>lua require%q.store[%d]()<cr>', module, id)
+  -- return string.format('<cmd>lua require%q.store[%d]()<cr>', module, id)
+  return id
+end
+
+local function map_str(id, mode, send_mode)
+  local mode_str
+  if send_mode then
+    mode_str = string.format("%q", mode)
+  else
+    mode_str = ''
+  end
+  if mode == 'x' or mode == 'o' then
+    return string.format(
+      ':<c-u>lua require%q.store[%d](%s)<cr>',
+      module,
+      id,
+      mode_str
+    )
+  end
+  return string.format(
+    '<cmd>lua require%q.store[%d](%s)<cr>',
+    module,
+    id,
+    mode_str
+  )
 end
 
 M.counters = {}
@@ -130,13 +154,15 @@ local function capture(keys, c)
 end
 
 local function reg(t, bufnr, acc)
+  -- print(acc.keys)
   if type(t) ~= 'table' then
     t = { t }
   end
   local rhs = t[1]
   if rhs then
+    local id
     if type(rhs) == 'function' then
-      rhs = create(rhs, t[2])
+      id = create(rhs, t[2])
     end
     local map_opts = {
       silent = t.silent,
@@ -150,7 +176,8 @@ local function reg(t, bufnr, acc)
     local modes = t.modes or acc.modes or 'n'
     for mode in string.gmatch(modes, '.') do
       count(mode)
-      map_defer(bufnr, mode, acc.keys, rhs, map_opts)
+      local rhs0 = id and map_str(id, mode, t.mode) or rhs
+      map_defer(bufnr, mode, acc.keys, rhs0, map_opts)
     end
     return
   end

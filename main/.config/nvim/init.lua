@@ -1,7 +1,3 @@
-pcall(function() -- needed to enable first installation
-  require('impatient').enable_profile()
-end)
-
 local g = vim.g
 
 -- this won't significantly improve startup time

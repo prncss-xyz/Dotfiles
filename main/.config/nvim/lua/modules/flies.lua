@@ -1,12 +1,32 @@
 local M = {}
 
--- TODO: words, lines
--- TODO: exchange, visual mode
+-- TODO: cancelation mechanisme for hinted textobjects
+-- TODO: linewiseness workaround (cf. anywise_reg)
+
+local conf = {
+  domains = {
+    i = 'inner',
+    a = 'outer',
+  },
+}
+
+local outer_char
+local hint_char
+local previous_char
 
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
+local function find(a, val)
+  for k, v in pairs(a) do
+    if v == val then
+      return k
+    end
+  end
+end
+
+-- FIXME: not working at all
 local function string_innerise(qualifier, mode)
   -- FIXME: get only cursor position before selection
   M.tobj('outer', qualifier, 'string', mode)
@@ -24,13 +44,51 @@ local function string_innerise(qualifier, mode)
   print(len)
 end
 
-function M.tobj(domain, qualifier, query, mode)
-  if domain == 'inner' and query == 'string' then
-    string_innerise(qualifier, mode)
+local rep = {}
+
+function M.repeat_register(previous, next)
+  rep.previous = previous
+  rep.next = next
+end
+
+function M.repeat_previous(mode)
+  if rep.previous then
+    rep.previous(mode)
+  end
+end
+
+function M.repeat_next(mode)
+  if rep.next then
+    rep.next(mode)
+  end
+end
+
+function M.move(domain, query, direction)
+  M.repeat_register(function()
+    M.move(domain, query, -1)
+  end, function()
+    M.move(domain, query, 1)
+  end)
+  local query_string = string.format('@%s.%s', query, domain)
+  if direction == -1 then
+    require('nvim-treesitter.textobjects.move').goto_previous_end(query_string)
     return
   end
+  if direction == 1 then
+    require('nvim-treesitter.textobjects.move').goto_next_start(query_string)
+    return
+  end
+  if direction == 0 then
+    require('hop-extensions').hint_textobjects(
+      string.format('%s.%s', query, domain)
+    )
+    return
+  end
+end
+
+function M.tobj(domain, qualifier, query, mode)
   local query_string = string.format('@%s.%s', query, domain)
-  local count1 = vim.fn.eval 'v:count1'
+  local count1 = vim.v.count1
   if qualifier == 'next' then
     for _ = 1, count1 do
       require('nvim-treesitter.textobjects.move').goto_next_start(query_string)
@@ -52,31 +110,7 @@ function M.tobj(domain, qualifier, query, mode)
   )
 end
 
-local conf = {
-  queries = {
-    Q = 'string',
-    f = 'function',
-    k = 'call',
-    j = 'block',
-    y = 'conditional',
-    z = 'loop',
-    -- c = 'comment', -- not working
-  },
-  qualifiers = {
-    N = 'previous',
-    n = 'next',
-    h = 'hint',
-  },
-  domains = {
-    i = 'inner',
-    a = 'outer',
-  },
-}
-
-local outer
-local hint
-
-local function exchange()
+function M.exchange()
   local res = ''
   local res2 = ''
   while true do
@@ -97,17 +131,17 @@ local function exchange()
       res2 = res2 .. char
     elseif conf.qualifiers[char] then
       if res == '' then
-        res = outer
-        res2 = outer
+        res = outer_char
+        res2 = outer_char
       end
       res = res .. char
     elseif conf.queries[char] then
       if res == '' then
-        res = outer
-        res2 = outer
+        res = outer_char
+        res2 = outer_char
       end
       res = res .. char
-      res2 = res2 .. hint .. char
+      res2 = res2 .. hint_char .. char
       return t(string.format('<Plug>(Exchange)%s<Plug>(Exchange)%s', res, res2))
     else
       return ''
@@ -115,30 +149,75 @@ local function exchange()
   end
 end
 
-function M.setup()
-  for k, v in pairs(conf.domains) do
-    if v == 'outer' then
-      outer = k
+function M.setup(user_conf)
+  conf = vim.tbl_extend('force', conf, user_conf)
+  hint_char = find(conf.qualifiers, 'hint')
+  previous_char = find(conf.qualifiers, 'previous')
+  outer_char = find(conf.domains, 'outer')
+  for k, v in pairs(conf.qualifiers) do
+    if v == 'hint' then
+      hint_char = k
       break
     end
   end
   for k, v in pairs(conf.qualifiers) do
-    if v == 'hint' then
-      hint = k
+    if v == 'previous' then
+      previous_char = k
       break
     end
   end
-  _G.Flies = { exchange = exchange }
+  for k, v in pairs(conf.domains) do
+    if v == 'outer' then
+      outer_char = k
+      break
+    end
+  end
   vim.api.nvim_set_keymap(
     'n',
-    'ox',
-    'v:lua.Flies.exchange()',
+    conf.exchange,
+    "v:lua.require'modules.flies'.exchange()",
     { expr = true, noremap = false }
   )
-  for _, mode in ipairs { 'o', 'x' } do
-    for query_char, query in pairs(conf.queries) do
-      for qualifier_char, qualifier in pairs(conf.qualifiers) do
-        for domain_char, domain in pairs(conf.domains) do
+  for query_char, query in pairs(conf.queries) do
+    for domain_char, domain in pairs(conf.domains) do
+      for _, mode in ipairs { 'n', 'o', 'x' } do
+        if conf.move then
+          vim.api.nvim_set_keymap(
+            mode,
+            conf.move .. domain_char .. query_char,
+            string.format(
+              '<cmd>lua require("modules.flies").move(%q, %q, 1)<cr>',
+              domain,
+              query
+            ),
+            {}
+          )
+          vim.api.nvim_set_keymap(
+            mode,
+            conf.move .. domain_char .. previous_char .. query_char,
+            string.format(
+              '<cmd>lua require("modules.flies").move(%q, %q, -1)<cr>',
+              domain,
+              query
+            ),
+            {}
+          )
+          if hint_char then
+            vim.api.nvim_set_keymap(
+              mode,
+              conf.move .. domain_char .. hint_char .. query_char,
+              string.format(
+                '<cmd>lua require("modules.flies").move(%q, %q, 0)<cr>',
+                domain,
+                query
+              ),
+              {}
+            )
+          end
+        end
+      end
+      for _, mode in ipairs { 'o', 'x' } do
+        for qualifier_char, qualifier in pairs(conf.qualifiers) do
           vim.api.nvim_set_keymap(
             mode,
             domain_char .. query_char,

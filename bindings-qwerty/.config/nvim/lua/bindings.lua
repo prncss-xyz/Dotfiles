@@ -156,37 +156,25 @@ local function map_basic()
     -- e = { 'e', 'next word ', modes = 'nxo' },
     e = plug { 'CamelCaseMotion_e', 'next subword ', modes = 'nxo' },
     F = {
-      'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_F" : "F"',
-      noremap = false,
-      expr = true,
+      function()
+        require('bindutils').lightspeed_F()
+      end,
       modes = 'nxo',
     },
     f = {
-      'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
-      noremap = false,
-      expr = true,
+      function()
+        require('bindutils').lightspeed_f()
+      end,
       modes = 'nxo',
     },
     I = 'I',
     i = 'i',
     N = {
-      modes = {
-        nx = {
-          "<cmd>execute('normal! ' . v:count1 . 'N')<cr><cmd>lua require('hlslens').start()<cr>",
-          'search previous',
-        },
-        o = 'gN',
-      },
+      require('modules.flies').repeat_previous,
+      mode = true,
+      modes = 'nxo',
     },
-    n = {
-      modes = {
-        nx = {
-          "<cmd>execute('normal! ' . v:count1 . 'n')<cr><cmd>lua require('hlslens').start()<cr>",
-          'search previous',
-        },
-        o = 'gn',
-      },
-    },
+    n = { require('modules.flies').repeat_next, mode = true, modes = 'nxo' },
     O = { '<nop>', modes = 'nx' },
     o = { '<nop>', modes = 'nx' },
     p = { 'p', modes = 'nx' },
@@ -195,15 +183,15 @@ local function map_basic()
     S = plug { 'Lightspeed_S', 'S', modes = 'nxo' },
     s = plug { 'Lightspeed_s', 's', modes = 'nxo' },
     T = {
-      'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_T" : "T"',
-      noremap = false,
-      expr = true,
+      function()
+        require('bindutils').lightspeed_T()
+      end,
       modes = 'nxo',
     },
     t = {
-      'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_t" : "t"',
-      noremap = false,
-      expr = true,
+      function()
+        require('bindutils').lightspeed_t()
+      end,
       modes = 'nxo',
     },
     U = 'U',
@@ -221,8 +209,8 @@ local function map_basic()
     cc = '""S',
     dd = '""dd',
     xx = '"+dd',
-    ['É'] = { '?', modes = 'nxo' },
-    ['é'] = { '/', modes = 'nxo' },
+    -- ['É'] = { '?', modes = 'nxo' },
+    -- ['é'] = { '/', modes = 'nxo' },
     ['.'] = '.',
     ['!'] = { '!', modes = 'nx' },
     ['!!'] = { '!!', modes = 'nx' },
@@ -245,7 +233,7 @@ local function map_basic()
       require('neoscroll').scroll(0.9, true, 250)
     end,
     -- ['<c-f>'] = plug { 'Lightspeed_,_ft', modes = 'nxo' },
-    ['<c-g>'] = plug { 'Lightspeed_;_ft', modes = 'nxo' },
+    -- ['<c-g>'] = plug { 'Lightspeed_;_ft', modes = 'nxo' },
     ['<c-i>'] = '<c-i>',
     ['<c-n>'] = {
       function()
@@ -261,7 +249,12 @@ local function map_basic()
       'jump previous buffer',
     },
     ['<c-r>'] = '<c-r>',
-    ['<c-s>'] = { vim.lsp.buf.formatting_sync, modes = 'ni' },
+    ['<c-s>'] = {
+      function()
+        vim.lsp.buf.formatting_sync()
+      end,
+      modes = 'ni',
+    },
     ['<c-u>'] = function()
       require('neoscroll').scroll(-0.9, true, 250)
     end,
@@ -363,12 +356,10 @@ local function map_basic()
           'dap frames',
         },
       },
-      N = 'gN',
-      n = 'gn',
       s = {
         name = '+LSP',
         a = {
-          vim.lsp.diagnostic.show_line_diagnostics(),
+          vim.lsp.diagnostic.show_line_diagnostics,
           'show line diagnostics',
         },
         C = { vim.lsp.buf.incoming_call, 'incoming calls' },
@@ -402,8 +393,6 @@ local function map_basic()
       },
     },
     [a.jump] = {
-      A = { vim.lsp.diagnostic.goto_prev, 'go previous diagnostic' },
-      a = { vim.lsp.diagnostic.goto_next, 'go next diagnostic' },
       BB = plug '(Marks-next-bookmark)',
       bb = plug '(Marks-next-previous)',
       Ba = plug '(Marks-prev-bookmark0)',
@@ -415,29 +404,67 @@ local function map_basic()
       Bf = plug '(Marks-prev-bookmark3)',
       bf = plug '(Marks-next-bookmark3)',
       C = {
-        '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
-        noremap = false,
+        function()
+          require('bindutils').search_asterisk(false)
+        end,
         modes = 'nx',
       },
       c = {
-        '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
-        noremap = false,
+        function()
+          require('bindutils').search_asterisk(true)
+        end,
         modes = 'nx',
       },
-      D = { '[c', 'previous change' }, -- FIXME:
-      d = { ']c', 'next change' }, -- FIXME:
+      -- C = {
+      --   '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
+      --   noremap = false,
+      --   modes = 'nx',
+      -- },
+      -- c = {
+      --   '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
+      --   noremap = false,
+      --   modes = 'nx',
+      -- },
+      D = { vim.diagnostic.goto_prev, 'go previous diagnostic' },
+      d = { vim.diagnostic.goto_next, 'go next diagnostic' },
+      -- D = { '[c', 'previous change' }, -- FIXME:
+      -- d = { ']c', 'next change' }, -- FIXME:
       E = { 'gg', 'first line', modes = 'nxo' },
       e = { 'G', 'last line', modes = 'nxo' },
-      f = { '(matchup-z%)', 'matchup inward', modes = 'nxo' },
+      F = {
+        function()
+          require('bindutils').search(false)
+        end,
+        modes = 'nxo',
+      },
+      f = {
+        function()
+          require('bindutils').search(true)
+        end,
+        modes = 'nxo',
+      },
+      h = { '(matchup-z%)', 'matchup inward', modes = 'nxo' },
       g = { '``', 'before last jump' },
-      L = cmd 'Telescope loclist',
+      N = {
+        function()
+          require('bindutils').n(false)
+        end,
+        modes = 'nxo',
+      },
+      n = {
+        function()
+          require('bindutils').n(true)
+        end,
+        modes = 'nxo',
+      },
       m = { '`', modes = 'nxo' },
       o = { '`.', 'last change' },
-      -- s = cmd 'Telescope treesitter',
-      P = { '`[', 'start of last mod', modes = 'nxo' },
-      p = { '`]', 'begin of last mod', modes = 'nxo' },
+      -- L = cmd 'Telescope loclist',
+      L = { '`[', 'start of last mod', modes = 'nxo' },
+      l = { '`]', 'begin of last mod', modes = 'nxo' },
       Q = plug { '(Marks-prev)', name = 'Goes to previous mark in buffer.' },
       q = plug { '(Marks-next)', name = 'Goes to next mark in buffer.' },
+      -- s = cmd 'Telescope treesitter',
       s = cmd 'Telescope lsp_document_symbols',
       V = { '`<', modes = 'nxo' },
       v = { '`>', modes = 'nxo' },
@@ -926,37 +953,6 @@ local function map_textobj(key, inner, outer, name)
   }
 end
 
-local function map_ts_textobj(key, name)
-  -- TODO: accept count argument
-  -- make indepenent of mappings
-  map_textobj(
-    key,
-    plug(string.format('(%s-inner)', name)),
-    plug(string.format('(%s-outer)', name))
-  )
-  -- require('modules.binder').reg {
-  --   [' gi' .. key] = plug(string.format('(gns-%s-inner)', name)),
-  --   [' gi' .. s(key)] = plug(string.format('(gpe-%s-inner)', name)),
-  --   [' go' .. key] = plug(string.format('(gns-%s-outer)', name)),
-  --   [' go' .. s(key)] = plug(string.format('(gpe-%s-outer)', name)),
-  -- }
-  map_textobj('N' .. key, {
-    string.format('<esc><Plug>(gpe-%s-inner)v<Plug>(%s-inner)', name, name),
-    noremap = false,
-  }, {
-    string.format('<esc><Plug>(gpe-%s-outer)v<Plug>(%s-outer)', name, name),
-    noremap = false,
-  })
-  map_textobj('n' .. key, {
-    string.format('<esc><Plug>(gns-%s-inner)v<Plug>(%s-inner)', name, name),
-    noremap = false,
-  }, {
-    string.format('<esc><Plug>(gns-%s-outer)v<Plug>(%s-outer)', name, name),
-    noremap = false,
-  })
-  require('modules.flies').setup()
-end
-
 -- FIXME: not working in visual mode: comment, ninja
 -- a: argument (targets)
 -- A: parameter (ts)
@@ -965,14 +961,13 @@ end
 -- d: datetime
 -- e: entire buffer
 -- f: funtion (ts)
--- h: gitsigns
 -- i: indent
 -- j: block (ts)
 -- k: call (ts)
 -- l: line
 -- m: parameter (ts)
--- p: paragraph (builtin)
 -- q: quotes (targets)
+-- r: paragraph (builtin)
 -- s: sentence
 -- t: tag (targets)
 -- v: variable segment
@@ -983,24 +978,19 @@ end
 -- IA (targets)
 
 -- ts: Ajktyz
+-- h: gitsigns
 
--- nN: next/last (targets)
+-- nlh: next/last/hint (targets)
 -- gG: ninja
 
 -- , hint
 
 local function map_textobjects()
-  map_textobj('p', 'ip', 'ap')
+  map_textobj('r', 'ip', 'ap')
   map_textobj('w', 'iw', 'aw')
   map_textobj('W', 'iW', 'aw')
-  map_ts_textobj('a', 'parameter')
-  -- map_ts_textobj('Q', 'string')
-  -- map_ts_textobj('f', 'function')
-  -- map_ts_textobj('k', 'call')
-  -- map_ts_textobj('j', 'block')
-  -- map_ts_textobj('y', 'conditional')
-  -- map_ts_textobj('z', 'loop')
-  vim.g.targets_nl = 'nN'
+
+  vim.g.targets_nl = 'np'
   require('modules.utils').augroup('targetsline', {
     {
       events = { 'user' },
@@ -1016,11 +1006,6 @@ local function map_textobjects()
       end,
     },
   })
-  map_textobj(
-    dd.comment,
-    plug '(u-comment-textobj)',
-    plug '(u-comment-textobj)'
-  )
   -- TODO: should be ii / ai for certain filetypes (markdown, python)
   map_textobj('i', plug '(indent-object-ii)', plug '(indent-object-ai)')
   map_textobj(
@@ -1038,6 +1023,25 @@ local function map_textobjects()
   local map = require('modules.utils').map
   map('o', 'z', '<Plug>Lightspeed_x', { noremap = false })
   map('o', 'Z', '<Plug>Lightspeed_x', { noremap = false })
+  require('modules.flies').setup {
+    queries = {
+      Q = 'string',
+      a = 'parameter',
+      f = 'function',
+      k = 'call',
+      j = 'block',
+      y = 'conditional',
+      z = 'loop',
+      c = 'comment',
+    },
+    qualifiers = {
+      p = 'previous',
+      n = 'next',
+      h = 'hint',
+    },
+    move = 'g',
+    exchange = 'ox',
+  }
 end
 
 local function map_markdown()

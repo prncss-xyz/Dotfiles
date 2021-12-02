@@ -1,11 +1,96 @@
 -- small commands directly meant for bindings
-
 local M = {}
+
+local function t(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
 
 local get_visual_selection = require('modules.utils').get_visual_selection
 
 -- FIXME:
 -- https://github.com/neovim/neovim/pull/12368
+
+local search_forward
+
+function M.search(forward)
+  search_forward = forward
+  require('modules.flies').repeat_register(function()
+    M.n(false)
+  end, function()
+    M.n(true)
+  end)
+  if forward then
+    vim.fn.feedkeys('/', 'n')
+  else
+    vim.fn.feedkeys('?', 'n')
+  end
+end
+
+function M.search_asterisk(exact)
+  search_forward = true
+  require('modules.flies').repeat_register(function()
+    M.n(false)
+  end, function()
+    M.n(true)
+  end)
+  if exact then
+    vim.fn.feedkeys(t '<plug>(asterisk-z*)')
+  else
+    vim.fn.feedkeys(t '<plug>(asterisk-gz*)')
+  end
+  require('hlslens').start()
+end
+
+function M.n(forward)
+  require('modules.flies').repeat_register(function()
+    M.n(false)
+  end, function()
+    M.n(true)
+  end)
+  if forward == search_forward then
+    vim.fn.feedkeys(vim.v.count1 .. 'n', 'n')
+  else
+    vim.fn.feedkeys(vim.v.count1 .. 'N', 'n')
+  end
+  require('hlslens').start()
+end
+
+-- 'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
+function M.lightspeed_F()
+  require('modules.flies').repeat_register(function()
+    require('lightspeed').ft:go(true, false, 'cold')
+  end, function()
+    require('lightspeed').ft:go(false, false, 'cold')
+  end)
+  require('lightspeed').ft:go(true, false)
+end
+
+function M.lightspeed_f()
+  require('modules.flies').repeat_register(function()
+    require('lightspeed').ft:go(true, false, 'cold')
+  end, function()
+    require('lightspeed').ft:go(false, false, 'cold')
+  end)
+  require('lightspeed').ft:go(false, false)
+end
+
+function M.lightspeed_T()
+  require('modules.flies').repeat_register(function()
+    require('lightspeed').ft:go(true, true, 'cold')
+  end, function()
+    require('lightspeed').ft:go(false, true, 'cold')
+  end)
+  require('lightspeed').ft:go(true, true)
+end
+
+function M.lightspeed_t()
+  require('modules.flies').repeat_register(function()
+    require('lightspeed').ft:go(true, true, 'cold')
+  end, function()
+    require('lightspeed').ft:go(false, true, 'cold')
+  end)
+  require('lightspeed').ft:go(false, true)
+end
 
 local function preview_location_callback(_, method, result)
   if result == nil or vim.tbl_isempty(result) then
@@ -19,6 +104,7 @@ local function preview_location_callback(_, method, result)
   end
 end
 
+-- FIXME:
 function M.peek_definition()
   local params = vim.lsp.util.make_position_params()
   return vim.lsp.buf_request(
@@ -27,10 +113,6 @@ function M.peek_definition()
     params,
     preview_location_callback
   )
-end
-
-local function t(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
 function M.ro_quit_else(lhs, mode)

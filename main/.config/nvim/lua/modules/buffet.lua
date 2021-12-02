@@ -12,6 +12,11 @@ lsp_expand(snip_string)`: expand the lsp-syntax-snippet defined via
 local M = {}
 local G = {}
 local conf = {
+  filetype = {
+    javascriptreact = 'javascript',
+    typescriptreact = 'javascript',
+    typescript = 'javascript',
+  },
   dot = '.',
   register = '+',
   query = {
@@ -208,8 +213,9 @@ local function insert_into_line(line_num, col, text)
 end
 
 local function add(char, marks, line_wise)
+  local filetype = conf.filetype[vim.bo.filetype] or vim.bo.filetype
   local snip = snips
-    and (snips[vim.bo.filetype .. ':' .. char] or snips['all:' .. char])
+    and (snips[filetype .. ':' .. char] or snips['all:' .. char])
   if snip then
     local lines = vim.api.nvim_buf_get_lines(
       0,
@@ -302,9 +308,10 @@ local function find_outer(mode)
   -- if char_right == char_left then
   --   len_right = 1
   -- end
+  local filetype = conf.filetype[vim.bo.filetype] or vim.bo.filetype
   for _, p in ipairs(conf.recipies) do
     if #p == 2 then
-      if not p.filetype or p.filetype == vim.bo.filetype then
+      if not p.filetype or p.filetype == filetype then
         if starts_with(chars_left, p[1]) and ends_with(chars_right, p[2]) then
           len_left = p[1]:len()
           len_right = p[2]:len()
@@ -362,9 +369,10 @@ function M.delete_query()
 end
 
 function M.replace_query()
+  local filetype = conf.filetype[vim.bo.filetype] or vim.bo.filetype
   local snip = snips
     and (
-      snips[vim.bo.filetype .. ':' .. last_char]
+      snips[filetype .. ':' .. last_char]
       or snips['all:' .. last_char]
     )
   if snip then

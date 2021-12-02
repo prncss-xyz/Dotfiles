@@ -31,13 +31,6 @@ return require('packer').startup {
   function()
     use 'wbthomason/packer.nvim'
     use {
-      'lewis6991/impatient.nvim',
-      config = {
-        -- Move to lua dir so impatient.nvim can cache it
-        compile_path = vim.fn.stdpath 'config' .. '/lua/packer_compiled.lua',
-      },
-    }
-    use {
       'nathom/filetype.nvim',
       config = function()
         require 'plugins.filetype'
@@ -560,11 +553,12 @@ return require('packer').startup {
     -- yup, hop for the extensions
     use {
       'phaazon/hop.nvim',
+      module = 'hop',
       config = function()
         require('hop').setup()
       end,
     }
-    use 'indianboy42/hop-extensions'
+    use { 'indianboy42/hop-extensions', module = 'hop-extensions' }
     use {
       'abecodes/tabout.nvim',
       event = 'InsertEnter',

@@ -66,7 +66,7 @@ local function cmd(t)
   return t
 end
 
-local function map_command_insert()
+local function map_command_lang()
   -- TODO:
   -- - dedent
   -- - remap cmp c-e
@@ -108,7 +108,7 @@ local function map_command_insert()
         ['<c-f>'] = { require('bindutils').cmp_confirm },
       },
       c = {
-        ['<a-v>'] = { '<c-f>', 'edit command line' },
+        ['<c-s>'] = { '<c-f>', 'edit command line' },
         ['<c-v>'] = { '<c-r>+', 'paste to command line' },
       },
     },
@@ -155,18 +155,18 @@ local function map_basic()
     E = { 'E', 'previous bigword', modes = 'nxo' },
     -- e = { 'e', 'next word ', modes = 'nxo' },
     e = plug { 'CamelCaseMotion_e', 'next subword ', modes = 'nxo' },
-    F = {
-      function()
-        require('bindutils').lightspeed_F()
-      end,
-      modes = 'nxo',
-    },
-    f = {
-      function()
-        require('bindutils').lightspeed_f()
-      end,
-      modes = 'nxo',
-    },
+    -- F = {
+    --   function()
+    --     require('bindutils').lightspeed_F()
+    --   end,
+    --   modes = 'nxo',
+    -- },
+    -- f = {
+    --   function()
+    --     require('bindutils').lightspeed_f()
+    --   end,
+    --   modes = 'nxo',
+    -- },
     I = 'I',
     i = 'i',
     N = {
@@ -359,7 +359,9 @@ local function map_basic()
       s = {
         name = '+LSP',
         a = {
-          vim.lsp.diagnostic.show_line_diagnostics,
+          function()
+            vim.diagnostic.open_float(nil, { source = 'always' })
+          end,
           'show line diagnostics',
         },
         C = { vim.lsp.buf.incoming_call, 'incoming calls' },
@@ -404,27 +406,15 @@ local function map_basic()
       Bf = plug '(Marks-prev-bookmark3)',
       bf = plug '(Marks-next-bookmark3)',
       C = {
-        function()
-          require('bindutils').search_asterisk(false)
-        end,
+        '<plug>(asterisk-gz*)<cmd>lua require"bindutils".search_asterisk()<cr>',
+        noremap = false,
         modes = 'nx',
       },
       c = {
-        function()
-          require('bindutils').search_asterisk(true)
-        end,
+        '<plug>(asterisk-z*)<cmd>lua require"bindutils".search_asterisk()<cr>',
+        noremap = false,
         modes = 'nx',
       },
-      -- C = {
-      --   '<plug>(asterisk-gz*)<cmd>lua require"hlslens".start()<cr>',
-      --   noremap = false,
-      --   modes = 'nx',
-      -- },
-      -- c = {
-      --   '<plug>(asterisk-z*)<cmd>lua require"hlslens".start()<cr>',
-      --   noremap = false,
-      --   modes = 'nx',
-      -- },
       D = { vim.diagnostic.goto_prev, 'go previous diagnostic' },
       d = { vim.diagnostic.goto_next, 'go next diagnostic' },
       -- D = { '[c', 'previous change' }, -- FIXME:
@@ -485,7 +475,11 @@ local function map_basic()
     },
     [a.edit] = {
       name = '+edit',
-      a = cmd { 'CodeActionMenu', 'code action', modes = 'nx' },
+      a = { modes = {
+        n = {"<cmd>lua vim.lsp.buf.code_action()<cr>"},
+        v = { ":'<,'>lua vim.lsp.buf.range_code_action()<cr>"},
+      }},
+      -- a = cmd { 'CodeActionMenu', 'code action', modes = 'nx' },
       b = { 'gi', 'last insert point' },
       f = cmd { 'Telescope refactoring', 'refactoring', modes = 'nx' },
       h = {
@@ -522,12 +516,7 @@ local function map_basic()
         'buffet replace',
         modes = 'nx',
       },
-      s = {
-        function()
-          require('renamer').rename { empty = false }
-        end,
-        'rename',
-      },
+      s = { vim.lsp.buf.rename, 'rename' },
       -- s = { vim.lsp.buf.rename, 'rename', modes = 'nx' },
       t = { '<<', 'dedent', modes = 'nx' },
       U = { 'gU', 'uppercase', modes = 'nx' },
@@ -696,6 +685,13 @@ local function map_basic()
       m = function()
         require('telescope.builtin').file_browser {
           cwd = vim.fn.expand '%:p:h',
+          -- hidden = false,
+        }
+      end,
+      M = function()
+        require('telescope.builtin').file_browser {
+          cwd = vim.fn.expand '%:p:h',
+          depth = 10,
         }
       end,
       o = cmd 'Telescope oldfiles only_cwd=true',
@@ -982,13 +978,28 @@ end
 
 -- nlh: next/last/hint (targets)
 -- gG: ninja
-
+-- [
 -- , hint
 
 local function map_textobjects()
+  local map = require('modules.utils').map
+  map('nox', 'gi', '<nop>', {})
+  map('nox', 'ga', '<nop>', {})
   map_textobj('r', 'ip', 'ap')
   map_textobj('w', 'iw', 'aw')
   map_textobj('W', 'iW', 'aw')
+  map('nox', 'gahb', '<cmd>lua require"hop".hint_patterns({}, "[({[]")<cr>', {})
+  map(
+    'nox',
+    'gahq',
+    '<cmd>lua require"hop".hint_patterns({}, "[\'\\"`]")<cr>',
+    {}
+  )
+  map('nox', 'gal', 'j', {})
+  map('nox', 'gapl', 'k', {})
+  map('nox', 'gahl', '<cmd>lua require"hop".hint_lines()<cr>', {})
+  map('nox', 'gil', 'j^', {})
+  map('nox', 'gipl', 'k^', {})
 
   vim.g.targets_nl = 'np'
   require('modules.utils').augroup('targetsline', {
@@ -1024,7 +1035,27 @@ local function map_textobjects()
   map('o', 'z', '<Plug>Lightspeed_x', { noremap = false })
   map('o', 'Z', '<Plug>Lightspeed_x', { noremap = false })
   require('modules.flies').setup {
+    chars = {
+      { '(', ')' },
+      { '[', ']' },
+      { '<', '>' },
+      '"',
+      "'",
+      '`',
+      ',',
+      '.',
+      ';',
+      ':',
+      '.',
+      '?',
+      '+',
+      '-',
+      '*',
+      '/',
+      '&',
+    },
     queries = {
+      T = 'tag',
       Q = 'string',
       a = 'parameter',
       f = 'function',
@@ -1040,6 +1071,8 @@ local function map_textobjects()
       h = 'hint',
     },
     move = 'g',
+    move_inner = 't',
+    move_outer = 'f',
     exchange = 'ox',
   }
 end
@@ -1083,6 +1116,20 @@ local function map_markdown()
 end
 
 local function map_readonly()
+  if vim.bo.buftype == 'prompt' then
+    local map = require('modules.utils').buf_map
+    map('nxo', '<esc>', ':q!<cr>')
+    map('nxo', '<a-w>', ':q!<cr>')
+    map('nxo', '<c-c>', ':q!<cr>')
+    map('si', '<a-w>', '<esc>:q!<cr>')
+    map('si', '<c-c>', '<esc>:q!<cr>')
+  end
+
+  -- buftype=prompt => map alt-w to :q!
+  -- vim.bo.buftype = 'prompt'
+
+  -- buftype=prompt => map alt-w to :q!
+  -- vim.bo.buftype = 'prompt'
   if not vim.bo.readonly then
     return
   end
@@ -1117,7 +1164,7 @@ function M.setup()
   map('', '<c-d>', '<nop>')
   require('modules.utils').augroup('ReadonlyMappings', {
     {
-      events = { 'BufReadPost' },
+      events = { 'BufNew' },
       targets = { '*' },
       command = map_readonly,
     },
@@ -1130,7 +1177,7 @@ function M.setup()
     },
   })
   -- ordering of the matters for: i) overriding, ii) captures
-  map_command_insert()
+  map_command_lang()
   map_basic()
   map_textobjects()
   -- require('modules.utils').dump(require('modules.binder').counters)
@@ -1153,20 +1200,9 @@ M.plugins = {
     next = dd.down,
     previous = dd.up,
   },
-  renamer = {
-    ['<c-a>'] = 'set_cursor_to_end',
-    ['<c-i>'] = 'set_cursor_to_start',
-    ['<c-e>'] = 'set_cursor_to_word_end',
-    ['<c-b>'] = 'set_cursor_to_word_start',
-    ['<c-c>'] = 'clear_line',
-    ['<c-u>'] = 'undo',
-    ['<c-r>'] = 'redo',
-  },
   lightspeed = invert {
-    [';'] = 'instant_repeat_fwd_key',
-    l = 'instant_repeat_bwd_key',
-    c = 'cycle_group_fwd_key',
     C = 'cycle_group_bwd_key',
+    c = 'cycle_group_fwd_key',
   },
   textobj = {
     g = {

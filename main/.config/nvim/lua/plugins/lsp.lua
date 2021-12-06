@@ -157,6 +157,7 @@ function M.setup()
       b.formatting.shfmt,
       b.diagnostics.shellcheck,
       b.code_actions.gitsigns,
+      b.code_actions.refactoring,
       b.formatting.fish_indent,
       -- b.diagnostics.markdownlint,
       -- b.diagnostics.selene,

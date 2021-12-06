@@ -42,11 +42,9 @@ local function setup(port, command)
   file:write(string.format('source <(pass show %q)\n', scheme.pass))
   file:write(command .. '\n')
   file:write(
-    string.format 'notify-send %q\n',
-    dirname .. ' — ' .. command .. ' done'
+    string.format('notify-send %q\n', dirname .. ' — ' .. command .. ' done')
   )
   file:write(os.getenv 'SHELL' .. '\n')
-  file:write 'sleep inf\n'
   file:close()
 end
 

@@ -5,8 +5,6 @@ local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-local get_visual_selection = require('modules.utils').get_visual_selection
-
 -- FIXME:
 -- https://github.com/neovim/neovim/pull/12368
 
@@ -33,11 +31,11 @@ function M.search_asterisk(exact)
   end, function()
     M.n(true)
   end)
-  if exact then
-    vim.fn.feedkeys(t '<plug>(asterisk-z*)')
-  else
-    vim.fn.feedkeys(t '<plug>(asterisk-gz*)')
-  end
+  -- if exact then
+  --   vim.fn.feedkeys(t '<plug>(asterisk-z*)')
+  -- else
+  --   vim.fn.feedkeys(t '<plug>(asterisk-gz*)')
+  -- end
   require('hlslens').start()
 end
 

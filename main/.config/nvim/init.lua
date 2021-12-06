@@ -1,3 +1,5 @@
+pcall(require, 'impatient')
+
 local g = vim.g
 
 -- this won't significantly improve startup time

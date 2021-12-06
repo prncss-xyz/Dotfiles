@@ -71,11 +71,13 @@ function M.move(domain, query, direction)
   end)
   local query_string = string.format('@%s.%s', query, domain)
   if direction == -1 then
-    require('nvim-treesitter.textobjects.move').goto_previous_end(query_string)
+    require('nvim-treesitter.textobjects.move').goto_previous_start(
+      query_string
+    )
     return
   end
   if direction == 1 then
-    require('nvim-treesitter.textobjects.move').goto_next_start(query_string)
+    require('nvim-treesitter.textobjects.move').goto_next_end(query_string)
     return
   end
   if direction == 0 then
@@ -133,8 +135,8 @@ function M.exchange()
       if res == '' then
         res = outer_char
         res2 = outer_char
+        res = res .. char
       end
-      res = res .. char
     elseif conf.queries[char] then
       if res == '' then
         res = outer_char
@@ -149,11 +151,97 @@ function M.exchange()
   end
 end
 
+function M.lightspeed_F()
+  require('modules.flies').repeat_register(function()
+    require('lightspeed').ft:go(true, false, 'cold')
+  end, function()
+    require('lightspeed').ft:go(false, false, 'cold')
+  end)
+  require('lightspeed').ft:go(true, false)
+end
+
+function M.lightspeed_f()
+  require('modules.flies').repeat_register(function()
+    require('lightspeed').ft:go(true, false, 'cold')
+  end, function()
+    require('lightspeed').ft:go(false, false, 'cold')
+  end)
+  require('lightspeed').ft:go(false, false)
+end
+
+function M.lightspeed_T()
+  require('modules.flies').repeat_register(function()
+    require('lightspeed').ft:go(true, true, 'cold')
+  end, function()
+    require('lightspeed').ft:go(false, true, 'cold')
+  end)
+  require('lightspeed').ft:go(true, true)
+end
+
+function M.lightspeed_t()
+  require('modules.flies').repeat_register(function()
+    require('lightspeed').ft:go(true, true, 'cold')
+  end, function()
+    require('lightspeed').ft:go(false, true, 'cold')
+  end)
+  require('lightspeed').ft:go(false, true)
+end
+
 function M.setup(user_conf)
   conf = vim.tbl_extend('force', conf, user_conf)
   hint_char = find(conf.qualifiers, 'hint')
   previous_char = find(conf.qualifiers, 'previous')
   outer_char = find(conf.domains, 'outer')
+
+  for _, c in ipairs(conf.chars) do
+    local cl, cr
+    if type(c) == 'table' then
+      cl, cr = unpack(c)
+    else
+      cl, cr = c, c
+    end
+    for mode in string.gmatch('nox', '.') do
+      vim.api.nvim_set_keymap(
+        mode,
+        conf.move_outer .. cl,
+        '<cmd>lua require"modules.flies".lightspeed_f()<cr>' .. cr,
+        {}
+      )
+      vim.api.nvim_set_keymap(
+        mode,
+        conf.move_inner .. cl,
+        '<cmd>lua require"modules.flies".lightspeed_t()<cr>' .. cr,
+        {}
+      )
+      vim.api.nvim_set_keymap(
+        mode,
+        conf.move_outer .. previous_char .. cl,
+        '<cmd>lua require"modules.flies".lightspeed_F()<cr>' .. cl,
+        {}
+      )
+      vim.api.nvim_set_keymap(
+        mode,
+        conf.move_inner .. previous_char .. cl,
+        '<cmd>lua require"modules.flies".lightspeed_T()<cr>' .. cl,
+        {}
+      )
+      vim.api.nvim_set_keymap(
+        mode,
+        conf.move_outer .. hint_char .. cl,
+        '<cmd>lua require"hop".hint_patterns({}, "[' .. cl .. ']")<cr>',
+        {}
+      )
+      vim.api.nvim_set_keymap(
+        mode,
+        conf.move_inner .. hint_char .. cl,
+        '<cmd>lua require"hop".hint_patterns({ direction = require"hop.hint".HintDirection.AFTER_CURSOR}, "['
+          .. cl
+          .. ']")<cr>',
+        {}
+      )
+    end
+  end
+
   for k, v in pairs(conf.qualifiers) do
     if v == 'hint' then
       hint_char = k
@@ -179,43 +267,43 @@ function M.setup(user_conf)
     { expr = true, noremap = false }
   )
   for query_char, query in pairs(conf.queries) do
-    for domain_char, domain in pairs(conf.domains) do
+    for domain_char, domain in pairs { [conf.move_outer] = 'outer', [conf.move_inner] = 'inner' } do
       for _, mode in ipairs { 'n', 'o', 'x' } do
-        if conf.move then
+        vim.api.nvim_set_keymap(
+          mode,
+          domain_char .. query_char,
+          string.format(
+            '<cmd>lua require("modules.flies").move(%q, %q, 1)<cr>',
+            domain,
+            query
+          ),
+          {}
+        )
+        vim.api.nvim_set_keymap(
+          mode,
+          domain_char .. previous_char .. query_char,
+          string.format(
+            '<cmd>lua require("modules.flies").move(%q, %q, -1)<cr>',
+            domain,
+            query
+          ),
+          {}
+        )
+        if hint_char then
           vim.api.nvim_set_keymap(
             mode,
-            conf.move .. domain_char .. query_char,
+            domain_char .. hint_char .. query_char,
             string.format(
-              '<cmd>lua require("modules.flies").move(%q, %q, 1)<cr>',
+              '<cmd>lua require("modules.flies").move(%q, %q, 0)<cr>',
               domain,
               query
             ),
             {}
           )
-          vim.api.nvim_set_keymap(
-            mode,
-            conf.move .. domain_char .. previous_char .. query_char,
-            string.format(
-              '<cmd>lua require("modules.flies").move(%q, %q, -1)<cr>',
-              domain,
-              query
-            ),
-            {}
-          )
-          if hint_char then
-            vim.api.nvim_set_keymap(
-              mode,
-              conf.move .. domain_char .. hint_char .. query_char,
-              string.format(
-                '<cmd>lua require("modules.flies").move(%q, %q, 0)<cr>',
-                domain,
-                query
-              ),
-              {}
-            )
-          end
         end
       end
+    end
+    for domain_char, domain in pairs(conf.domains) do
       for _, mode in ipairs { 'o', 'x' } do
         for qualifier_char, qualifier in pairs(conf.qualifiers) do
           vim.api.nvim_set_keymap(

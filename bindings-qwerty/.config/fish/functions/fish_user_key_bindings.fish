@@ -15,9 +15,10 @@ function fish_user_key_bindings
     bind \el fish_list_current_token
     # \eo open in pager
     # \es prepend sudo
-    # \ev edit command line
+    # bind \cs edit command line
     # \cr fzf-history-widget
-    bind \cs pet-select
+    # bind \cs pet-select
+    bind \cs edit_command_buffer
     bind \ct transpose-chars
     # \cu kill to bol
     # \cv paste

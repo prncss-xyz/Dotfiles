@@ -1,21 +1,10 @@
 require 'plugins.luasnip'
-require("luasnip").config.setup({history = true})
 local cmp = require 'cmp'
 
 local sources = {
   { name = 'luasnip' },
-  { name = 'nvim_lsp' },
-  { name = 'spell' },
-  { name = 'path' },
-  { name = 'buffer' },
-  -- { name = 'fuzzy_path' },
-  -- { name = 'fuzzy_buffer' },
-  { name = 'neorg' },
-}
-
-local lua_sources = {
-  { name = 'luasnip' },
   { name = 'nvim_lua' },
+  { name = 'nvim_lsp' },
   { name = 'spell' },
   { name = 'path' },
   { name = 'buffer' },
@@ -51,7 +40,11 @@ cmp.setup {
     -- ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     -- ['<C-f>'] = cmp.mapping.scroll_docs(4),
   },
+  experimental = {
+    ghost_text = false,
+  },
 }
+
 
 cmp.setup.cmdline('/', {
   sources = {
@@ -73,7 +66,7 @@ if false then
       targets = { 'lua' },
       command = function()
         require('cmp').setup.buffer {
-          sources = lua_sources,
+          sources = {}, -- additional sources
         }
       end,
     },

@@ -62,18 +62,24 @@ return require('packer').startup {
         require 'plugins.treesitter'
       end,
       requires = { -- TODO: lazy
-        { 'p00f/nvim-ts-rainbow', cond = full },
+        { 'p00f/nvim-ts-rainbow', after = 'nvim-treesitter' },
         { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } },
-        { 'nvim-treesitter/nvim-treesitter-textobjects', cond = full },
-        { 'mfussenegger/nvim-ts-hint-textobject', cond = full },
+        {
+          'nvim-treesitter/nvim-treesitter-textobjects',
+          module = 'nvim-treesitter.textobjects',
+        },
+        { 'mfussenegger/nvim-ts-hint-textobject', cmd = 'tsht' },
         -- Use tressitter to autoclose and autorename html tag
-        { 'windwp/nvim-ts-autotag', cond = full },
+        { 'windwp/nvim-ts-autotag', after = 'nvim-treesitter' },
+        {
+          'JoosepAlviste/nvim-ts-context-commentstring',
+          after = 'nvim-treesitter',
+        },
       },
     }
     use {
       'lewis6991/spellsitter.nvim',
       after = 'nvim-treesitter',
-      cond = full,
       config = function()
         require('spellsitter').setup()
       end,
@@ -400,22 +406,28 @@ return require('packer').startup {
       end,
     }
     use {
-      'filipdutescu/renamer.nvim',
-      branch = 'master',
-      requires = { 'nvim-lua/plenary.nvim' },
-      module = 'renamer',
+      'stevearc/dressing.nvim',
       config = function()
-        local mappings_utils = require 'renamer.mappings.utils'
-        local mappings = {}
-        for k, v in pairs(require('bindings').plugins.renamer) do
-          mappings[k] = mappings_utils[v]
-        end
-        require('renamer').setup {
-          title = 'rename',
-          mappings = mappings,
-        }
+        require('dressing').setup {}
       end,
     }
+    -- use {
+    --   'filipdutescu/renamer.nvim',
+    --   branch = 'master',
+    --   requires = { 'nvim-lua/plenary.nvim' },
+    --   module = 'renamer',
+    --   config = function()
+    --     local mappings_utils = require 'renamer.mappings.utils'
+    --     local mappings = {}
+    --     for k, v in pairs(require('bindings').plugins.renamer) do
+    --       mappings[k] = mappings_utils[v]
+    --     end
+    --     require('renamer').setup {
+    --       title = 'rename',
+    --       mappings = mappings,
+    --     }
+    --   end,
+    -- }
 
     -- navigation
     use {
@@ -507,6 +519,17 @@ return require('packer').startup {
       },
     }
     use {
+      'fhill2/xplr.nvim',
+      run = function()
+        require('xplr').install { hide = true }
+      end,
+      module = 'xplr',
+      config = function()
+        require('plugins.xplr').setup()
+      end,
+      requires = { { 'nvim-lua/plenary.nvim' }, { 'MunifTanjim/nui.nvim' } },
+    }
+    use {
       local_repo 'bufjump.nvim',
       module = 'bufjump',
       config = function()
@@ -570,7 +593,7 @@ return require('packer').startup {
       end,
     }
 
-    -- UI
+    -- Telescope
     use {
       'nvim-telescope/telescope.nvim',
       config = function()
@@ -634,7 +657,10 @@ return require('packer').startup {
       end,
       cmd = { 'UndotreeToggle' },
     }
-
+    use {
+      'benfowler/telescope-luasnip.nvim',
+      module = 'telescope._extensions.luasnip', -- if you wish to lazy-load
+    }
     -- bindings
     use {
       'folke/which-key.nvim',
@@ -862,17 +888,8 @@ return require('packer').startup {
         'Wall',
       },
     }
+    use { 'lewis6991/impatient.nvim' }
     use { 'dstein64/vim-startuptime' }
-    use {
-      'henriquehbr/nvim-startup.lua',
-      cond = never,
-      config = function()
-        require('nvim-startup').setup {
-          startup_file = '/tmp/nvim-startuptime',
-          messages = print,
-        }
-      end,
-    }
   end,
   config = {
     display = {

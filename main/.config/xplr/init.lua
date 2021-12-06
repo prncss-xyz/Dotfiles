@@ -42,7 +42,9 @@ local xplr = xplr
 xplr.config.general.initial_layout = 'no_help_no_selection'
 
 local copy_here = {
-  unpack(xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages),
+  unpack(
+    xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages
+  ),
 }
 
 for _, key in ipairs { 'space', 'v', 'h', 'j', 'k', 'l' } do

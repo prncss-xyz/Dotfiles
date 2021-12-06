@@ -1,4 +1,6 @@
 local ls = require 'luasnip'
+ls.config.set_config { history = true, enable_autosnippets = true }
+
 require('luasnip/loaders/from_vscode').lazy_load()
 
 local split_string = require('modules.utils').split_string
@@ -16,6 +18,14 @@ local p = require('luasnip.extras').partial
 --
 -- not succeding to access system clipboard through LSP protocol
 -- using vim api instead
+
+local function first_word(s)
+  local i = s:find(' ', 1, true)
+  if i then
+    return s:sub(1, i - 1)
+  end
+  return s
+end
 
 local function clip_to_snip()
   local clip = vim.fn.getreg '+'
@@ -96,39 +106,17 @@ ls.snippets = {
       t { '', '' },
     }),
   },
-  lua = {
-    s({ trig = 'snippet' }, {
-      t "s( {trig = '",
-      i(1, 'trigger'),
-      t { "'}, {", '\t' },
-      i(2, '-- contents'),
-      t { '', '' },
-      t { '}),', '' },
-    }),
-  },
   all = {
-    s('isn', {
-      isn(2, {
-        t {
-          'This is indented as deep as the trigger',
-          'and this is at the beginning of the next line',
-        },
-      }, ''), i(1, 'caca'),
-    }),
-    s({ trig = 'lua:f' }, {
-      t 'local function ',
-      i(1, 'name'),
-      t '()',
-      isn(
-        1,
-        f(function()
-          return { '', 'caca', '' }
-        end, {}),
-        ''
-      ),
-      i(1),
-      t { '', 'end', '' },
-      i(0),
+    s({ trig = 't', dscr = 'tag' }, {
+      t '<',
+      i(1, 'tag'),
+      t '>',
+      i(2),
+      t '</',
+      f(function(args)
+        return first_word(args[1][1])
+      end, { 1 }),
+      t '>',
     }),
     s('date', p(os.date, '%x')),
     s('time', p(os.date, '%H:%M')),
@@ -138,6 +126,92 @@ ls.snippets = {
   fish = {
     s({ trig = 'if' }, {
       -- contents
+    }),
+  },
+  lua = {
+    s({ trig = 'k' }, {
+      i(1, 'name'),
+      t '(',
+      i(2),
+      t ')',
+    }),
+    s({ trig = 'y' }, {
+      t 'if ',
+      i(1, 'true'),
+      t ' then',
+      t { '', '' },
+      i(2),
+      t { '', 'end', '' },
+    }),
+    s({ trig = 'z' }, {
+      t 'while ',
+      i(1, 'true'),
+      t ' do',
+      t { '', '' },
+      i(2),
+      t { '', 'end' },
+    }),
+    s({ trig = 'f' }, {
+      t 'local function ',
+      i(1, 'name'),
+      t '(',
+      i(2),
+      t ')',
+      t { '', '  ' },
+      i(3),
+      t { '', 'end', '' },
+    }),
+    s({ trig = 'snippet' }, {
+      t "s( {trig = '",
+      i(1, 'trigger'),
+      t { "'}, {", '\t' },
+      i(2, '-- contents'),
+      t { '', '' },
+      t { '}),', '' },
+    }),
+  },
+  javascript = {
+    s({ trig = 'k' }, {
+      i(1, 'name'),
+      t '(',
+      i(2),
+      t ')',
+    }),
+    s({ trig = 'y' }, {
+      t 'if (',
+      i(1, 'true'),
+      t ') {',
+      t { '', '' },
+      i(2),
+      t { '', '}', '' },
+    }),
+    s({ trig = 'z' }, {
+      t 'while (',
+      i(1, 'true'),
+      t ') {',
+      t { '', '' },
+      i(2),
+      t { '', '}' },
+    }),
+    s({ trig = 'f' }, {
+      t 'function ',
+      i(1, 'name'),
+      t '(',
+      i(2),
+      t ') {',
+      t { '', '  ' },
+      i(3),
+      t { '', '}', '' },
+    }),
+    s({
+      trig = 'shebang',
+    }, {
+      t '#!/usr/bin/env node',
+      f(function()
+        vim.cmd 'Chmod +x'
+        return ''
+      end, {}),
+      t { '', '' },
     }),
   },
   json = {
@@ -155,19 +229,6 @@ ls.snippets = {
       t { '\t"body": [', '' },
       d(4, clip_to_snip, {}),
       t { '\t]', '},' },
-    }),
-  },
-  -- makes file executable as a side effect
-  javascript = {
-    s({
-      trig = 'shebang',
-    }, {
-      t '#!/usr/bin/env node',
-      f(function()
-        vim.cmd 'Chmod +x'
-        return ''
-      end, {}),
-      t { '', '' },
     }),
   },
 }

@@ -3,7 +3,7 @@ local M = {}
 function M.setup()
   local telescope = require 'telescope'
   local mappings = require('bindings').plugins.telescope()
-  telescope.setup{
+  telescope.setup {
     defaults = {
       mappings = mappings,
       vimgrep_arguments = {
@@ -31,8 +31,8 @@ function M.setup()
   telescope.load_extension 'project_directory'
   telescope.load_extension 'my_projects'
   telescope.load_extension 'modules'
-  telescope.load_extension 'refactoring'
   telescope.load_extension 'installed_plugins'
+  telescope.load_extension 'luasnip'
 end
 
 return M

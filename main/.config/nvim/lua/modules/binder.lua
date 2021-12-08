@@ -102,14 +102,6 @@ local function map_str(id, mode, send_mode)
   else
     mode_str = ''
   end
-  if mode == 'x' or mode == 'o' then
-    return string.format(
-      ':<c-u>lua require%q.store[%d](%s)<cr>',
-      module,
-      id,
-      mode_str
-    )
-  end
   return string.format(
     '<cmd>lua require%q.store[%d](%s)<cr>',
     module,

@@ -13,9 +13,7 @@ local i = ls.insert_node
 local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
-
 local p = require('luasnip.extras').partial
---
 -- not succeding to access system clipboard through LSP protocol
 -- using vim api instead
 
@@ -123,11 +121,7 @@ ls.snippets = {
     s('datetime', p(os.date, '%x, %H:%M')),
     s('timestamp', p(os.date, '%c')),
   },
-  fish = {
-    s({ trig = 'if' }, {
-      -- contents
-    }),
-  },
+  fish = require 'plugins.luasnip.fish',
   lua = {
     s({ trig = 'k' }, {
       i(1, 'name'),
@@ -160,14 +154,6 @@ ls.snippets = {
       t { '', '  ' },
       i(3),
       t { '', 'end', '' },
-    }),
-    s({ trig = 'snippet' }, {
-      t "s( {trig = '",
-      i(1, 'trigger'),
-      t { "'}, {", '\t' },
-      i(2, '-- contents'),
-      t { '', '' },
-      t { '}),', '' },
     }),
   },
   javascript = {

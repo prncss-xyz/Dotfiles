@@ -187,6 +187,33 @@ function M.lightspeed_t()
   require('lightspeed').ft:go(false, true)
 end
 
+local fwd_last_dir
+
+function M.fwd(backwards, before, cl, cr, repeating)
+  require('modules.flies').repeat_register(function()
+    M.fwd(true, before, cl, cr, true)
+  end, function()
+    M.fwd(false, before, cl, cr, true)
+  end)
+  print(repeating, fwd_last_dir, backwards)
+  if repeating and (fwd_last_dir == backwards) then
+    require('lightspeed').ft:go(false, before, 'cold')
+    return
+  end
+  local char = backwards and cl or cr
+  vim.fn.feedkeys(
+    t(
+      string.format(
+        "<cmd>lua require('lightspeed').ft:go(%s, %s)<cr>%s",
+        backwards,
+        before,
+        char
+      )
+    )
+  )
+  fwd_last_dir = backwards
+end
+
 function M.setup(user_conf)
   conf = vim.tbl_extend('force', conf, user_conf)
   hint_char = find(conf.qualifiers, 'hint')
@@ -203,26 +230,56 @@ function M.setup(user_conf)
     for mode in string.gmatch('nox', '.') do
       vim.api.nvim_set_keymap(
         mode,
+        conf.move_outer .. cr,
+        string.format(
+          '<cmd>lua require"modules.flies".fwd(false, false, %q, %q)<cr>',
+          cl,
+          cr
+        ),
+        {}
+      )
+      vim.api.nvim_set_keymap(
+        mode,
         conf.move_outer .. cl,
-        '<cmd>lua require"modules.flies".lightspeed_f()<cr>' .. cr,
+        string.format(
+          '<cmd>lua require"modules.flies".fwd(false, false, %q, %q)<cr>',
+          cr,
+          cl
+        ),
+        {}
+      )
+      vim.api.nvim_set_keymap(
+        mode,
+        conf.move_inner .. cr,
+        string.format(
+          '<cmd>lua require"modules.flies".fwd(false, true, %q, %q)<cr>',
+          cl,
+          cr
+        ),
         {}
       )
       vim.api.nvim_set_keymap(
         mode,
         conf.move_inner .. cl,
-        '<cmd>lua require"modules.flies".lightspeed_t()<cr>' .. cr,
+        string.format(
+          '<cmd>lua require"modules.flies".fwd(false, true, %q, %q)<cr>',
+          cr,
+          cl
+        ),
         {}
       )
       vim.api.nvim_set_keymap(
         mode,
-        conf.move_outer .. previous_char .. cl,
-        '<cmd>lua require"modules.flies".lightspeed_F()<cr>' .. cl,
+        conf.move_outer .. hint_char .. cr,
+        '<cmd>lua require"hop".hint_patterns({}, "[' .. cr .. ']")<cr>',
         {}
       )
       vim.api.nvim_set_keymap(
         mode,
-        conf.move_inner .. previous_char .. cl,
-        '<cmd>lua require"modules.flies".lightspeed_T()<cr>' .. cl,
+        conf.move_inner .. hint_char .. cr,
+        '<cmd>lua require"hop".hint_patterns({ direction = require"hop.hint".HintDirection.BEFORE_CURSOR}, "[' -- FIXME: `direction` has no effect
+          .. cr
+          .. ']")<cr>',
         {}
       )
       vim.api.nvim_set_keymap(
@@ -234,7 +291,7 @@ function M.setup(user_conf)
       vim.api.nvim_set_keymap(
         mode,
         conf.move_inner .. hint_char .. cl,
-        '<cmd>lua require"hop".hint_patterns({ direction = require"hop.hint".HintDirection.AFTER_CURSOR}, "['
+        '<cmd>lua require"hop".hint_patterns({ direction = require"hop.hint".HintDirection.BEFORE_CURSOR}, "[' -- FIXME: `direction` has no effect
           .. cl
           .. ']")<cr>',
         {}

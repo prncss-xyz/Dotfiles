@@ -658,7 +658,8 @@ return require('packer').startup {
       cmd = { 'UndotreeToggle' },
     }
     use {
-      'benfowler/telescope-luasnip.nvim',
+      -- 'benfowler/telescope-luasnip.nvim',
+      local_repo 'telescope-luasnip.nvim',
       module = 'telescope._extensions.luasnip', -- if you wish to lazy-load
     }
     -- bindings

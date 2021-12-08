@@ -31,11 +31,11 @@ function M.search_asterisk(exact)
   end, function()
     M.n(true)
   end)
-  -- if exact then
-  --   vim.fn.feedkeys(t '<plug>(asterisk-z*)')
-  -- else
-  --   vim.fn.feedkeys(t '<plug>(asterisk-gz*)')
-  -- end
+  if exact then
+    vim.fn.feedkeys(t '<plug>(asterisk-z*)')
+  else
+    vim.fn.feedkeys(t '<plug>(asterisk-gz*)')
+  end
   require('hlslens').start()
 end
 

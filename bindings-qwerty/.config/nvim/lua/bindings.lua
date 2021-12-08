@@ -155,18 +155,6 @@ local function map_basic()
     E = { 'E', 'previous bigword', modes = 'nxo' },
     -- e = { 'e', 'next word ', modes = 'nxo' },
     e = plug { 'CamelCaseMotion_e', 'next subword ', modes = 'nxo' },
-    -- F = {
-    --   function()
-    --     require('bindutils').lightspeed_F()
-    --   end,
-    --   modes = 'nxo',
-    -- },
-    -- f = {
-    --   function()
-    --     require('bindutils').lightspeed_f()
-    --   end,
-    --   modes = 'nxo',
-    -- },
     I = 'I',
     i = 'i',
     N = {
@@ -249,6 +237,7 @@ local function map_basic()
       'jump previous buffer',
     },
     ['<c-r>'] = '<c-r>',
+    ['<c-g>'] = cmd { 'Telescope luasnip', modes = 'ni' },
     ['<c-s>'] = {
       function()
         vim.lsp.buf.formatting_sync()
@@ -406,19 +395,23 @@ local function map_basic()
       Bf = plug '(Marks-prev-bookmark3)',
       bf = plug '(Marks-next-bookmark3)',
       C = {
-        '<plug>(asterisk-gz*)<cmd>lua require"bindutils".search_asterisk()<cr>',
+        function()
+          require('bindutils').search_asterisk(false)
+        end,
         noremap = false,
         modes = 'nx',
       },
       c = {
-        '<plug>(asterisk-z*)<cmd>lua require"bindutils".search_asterisk()<cr>',
+        function()
+          require('bindutils').search_asterisk(true)
+        end,
         noremap = false,
         modes = 'nx',
       },
       D = { vim.diagnostic.goto_prev, 'go previous diagnostic' },
       d = { vim.diagnostic.goto_next, 'go next diagnostic' },
-      -- D = { '[c', 'previous change' }, -- FIXME:
-      -- d = { ']c', 'next change' }, -- FIXME:
+      I = { '[c', 'previous change' }, -- FIXME:
+      i = { ']c', 'next change' }, -- FIXME:
       E = { 'gg', 'first line', modes = 'nxo' },
       e = { 'G', 'last line', modes = 'nxo' },
       F = {
@@ -468,6 +461,7 @@ local function map_basic()
       [dd.spell] = { ']s', 'next misspelled' },
       [dd.search] = cmd {
         'Telescope current_buffer_fuzzy_find',
+        'Telescope current_buffer_fuzzy_find',
         modes = 'nxo',
       },
       [dd.up] = { 'gk', 'visual up', modes = 'nxo' },
@@ -475,10 +469,15 @@ local function map_basic()
     },
     [a.edit] = {
       name = '+edit',
-      a = { modes = {
-        n = {"<cmd>lua vim.lsp.buf.code_action()<cr>"},
-        v = { ":'<,'>lua vim.lsp.buf.range_code_action()<cr>"},
-      }},
+      a = {
+        modes = {
+          n = function()
+            vim.lsp.buf.code_action()
+          end,
+          -- n = { '<cmd>lua vim.lsp.buf.code_action()<cr>' },
+          v = { ":'<,'>lua vim.lsp.buf.range_code_action()<cr>" },
+        },
+      },
       -- a = cmd { 'CodeActionMenu', 'code action', modes = 'nx' },
       b = { 'gi', 'last insert point' },
       f = cmd { 'Telescope refactoring', 'refactoring', modes = 'nx' },
@@ -985,9 +984,10 @@ local function map_textobjects()
   local map = require('modules.utils').map
   map('nox', 'gi', '<nop>', {})
   map('nox', 'ga', '<nop>', {})
-  map_textobj('r', 'ip', 'ap')
-  map_textobj('w', 'iw', 'aw')
-  map_textobj('W', 'iW', 'aw')
+  map('x', 'ar', 'ap', {})
+  map('x', 'ir', 'ip', {})
+  map('o', 'ar', 'ap', {})
+  map('o', 'ir', 'ip', {})
   map('nox', 'gahb', '<cmd>lua require"hop".hint_patterns({}, "[({[]")<cr>', {})
   map(
     'nox',

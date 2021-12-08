@@ -18,7 +18,7 @@ function fish_user_key_bindings
     # bind \cs edit command line
     # \cr fzf-history-widget
     # bind \cs pet-select
-    bind \cs edit_command_buffer
+    bind \cs my_edit_command_buffer
     bind \ct transpose-chars
     # \cu kill to bol
     # \cv paste

@@ -2,7 +2,6 @@ local M = {}
 
 M.setup = function()
   require('modules.utils').deep_merge(vim.g, {
-    nvim_tree_gitignore = 1,
     nvim_tree_ignore_ft = {},
     -- nvim_tree_quit_on_open = 1,
     nvim_tree_highlight_opened_files = 1,
@@ -73,9 +72,10 @@ M.config = function()
       enable = true,
       update_cwd = true,
     }, -- https://github.com/ahmedkhalf/project.nvim
+    nvim_tree_gitignore = true,
     nvim_tree_ignore = { '.git' },
-    tree_follow = 1,
-    tree_disable_default_keybindings = 1,
+    tree_follow = true,
+    tree_disable_default_keybindings = true,
     show_hidden = true,
   }
   require('nvim-tree.events').on_file_created(function(ev)

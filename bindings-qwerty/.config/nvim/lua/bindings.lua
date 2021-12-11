@@ -554,9 +554,6 @@ local function map_basic()
       }, -- FIXME: not repeatable
       pu = { 'gU', 'uppercase', modes = 'nx' },
       u = { 'gu', 'lowercase', modes = 'nx' },
-      -- ppu = 'U',
-      -- pu = '<c-r>',
-      -- u = 'u',
       v = { 'p', modes = 'nx' },
       pv = { 'P', modes = 'nx' },
       -- v = { 'g~', 'toggle case', modes = 'nx' },
@@ -1074,46 +1071,45 @@ local function map_textobjects()
   -- map('ox', 'z', function()
   --   require('hop').hint_char2 {
   --     direction = require('hop.hint').hintdirection.before_cursor,
-  --   }
   -- end, { noremap = false })
+  --   }
   -- map('o', 'z', '<plug>lightspeed_x', { noremap = false })
   -- map('o', 'z', '<plug>lightspeed_x', { noremap = false })
+
+  local ts = require('modules.flies').Treesitter.new
+  local p = require('modules.flies').Pair.new
+  local queries = {
+    q = p('[\'"`"]'),
+    b = p('[[({]', '[])}]'),
+    -- b = p('=', ','),
+    T = ts 'tag',
+    Q = ts 'string',
+    a = ts 'parameter',
+    f = ts 'function',
+    k = ts 'call',
+    j = ts 'block',
+    y = ts 'conditional',
+    z = ts 'loop',
+    c = ts 'comment',
+  }
+  for c in string.gmatch('="\'`,.;:.?+-,*/\\()[]{}', '.') do
+    queries[c] = require('modules.flies').Char.new(c)
+  end
   require('modules.flies').setup {
-    chars = {
-      { '(', ')' },
-      { '[', ']' },
-      { '<', '>' },
-      '"',
-      "'",
-      '`',
-      ',',
-      '.',
-      ';',
-      ':',
-      '.',
-      '?',
-      '+',
-      '-',
-      '*',
-      '/',
-      '&',
+    queries = queries,
+    qualifiers = {
+      p = 'previous',
+      n = 'next',
+      h = 'hint',
+      [''] = 'plain',
     },
-    queries = {
-      t = 'tag',
-      Q = 'string',
-      a = 'parameter',
-      f = 'function',
-      k = 'call',
-      j = 'block',
-      y = 'conditional',
-      z = 'loop',
-      c = 'comment',
+    commands = {
+      i = 'select_inner',
+      a = 'select_outer',
+      t = 'move_inner',
+      f = 'move_outer',
+      ox = 'exchange',
     },
-    qualifiers = qualifiers,
-    move = 'g',
-    move_inner = 't',
-    move_outer = 'f',
-    exchange = 'ox',
   }
 end
 

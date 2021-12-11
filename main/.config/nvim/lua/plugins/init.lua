@@ -446,8 +446,7 @@ return require('packer').startup {
       config = function()
         require('trouble').setup {
           position = 'bottom',
-          -- width = 30,
-          use_lsp_diagnostic_signs = true,
+          use_diagnostic_signs = true,
           action_keys = require('bindings').plugins.trouble,
         }
       end,
@@ -546,7 +545,7 @@ return require('packer').startup {
       -- 'chentau/marks.nvim',
       event = 'BufReadPost',
       config = function()
-      -- cond = full,
+        -- cond = full,
         require('marks').setup {
           default_mappings = false,
           mappings = require('modules.binder').captures.marks,

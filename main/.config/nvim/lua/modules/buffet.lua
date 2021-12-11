@@ -372,7 +372,7 @@ function M.replace_query()
   local filetype = conf.filetype[vim.bo.filetype] or vim.bo.filetype
   local snip = snips
     and (
-      snips[filetype .. ':' .. last_char]
+      snips[vim.bo.filetype .. ':' .. last_char]
       or snips['all:' .. last_char]
     )
   if snip then

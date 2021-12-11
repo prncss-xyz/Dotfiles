@@ -98,7 +98,7 @@ end
 local function map_str(id, mode, send_mode)
   local mode_str
   if send_mode then
-    mode_str = string.format("%q", mode)
+    mode_str = string.format('%q', mode)
   else
     mode_str = ''
   end
@@ -108,6 +108,20 @@ local function map_str(id, mode, send_mode)
     id,
     mode_str
   )
+end
+
+function M.fn_str(cb, help)
+  local id = create(cb, help)
+  return map_str(id, '', false)
+end
+
+function M.map(modes, keys, rhs, map_opts)
+  if type(rhs) == 'function' then
+    rhs = M.fn_str(rhs)
+  end
+  for mode in string.gmatch(modes, '.') do
+    map(nil, mode, keys, rhs, map_opts)
+  end
 end
 
 M.counters = {}

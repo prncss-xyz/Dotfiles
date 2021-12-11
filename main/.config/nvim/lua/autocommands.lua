@@ -86,27 +86,27 @@ local function set_title(branch)
 end
 
 -- keep cursor in place while yankink
-local cursor
-augroup('CursorGet', {
-  {
-    events = { 'VimEnter', 'CursorMoved' },
-    targets = { '*' },
-    command = function()
-      cursor = vim.fn.getpos '.'
-    end,
-  },
-})
-augroup('CursorSet', {
-  {
-    events = { 'TextYankPost' },
-    targets = { '*' },
-    command = function()
-      if vim.fn.eval('v:event').operator == 'y' then
-        -- vim.fn.setpos('.', cursor)
-      end
-    end,
-  },
-})
+-- local cursor
+-- augroup('CursorGet', {
+--   {
+--     events = { 'VimEnter', 'CursorMoved' },
+--     targets = { '*' },
+--     command = function()
+--       cursor = vim.fn.getpos '.'
+--     end,
+--   },
+-- })
+-- augroup('CursorSet', {
+--   {
+--     events = { 'TextYankPost' },
+--     targets = { '*' },
+--     command = function()
+--       if vim.fn.eval('v:event').operator == 'y' then
+--         vim.fn.setpos('.', cursor)
+--       end
+--     end,
+--   },
+-- })
 -- for operators: https://vimways.org/2019/making-things-flow/
 
 local function set_title_git_plenary()

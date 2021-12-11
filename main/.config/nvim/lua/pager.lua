@@ -12,7 +12,7 @@ if nvim_paging then
         if nvim_paging ~= '1' then
           vim.bo.filetype = nvim_paging
         else
-          vim.cmd'Man!'
+          vim.cmd 'Man!'
         end
       end,
     },

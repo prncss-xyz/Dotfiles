@@ -531,7 +531,7 @@ return require('packer').startup {
     }
     use {
       local_repo 'bufjump.nvim',
-      module = 'bufjump',
+      -- module = 'bufjump',
       config = function()
         require('bufjump').setup {
           cond = require('bufjump').under_cwd,
@@ -539,10 +539,11 @@ return require('packer').startup {
       end,
     }
     use {
-      'chentau/marks.nvim',
+      local_repo 'marks.nvim',
+      -- 'chentau/marks.nvim',
       event = 'BufReadPost',
-      -- cond = full,
       config = function()
+      -- cond = full,
         require('marks').setup {
           default_mappings = false,
           mappings = require('modules.binder').captures.marks,
@@ -550,8 +551,8 @@ return require('packer').startup {
       end,
     }
     use {
-      'andymass/vim-matchup',
       event = 'BufReadPost',
+      'andymass/vim-matchup',
       -- cond = full,
       setup = function()
         vim.g.matchup_matchparen_offscreen = { method = 'status' }
@@ -578,7 +579,9 @@ return require('packer').startup {
       'phaazon/hop.nvim',
       module = 'hop',
       config = function()
-        require('hop').setup()
+        require('hop').setup {
+          jump_on_sole_occurrence = true,
+        }
       end,
     }
     use { 'indianboy42/hop-extensions', module = 'hop-extensions' }

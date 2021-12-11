@@ -11,6 +11,9 @@ systemctl --user enable psd
 systemctl --user enable syncthing
 systemctl --user enable udiskie
 
+sudo ln -sf /dev/null /etc/pacman.d/hooks/90-mkinitcpio-install.hook
+sudo ln -sf /dev/null /etc/pacman.d/hooks/60-mkinitcpio-remove.hook
+
 mkdir -p "$PASSWORD_STORE_DIR/.extensions/"
 wget https://raw.githubusercontent.com/ficoos/pass-fzf/master/fzf.bash -O "$PASSWORD_STORE_DIR/.extensions/fzf.bash"
 chmod +x "$PASSWORD_STORE_DIR/.extensions/fzf.bash"

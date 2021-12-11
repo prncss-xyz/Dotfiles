@@ -23,6 +23,7 @@ function M.setup()
       },
     },
     numhl = false,
+    keymaps = {},
   }
 end
 

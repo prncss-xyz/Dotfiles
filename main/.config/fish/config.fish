@@ -3,7 +3,7 @@ alias gh 'GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1) /usr/bin/gh '
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
 alias o xdg-open
 # alias e nvr -s
-alias y 'youtube-dl -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
+alias y 'yt-dlp -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 alias e nvim_sessions
 # alias e 'nvim --startuptime /tmp/nvim-startuptime'
 alias s fsearch-ext

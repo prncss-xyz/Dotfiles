@@ -26,6 +26,7 @@ local dd = invert {
   b = 'join',
   c = 'comment',
   g = 'ninja',
+  u = 'git',
   j = 'up',
   k = 'down',
   L = 'loclist',
@@ -37,6 +38,12 @@ local dd = invert {
   ['<c-j>'] = 'next_search',
   ['<c-x>'] = 'prev_search',
 }
+local qualifiers = {
+  p = 'previous',
+  n = 'next',
+  h = 'hint',
+}
+local q = invert(qualifiers)
 
 local function plug(t)
   if type(t) == 'string' then
@@ -157,7 +164,7 @@ local function map_basic()
     e = plug { 'CamelCaseMotion_e', 'next subword ', modes = 'nxo' },
     I = 'I',
     i = 'i',
-    N = {
+    p = {
       require('modules.flies').repeat_previous,
       mode = true,
       modes = 'nxo',
@@ -165,11 +172,19 @@ local function map_basic()
     n = { require('modules.flies').repeat_next, mode = true, modes = 'nxo' },
     O = { '<nop>', modes = 'nx' },
     o = { '<nop>', modes = 'nx' },
-    p = { 'p', modes = 'nx' },
     R = { 'R', modes = 'nx' },
     r = { 'r', modes = 'nx' },
-    S = plug { 'Lightspeed_S', 'S', modes = 'nxo' },
-    s = plug { 'Lightspeed_s', 's', modes = 'nxo' },
+    s = {
+      function()
+        require('hop').hint_char2 {
+          char2_fallback_key = '<cr>',
+        }
+      end,
+      'hop char2',
+      modes = 'nxo',
+    },
+    -- S = plug { 'Lightspeed_S', 'S', modes = 'nxo' },
+    -- s = plug { 'Lightspeed_s', 's', modes = 'nxo' },
     T = {
       function()
         require('bindutils').lightspeed_T()
@@ -384,17 +399,37 @@ local function map_basic()
       },
     },
     [a.jump] = {
-      BB = plug '(Marks-next-bookmark)',
-      bb = plug '(Marks-next-previous)',
-      Ba = plug '(Marks-prev-bookmark0)',
-      ba = plug '(Marks-next-bookmark0)',
-      Bs = plug '(Marks-prev-bookmark1)',
-      bs = plug '(Marks-next-bookmark1)',
-      Bd = plug '(Marks-prev-bookmark2)',
-      bd = plug '(Marks-next-bookmark2)',
-      Bf = plug '(Marks-prev-bookmark3)',
-      bf = plug '(Marks-next-bookmark3)',
-      C = {
+      pb = {
+        a = function()
+          require('marks').prev_bookmark0()
+        end,
+        s = function()
+          require('marks').prev_bookmark1()
+        end,
+        d = function()
+          require('marks').prev_bookmark2()
+        end,
+        f = function()
+          require('marks').prev_bookmark3()
+        end,
+        b = plug '(Marks-prev-bookmark)',
+      },
+      b = {
+        a = function()
+          require('marks').next_bookmark0()
+        end,
+        s = function()
+          require('marks').next_bookmark1()
+        end,
+        d = function()
+          require('marks').next_bookmark2()
+        end,
+        f = function()
+          require('marks').next_bookmark3()
+        end,
+        b = plug '(Marks-next-bookmark)',
+      },
+      pc = {
         function()
           require('bindutils').search_asterisk(false)
         end,
@@ -408,13 +443,11 @@ local function map_basic()
         noremap = false,
         modes = 'nx',
       },
-      D = { vim.diagnostic.goto_prev, 'go previous diagnostic' },
+      pd = { vim.diagnostic.goto_prev, 'go previous diagnostic' },
       d = { vim.diagnostic.goto_next, 'go next diagnostic' },
-      I = { '[c', 'previous change' }, -- FIXME:
-      i = { ']c', 'next change' }, -- FIXME:
-      E = { 'gg', 'first line', modes = 'nxo' },
+      pe = { 'gg', 'first line', modes = 'nxo' },
       e = { 'G', 'last line', modes = 'nxo' },
-      F = {
+      pf = {
         function()
           require('bindutils').search(false)
         end,
@@ -428,7 +461,7 @@ local function map_basic()
       },
       h = { '(matchup-z%)', 'matchup inward', modes = 'nxo' },
       g = { '``', 'before last jump' },
-      N = {
+      pn = {
         function()
           require('bindutils').n(false)
         end,
@@ -443,21 +476,21 @@ local function map_basic()
       m = { '`', modes = 'nxo' },
       o = { '`.', 'last change' },
       -- L = cmd 'Telescope loclist',
-      L = { '`[', 'start of last mod', modes = 'nxo' },
+      pl = { '`[', 'start of last mod', modes = 'nxo' },
       l = { '`]', 'begin of last mod', modes = 'nxo' },
-      Q = plug { '(Marks-prev)', name = 'Goes to previous mark in buffer.' },
+      pq = plug { '(Marks-prev)', name = 'Goes to previous mark in buffer.' },
       q = plug { '(Marks-next)', name = 'Goes to next mark in buffer.' },
       -- s = cmd 'Telescope treesitter',
       s = cmd 'Telescope lsp_document_symbols',
-      V = { '`<', modes = 'nxo' },
+      pv = { '`<', modes = 'nxo' },
       v = { '`>', modes = 'nxo' },
       Y = { '(matchup-[%)', 'matchup backward', modes = 'nxo' },
       y = { '(matchup-]%)', 'matchup forward', modes = 'nxo' },
       -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
       -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
-      [':'] = { 'g,', 'newer change' },
+      ['p;'] = { 'g,', 'newer change' },
       [';'] = { 'g;', 'older changer' },
-      [s(dd.spell)] = { '[s', 'prevous misspelled' },
+      [q.previous .. dd.spell] = { '[s', 'prevous misspelled' },
       [dd.spell] = { ']s', 'next misspelled' },
       [dd.search] = cmd {
         'Telescope current_buffer_fuzzy_find',
@@ -503,9 +536,9 @@ local function map_basic()
         },
       },
       i = { '>>', 'indent', modes = 'nx' },
-      O = 'O',
+      po = 'O',
       o = 'o',
-      R = plug {
+      pr = plug {
         '(buffet-operator-extract)',
         'buffet extract',
         modes = 'nx',
@@ -518,13 +551,15 @@ local function map_basic()
       s = { vim.lsp.buf.rename, 'rename' },
       -- s = { vim.lsp.buf.rename, 'rename', modes = 'nx' },
       t = { '<<', 'dedent', modes = 'nx' },
-      U = { 'gU', 'uppercase', modes = 'nx' },
-      u = { 'gu', 'lowercase', modes = 'nx' },
-      v = {
+      ppu = {
         rep [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']],
         'change case',
         modes = 'nx',
       }, -- FIXME: not repeatable
+      pu = { 'gU', 'uppercase', modes = 'nx' },
+      u = { 'gu', 'lowercase', modes = 'nx' },
+      v = {'p', modes = 'nx'},
+      pv = {'P', modes = 'nx'},
       -- v = { 'g~', 'toggle case', modes = 'nx' },
       w = {
         function()
@@ -535,7 +570,7 @@ local function map_basic()
         'symbols',
         modes = 'n',
       },
-      X = plug {
+      px = plug {
         '(ExchangeClear)',
         modes = 'nx',
       },
@@ -546,7 +581,7 @@ local function map_basic()
           n = plug '(Exchange)',
         },
       },
-      Y = plug { '(buffet-operator-delete)', modes = 'nx' },
+      py = plug { '(buffet-operator-delete)', modes = 'nx' },
       y = plug { '(buffet-operator-add)', modes = 'nx' },
       [','] = cmd 'ISwapWith',
       [dd.spell] = {
@@ -558,7 +593,7 @@ local function map_basic()
         'spell suggest',
         modes = 'nx',
       },
-      [s(dd.comment)] = plug { '(u-comment-opleader-block)', modes = 'nx' },
+      ['p' .. dd.comment] = plug { '(u-comment-opleader-block)', modes = 'nx' },
       [dd.comment] = {
         modes = {
           n = {
@@ -571,8 +606,8 @@ local function map_basic()
           },
         },
       },
-      [s(dd.join)] = { 'J', 'join', modes = 'nx' },
-      [dd.join] = {
+      [dd.join] = { 'J', 'join', modes = 'nx' },
+      ['p' .. dd.join] = {
         modes = {
           n = '<Plug>(u-revj-operator)',
           x = {
@@ -583,7 +618,7 @@ local function map_basic()
           },
         },
       },
-      [s(dd.ninja)] = {
+      [q.previous .. dd.ninja] = {
         modes = {
           n = plug '(ninja-insert)',
           x = require('modules.palette').pre,
@@ -627,9 +662,9 @@ local function map_basic()
       [dd.next_search] = plug { '(dial-decrement-additional)', modes = 'x' },
       [a.edit] = {
         name = '+line',
-        Y = { '<Plug>(buffet-operator-delete)il', noremap = false },
+        py = { '<Plug>(buffet-operator-delete)il', noremap = false },
         y = { '<Plug>(buffet-operator-add)il', noremap = false },
-        R = { '<Plug>(buffet-operator-extract)il', noremap = false },
+        pr = { '<Plug>(buffet-operator-extract)il', noremap = false },
         r = { '<Plug>(buffet-operator-replace)il', noremap = false },
         x = plug '(ExchangeLine)',
         [dd.join] = plug '(u-revj-line)',
@@ -638,12 +673,12 @@ local function map_basic()
       },
     },
     [a.mark] = {
-      B = plug { '(Marks-delete-bookmark)' },
+      pb = plug { '(Marks-delete-bookmark)' },
       ba = plug { '(Marks-set-bookmark0)' },
       bs = plug { '(Marks-set-bookmark1)' },
       bd = plug { '(Marks-set-bookmark2)' },
       bf = plug { '(Marks-set-bookmark3)' },
-      D = plug {
+      pd = plug {
         '(Marks-deletebuf)',
         name = 'Deletes all marks in current buffer.',
       },
@@ -651,7 +686,7 @@ local function map_basic()
         '(Marks-deleteline)',
         name = 'Deletes all marks on current line.',
       },
-      S = plug {
+      ps = plug {
         '(Marks-delete)',
         name = 'Delete a letter mark (will wait for input).',
       },
@@ -672,9 +707,9 @@ local function map_basic()
     [a.move] = {
       name = '+move',
       b = cmd 'Telescope buffers',
-      D = cmd 'Telescope lsp_type_definitions', -- also, trouble
+      pd = cmd 'Telescope lsp_type_definitions', -- also, trouble
       d = cmd 'Telescope lsp_definitions', -- also, trouble
-      I = { vim.lsp.buf.declaration, 'go declaration' }, -- FIXME:
+      pi = { vim.lsp.buf.declaration, 'go declaration' }, -- FIXME:
       i = cmd 'Telescope lsp_implementations', -- also, trouble
       -- m = function()
       --   require('telescope.builtin').find_files {
@@ -687,7 +722,7 @@ local function map_basic()
           -- hidden = false,
         }
       end,
-      M = function()
+      pm = function()
         require('telescope.builtin').file_browser {
           cwd = vim.fn.expand '%:p:h',
           depth = 10,
@@ -695,9 +730,9 @@ local function map_basic()
       end,
       o = cmd 'Telescope oldfiles only_cwd=true',
       -- "Telescope lsp_references"
-      p = cmd 'TodoTrouble',
-      P = cmd 'TodoTelescope',
-      R = {
+      w = cmd 'TodoTrouble',
+      pw = cmd 'TodoTelescope',
+      pr = {
         function()
           require('modules.toggler').open(
             'Trouble lsp_references',
@@ -707,7 +742,7 @@ local function map_basic()
         'lsp document diagnostics',
       },
       r = cmd 'Telescope lsp_references',
-      A = {
+      pa = {
         function()
           require('modules.toggler').open(
             'Trouble lsp_document_diagnostics',
@@ -716,7 +751,7 @@ local function map_basic()
         end,
         'lsp document diagnostics',
       },
-      T = {
+      pt = {
         function()
           require('trouble').previous { skip_groups = true, jump = true }
         end,
@@ -742,7 +777,7 @@ local function map_basic()
       v = cmd { 'Telescope help_tags', 'help tags' },
     },
     [a.editor] = {
-      A = {
+      pa = {
         function()
           require('modules.toggler').open(
             'Trouble lsp_document_diagnostics',
@@ -760,7 +795,7 @@ local function map_basic()
         end,
         'lsp worspace diagnostics',
       },
-      B = { -- FIXME:
+      pb = { -- FIXME:
         function()
           require('bufjump').backward(require('bufjump').not_under_cwd)
         end,
@@ -782,16 +817,10 @@ local function map_basic()
         end,
         'nvim tree',
       },
-      G = {
-        function()
-          require('modules.toggler').open('Gitsigns setqflist', 'TroubleClose')
-        end,
-        'hunks',
-      },
       g = function()
         require('modules.toggler').open('Neogit', ':q')
       end,
-      H = cmd { 'DiffviewClose', 'diffview close' },
+      ph = cmd { 'DiffviewClose', 'diffview close' },
       h = cmd { 'DiffviewFileHistory', 'diffview open' },
       i = {
         function()
@@ -808,10 +837,10 @@ local function map_basic()
       m = cmd { 'Telescope installed_plugins', 'plugins' },
       n = cmd { 'Telescope modules', 'node modules' },
       o = { require('bindutils').open_current, 'open current external' },
-      p = { require('modules.setup-session').develop, 'session develop' },
+      pp = { require('modules.setup-session').develop, 'session develop' },
       r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
       s = { require('bindutils').outliner, 'outliner' },
-      S = {
+      ps = {
         function()
           require('modules.toggler').open(
             'TroubleToggle lsp_references',
@@ -820,15 +849,22 @@ local function map_basic()
         end,
         'lsp references',
       },
-      t = { require('bindutils').term, 'new terminal' },
-      u = {
+      y = {
         function()
           require('modules.toggler').open('UndotreeToggle', 'UndotreeToggle')
         end,
         'undo tree',
       },
+      t = { require('bindutils').term, 'new terminal' },
+      pu = {
+        function()
+          require('modules.toggler').open('Gitsigns setqflist', 'TroubleClose')
+        end,
+        'hunks',
+      },
+      u = cmd { 'lua require"gitsigns".blame_line{full=true}' },
       w = cmd { 'Telescope my_projects', 'sessions' },
-      W = cmd { 'Telescope project_directory', 'projects' },
+      pw = cmd { 'Telescope project_directory', 'projects' },
       x = {
         function()
           require('bindutils').term_launch { 'xplr', vim.fn.expand '%' }
@@ -884,7 +920,7 @@ local function map_basic()
         '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
         'open current file',
       },
-      P = { require('modules.setup-session').launch, 'session lauch' },
+      pr = { require('modules.setup-session').launch, 'session lauch' },
       pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
       sea = map_search('https://www.seriouseats.com/search?q=', 'seriouseats'),
       sep = map_search(
@@ -910,9 +946,9 @@ local function map_basic()
     [a.macro] = {
       r = plug '(Mac_RecordNew)',
       n = plug '(Mac_RotateBack)',
-      N = plug '(Mac_RotateForward)',
+      pn = plug '(Mac_RotateForward)',
       a = plug '(Mac_Append)',
-      A = plug '(Mac_Prepend)',
+      pa = plug '(Mac_Prepend)',
       w = plug '(Mac_NameCurrentMacro)',
       fw = plug '(Mac_NameCurrentMacroForFileType)',
       sw = plug '(Mac_NameCurrentMacroForCurrentSession)',
@@ -965,6 +1001,7 @@ end
 -- r: paragraph (builtin)
 -- s: sentence
 -- t: tag (targets)
+-- u: hunk (gitsigns)
 -- v: variable segment
 -- y: conditional (ts)
 -- é: detect (sandwich)
@@ -984,24 +1021,26 @@ local function map_textobjects()
   local map = require('modules.utils').map
   map('nox', 'gi', '<nop>', {})
   map('nox', 'ga', '<nop>', {})
-  map('x', 'ar', 'ap', {})
-  map('x', 'ir', 'ip', {})
-  map('o', 'ar', 'ap', {})
-  map('o', 'ir', 'ip', {})
-  map('nox', 'gahb', '<cmd>lua require"hop".hint_patterns({}, "[({[]")<cr>', {})
+  map('ox', 'ar', 'ap', {})
+  map('ox', 'ir', 'ip', {})
+  map('ox', 'a' .. dd.git, ':<c-u>Gitsigns select_hunk<cr>')
+  map('nox', 'f' .. dd.git, '<cmd>Gitsigns next_hunk<cr>')
+  map('nox', 'fp' .. dd.git, '<cmd>Gitsigns prev_hunk<cr>')
+  map('nox', 'fhb', '<cmd>lua require"hop".hint_patterns({}, "[({[]")<cr>', {})
   map(
     'nox',
-    'gahq',
+    'fhq',
     '<cmd>lua require"hop".hint_patterns({}, "[\'\\"`]")<cr>',
     {}
   )
-  map('nox', 'gal', 'j', {})
-  map('nox', 'gapl', 'k', {})
-  map('nox', 'gahl', '<cmd>lua require"hop".hint_lines()<cr>', {})
-  map('nox', 'gil', 'j^', {})
-  map('nox', 'gipl', 'k^', {})
+  map('nox', 'fl', 'j', {})
+  map('nox', 'fpl', 'k', {})
+  map('nox', 'fhl', '<cmd>lua require"hop".hint_lines()<cr>', {})
+  map('nox', 'tl', 'j^', {})
+  map('nox', 'tpl', 'k^', {})
 
   vim.g.targets_nl = 'np'
+  -- FIXME: targets only does omap (no xmap)
   require('modules.utils').augroup('targetsline', {
     {
       events = { 'user' },
@@ -1011,16 +1050,16 @@ local function map_textobjects()
           {
             ['-'] = { separator = { { d = '-' } } },
             l = { line = { { c = 1 } } },
-            A = { argument = { { o = '[([]', c = '[])]', s = ',' } } },
+            -- a = { argument = { { o = '[([]', c = '[])]', s = ',' } } },
           },
         })
       end,
     },
   })
-  -- TODO: should be ii / ai for certain filetypes (markdown, python)
+  -- todo: should be ii / ai for certain filetypes (markdown, python)
   map_textobj('i', plug '(indent-object-ii)', plug '(indent-object-ai)')
   map_textobj(
-    s(dd.ninja),
+    q.previous .. dd.ninja,
     plug '(ninja-left-foot-inner)',
     plug '(ninja-left-foot-a)',
     'ninja left foot'
@@ -1031,9 +1070,15 @@ local function map_textobjects()
     plug '(ninja-right-foot-a)',
     'ninja right foot'
   )
-  local map = require('modules.utils').map
-  map('o', 'z', '<Plug>Lightspeed_x', { noremap = false })
-  map('o', 'Z', '<Plug>Lightspeed_x', { noremap = false })
+  -- local map = require('modules.binder').map
+  -- not working
+  -- map('ox', 'z', function()
+  --   require('hop').hint_char2 {
+  --     direction = require('hop.hint').hintdirection.before_cursor,
+  --   }
+  -- end, { noremap = false })
+  -- map('o', 'z', '<plug>lightspeed_x', { noremap = false })
+  -- map('o', 'z', '<plug>lightspeed_x', { noremap = false })
   require('modules.flies').setup {
     chars = {
       { '(', ')' },
@@ -1055,7 +1100,7 @@ local function map_textobjects()
       '&',
     },
     queries = {
-      T = 'tag',
+      t = 'tag',
       Q = 'string',
       a = 'parameter',
       f = 'function',
@@ -1065,11 +1110,7 @@ local function map_textobjects()
       z = 'loop',
       c = 'comment',
     },
-    qualifiers = {
-      p = 'previous',
-      n = 'next',
-      h = 'hint',
-    },
+    qualifiers = qualifiers,
     move = 'g',
     move_inner = 't',
     move_outer = 'f',
@@ -1090,13 +1131,13 @@ local function map_markdown()
     [a.jump] = {
       s = { '<cmd>Telescope heading<cr>', 'headings' },
       t = plug { 'Markdown_MoveToNextHeader', 'next header', modes = 'nxo' },
-      T = plug {
+      pt = plug {
         'Markdown_MoveToPreviousHeader',
         'previous header',
         modes = 'nxo',
       },
       h = plug { 'Markdown_MoveToCurHeader', 'current header', modes = 'nxo' },
-      H = plug {
+      ph = plug {
         'Markdown_MoveToParentHeader',
         'parent header',
         modes = 'nxo',

@@ -195,7 +195,6 @@ function M.fwd(backwards, before, cl, cr, repeating)
   end, function()
     M.fwd(false, before, cl, cr, true)
   end)
-  print(repeating, fwd_last_dir, backwards)
   if repeating and (fwd_last_dir == backwards) then
     require('lightspeed').ft:go(false, before, 'cold')
     return
@@ -219,7 +218,6 @@ function M.setup(user_conf)
   hint_char = find(conf.qualifiers, 'hint')
   previous_char = find(conf.qualifiers, 'previous')
   outer_char = find(conf.domains, 'outer')
-
   for _, c in ipairs(conf.chars) do
     local cl, cr
     if type(c) == 'table' then

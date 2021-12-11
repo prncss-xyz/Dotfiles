@@ -34,6 +34,10 @@ g.did_load_filetypes = 1 -- nathom/filetype.nvim
 
 vim.cmd 'highlight link hl_ColorColumn Visual'
 require 'options'
+-- neovim-qt
+if not vim.fn.exists 'GuiFont' then
+  vim.opt.guifont = 'Victor Mono:h8'
+end
 require('bindings').setup()
 require 'plugins'
 require('modules.binder').setup_mappings()
@@ -44,7 +48,7 @@ require('theme').setup()
 
 -- foot terminal
 -- https://codeberg.org/dnkl/foot/wiki#user-content-how-to-configure-my-shell-to-emit-the-osc-7-escape-sequence
-vim.cmd[[
+vim.cmd [[
 autocmd InsertEnter * call chansend(v:stderr, "\e[?737769h")
 autocmd InsertLeave * call chansend(v:stderr, "\e[?737769l")
 set ttimeoutlen=0

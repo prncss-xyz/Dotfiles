@@ -920,7 +920,7 @@ local function map_basic()
         '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
         'open current file',
       },
-      pr = { require('modules.setup-session').launch, 'session lauch' },
+      pp = { require('modules.setup-session').launch, 'session lauch' },
       pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
       sea = map_search('https://www.seriouseats.com/search?q=', 'seriouseats'),
       sep = map_search(

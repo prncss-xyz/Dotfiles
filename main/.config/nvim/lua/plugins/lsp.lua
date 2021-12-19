@@ -6,11 +6,11 @@ local function noformat_on_attach(client, _)
   client.resolved_capabilities.document_range_formatting = false
 end
 
-local format_on_attach = function(client)
-  if client.resolved_capabilities.document_formatting then
-    vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
-  end
-end
+-- local format_on_attach = function(client)
+--   if client.resolved_capabilities.document_formatting then
+--     vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
+--   end
+-- end
 
 local function ts_uttils_on_attach(client, bufnr)
   local ts_utils = require 'nvim-lsp-ts-utils'
@@ -30,14 +30,6 @@ local function ts_uttils_on_attach(client, bufnr)
     },
     import_all_scan_buffers = 100,
     import_all_select_source = false,
-
-    -- no eslint
-    eslint_enable_code_actions = false,
-    eslint_enable_disable_comments = false,
-    eslint_enable_diagnostics = false,
-    eslint_opts = {},
-    -- no prettier
-    enable_formatting = false,
 
     -- update imports on file move
     update_imports_on_move = true,
@@ -131,39 +123,39 @@ function M.setup()
     },
   }
 
-  local null_ls = require 'null-ls'
-  local b = null_ls.builtins
-  null_ls.config {
-    sources = {
-      b.formatting.prettierd.with {
-        filetypes = {
-          'javascript',
-          'javascriptreact',
-          'typescript',
-          'typescriptreact',
-          'vue',
-          'svelte',
-          'css',
-          'html',
-          'json',
-          'yaml',
-          -- 'markdown', -- slow
-          'scss',
-          'toml',
-        },
-      },
-      b.formatting.eslint_d,
-      b.formatting.stylua,
-      b.formatting.shfmt,
-      b.diagnostics.shellcheck,
-      b.code_actions.gitsigns,
-      b.code_actions.refactoring,
-      b.formatting.fish_indent,
-      -- b.diagnostics.markdownlint,
-      -- b.diagnostics.selene,
-    },
-  }
-  nvim_lsp['null-ls'].setup { on_attach = format_on_attach, debounce = 500 }
+  -- local null_ls = require 'null-ls'
+  -- local b = null_ls.builtins
+  -- null_ls.config {
+  --   sources = {
+  --     b.formatting.prettierd.with {
+  --       filetypes = {
+  --         'javascript',
+  --         'javascriptreact',
+  --         'typescript',
+  --         'typescriptreact',
+  --         'vue',
+  --         'svelte',
+  --         'css',
+  --         'html',
+  --         'json',
+  --         'yaml',
+  --         -- 'markdown', -- slow
+  --         'scss',
+  --         'toml',
+  --       },
+  --     },
+  --     b.formatting.eslint_d,
+  --     b.formatting.stylua,
+  --     b.formatting.shfmt,
+  --     b.diagnostics.shellcheck,
+  --     b.code_actions.gitsigns,
+  --     b.code_actions.refactoring,
+  --     b.formatting.fish_indent,
+  --     -- b.diagnostics.markdownlint,
+  --     -- b.diagnostics.selene,
+  --   },
+  -- }
+  -- nvim_lsp['null-ls'].setup { on_attach = format_on_attach, debounce = 500 }
 
   -- FIXME: trigger text is not deleted
   -- TODO: wait for jsx support

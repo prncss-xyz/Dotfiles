@@ -196,6 +196,9 @@ return require('packer').startup {
     use {
       'jose-elias-alvarez/null-ls.nvim',
       module = 'null-ls',
+      confit = function ()
+        require('null_ls').setup()
+      end
     }
     use {
       'brymer-meneses/grammar-guard.nvim',

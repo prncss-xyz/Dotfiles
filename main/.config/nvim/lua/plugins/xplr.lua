@@ -14,7 +14,7 @@ function M.setup()
       relative = 'editor',
       size = {
         width = '80%',
-        height = '30%',
+        height = '90%',
       },
     },
     previewer = {

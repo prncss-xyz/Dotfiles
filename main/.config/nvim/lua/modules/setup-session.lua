@@ -9,6 +9,7 @@
 
 local M = {}
 
+local conf = {}
 local scheme = { type = 'unknown' }
 
 local function setup(port, command)
@@ -86,8 +87,6 @@ end
 function M.develop()
   setup(scheme.port, scheme.develop)
 end
-
-local conf = {}
 
 function M.setup(conf0)
   conf = conf0

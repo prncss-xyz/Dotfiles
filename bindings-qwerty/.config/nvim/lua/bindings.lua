@@ -232,9 +232,6 @@ local function map_basic()
       },
       [','] = { require('modules.alt-jump').toggle, 'alt-jump' },
     },
-    ['<c-d>'] = function()
-      require('neoscroll').scroll(0.9, true, 250)
-    end,
     -- ['<c-f>'] = plug { 'Lightspeed_,_ft', modes = 'nxo' },
     -- ['<c-g>'] = plug { 'Lightspeed_;_ft', modes = 'nxo' },
     ['<c-i>'] = '<c-i>',
@@ -259,9 +256,6 @@ local function map_basic()
       end,
       modes = 'ni',
     },
-    ['<c-u>'] = function()
-      require('neoscroll').scroll(-0.9, true, 250)
-    end,
     ['<c-v>'] = { 'gp', modes = 'nv' },
     ['<c-w>'] = {
       r = plug { '(Visual-Split-VSResize)', modes = 'x' },
@@ -482,6 +476,8 @@ local function map_basic()
       q = plug { '(Marks-next)', name = 'Goes to next mark in buffer.' },
       -- s = cmd 'Telescope treesitter',
       s = cmd 'Telescope lsp_document_symbols',
+      pu = require'bindutils'.scroll_up,
+      u = require'bindutils'.scroll_down,
       pv = { '`<', modes = 'nxo' },
       v = { '`>', modes = 'nxo' },
       Y = { '(matchup-[%)', 'matchup backward', modes = 'nxo' },
@@ -558,8 +554,11 @@ local function map_basic()
       }, -- FIXME: not repeatable
       pu = { 'gU', 'uppercase', modes = 'nx' },
       u = { 'gu', 'lowercase', modes = 'nx' },
-      v = {'p', modes = 'nx'},
-      pv = {'P', modes = 'nx'},
+      -- ppu = 'U',
+      -- pu = '<c-r>',
+      -- u = 'u',
+      v = { 'p', modes = 'nx' },
+      pv = { 'P', modes = 'nx' },
       -- v = { 'g~', 'toggle case', modes = 'nx' },
       w = {
         function()

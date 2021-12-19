@@ -15,6 +15,7 @@ alias m nvim_pager
 # alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
 alias nod 'nodemon --config ~/.config/nodemon/config.json'
 abbr hm 'man -H'
+update_cwd_osc # this is needed beacause aur package sets TERM to 'foot-extra' and not 'foot'
 
 starship init fish | source
 zoxide init fish | source

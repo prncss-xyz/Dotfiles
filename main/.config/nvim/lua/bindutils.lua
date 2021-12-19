@@ -53,6 +53,24 @@ function M.n(forward)
   require('hlslens').start()
 end
 
+function M.scroll_up()
+  require('modules.flies').repeat_register(function()
+    require('neoscroll').scroll(-0.9, true, 250)
+  end, function()
+    require('neoscroll').scroll(0.9, true, 250)
+  end)
+  require('neoscroll').scroll(-0.9, true, 250)
+end
+
+function M.scroll_down()
+  require('modules.flies').repeat_register(function()
+    require('neoscroll').scroll(-0.9, true, 250)
+  end, function()
+    require('neoscroll').scroll(0.9, true, 250)
+  end)
+  require('neoscroll').scroll(0.9, true, 250)
+end
+
 -- 'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
 function M.lightspeed_F()
   require('modules.flies').repeat_register(function()

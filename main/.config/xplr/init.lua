@@ -1,4 +1,4 @@
-version = '0.16.2'
+version = '0.17.0'
 package.path = os.getenv 'HOME' .. '/.config/xplr/plugins/?.xplr/src/init.lua'
 require('comex').setup { compress_key = 'c', extract_key = 'x' }
 require('type-to-nav').setup()
@@ -12,7 +12,7 @@ require('xargs').setup()
 require('trash-cli').setup()
 -- require('type-to-nav').setup()
 require('icons').setup()
-
+require('context-switch').setup()
 -- local modules.utils = require 'utils'
 
 -- TODO merge arrays
@@ -192,6 +192,24 @@ deep_merge(xplr, {
                 messages = {
                   'PopMode',
                   { SwitchModeBuiltin = 'default' },
+                },
+              },
+            },
+          },
+        },
+        context_switch = {
+          key_bindings = {
+            on_key = {
+              j = {
+                help = 'up',
+                messages = {
+                  { CallLuaSilently = 'custom.context_switch.prev' },
+                },
+              },
+              k = {
+                help = 'down',
+                messages = {
+                  { CallLuaSilently = 'custom.context_switch.next' },
                 },
               },
             },

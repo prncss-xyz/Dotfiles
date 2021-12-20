@@ -104,31 +104,35 @@ local function treesitter_exchange(query, qualifier, _)
   )
 end
 
--- modified from https://github.com/echasnovski/mini.nvim/blob/main/lua/mini/jump.lua
+-- inspired by https://github.com/echasnovski/mini.nvim/blob/main/lua/mini/jump.lua
 ---@param target string: The regex pattern to jump to.
 ---@param backward boolean: Whether to jump backward. Default: latest used value or `false`.
 ---@param till boolean: Whether to jump just before/after the match instead of exactly on target. Also ignore matches that don't have anything before/after them. Default: latest used value or `false`.
 ---@param n_times number: Number of times to perform a jump. Default: latest used value or 1.
-local function jump(target, backward, till, n_times)
+local function jump(target, backward, till, n_times, mode)
   -- Construct search and highlight patterns
   local flags = backward and 'Wb' or 'W'
-  local pattern = [[\V%s]]
   if till then
     if backward then
-      pattern = [[\V\(%s\)\@<=\.]]
-      flags = ('%se'):format(flags)
+      target = target .. '.'
     else
-      pattern = [[\V\.\(%s\)\@=]]
+      target = '.' .. target
     end
   end
-
-  pattern = pattern:format(target)
+  if mode == 'o' and not backward then
+    -- target = target .. '.'
+  elseif not backward and till then
+  else
+    flags = flags .. 'e'
+  end
+  print('target: ', target)
+  -- 00001111,aetsa
 
   -- TODO: highlights
 
   -- Make jump(s)
   for _ = 1, n_times do
-    vim.fn.search(pattern, flags)
+    vim.fn.search(target, flags)
   end
 
   -- Open enough folds to show jump
@@ -142,11 +146,11 @@ local function char_move(domain, left, right, qualifier, mode)
     char_move(domain, left, right, 'plain', mode)
   end)
   if qualifier == 'previous' then
-    jump(left, true, domain == 'inner', vim.v.count1)
+    jump(left, true, domain == 'inner', vim.v.count1, mode)
     return
   end
   if qualifier == 'plain' then
-    jump(right, false, domain == 'inner', vim.v.count1)
+    jump(right, false, domain == 'inner', vim.v.count1, mode)
     return
   end
   if qualifier == 'hint' then
@@ -162,19 +166,22 @@ function M.Char.new(char)
 end
 
 function M.Char:move_outer(qualifier, mode)
-  local pattern = string.format([[\V%s]], vim.fn.escape(self.char, [[\]]))
+  local pattern = '[' .. self.char .. ']'
   char_move('outer', pattern, pattern, qualifier, mode)
 end
 
 function M.Char:move_inner(qualifier, mode)
-  local pattern = string.format([[\V%s]], vim.fn.escape(self.char, [[\]]))
+  local pattern = '[' .. self.char .. ']'
   char_move('inner', pattern, pattern, qualifier, mode)
 end
 
 M.Pair = {}
 
 function M.Pair.new(left, right)
-  return setmetatable({ left = left, right = right or left }, { __index = M.Pair })
+  return setmetatable(
+    { left = left, right = right or left },
+    { __index = M.Pair }
+  )
 end
 
 function M.Pair:move_outer(qualifier, mode)
@@ -182,6 +189,7 @@ function M.Pair:move_outer(qualifier, mode)
 end
 
 function M.Pair:move_inner(qualifier, mode)
+  print 'caca'
   char_move('inner', self.left, self.right, qualifier, mode)
 end
 
@@ -214,8 +222,8 @@ end
 M.commands_info = {
   select_inner = { modes = 'ox', call = ':' },
   select_outer = { modes = 'ox', call = ':' },
-  move_inner = { modes = 'nox' },
-  move_outer = { modes = 'nox' },
+  move_inner = { modes = 'nox', callo = 'v<cmd>' },
+  move_outer = { modes = 'nox', callo = 'v<cmd>' },
   exchange = { modes = 'n' },
 }
 
@@ -238,13 +246,13 @@ function M.setup(user_conf)
                 command_map .. qualifier_map .. query_map,
                 string.format(
                   '%slua require("modules.flies").command(%q, %q, %q, %q)<cr>',
-                  command.call or '<cmd>',
+                  mode == 'o' and command.callo or command.call or '<cmd>',
                   command_name,
                   query_map,
                   qualifier,
                   mode
                 ),
-                {}
+                { noremap = true }
               )
             end
           end

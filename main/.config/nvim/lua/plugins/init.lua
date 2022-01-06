@@ -107,7 +107,7 @@ return require('packer').startup {
 
     -- syntax
     use 'ajouellette/sway-vim-syntax'
-    use 'fladson/vim-kitty'
+    -- use 'fladson/vim-kitty'
     use {
       -- weirdly seems required to format yaml frontmatter
       'godlygeek/tabular',
@@ -195,10 +195,10 @@ return require('packer').startup {
     -- LSP
     use {
       'jose-elias-alvarez/null-ls.nvim',
-      module = 'null-ls',
-      confit = function ()
-        require('null_ls').setup()
-      end
+      event = 'BufReadPost',
+      config = function()
+        require('plugins.null_ls').setup()
+      end,
     }
     use {
       'brymer-meneses/grammar-guard.nvim',
@@ -557,23 +557,7 @@ return require('packer').startup {
       'andymass/vim-matchup',
       -- cond = full,
       setup = function()
-        vim.g.matchup_matchparen_offscreen = { method = 'status' }
-      end,
-    }
-    use {
-      'ggandor/lightspeed.nvim',
-      disable = false,
-      event = 'BufReadPost',
-      config = function()
-        local conf = {
-          highlight_unique_chars = false,
-          safe_labels = {},
-        }
-        require('modules.utils').deep_merge(
-          conf,
-          require('bindings').plugins.lightspeed
-        )
-        require('lightspeed').setup(conf)
+        vim.g.matchup_matchparen_offscreen = {}
       end,
     }
     -- yup, hop for the extensions
@@ -698,13 +682,6 @@ return require('packer').startup {
       end,
     }
     use {
-      'AckslD/nvim-anywise-reg.lua',
-      cond = never,
-      config = function()
-        require 'plugins.anywise_reg'
-      end,
-    }
-    use {
       'bfredl/nvim-miniyank',
       disable = true,
       setup = function()
@@ -795,33 +772,16 @@ return require('packer').startup {
           'preservim/vim-textobj-sentence',
           after = 'vim-textobj-user',
         },
-        -- {
-        --   'kana/vim-textobj-line',
-        --   cond = full,
-        --   setup = function()
-        --     vim.g.textobj_line_no_default_key_mappings = 1
-        --   end,
-        -- },
-        {
-          'kana/vim-textobj-entire',
-          after = 'vim-textobj-user',
-        },
-        -- original breaks completion by mapping in v mode
-        {
-          local_repo 'vim-indent-object',
-          after = 'vim-textobj-user',
-        },
       },
     }
     use {
       'wellle/targets.vim',
       event = 'BufReadPost',
-      require = {
-        use { 'wellle/line-targets.vim', after = 'targets.vim' },
-      },
     }
+    use { local_repo 'flies.nvim' }
     use {
-      'tommcdo/vim-ninja-feet',
+      -- 'tommcdo/vim-ninja-feet',
+      local_repo 'vim-ninja-feet',
       event = 'BufReadPost',
       setup = function()
         vim.g.ninja_feet_no_mappings = 1

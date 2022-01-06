@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
-comm=$(printf "$TERMINAL --class=launcher -e $1 %q" "$2")
-echo "$comm"
+# comm=$(printf "kitty --class=launcher -e $1 %q" "$2")
+comm=$(printf "footclient --app-id=launcher -e $1 %q" "$2")
+echo "$comm" >> ~/imv-do.log
 swaymsg exec "$comm"

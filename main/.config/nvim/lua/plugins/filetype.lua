@@ -8,6 +8,7 @@ require('filetype').setup {
       ['.htmlhintrc'] = 'json',
     },
     complex = {
+      ['.config/sway/config'] = 'sway',
       ['.config/sway/config.d/*'] = 'sway',
       ['.config/kitty/*'] = 'kitty',
     },

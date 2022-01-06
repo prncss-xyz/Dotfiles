@@ -38,10 +38,10 @@ require 'options'
 if not vim.fn.exists 'GuiFont' then
   vim.opt.guifont = 'Victor Mono:h8'
 end
+require 'modules'
 require('bindings').setup()
 require 'plugins'
 require('modules.binder').setup_mappings()
-require 'modules'
 require 'commands'
 require 'autocommands'
 require('theme').setup()

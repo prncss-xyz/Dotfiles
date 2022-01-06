@@ -1,3 +1,5 @@
+_G.Dump = require'modules.utils'.dump
+
 require('modules.setup-session').setup {
   browser = require('modules.browser').open,
 }

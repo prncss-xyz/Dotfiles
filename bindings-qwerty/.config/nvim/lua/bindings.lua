@@ -17,7 +17,6 @@ local a = invert {
   m = 'mark',
   Q = 'macro',
   q = 'editor',
-  Y = 'browser',
   o = 'various',
   [' '] = 'leader',
 }
@@ -33,8 +32,8 @@ local dd = invert {
   l = 'left',
   s = 'symbol',
   z = 'spell',
-  ['é'] = 'search',
   [';'] = 'right',
+  ['é'] = 'search',
   ['<c-j>'] = 'next_search',
   ['<c-x>'] = 'prev_search',
 }
@@ -159,17 +158,18 @@ local function map_basic()
     c = { '""c', modes = 'nx' },
     D = { '<nop>', modes = 'nx' },
     d = { '""d', modes = 'nx' },
-    E = { 'E', 'previous bigword', modes = 'nxo' },
-    -- e = { 'e', 'next word ', modes = 'nxo' },
-    e = plug { 'CamelCaseMotion_e', 'next subword ', modes = 'nxo' },
+    E = { 'W', 'previous bigword', modes = 'nxo' },
+    -- e = { 'w', 'next word ', modes = 'nxo' },
+    e = plug { 'CamelCaseMotion_w', 'next subword ', modes = 'nxo' },
+    f = { require('bindutils').meta_move, mode = true, modes = 'nxo' },
     I = 'I',
     i = 'i',
     p = {
-      require('modules.flies').repeat_previous,
+      require('flies').repeat_previous,
       mode = true,
       modes = 'nxo',
     },
-    n = { require('modules.flies').repeat_next, mode = true, modes = 'nxo' },
+    n = { require('flies').repeat_next, mode = true, modes = 'nxo' },
     O = { '<nop>', modes = 'nx' },
     o = { '<nop>', modes = 'nx' },
     R = { 'R', modes = 'nx' },
@@ -183,28 +183,30 @@ local function map_basic()
       'hop char2',
       modes = 'nxo',
     },
-    -- S = plug { 'Lightspeed_S', 'S', modes = 'nxo' },
-    -- s = plug { 'Lightspeed_s', 's', modes = 'nxo' },
     T = {
-      function()
-        require('bindutils').lightspeed_T()
-      end,
-      modes = 'nxo',
+      modes = {
+        x = require('bindutils').pre,
+        o = plug '(ninja-left-foot-inner)',
+      },
     },
     t = {
-      function()
-        require('bindutils').lightspeed_t()
-      end,
-      modes = 'nxo',
+      modes = {
+        n = function()
+          require('bindutils').tobj_extreme()
+        end,
+        x = require('bindutils').post,
+        o = plug '(ninja-right-foot-inner)',
+      },
     },
-    U = 'U',
+    ou = 'U',
     u = 'u',
     V = { '<c-v>', modes = 'nxo' },
     v = { modes = {
       x = 'V',
       n = 'v',
     } },
-    W = { 'B', 'previous word', modes = 'nxo' },
+    W = '<nop>',
+    -- W = { 'B', 'previous word', modes = 'nxo' },
     -- w = { 'b', 'next word', modes = 'nxo' },
     w = plug { 'CamelCaseMotion_b', 'previous subword ', modes = 'nxo' },
     X = { '"+d$', modes = 'nx' },
@@ -232,8 +234,6 @@ local function map_basic()
       },
       [','] = { require('modules.alt-jump').toggle, 'alt-jump' },
     },
-    -- ['<c-f>'] = plug { 'Lightspeed_,_ft', modes = 'nxo' },
-    -- ['<c-g>'] = plug { 'Lightspeed_;_ft', modes = 'nxo' },
     ['<c-i>'] = '<c-i>',
     ['<c-n>'] = {
       function()
@@ -288,7 +288,7 @@ local function map_basic()
     [alt(dd.right)] = { require('modules.wrap_win').right, 'window right' },
     -- normal mode only, because mapped to o
     [a.various] = {
-      B = function()
+      pb = function()
         require('neoscroll').zt(250)
       end,
       b = function()
@@ -306,7 +306,7 @@ local function map_basic()
         c = { "<cmd>lua require'dap'.continue()<cr>", 'continue' },
         s = { "<cmd>lua require'dap'.stop()<cr>", 'stop' },
         o = { "<cmd>lua require'dap'.step_over()<cr>", 'step over' },
-        O = { "<cmd>lua require'dap'.step_out()<cr>", 'step out' },
+        po = { "<cmd>lua require'dap'.step_out()<cr>", 'step out' },
         i = { "<cmd>lua require'dap'.step_into()<cr>", 'step into' },
         ['.'] = { "<cmd>lua require'dap'.run_last()<cr>", 'run last' },
         -- u = { "<cmd>lua require'dapui'.eval()<cr>", 'toggle dapui' },
@@ -315,12 +315,12 @@ local function map_basic()
         l = { "<cmd>lua require'plugins.dap'.launch()<cr>", 'launch' },
         r = { "<cmd>lua require'dap'.repl.open()<cr>", 'repl' },
         a = { "<cmd>lua require'plugins.dap'.attach()<cr>", 'attach' },
-        A = {
+        pa = {
           "<cmd>lua require'plugins.dap'.attachToRemote()<cr>",
           'attach to remote',
         },
         h = { "<cmd>lua require'dap.ui.widgets'.hover()<cr>", 'widgets' },
-        H = { "<cmd>lua require'dap.ui.variables'.hover()<cr>", 'hover' },
+        ph = { "<cmd>lua require'dap.ui.variables'.hover()<cr>", 'hover' },
         v = {
           "<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
           'visual hover',
@@ -329,7 +329,7 @@ local function map_basic()
           "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
           'variables scopes',
         },
-        B = {
+        pb = {
           "<cmd>lua require'dap'.set_exception_breakpoints({'all'})<cr>",
           'set exception breakoints',
         },
@@ -354,6 +354,24 @@ local function map_basic()
           'dap frames',
         },
       },
+      q = {
+        r = plug '(Mac_RecordNew)',
+        n = plug '(Mac_RotateBack)',
+        pn = plug '(Mac_RotateForward)',
+        a = plug '(Mac_Append)',
+        pa = plug '(Mac_Prepend)',
+        w = plug '(Mac_NameCurrentMacro)',
+        fw = plug '(Mac_NameCurrentMacroForFileType)',
+        sw = plug '(Mac_NameCurrentMacroForCurrentSession)',
+        l = cmd 'DisplayMacroHistory',
+        [a.macro] = { '<plug>(Mac_Play)', noremap = false },
+        [dd.search] = {
+          w = plug '(Mac_SearchForNamedMacroAndOverwrite)',
+          r = plug '(Mac_SearchForNamedMacroAndRename)',
+          d = plug '(Mac_SearchForNamedMacroAndDelete)',
+          [a.macro] = plug '(Mac_SearchForNamedMacroAndPlay)',
+        },
+      },
       s = {
         name = '+LSP',
         a = {
@@ -362,7 +380,7 @@ local function map_basic()
           end,
           'show line diagnostics',
         },
-        C = { vim.lsp.buf.incoming_call, 'incoming calls' },
+        pc = { vim.lsp.buf.incoming_call, 'incoming calls' },
         c = { vim.lsp.buf.outgoing_calls, 'outgoing calls' },
         d = { require('bindutils').peek_definition, 'hover definition' }, -- FIXME:
         k = { vim.lsp.buf.hover, 'hover' },
@@ -383,6 +401,75 @@ local function map_basic()
         },
       },
       v = 'gv',
+      y = {
+        arch = map_search(
+          'https://wiki.archlinux.org/index.php?search=',
+          'archlinux wiki'
+        ),
+        aur = map_search(
+          'https://aur.archlinux.org/packages/?K=',
+          'aur packages'
+        ),
+        ca = map_search(
+          'https://www.cairn.info/resultats_recherche.php?searchTerm=',
+          'cairn'
+        ),
+        cn = map_search('https://www.cnrtl.fr/definition/', 'cnrtl'),
+        d = map_search('https://duckduckgo.com/?q=', 'duckduckgo'),
+        eru = map_search(
+          'https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=',
+          'erudit'
+        ),
+        fr = map_search(
+          'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=',
+          'francis'
+        ),
+        gh = map_search('https://github.com/search?q=', 'github'),
+        go = map_search('https://google.ca/search?q=', 'google'),
+        lh = map_search('https://www.libhunt.com/search?query=', 'libhunt'),
+        man = { require('modules.browser').man, 'man page' },
+        mdn = map_search(
+          'https://developer.mozilla.org/en-US/search?q=',
+          'mdn'
+        ),
+        nell = map_search(
+          'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
+          'nelligan'
+        ),
+        npm = map_search('https://www.npmjs.com/search?q=', 'npm'),
+        o = {
+          '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
+          'open current file',
+        },
+        pp = { require('modules.setup-session').launch, 'session lauch' },
+        pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
+        sea = map_search(
+          'https://www.seriouseats.com/search?q=',
+          'seriouseats'
+        ),
+        sep = map_search(
+          'https://plato.stanford.edu/search/searcher.py?query=',
+          'sep'
+        ),
+        sp = map_search(
+          'https://www.persee.fr/search?ta=article&q=',
+          'persée'
+        ),
+        st = map_search(
+          'https://usito.usherbrooke.ca/d%C3%A9finitions/',
+          'usito'
+        ),
+        u = {
+          require('modules.browser').open_file,
+          'open current file',
+        },
+        we = map_search('https://en.wikipedia.org/wiki/', 'wikipidia en'),
+        wf = map_search('https://fr.wikipedia.org/wiki/', 'wikipidia fr'),
+        y = map_search(
+          'https://www.youtube.com/results?search_query=',
+          'youtube'
+        ),
+      },
       z = {
         name = '+Spell',
         b = cmd { 'setlocal spell spelllang=en_us,fr,cjk', 'en fr' },
@@ -393,6 +480,18 @@ local function map_basic()
       },
     },
     [a.jump] = {
+      pa = {
+        function()
+          require('bindutils').search(false)
+        end,
+        modes = 'nxo',
+      },
+      a = {
+        function()
+          require('bindutils').search(true)
+        end,
+        modes = 'nxo',
+      },
       pb = {
         a = function()
           require('marks').prev_bookmark0()
@@ -439,35 +538,20 @@ local function map_basic()
       },
       pd = { vim.diagnostic.goto_prev, 'go previous diagnostic' },
       d = { vim.diagnostic.goto_next, 'go next diagnostic' },
-      pe = { 'gg', 'first line', modes = 'nxo' },
-      e = { 'G', 'last line', modes = 'nxo' },
-      pf = {
-        function()
-          require('bindutils').search(false)
-        end,
-        modes = 'nxo',
-      },
-      f = {
-        function()
-          require('bindutils').search(true)
-        end,
-        modes = 'nxo',
-      },
       h = { '(matchup-z%)', 'matchup inward', modes = 'nxo' },
       g = { '``', 'before last jump' },
-      pn = {
-        function()
-          require('bindutils').n(false)
-        end,
-        modes = 'nxo',
-      },
-      n = {
-        function()
-          require('bindutils').n(true)
-        end,
-        modes = 'nxo',
-      },
-      m = { '`', modes = 'nxo' },
+      -- pn = {
+      --   function()
+      --     require('bindutils').n(false)
+      --   end,
+      --   modes = 'nxo',
+      -- },
+      -- n = {
+      --   function()
+      --     require('bindutils').n(true)
+      --   end,
+      --   modes = 'nxo',
+      -- },
       o = { '`.', 'last change' },
       -- L = cmd 'Telescope loclist',
       pl = { '`[', 'start of last mod', modes = 'nxo' },
@@ -476,8 +560,8 @@ local function map_basic()
       q = plug { '(Marks-next)', name = 'Goes to next mark in buffer.' },
       -- s = cmd 'Telescope treesitter',
       s = cmd 'Telescope lsp_document_symbols',
-      pu = require'bindutils'.scroll_up,
-      u = require'bindutils'.scroll_down,
+      pu = require('bindutils').scroll_up,
+      u = require('bindutils').scroll_down,
       pv = { '`<', modes = 'nxo' },
       v = { '`>', modes = 'nxo' },
       Y = { '(matchup-[%)', 'matchup backward', modes = 'nxo' },
@@ -509,7 +593,7 @@ local function map_basic()
       },
       -- a = cmd { 'CodeActionMenu', 'code action', modes = 'nx' },
       b = { 'gi', 'last insert point' },
-      f = cmd { 'Telescope refactoring', 'refactoring', modes = 'nx' },
+      -- f = cmd { 'Telescope refactoring', 'refactoring', modes = 'nx' },
       h = {
         name = '+annotate',
         c = {
@@ -546,7 +630,7 @@ local function map_basic()
       },
       s = { vim.lsp.buf.rename, 'rename' },
       -- s = { vim.lsp.buf.rename, 'rename', modes = 'nx' },
-      t = { '<<', 'dedent', modes = 'nx' },
+      -- t = { '<<', 'dedent', modes = 'nx' },
       ppu = {
         rep [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']],
         'change case',
@@ -614,16 +698,28 @@ local function map_basic()
           },
         },
       },
-      [q.previous .. dd.ninja] = {
+      [q.previous .. 't'] = {
         modes = {
-          n = plug '(ninja-insert)',
-          x = require('modules.palette').pre,
+          n = plug '(ninja-insert)i',
+          x = require('bindutils').pre,
         },
       },
-      [dd.ninja] = {
+      t = {
         modes = {
-          n = plug '(ninja-append)',
-          x = require('modules.palette').post,
+          n = plug '(ninja-append)i',
+          x = require('bindutils').post,
+        },
+      },
+      [q.previous .. 'f'] = {
+        modes = {
+          n = plug '(ninja-insert)a',
+          x = require('bindutils').pre,
+        },
+      },
+      f = {
+        modes = {
+          n = plug '(ninja-append)a',
+          x = require('bindutils').post,
         },
       },
       [dd.left] = {
@@ -879,84 +975,6 @@ local function map_basic()
       [s(a.editor)] = { require('modules.toggler').back, 'toggle' },
       [a.editor] = { require('modules.toggler').toggle, 'toggle' },
     },
-    [a.browser] = {
-      arch = map_search(
-        'https://wiki.archlinux.org/index.php?search=',
-        'archlinux wiki'
-      ),
-      aur = map_search(
-        'https://aur.archlinux.org/packages/?K=',
-        'aur packages'
-      ),
-      ca = map_search(
-        'https://www.cairn.info/resultats_recherche.php?searchTerm=',
-        'cairn'
-      ),
-      cn = map_search('https://www.cnrtl.fr/definition/', 'cnrtl'),
-      d = map_search('https://duckduckgo.com/?q=', 'duckduckgo'),
-      eru = map_search(
-        'https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=',
-        'erudit'
-      ),
-      fr = map_search(
-        'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=',
-        'francis'
-      ),
-      gh = map_search('https://github.com/search?q=', 'github'),
-      go = map_search('https://google.ca/search?q=', 'google'),
-      lh = map_search('https://www.libhunt.com/search?query=', 'libhunt'),
-      man = { require('modules.browser').man, 'man page' },
-      mdn = map_search('https://developer.mozilla.org/en-US/search?q=', 'mdn'),
-      nell = map_search(
-        'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
-        'nelligan'
-      ),
-      npm = map_search('https://www.npmjs.com/search?q=', 'npm'),
-      o = {
-        '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
-        'open current file',
-      },
-      pp = { require('modules.setup-session').launch, 'session lauch' },
-      pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
-      sea = map_search('https://www.seriouseats.com/search?q=', 'seriouseats'),
-      sep = map_search(
-        'https://plato.stanford.edu/search/searcher.py?query=',
-        'sep'
-      ),
-      sp = map_search('https://www.persee.fr/search?ta=article&q=', 'persée'),
-      st = map_search(
-        'https://usito.usherbrooke.ca/d%C3%A9finitions/',
-        'usito'
-      ),
-      u = {
-        require('modules.browser').open_file,
-        'open current file',
-      },
-      we = map_search('https://en.wikipedia.org/wiki/', 'wikipidia en'),
-      wf = map_search('https://fr.wikipedia.org/wiki/', 'wikipidia fr'),
-      y = map_search(
-        'https://www.youtube.com/results?search_query=',
-        'youtube'
-      ),
-    },
-    [a.macro] = {
-      r = plug '(Mac_RecordNew)',
-      n = plug '(Mac_RotateBack)',
-      pn = plug '(Mac_RotateForward)',
-      a = plug '(Mac_Append)',
-      pa = plug '(Mac_Prepend)',
-      w = plug '(Mac_NameCurrentMacro)',
-      fw = plug '(Mac_NameCurrentMacroForFileType)',
-      sw = plug '(Mac_NameCurrentMacroForCurrentSession)',
-      l = cmd 'DisplayMacroHistory',
-      [a.macro] = { '<plug>(Mac_Play)', noremap = false },
-      [dd.search] = {
-        w = plug '(Mac_SearchForNamedMacroAndOverwrite)',
-        r = plug '(Mac_SearchForNamedMacroAndRename)',
-        d = plug '(Mac_SearchForNamedMacroAndDelete)',
-        [a.macro] = plug '(Mac_SearchForNamedMacroAndPlay)',
-      },
-    },
   }
 end
 
@@ -1015,57 +1033,56 @@ end
 
 local function map_textobjects()
   local map = require('modules.utils').map
+
+  -- entire buffer
+  -- map('n', 'fhe', '<cmd>Telescope buffers<cr>')
+  -- map('n', 'fe', '<cmd>lua require("bufjump").forward()<cr>')
+  -- map('n', 'fpe', '<cmd>lua require("bufjump").backward()<cr>')
+
   map('nox', 'gi', '<nop>', {})
   map('nox', 'ga', '<nop>', {})
   map('ox', 'ar', 'ap', {})
   map('ox', 'ir', 'ip', {})
   map('ox', 'a' .. dd.git, ':<c-u>Gitsigns select_hunk<cr>')
-  map('nox', 'f' .. dd.git, '<cmd>Gitsigns next_hunk<cr>')
-  map('nox', 'fp' .. dd.git, '<cmd>Gitsigns prev_hunk<cr>')
-  map('nox', 'fhb', '<cmd>lua require"hop".hint_patterns({}, "[({[]")<cr>', {})
-  map(
-    'nox',
-    'fhq',
-    '<cmd>lua require"hop".hint_patterns({}, "[\'\\"`]")<cr>',
-    {}
-  )
-  map('nox', 'fl', 'j', {})
-  map('nox', 'fpl', 'k', {})
-  map('nox', 'fhl', '<cmd>lua require"hop".hint_lines()<cr>', {})
-  map('nox', 'tl', 'j^', {})
-  map('nox', 'tpl', 'k^', {})
+  -- map('nox', 'f' .. dd.git, '<cmd>Gitsigns next_hunk<cr>')
+  -- map('nox', 'fp' .. dd.git, '<cmd>Gitsigns prev_hunk<cr>')
+  -- map('nox', 'fhb', '<cmd>lua require"hop".hint_patterns({}, "[({[]")<cr>', {})
+  -- map(
+  --   'nox',
+  --   'fhq',
+  --   '<cmd>lua require"hop".hint_patterns({}, "[\'\\"`]")<cr>',
+  --   {}
+  -- )
+  -- map('nox', 'fhl', '<cmd>lua require"hop".hint_lines()<cr>', {})
 
   vim.g.targets_nl = 'np'
   -- FIXME: targets only does omap (no xmap)
   require('modules.utils').augroup('targetsline', {
     {
       events = { 'user' },
-      targets = { 'targets#mappings#user' },
+      targets = { 'trgets#mappings#user' },
       command = function()
         vim.fn.call('targets#mappings#extend', {
           {
             ['-'] = { separator = { { d = '-' } } },
-            l = { line = { { c = 1 } } },
             -- a = { argument = { { o = '[([]', c = '[])]', s = ',' } } },
           },
         })
       end,
     },
   })
-  -- todo: should be ii / ai for certain filetypes (markdown, python)
-  map_textobj('i', plug '(indent-object-ii)', plug '(indent-object-ai)')
-  map_textobj(
-    q.previous .. dd.ninja,
-    plug '(ninja-left-foot-inner)',
-    plug '(ninja-left-foot-a)',
-    'ninja left foot'
-  )
-  map_textobj(
-    dd.ninja,
-    plug '(ninja-right-foot-inner)',
-    plug '(ninja-right-foot-a)',
-    'ninja right foot'
-  )
+  -- map_textobj(
+  --   q.previous .. dd.ninja,
+  --   plug '(ninja-left-foot-inner)',
+  --   plug '(ninja-left-foot-a)',
+  --   'ninja left foot'
+  -- )
+  -- map_textobj(
+  --   dd.ninja,
+  --   plug '(ninja-right-foot-inner)',
+  --   plug '(ninja-right-foot-a)',
+  --   'ninja right foot'
+  -- )
   -- local map = require('modules.binder').map
   -- not working
   -- map('ox', 'z', function()
@@ -1073,24 +1090,22 @@ local function map_textobjects()
   --     direction = require('hop.hint').hintdirection.before_cursor,
   -- end, { noremap = false })
   --   }
-  -- map('o', 'z', '<plug>lightspeed_x', { noremap = false })
-  -- map('o', 'z', '<plug>lightspeed_x', { noremap = false })
-
-  local ts = require('modules.flies').Treesitter.new
+  -- local ts1 = require('modules.flies').Treesitter.new
   local p = require('modules.flies').Pair.new
   local queries = {
-    q = p('[\'"`"]'),
+    q = p '[\'"`"]',
     b = p('[[({]', '[])}]'),
     -- b = p('=', ','),
-    T = ts 'tag',
-    Q = ts 'string',
-    a = ts 'parameter',
-    f = ts 'function',
-    k = ts 'call',
-    j = ts 'block',
-    y = ts 'conditional',
-    z = ts 'loop',
-    c = ts 'comment',
+    -- T = ts1 'tag',
+    -- Q = ts1 'string',
+    -- a = ts1 'parameter',
+    -- f = ts1 'function',
+    -- k = ts1 'call',
+    -- j = ts1 'block',
+    -- y = ts1 'conditional',
+    -- z = ts1 'loop',
+    -- c = ts1 'comment',
+    [' '] = require('modules.flies').Bigword,
   }
   for c in string.gmatch('="\'`,.;:.?+-,*/\\()[]{}', '.') do
     queries[c] = require('modules.flies').Char.new(c)
@@ -1103,12 +1118,62 @@ local function map_textobjects()
       h = 'hint',
       [''] = 'plain',
     },
-    commands = {
-      i = 'select_inner',
-      a = 'select_outer',
-      t = 'move_inner',
-      f = 'move_outer',
+    textobjects = {
+      i = 'inner',
+      a = 'outer',
+    },
+    -- tobj_qualifier(domain,mode)
+    moves = {
+      -- f = { domain = 'inner', start = true, exclusive = true },
+    },
+    -- op_qualifier(domain, mode)
+    -- move_next()
+    operators = {
+      f = 'move_inner_exclusive',
       ox = 'exchange',
+    },
+  }
+  local ts = require('flies.objects.treesitter').new
+  local buf = require('flies.objects.buffer').new()
+  buf.move_outer_hint = function()
+    require('telescope.builtin').buffers()
+  end
+  buf.move_outer_next = function()
+    require('bufjump').forward()
+  end
+  buf.move_outer_previous = function()
+    require('bufjump').backward()
+  end
+  require('flies').setup {
+    queries = {
+      ['<cr>'] = require('flies.objects.line').new(),
+      e = buf,
+      i = require('flies.objects.indent').new(),
+      T = ts 'tag',
+      Q = ts 'string',
+      a = ts 'parameter',
+      f = ts 'function',
+      k = ts 'call',
+      j = ts 'block',
+      y = ts 'conditional',
+      z = ts 'loop',
+      c = ts 'comment',
+    },
+    qualifiers = {
+      p = 'previous',
+      n = 'next',
+      h = 'hint',
+      [''] = 'plain',
+    },
+    textobjects = {
+      i = 'inner',
+      a = 'outer',
+    },
+    maps = {
+      F = {
+        domain = 'inner',
+        start = true,
+      },
     },
   }
 end
@@ -1187,7 +1252,6 @@ function M.setup()
   map('nxo', a.macro, '<nop>')
   map('nxo', a.editor, '<nop>')
   map('nxo', a.help, '<nop>')
-  map('nxo', a.browser, '<nop>')
   -- map('nxo', 'n', '<nop>')
   -- map('nxo', 'N', '<nop>')
   map('nxo', 'gg', '<nop>')
@@ -1235,10 +1299,6 @@ M.plugins = {
     open_folds = {},
     next = dd.down,
     previous = dd.up,
-  },
-  lightspeed = invert {
-    C = 'cycle_group_bwd_key',
-    c = 'cycle_group_fwd_key',
   },
   textobj = {
     g = {

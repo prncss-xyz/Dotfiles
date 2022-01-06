@@ -193,6 +193,16 @@ const openLink = (url, newTab = false, active = true) => {
 
 const actions = {};
 
+const ajustedRe = /^([^&]*)/;
+actions.copyAjustedUrl = () => {
+  const href = util.getCurrentLocation('href');
+  const m = href.match(ajustedRe);
+  const id = m?.[1];
+  if (id) {
+    Clipboard.write(id);
+  }
+};
+
 const githubIdReg = /:\/\/github\.com\/([\w-.]+\/[\w-.]+)/;
 actions.copyGithubId = () => {
   const href = util.getCurrentLocation('href');
@@ -402,6 +412,7 @@ const dmap = (domains, maps) =>
 mapkey('ym', 'Copy page URL/Title as Markdown link', actions.copyMarkdownLink);
 mapkey('yg', 'Copy github id', actions.copyGithubId);
 mapkey('yG', 'Copy github ssh', actions.copyGithubSsh);
+mapkey('yx', 'Copy ajusted url', actions.copyAjustedUrl);
 
 // site specific
 

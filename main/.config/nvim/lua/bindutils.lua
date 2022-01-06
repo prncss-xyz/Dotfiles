@@ -8,11 +8,119 @@ end
 -- FIXME:
 -- https://github.com/neovim/neovim/pull/12368
 
+local function pre_jump()
+  local pos = vim.api.nvim_win_get_cursor(0)
+  vim.api.nvim_buf_set_mark(0, "'", pos[1], pos[2], {})
+end
+
+local qualifiers = { 'p', 'n', 'h' }
+for i, v in ipairs(qualifiers) do
+  qualifiers[i] = t(v)
+end
+
+local cache
+
+local function meta_move(char, qualifier, mode)
+  print(char, qualifier, mode)
+  if mode == 'n' then
+    require('flies').move(char, qualifier, 'outer', true, mode)
+    return
+  end
+  if mode == 'o' then
+    require('flies').move(char, qualifier, 'outer', qualifier == 'next', mode)
+    return
+  end
+  if mode == 'x' then
+    require('flies').move(
+      char,
+      qualifier,
+      'outer',
+      qualifier == 'previous',
+      mode
+    )
+    return
+  end
+end
+
+function M.meta_move(mode)
+  local qualifier, char = require('flies').query_obj()
+  if not qualifier then
+    return
+  end
+  if qualifier == 'plain' then
+    qualifier = 'next'
+  end
+  require('flies').repeat_register(function(mode0)
+    meta_move(char, 'previous', mode0)
+  end, function(mode0)
+    meta_move(char, 'next', mode0)
+  end)
+  meta_move(char, qualifier, mode)
+end
+
+local function query_obj()
+  local qualifier
+  while true do
+    local char = vim.fn.getchar()
+    char = vim.fn.nr2char(char)
+    if not qualifier and vim.tbl_contains(qualifiers, char) then
+      qualifier = char
+    elseif char == t '<esc>' then
+      return false
+    else
+      qualifier = qualifier or ''
+      cache = { query = char, qualifier = qualifier }
+      return true
+    end
+  end
+end
+
+function M.tobj_extreme()
+  if not query_obj() then
+    return
+  end
+  local query = cache.query
+  local outer
+  if vim.tbl_contains({ t '<cr>', 'e' }, query) then
+    outer = 'i'
+  else
+    outer = 'a'
+  end
+  pre_jump()
+  local r = cache.qualifier == 'p' and 'o' or ''
+  if outer == 'i' then
+    vim.api.nvim_feedkeys('va' .. query .. 'o' .. t '<esc>', '', false)
+  end
+  vim.api.nvim_feedkeys('v' .. outer .. query .. r .. t '<esc>', '', false)
+end
+
+function M.pre()
+  local prefix = ''
+  local p0 = vim.fn.getpos 'v'
+  local p1 = vim.fn.getpos '.'
+  if p0[2] < p1[2] or p0[2] == p1[2] and p0[3] < p1[3] then
+    prefix = 'o'
+  end
+  local postfix = true and 'i' or 'I' -- TODO: detect selection module
+  vim.fn.feedkeys(t(prefix .. '<esc>' .. postfix))
+end
+
+function M.post()
+  local prefix = ''
+  local p0 = vim.fn.getpos 'v'
+  local p1 = vim.fn.getpos '.'
+  local postfix = true and 'a' or 'A' -- TODO: detect selection mode
+  if p0[2] > p1[2] or p0[2] == p1[2] and p0[3] > p1[3] then
+    prefix = 'o'
+  end
+  vim.fn.feedkeys(t(prefix .. '<esc>' .. postfix))
+end
+
 local search_forward
 
 function M.search(forward)
   search_forward = forward
-  require('modules.flies').repeat_register(function()
+  require('flies').repeat_register(function()
     M.n(false)
   end, function()
     M.n(true)
@@ -26,7 +134,7 @@ end
 
 function M.search_asterisk(exact)
   search_forward = true
-  require('modules.flies').repeat_register(function()
+  require('flies').repeat_register(function()
     M.n(false)
   end, function()
     M.n(true)
@@ -40,7 +148,7 @@ function M.search_asterisk(exact)
 end
 
 function M.n(forward)
-  require('modules.flies').repeat_register(function()
+  require('flies').repeat_register(function()
     M.n(false)
   end, function()
     M.n(true)
@@ -54,7 +162,7 @@ function M.n(forward)
 end
 
 function M.scroll_up()
-  require('modules.flies').repeat_register(function()
+  require('flies').repeat_register(function()
     require('neoscroll').scroll(-0.9, true, 250)
   end, function()
     require('neoscroll').scroll(0.9, true, 250)
@@ -63,49 +171,12 @@ function M.scroll_up()
 end
 
 function M.scroll_down()
-  require('modules.flies').repeat_register(function()
+  require('flies').repeat_register(function()
     require('neoscroll').scroll(-0.9, true, 250)
   end, function()
     require('neoscroll').scroll(0.9, true, 250)
   end)
   require('neoscroll').scroll(0.9, true, 250)
-end
-
--- 'reg_recording() . reg_executing() == "" ? "<Plug>Lightspeed_f" : "f"',
-function M.lightspeed_F()
-  require('modules.flies').repeat_register(function()
-    require('lightspeed').ft:go(true, false, 'cold')
-  end, function()
-    require('lightspeed').ft:go(false, false, 'cold')
-  end)
-  require('lightspeed').ft:go(true, false)
-end
-
-function M.lightspeed_f()
-  require('modules.flies').repeat_register(function()
-    require('lightspeed').ft:go(true, false, 'cold')
-  end, function()
-    require('lightspeed').ft:go(false, false, 'cold')
-  end)
-  require('lightspeed').ft:go(false, false)
-end
-
-function M.lightspeed_T()
-  require('modules.flies').repeat_register(function()
-    require('lightspeed').ft:go(true, true, 'cold')
-  end, function()
-    require('lightspeed').ft:go(false, true, 'cold')
-  end)
-  require('lightspeed').ft:go(true, true)
-end
-
-function M.lightspeed_t()
-  require('modules.flies').repeat_register(function()
-    require('lightspeed').ft:go(true, true, 'cold')
-  end, function()
-    require('lightspeed').ft:go(false, true, 'cold')
-  end)
-  require('lightspeed').ft:go(false, true)
 end
 
 local function preview_location_callback(_, method, result)

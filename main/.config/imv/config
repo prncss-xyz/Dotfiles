@@ -1,5 +1,5 @@
 [binds]
-m = exec imv-do mvf "$imv_current_file"
+m = exec footclient --app-id=launcher -e mvf "$imv_current_file"
 bm = exec imv-do mvf --last
 w = exec imv-do tag-put "$imv_current_file"
 bw = exec imv-do tag-put --last

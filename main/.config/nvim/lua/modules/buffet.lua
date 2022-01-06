@@ -369,7 +369,6 @@ function M.delete_query()
 end
 
 function M.replace_query()
-  local filetype = conf.filetype[vim.bo.filetype] or vim.bo.filetype
   local snip = snips
     and (
       snips[vim.bo.filetype .. ':' .. last_char]

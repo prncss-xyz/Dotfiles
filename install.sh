@@ -27,9 +27,8 @@ hwclock --systohc
 fscrypt setup
 fscrypt setup /home
 
-
 echo "wheel ALL=(ALL) ALL">>/etc/sudoers
-useradd -mU -k /empty -G wheel,input,lp,users "$USER1"
+useradd -mU -k /empty -G input,lp,users "$USER1"
 passwd $USER1
 cd /home/"$USER1" || exit 1
 rm /home/"$USER1"/.*

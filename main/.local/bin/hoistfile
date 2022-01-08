@@ -38,6 +38,7 @@ case "$REL" in
 *)
 	tail="${REL#*/}"
 	# head="${REL%/$tail}"
+	mkdir -p "$ABS" "$DOTFILES/$PAC/$tail"
 	mv "$ABS" "$DOTFILES/$PAC/$tail"
 	stow "$PAC"
 	echo "$DOTFILES/$PAC/$tail"

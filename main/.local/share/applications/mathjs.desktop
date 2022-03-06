@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=mathjs
-Comment=formula evaluation
-Exec=edit_mathjs
-Terminal=true

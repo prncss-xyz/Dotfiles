@@ -11,6 +11,15 @@ workspace 0
 include ~/.config/sway/env 
 include ~/.config/sway/config.d/*
 
+## Remove titlebar
+font pango:monospace 0
+titlebar_border_thickness 0                                                     
+titlebar_padding 0
+
+## Remove borders
+default_border none
+default_floating_border none
+
 # output DP-1 scale 2
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -21,14 +30,14 @@ exec wl-paste -t text --watch clipman store
 exec flashfocus
 exec wlsunset -l 45.5 -L -73.6
 # exec wluma
-exec timinou
 exec swayidle -w \
  timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
  timeout 330 'swaylock' \
  before-sleep 'swaylock'
 exec aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
 exec blueberry-tray
-exec http-server -p 8083 .config/surfingkeys &
+exec .pnpm-global-bin/timinou
+exec .pnpm-global-bin/http-server -p 8083 .config/surfingkeys &
 mouse_warping none
 focus_follows_mouse no
 for_window [workspace=0] layout stacking
@@ -37,7 +46,11 @@ for_window [workspace=0] layout stacking
 exec pactl set-sink-volume @DEFAULT_SINK@ 30%
 exec pactl set-sink-mute @DEFAULT_SINK@ 0
 for_window [title="^scratchpad$"] move scratchpad
-exec foot --server
+# FIXME:
+# exec xdg-settings set default-web-browser firefox.desktop
+exec sh -c "BROWSER=/home/prncss/.local/bin/browser foot --server"
+# exec foot --server
+
 exec sh -c "sleep 1; $TERMINAL --title=scratchpad"
 # exec $terminal --title=scratchpad
 exec ~/.local/bin/setbg-sway

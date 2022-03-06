@@ -19,3 +19,6 @@
 [submodule "main/.config/xplr/plugins/zoxide.xplr"]
 	path = main/.config/xplr/plugins/zoxide.xplr
 	url = https://github.com/sayanarijit/zoxide.xplr
+[submodule "main/.config/xplr/plugins/context-switch.xplr"]
+	path = main/.config/xplr/plugins/context-switch.xplr
+	url = https://github.com/igorepst/context-switch.xplr

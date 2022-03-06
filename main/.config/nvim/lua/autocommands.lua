@@ -132,7 +132,7 @@ local function set_title_git()
   if branch then
     set_title(branch)
   else
-    set_title_git_plenary()
+    -- set_title_git_plenary()
   end
 end
 

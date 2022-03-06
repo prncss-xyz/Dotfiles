@@ -2,28 +2,50 @@
 
 // https://github.com/b0o/surfingkeys-conf
 
+const {
+    aceVimMap,
+    mapkey,
+    imap,
+    imapkey,
+    getClickableElements,
+    vmapkey,
+    map,
+    unmap,
+    vunmap,
+    cmap,
+    addSearchAlias,
+    removeSearchAlias,
+    tabOpenLink,
+    readText,
+    Clipboard,
+    Front,
+    Hints,
+    Visual,
+    RUNTIME
+} = api;
+
 map('J', 'u');
 map('K', 'd');
 map('<Alt-h>', '?');
 map('<Ctrl-c>', '<Esc>');
 cmap('<Ctrl-c>', '<Esc>');
-vmap('<Ctrl-c>', '<Esc>');
+vmapkey('<Ctrl-c>', '<Esc>');
 
 map('gE', 'gg');
 unmap('gg');
 map('ge', 'G');
 unmap('G');
-vmap('gE', 'gg');
+vmapkey('gE', 'gg');
 vunmap('gg');
-vmap('ge', 'G');
+vmapkey('ge', 'G');
 vunmap('G');
 
-vmap('_', 'j');
-vmap('j', 'k');
-vmap('k', '_');
-vmap('_', 'h');
-vmap(';', 'l');
-vmap('l', '_');
+vmapkey('_', 'j');
+vmapkey('j', 'k');
+vmapkey('k', '_');
+vmapkey('_', 'h');
+vmapkey(';', 'l');
+vmapkey('l', '_');
 vunmap('_');
 
 cmap('<Ctrl-n>', '<Tab>');
@@ -40,6 +62,7 @@ mapkey('j', 'up', Normal.scroll.bind(Normal, 'up'));
 mapkey('l', 'left', Normal.scroll.bind(Normal, 'left'));
 mapkey(';', 'right', Normal.scroll.bind(Normal, 'right'));
 
+addSearchAliasX('gr', 'https://www.goodreads.com/search?q=', '')
 addSearchAliasX('gh', 'github', 'https://github.com/search?q=', 's');
 addSearchAliasX('npm', 'npm', 'https://www.npmjs.com/search?q=', 's');
 addSearchAliasX('lh', 'libhunt', 'https://www.libhunt.com/search?query=', 's');

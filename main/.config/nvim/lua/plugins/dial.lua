@@ -1,29 +1,26 @@
-local dial = require 'dial'
-dial.augends['custom#boolean'] = dial.common.enum_cyclic {
-  name = 'boolean',
-  strlist = { 'true', 'false' },
-}
+local augend = require 'dial.augend'
 
-local function add(cursor, text, added)
-  if text:sub(4, 4) == ' ' then
-    text = '- [x]'
-  else
-    text = '- [ ]'
-  end
-  return cursor, text
-end
-
-dial.augends['custom#todo'] = {
-  desc = 'toggle markdown todo',
-  find = dial.common.find_pattern '- %[.%]',
-  add = add,
-}
-dial.config.searchlist.normal = {
-  'number#decimal',
-  'number#hex',
-  'number#binary',
-  'date#[%Y-%m-%d]',
-  'markup#markdown#header',
-  'custom#todo',
-  'custom#boolean',
+require('dial.config').augends:register_group {
+  -- default augends used when no group name is specified
+  default = {
+    augend.integer.alias.decimal,
+    augend.integer.alias.hex,
+    augend.integer.alias.binary,
+    augend.date.alias['%Y-%m-%d'],
+    augend.constant.alias.bool,
+    -- 'markup#markdown#header': not implemented (https://github.com/monaqa/dial.nvim/blob/f1f68d3ab39597107f6582cc17f698c0ff0c6945/TROUBLESHOOTING.md)
+    -- toggle markdown todo
+    augend.user.new {
+      find = require('dial.augend.common').find_pattern '- %[.%]',
+      add = function(text, _, cursor)
+        if text:sub(4, 4) == ' ' then
+          text = '- [x]'
+        else
+          text = '- [ ]'
+        end
+        cursor = #text
+			  return {text = text, cursor = cursor}
+      end,
+    },
+  },
 }

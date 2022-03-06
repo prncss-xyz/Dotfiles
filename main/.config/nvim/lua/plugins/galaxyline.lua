@@ -137,23 +137,12 @@ end
 
 local function get_lsp_diagnostic()
   local res = {
-    Error = 0,
-    Warning = 0,
+    [vim.diagnostic.severity.WARN] = 0,
+    [vim.diagnostic.severity.ERROR] = 0,
   }
-  if next(lsp.buf_get_clients(0)) then
-    local active_clients = lsp.get_active_clients()
-    if active_clients then
-      for _, client in ipairs(active_clients) do
-        for diag_type in pairs(res) do
-          res[diag_type] = res[diag_type]
-            + lsp.diagnostic.get_count(
-              api.nvim_get_current_buf(),
-              diag_type,
-              client.id
-            )
-        end
-      end
-    end
+  local res = {}
+  for _,diag in ipairs(vim.diagnostic.get(0,nil)) do
+    res[diag.severity] = (res[diag.severity] or 0) + 1
   end
   return res
 end
@@ -178,20 +167,14 @@ local function get_status_icons()
 
   -- diagnostics
   local lsp_diagnostic = get_lsp_diagnostic()
-  if lsp_diagnostic.Error > 0 then
+  if lsp_diagnostic[vim.diagnostic.severity.ERROR] then
     icons = icons .. ' '
   end
-  if lsp_diagnostic.Warning > 0 then
+  if lsp_diagnostic[vim.diagnostic.severity.WARN] then
     icons = icons .. ' '
   end
 
   return icons
-end
-
-local function constant(val)
-  return function()
-    return val
-  end
 end
 
 local colors = {

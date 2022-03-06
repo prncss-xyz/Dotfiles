@@ -34,7 +34,7 @@ else
       events = { 'BufReadPost' },
       targets = { '*' },
       command = function()
-        require 'galaxyline'
+       require 'galaxyline'
       end,
     },
   })

@@ -1,5 +1,26 @@
 local M = {}
 
+vim.fn.sign_define(
+  'DiagnosticSignError',
+  { text = ' ', texthl = 'diagnosticvirtualtextError'}
+)
+vim.fn.sign_define(
+  'DiagnosticSignWarn',
+  { text = ' ', texthl = 'diagnosticvirtualtextWarn'}
+)
+vim.fn.sign_define(
+  'DiagnosticSignHint',
+  { text = '', texthl = 'diagnosticvirtualtextHint'}
+)
+vim.fn.sign_define(
+  'DiagnosticSignInfo',
+  { text = ' ', texthl = 'diagnosticvirtualtextInfo'}
+)
+
+vim.diagnostic.config {
+  virtual_text = false,
+}
+
 local function noformat_on_attach(client, _)
   -- TODO: bindings
   client.resolved_capabilities.document_formatting = false
@@ -12,6 +33,7 @@ end
 --   end
 -- end
 
+-- noformat_on_attach(client, bufnr)
 local function ts_uttils_on_attach(client, bufnr)
   local ts_utils = require 'nvim-lsp-ts-utils'
   ts_utils.setup {
@@ -63,13 +85,15 @@ function M.setup()
     allow_incremental_sync = true,
   }
 
-  for _, lsp in ipairs {
-    'bashls',
-    'html',
-    'cssls',
-    'vimls',
-    'yamlls',
-  } do
+  for _, lsp in
+    ipairs {
+      'bashls',
+      'html',
+      'cssls',
+      'vimls',
+      'yamlls',
+    }
+  do
     nvim_lsp[lsp].setup {
       on_attach = noformat_on_attach,
       capabilities = capabilities,

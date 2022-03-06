@@ -13,4 +13,4 @@ matcher:
     value: "chromium"
 runner:
   terminal: "foot"
-  browser: "browser --new-window"
+  browser: ".local/bin/browser --new-window"

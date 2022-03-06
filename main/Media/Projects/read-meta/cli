@@ -1,0 +1,130 @@
+#!/bin/node
+
+// TODO
+// file not found
+// node es6 modules
+// package.json (bin)
+// index.js (library)
+// README
+// formatter
+
+const fs = require("fs/promises");
+const { constants } = require("fs");
+const { dirname, join, extname, basename } = require("path");
+const path = require("path");
+const parse5 = require("parse5");
+const fromParse5 = require("hast-util-from-parse5");
+const { program } = require("commander");
+const readMeta = require("./read-meta");
+const mkEpub = require("./mk-epub");
+const Confirm = require("prompt-confirm");
+
+const getMeta = async (filename) => {
+  let stat;
+  try {
+    stat = await fs.stat(filename);
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+    console.error(`File ${filename} not found.`);
+    return null;
+  }
+  const raw = await fs.readFile(filename, "utf-8");
+  const ast = parse5.parse(raw);
+  const tree = fromParse5(ast);
+  const meta = readMeta(tree);
+  meta.date ??= stat.birthtime.toISOString();
+  return meta;
+};
+
+const getMetaCli = async (filename) => {
+  const meta = await getMeta(filename);
+  if (!meta) return;
+  console.log(meta);
+};
+
+const confirmer = new Confirm("Should we rename?");
+const suggestNameCli = async (filenames, { confirm }) => {
+  for (const filename of filenames) {
+    const meta = await getMeta(filename);
+    if (!meta) return;
+    const newname = suggestName(meta);
+    console.log(newname);
+    const answer = await (!confirm || confirmer.run());
+    if (answer) {
+      await fs.rename(filename, join(dirname(filename), newname));
+    }
+  }
+};
+
+function lastName(name) {
+  let strs = name.split(",");
+  if (strs.length === 2) {
+    return strs[0];
+  }
+  strs = name.split(" ");
+  return strs[strs.length - 1];
+}
+
+function suggestName(meta) {
+  const ln = meta.authors ? lastName(meta.authors[0]) : null;
+  const year = meta.date && meta.date.slice(0, 4);
+
+  if (ln || year) {
+    const title = meta.title || "untitled";
+    if (ln) return `${ln} ${year || "-"} ${title}.html`;
+    if (year) return `${year} ${title}.html`;
+    return `${title}.html`;
+  }
+}
+
+async function epub(filename, directory) {
+  const ext = extname(filename);
+  const lc = ext.toLowerCase();
+  if (lc !== ".html" && lc !== ".html") {
+    console.error(`${filename} is not an html file`);
+    return;
+  }
+  const base = basename(filename, ext);
+  const dir = directory || dirname(filename);
+  const dest = path.join(dir, base + ".epub");
+  const meta = await getMeta(filename);
+  await mkEpub(meta._tree, meta, dest);
+}
+
+async function epubCli(filenames, { directory }) {
+  if (directory) {
+    let stat;
+    try {
+      stat = await fs.stat(directory);
+    } catch (e) {
+      if (e.code === "ENOENT") {
+        console.error(`directory ${directory} does not exists`);
+        process.exit(1);
+      }
+      throw e;
+    }
+    if (!stat.isDirectory()) {
+      console.error(`file ${directory} is not a directory`);
+      process.exit(1);
+    }
+    try {
+      await access(directory, constants.W_OK);
+    } catch {
+      console.error(`${directory} is not writable`);
+      process.exit(1);
+    }
+  }
+  await Promise.all(filenames.map((filename) => epub(filename, directory)));
+}
+
+program.command("meta <filename>").action(getMetaCli);
+program
+  .command("rename <filenames...>")
+  .option("-n, --no-confirm", "do not prompt before renaming")
+  .action(suggestNameCli);
+program
+  .command("epub <filenames...>")
+  .option("-d, --directory <directory>", "created file directory")
+  .action(epubCli);
+
+program.parseAsync(process.argv);

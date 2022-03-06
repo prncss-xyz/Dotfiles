@@ -108,17 +108,17 @@ return require('packer').startup {
     -- syntax
     use 'ajouellette/sway-vim-syntax'
     -- use 'fladson/vim-kitty'
-    use {
-      -- weirdly seems required to format yaml frontmatter
-      'godlygeek/tabular',
-      ft = 'markdown',
-      requires = {
-        'plasticboy/vim-markdown',
-        ft = 'markdown',
-        after = 'tablular',
-        -- unsuccessful setting options here, using options.lua instead
-      },
-    }
+    -- use {
+    --   -- weirdly seems required to format yaml frontmatter
+    --   'godlygeek/tabular',
+    --   ft = 'markdown',
+    --   requires = {
+    --     'plasticboy/vim-markdown',
+    --     ft = 'markdown',
+    --     after = 'tablular',
+    --     -- unsuccessful setting options here, using options.lua instead
+    --   },
+    -- }
 
     -- luv docs in :help
     use { 'nanotee/luv-vimdocs', cond = full }
@@ -200,11 +200,6 @@ return require('packer').startup {
         require('plugins.null_ls').setup()
       end,
     }
-    use {
-      'brymer-meneses/grammar-guard.nvim',
-      module = 'grammar-guard',
-      cmd = 'GrammarInstall',
-    }
     use { 'folke/lua-dev.nvim', module = 'lua-dev' }
     use { 'b0o/schemastore.nvim', module = 'schemastore' }
     use {
@@ -281,6 +276,7 @@ return require('packer').startup {
 
     -- completion
     use { local_repo 'friendly-snippets' }
+    use { 'hrsh7th/cmp-nvim-lsp', module = 'cmp_nvim_lsp' }
     use {
       'hrsh7th/nvim-cmp',
       module = 'cmp',
@@ -296,7 +292,6 @@ return require('packer').startup {
         -- { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp' },
         -- { 'tzachar/cmp-fuzzy-path', after = 'nvim-cmp' },
         { 'f3fora/cmp-spell', after = 'nvim-cmp' },
-        { 'hrsh7th/cmp-nvim-lsp', after = 'nvim-cmp' },
         { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' },
         { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' },
         { 'L3MON4D3/LuaSnip', module = 'luasnip' },
@@ -319,7 +314,7 @@ return require('packer').startup {
 
     -- Tracking
     -- use { 'ThePrimeagen/vim-apm' } -- not working
-    use { 'git-time-metric/gtm-vim-plugin', cond = full }
+    -- use { 'git-time-metric/gtm-vim-plugin', cond = full }
     use {
       'chrisbra/BufTimer',
       cond = full,
@@ -414,23 +409,6 @@ return require('packer').startup {
         require('dressing').setup {}
       end,
     }
-    -- use {
-    --   'filipdutescu/renamer.nvim',
-    --   branch = 'master',
-    --   requires = { 'nvim-lua/plenary.nvim' },
-    --   module = 'renamer',
-    --   config = function()
-    --     local mappings_utils = require 'renamer.mappings.utils'
-    --     local mappings = {}
-    --     for k, v in pairs(require('bindings').plugins.renamer) do
-    --       mappings[k] = mappings_utils[v]
-    --     end
-    --     require('renamer').setup {
-    --       title = 'rename',
-    --       mappings = mappings,
-    --     }
-    --   end,
-    -- }
 
     -- navigation
     use {
@@ -556,6 +534,7 @@ return require('packer').startup {
       event = 'BufReadPost',
       'andymass/vim-matchup',
       -- cond = full,
+      cond = never,
       setup = function()
         vim.g.matchup_matchparen_offscreen = {}
       end,

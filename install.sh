@@ -32,5 +32,7 @@ useradd -mU -k /empty -G input,lp,users "$USER1"
 passwd $USER1
 cd /home/"$USER1" || exit 1
 rm /home/"$USER1"/.*
-sudo -u "$USER1" git clone "$GIT"
+
+sudo -u "$USER1" fscrypt encrypt /home/"$USER1"
+sudo -u "$USER1" git clone --recursive "$GIT"
 sudo -u "$USER1" sh Dotfiles/post-install.sh

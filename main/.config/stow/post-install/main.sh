@@ -1,6 +1,6 @@
 # shellcheck shell=sh
 
-sudo systemctl enable greetd
+sudo systemctl enable lightdm
 sudo systemctl enable bluetooth
 sudo systemctl enable NetworkManager
 sudo systemctl enable avahi
@@ -52,6 +52,9 @@ pnpm --global i @fsouza/prettierd bash-language-server create-react-app eslint_d
 # plop
 
 fisher update
+# pnpm install-completion
+# ip addr show
+# rsync --rsync-path=/usr/bin/rsync trustdb.gpg prncss@192.168.0.108:.gnupg/
 
 # install nvim language files
 mkdir -p ~/.local/share/nvim/site/spell/

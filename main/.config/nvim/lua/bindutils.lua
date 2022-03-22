@@ -310,6 +310,8 @@ function M.onlyBuffer()
 end
 
 local alt_patterns = {
+  { '(.+)_spec.lua$', '%1.lua' },
+  { '(.+).lua$', '%1_spec.lua' },
   { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
   { '(.+)(%.[%w%d]+)$', '%1.test%2' },
 }

@@ -15,7 +15,7 @@ end)
 command('EditSnippet', {}, function()
   vim.cmd(
     string.format(
-      ':edit snippets/%s.json',
+      ':edit %s/snippets/%s.json',
       utils.local_repo'friendly-snippets',
       vim.bo.filetype
     )

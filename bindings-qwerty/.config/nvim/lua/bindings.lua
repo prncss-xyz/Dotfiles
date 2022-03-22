@@ -798,6 +798,7 @@ local function map_basic()
     },
     [a.move] = {
       name = '+move',
+      a = require('bindutils').edit_alt,
       b = cmd 'Telescope buffers',
       pd = cmd 'Telescope lsp_type_definitions', -- also, trouble
       d = cmd 'Telescope lsp_definitions', -- also, trouble

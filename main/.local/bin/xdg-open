@@ -2,16 +2,17 @@
 
 launch() {
 
-	FPATH="$1"
+	FPATH="${1:-.}"
+  echo "$FPATH"
 
-	if [ -z "$FPATH" ]; then
-		nvr_do
-		exit 0
-	fi
-
+	# if it is a directory, open the oldest file of file manager if empty
 	if [ -d "$FPATH" ]; then
-		$TERMINAL -e xplr
-		exit 0
+		FPATH1="$(fd -a -tf -ts . "$FPATH" --exec-batch ls -t | tail -1)"
+		if [ -z "$FPATH1" ]; then
+			$TERMINAL -e xplr "$FPATH"
+			exit 0
+		fi
+    FPATH="$FPATH1"
 	fi
 
 	case "${FPATH}" in
@@ -23,8 +24,8 @@ launch() {
 
 	#TODO: epub, office
 
-	FNAME=$(basename "$1")
-	DNAME=$(dirname "$1")
+	FNAME=$(basename "$FPATH")
+	DNAME=$(dirname "$FPATH")
 	EDITOR="${VISUAL:-${EDITOR:-vi}}"
 	PAGER="${PAGER:-less -R}"
 	ext="${FNAME##*.}"

@@ -2,7 +2,7 @@ local M = {}
 
 function M.setup()
   require('gitsigns').setup {
-    watch_index = {
+    watch_gitdir = {
       interval = 100,
     },
     sign_priority = 5,

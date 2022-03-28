@@ -51,6 +51,16 @@ augroup('Autosave', {
   },
 })
 
+-- without this, deleted marks do not get removed on exit
+-- https://github.com/neovim/neovim/issues/4288
+augroup('SaveShada', {
+  {
+    events = { 'VimLeave' },
+    targets = { '*' },
+    command = 'wshada!',
+  },
+})
+
 augroup('NoUndoFile', {
   {
     events = { 'BufWritePre' },
@@ -82,6 +92,7 @@ local function set_title(branch)
   if branch then
     titlestring = titlestring .. ' — ' .. branch
   end
+  titlestring = titlestring .. ' — NVIM'
   vim.cmd(string.format('let &titlestring=%q', titlestring))
 end
 
@@ -146,6 +157,26 @@ augroup('SetTitleGitsigns', {
   },
 })
 
+augroup('IlluminateInsert', {
+  {
+    events = { 'VimEnter', 'InsertEnter' },
+    targets = { '*' },
+    command = function()
+      vim.g.Illuminate_delay = 1000
+    end,
+  },
+})
+
+augroup('IlluminateInsert', {
+  {
+    events = { 'InsertLeave' },
+    targets = { '*' },
+    command = function()
+      vim.g.Illuminate_delay = 0
+    end,
+  },
+})
+
 augroup('Outline', {
   {
     events = { 'FileType' },
@@ -154,6 +185,33 @@ augroup('Outline', {
   },
 })
 
+-- FIXME: these are NOT working
+augroup('ConcealLua', {
+  {
+    events = { 'BufNewFile', 'BufRead' },
+    targets = { '*.lua' },
+    command = function()
+      vim.cmd [[
+        set syntax=on
+        syntax match True "true" conceal cchar=⊤
+        syntax match False "false" conceal cchar=⊥
+      ]]
+    end,
+  },
+})
+augroup('ConcealLuaB', {
+  {
+    events = { 'FileType' },
+    targets = { 'lua' },
+    command = function()
+      vim.cmd [[
+        set syntax=on
+        syntax match True "true" conceal cchar=⊤
+        syntax match False "false" conceal cchar=⊥
+      ]]
+    end,
+  },
+})
 -- augroup('SelectProject', {
 --   {
 --     events = { 'VimEnter' },

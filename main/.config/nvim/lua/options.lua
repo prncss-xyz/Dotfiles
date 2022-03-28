@@ -1,7 +1,7 @@
 local full = require('pager').full
 
 if not full then
-  vim.cmd 'set shada="NONE"'
+  -- vim.cmd 'set shada="NONE"'
 end
 local deep_merge = require('modules.utils').deep_merge
 local indent = 2
@@ -64,6 +64,7 @@ deep_merge(vim, {
     -- do not seem to work in setup
     -- vim_markdown_folding_disabled = 0,
     matchup_mappings_enabled = 0,
+    targets_nl = 'np',
     vim_markdown_folding_level = 6,
     vim_markdown_no_default_key_mappings = 1,
     vim_markdown_conceal_code_blocks = 0,
@@ -79,6 +80,7 @@ deep_merge(vim, {
       'tsx=typescriptreact',
       'bash=sh',
     },
+    u_lsp_lines = false,
   },
   wo = {
     number = false,

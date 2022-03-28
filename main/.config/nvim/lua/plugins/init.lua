@@ -91,7 +91,7 @@ return require('packer').startup {
       config = function()
         require('neogen').setup {
           enabled = true,
-          -- jump_map = 'â', -- that is, diable mapping
+          snippet_engine = 'luasnip',
         }
       end,
       requires = 'nvim-treesitter/nvim-treesitter',
@@ -104,21 +104,11 @@ return require('packer').startup {
         require('iswap').setup {}
       end,
     }
+    use { 'mfussenegger/nvim-treehopper', module = 'tsht' }
 
     -- syntax
     use 'ajouellette/sway-vim-syntax'
     -- use 'fladson/vim-kitty'
-    -- use {
-    --   -- weirdly seems required to format yaml frontmatter
-    --   'godlygeek/tabular',
-    --   ft = 'markdown',
-    --   requires = {
-    --     'plasticboy/vim-markdown',
-    --     ft = 'markdown',
-    --     after = 'tablular',
-    --     -- unsuccessful setting options here, using options.lua instead
-    --   },
-    -- }
 
     -- luv docs in :help
     use { 'nanotee/luv-vimdocs', cond = full }
@@ -266,13 +256,30 @@ return require('packer').startup {
         require('refactoring').setup {}
       end,
     }
-    require('packer').use {
+    use {
       'weilbith/nvim-code-action-menu',
       wants = 'telescope.nvim',
       cmd = 'CodeActionMenu',
     }
-    -- TODO:
-    -- filipdutescu/renamer.nvim
+    use {
+      'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
+      config = function()
+        if vim.g.u_lsp_lines then
+          require('lsp_lines').register_lsp_virtual_lines()
+        end
+      end,
+      after = 'nvim-lspconfig',
+    }
+    use {
+      'RRethy/vim-illuminate',
+      module = 'illuminate',
+    }
+    use {
+      'rmagatti/goto-preview',
+      config = function()
+        require 'plugins.goto-preview'
+      end,
+    }
 
     -- completion
     use { local_repo 'friendly-snippets' }
@@ -409,8 +416,7 @@ return require('packer').startup {
         require('dressing').setup {}
       end,
     }
-
-    -- navigation
+    -- Navigation
     use {
       'folke/trouble.nvim',
       -- module = 'trouble.providers.telescope',
@@ -422,11 +428,7 @@ return require('packer').startup {
         'TodoTelescope',
       },
       config = function()
-        require('trouble').setup {
-          position = 'bottom',
-          use_diagnostic_signs = true,
-          action_keys = require('bindings').plugins.trouble,
-        }
+        require 'plugins.trouble'
       end,
     }
     use {
@@ -511,7 +513,7 @@ return require('packer').startup {
     }
     use {
       local_repo 'bufjump.nvim',
-      -- module = 'bufjump',
+      module = 'bufjump',
       config = function()
         require('bufjump').setup {
           cond = require('bufjump').under_cwd,
@@ -519,8 +521,7 @@ return require('packer').startup {
       end,
     }
     use {
-      local_repo 'marks.nvim',
-      -- 'chentau/marks.nvim',
+      'chentau/marks.nvim',
       event = 'BufReadPost',
       config = function()
         -- cond = full,
@@ -539,7 +540,6 @@ return require('packer').startup {
         vim.g.matchup_matchparen_offscreen = {}
       end,
     }
-    -- yup, hop for the extensions
     use {
       'phaazon/hop.nvim',
       module = 'hop',
@@ -560,7 +560,6 @@ return require('packer').startup {
         }
       end,
     }
-
     -- Telescope
     use {
       'nvim-telescope/telescope.nvim',
@@ -652,7 +651,7 @@ return require('packer').startup {
       end,
     }
 
-    -- clipboard
+    -- Clipboard
     use {
       'kevinhwang91/nvim-hclipboard',
       event = 'InsertEnter',
@@ -672,7 +671,7 @@ return require('packer').startup {
       disable = true,
     }
 
-    -- edition
+    -- Edition
     use {
       'JoseConseco/vim-case-change',
       event = 'BufReadPost',
@@ -767,7 +766,7 @@ return require('packer').startup {
       end,
     }
 
-    -- session
+    -- Session
     use {
       'windwp/nvim-projectconfig',
       disable = true,
@@ -808,13 +807,45 @@ return require('packer').startup {
       end,
     }
 
-    -- themes
+    -- Themes
     use 'rafamadriz/neon'
     use 'ishan9299/nvim-solarized-lua'
     use 'sainnhe/gruvbox-material'
     use { 'rose-pine/neovim', as = 'rose-pine' }
 
-    -- various
+    -- Runners
+    -- binary installed with `yay -S neovim-sniprun`
+    use {
+      'michaelb/sniprun',
+      module = 'sniprun',
+      module_pattern = 'sniprun.*',
+      cmd = {
+        'SnipRun',
+        'SnipInfo',
+        'SnipReset',
+        'SnipReplMemoryClean',
+        'SnipClose',
+      },
+      config = {
+        require('sniprun').setup {
+          live_mode_toggle = 'on',
+          selected_interpreters = {
+            'Python3_jupyter',
+            -- 'JS_TS_deno'
+          },
+        },
+      },
+    }
+    use {
+      'rafcamlet/nvim-luapad',
+      module = 'luapd',
+      cmd = { 'Luapad', 'LuaRun', 'Lua' },
+      config = function()
+        require('luapad').setup {}
+      end,
+    }
+
+    -- Various
     use {
       'tpope/vim-eunuch',
       cmd = {

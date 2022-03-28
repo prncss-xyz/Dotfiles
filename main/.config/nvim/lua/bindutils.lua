@@ -161,23 +161,49 @@ function M.n(forward)
   require('hlslens').start()
 end
 
-function M.scroll_up()
-  require('flies').repeat_register(function()
-    require('neoscroll').scroll(-0.9, true, 250)
-  end, function()
-    require('neoscroll').scroll(0.9, true, 250)
-  end)
+local repeatable = require('flies').repeatable
+
+M.scroll_up, M.scroll_down = repeatable(function()
   require('neoscroll').scroll(-0.9, true, 250)
+end, function()
+  require('neoscroll').scroll(0.9, true, 250)
+end)
+
+M.previous_reference, M.next_reference = repeatable(function()
+  require('illuminate').next_reference { wrap = true, reverse = true }
+end, function()
+  require('illuminate').next_reference { wrap = true }
+end)
+
+M.mark_previous, M.mark_next = repeatable(function()
+  require('marks').bookmark_state:previous()
+end, function()
+  require('marks').bookmark_state:next()
+end)
+
+local function mv_bookmark(i)
+  return repeatable(function()
+    require('marks').bookmark_state:previous(i)
+  end, function()
+    require('marks').bookmark_state:next(i)
+  end)
 end
 
-function M.scroll_down()
-  require('flies').repeat_register(function()
-    require('neoscroll').scroll(-0.9, true, 250)
-  end, function()
-    require('neoscroll').scroll(0.9, true, 250)
-  end)
-  require('neoscroll').scroll(0.9, true, 250)
+function M.bookmark_previous(i)
+  local cb, _ = mv_bookmark(i)
+  return cb
 end
+
+function M.bookmark_next(i)
+  local _, cb = mv_bookmark(i)
+  return cb
+end
+
+M.all_bookmarks_previous, M.all_bookmarks_next = repeatable(function()
+  require('marks').prev_bookmark()
+end, function()
+  require('marks').next_bookmark()
+end)
 
 local function preview_location_callback(_, method, result)
   if result == nil or vim.tbl_isempty(result) then
@@ -189,17 +215,6 @@ local function preview_location_callback(_, method, result)
   else
     vim.lsp.util.preview_location(result)
   end
-end
-
--- FIXME:
-function M.peek_definition()
-  local params = vim.lsp.util.make_position_params()
-  return vim.lsp.buf_request(
-    0,
-    'textDocument/definition',
-    params,
-    preview_location_callback
-  )
 end
 
 function M.ro_quit_else(lhs, mode)
@@ -264,27 +279,23 @@ function M.cmp_confirm()
   end
 end
 
-function M.tab()
-  local r = require('luasnip').jump(1)
-  if r then
-    return
-  end
-  local neogen = require 'neogen'
-  if neogen.jumpable() then
-    -- there is no correspondig "jump_previous"
-    neogen.jump_next()
-    return
-  end
-  vim.fn.feedkeys(t '<Plug>(TaboutMulti)', '')
-end
-
 --- <s-tab> to jump to next snippet's placeholder
 function M.s_tab()
   local r = require('luasnip').jump(-1)
   if r then
     return
   end
-  vim.fn.feedkeys(t '<Plug>(TaboutBackMulti)', '')
+  -- vim.fn.feedkeys(t '<Plug>(TaboutBackMulti)', '')
+  vim.fn.feedkeys(t '<Plug>(TaboutBack)', '')
+end
+
+function M.tab()
+  local r = require('luasnip').jump(1)
+  if r then
+    return
+  end
+  -- vim.fn.feedkeys(t '<Plug>(TaboutMulti)', '')
+  vim.fn.feedkeys(t '<Plug>(Tabout)', '')
 end
 
 function M.spell_next(dir)
@@ -340,21 +351,20 @@ function M.term()
     :start()
 end
 
-function M.term_launch(args0)
-  local args = { '-e', unpack(args0) }
-  require('plenary.job')
-    :new({
-      command = vim.env.TERMINAL,
-      args = args,
-    })
-    :start()
-end
-
 function M.open_current()
   require('plenary.job')
     :new({
       command = 'xdg-open',
       args = { vim.fn.expand '%' },
+    })
+    :start()
+end
+
+function M.xplr_launch()
+  require('plenary.job')
+    :new({
+      command = vim.env.TERMINAL,
+      args = { 'xplr', vim.fn.expand '%' },
     })
     :start()
 end
@@ -380,8 +390,27 @@ end
 
 function M.edit_current()
   local current = vim.fn.expand '%'
-  -- needs this delay for proper display; is it dued to sway or foot
-  M.term_launch { 'sh', '-c', 'sleep 0.1; nvim', current }
+  require('plenary.job')
+    :new({
+      command = vim.env.TERMINAL,
+      -- args = {'-e', 'nvim', current},
+      -- without sh, nvim occupies only small portion of terminal
+      args = { '-e', 'sh', '-c', 'nvim ' .. current },
+    })
+    :start()
+end
+
+function M.reset_editor()
+  local current = vim.fn.expand '%'
+  require('plenary.job')
+    :new({
+      command = 'swaymsg',
+      -- args = {'-e', 'nvim', current},
+      -- without sh, nvim occupies only small portion of terminal
+      args = { 'exec', vim.env.TERMINAL, ' -e', 'sh -c nvim' },
+    })
+    :sync()
+  vim.cmd 'quitall'
 end
 
 function M.searchCword(base)

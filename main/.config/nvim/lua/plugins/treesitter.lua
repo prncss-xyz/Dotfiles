@@ -6,7 +6,6 @@ parser_configs.norg = {
     branch = 'main',
   },
 }
-
 local full = require('pager').full
 require('nvim-treesitter.configs').setup {
   rainbow = {
@@ -18,7 +17,7 @@ require('nvim-treesitter.configs').setup {
   },
   ensure_installed = {
     -- 'norg',
-    -- 'markdown',
+    'markdown',
     'bash',
     'c',
     'cpp',
@@ -35,6 +34,7 @@ require('nvim-treesitter.configs').setup {
     'lua',
     'php',
     'python',
+    'query',
     'ql',
     'regex',
     'rust',
@@ -72,6 +72,9 @@ require('nvim-treesitter.configs').setup {
     move = {
       enable = full,
       set_jumps = true,
+    },
+    swap = {
+      enable = true,
     },
   },
 }

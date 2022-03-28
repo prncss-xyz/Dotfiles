@@ -1,21 +1,43 @@
 local M = {}
 
-vim.fn.sign_define(
-  'DiagnosticSignError',
-  { text = ' ', texthl = 'diagnosticvirtualtextError'}
-)
-vim.fn.sign_define(
-  'DiagnosticSignWarn',
-  { text = ' ', texthl = 'diagnosticvirtualtextWarn'}
-)
-vim.fn.sign_define(
-  'DiagnosticSignHint',
-  { text = '', texthl = 'diagnosticvirtualtextHint'}
-)
-vim.fn.sign_define(
-  'DiagnosticSignInfo',
-  { text = ' ', texthl = 'diagnosticvirtualtextInfo'}
-)
+-- null_ls uses its own configuration file
+
+-- local virtual_lines = true
+if vim.g.u_lsp_lines then
+  vim.fn.sign_define(
+    'DiagnosticSignError',
+    { text = '', texthl = 'diagnosticvirtualtextError' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignWarn',
+    { text = '', texthl = 'diagnosticvirtualtextWarn' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignHint',
+    { text = '', texthl = 'diagnosticvirtualtextHint' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignInfo',
+    { text = '', texthl = 'diagnosticvirtualtextInfo' }
+  )
+else
+  vim.fn.sign_define(
+    'DiagnosticSignError',
+    { text = ' ', texthl = 'diagnosticvirtualtextError' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignWarn',
+    { text = ' ', texthl = 'diagnosticvirtualtextWarn' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignHint',
+    { text = '', texthl = 'diagnosticvirtualtextHint' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignInfo',
+    { text = ' ', texthl = 'diagnosticvirtualtextInfo' }
+  )
+end
 
 vim.diagnostic.config {
   virtual_text = false,
@@ -25,16 +47,12 @@ local function noformat_on_attach(client, _)
   -- TODO: bindings
   client.resolved_capabilities.document_formatting = false
   client.resolved_capabilities.document_range_formatting = false
+  client.config.flags.debounce_text_changes = 150
+  require 'illuminate'.on_attach(client)
 end
 
--- local format_on_attach = function(client)
---   if client.resolved_capabilities.document_formatting then
---     vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
---   end
--- end
-
--- noformat_on_attach(client, bufnr)
-local function ts_uttils_on_attach(client, bufnr)
+-- will be called before noformat_on_attach
+local function ts_uttils_on_attach(client, _)
   local ts_utils = require 'nvim-lsp-ts-utils'
   ts_utils.setup {
     debug = false,
@@ -65,12 +83,6 @@ local function ts_uttils_on_attach(client, bufnr)
 
   -- required to fix code action ranges and filter diagnostics
   ts_utils.setup_client(client)
-
-  -- no default maps, so you may want to define some here
-  -- local opts = { silent = true }
-  -- vim.api.nvim_buf_set_keymap(bufnr, "n", "gs", ":TSLspOrganize<CR>", opts)
-  -- vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", ":TSLspRenameFile<CR>", opts)
-  -- vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", ":TSLspImportAll<CR>", opts)
 end
 
 function M.setup()
@@ -118,14 +130,22 @@ function M.setup()
     lspconfig = {
       capabilities = capabilities,
       cmd = { 'lua-language-server' },
+      on_attach = noformat_on_attach,
       settings = {
         Lua = {
           diagnostics = {
             globals = {
+              -- nvim
               'vim',
-              'use', -- packer
-              'xplr', -- xplr
-              'version', -- xplr
+              -- packer.nvim
+              'use',
+              -- xplr
+              'xplr',
+              'version',
+              -- busted
+              'it',
+              'describe',
+              'assert'
             },
           },
           runtime = {
@@ -147,44 +167,10 @@ function M.setup()
     },
   }
 
-  -- local null_ls = require 'null-ls'
-  -- local b = null_ls.builtins
-  -- null_ls.config {
-  --   sources = {
-  --     b.formatting.prettierd.with {
-  --       filetypes = {
-  --         'javascript',
-  --         'javascriptreact',
-  --         'typescript',
-  --         'typescriptreact',
-  --         'vue',
-  --         'svelte',
-  --         'css',
-  --         'html',
-  --         'json',
-  --         'yaml',
-  --         -- 'markdown', -- slow
-  --         'scss',
-  --         'toml',
-  --       },
-  --     },
-  --     b.formatting.eslint_d,
-  --     b.formatting.stylua,
-  --     b.formatting.shfmt,
-  --     b.diagnostics.shellcheck,
-  --     b.code_actions.gitsigns,
-  --     b.code_actions.refactoring,
-  --     b.formatting.fish_indent,
-  --     -- b.diagnostics.markdownlint,
-  --     -- b.diagnostics.selene,
-  --   },
-  -- }
-  -- nvim_lsp['null-ls'].setup { on_attach = format_on_attach, debounce = 500 }
-
-  -- FIXME: trigger text is not deleted
-  -- TODO: wait for jsx support
+  -- TODO:
   -- nvim_lsp.emmet_ls.setup {}
 
+  -- TODO:
   -- require('grammar-guard').init()
   -- nvim_lsp.grammar_guard.setup {}
 end

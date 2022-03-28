@@ -4,6 +4,8 @@
 	signingkey = DB6F754B59A68BC3AE6CF695004A3B1CB2774189
 [commit]
   gpgsign = true
+[tag]
+  gpgsign = true
 [diff]
 	tool = delta
 	algorithm = histogram

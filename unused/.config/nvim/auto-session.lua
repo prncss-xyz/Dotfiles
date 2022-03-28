@@ -6,7 +6,6 @@ end
 
 local isHome = os.getenv 'HOME' == os.getenv 'PWD'
 
-
 require('auto-session').setup {
   ('auto-session').setup {
   log_level = 'error',

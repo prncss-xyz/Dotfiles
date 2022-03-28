@@ -17,8 +17,8 @@ floating_modifier $mod normal
 
 bindsym $mod+b mode audio
 bindsym $mod+shift+b mode lumino
-bindsym $mod+e exec $terminal -e nvim_sessions
-bindsym $mod+shift+e exec $terminal -e nvim_nonono
+bindsym $mod+e exec echo next editor > /tmp/sway-mega-hotkeys
+bindsym $mod+shift+e exec $terminal -e .local/bin/nvim_nonono
 bindsym $mod+g mode launch
 bindsym $mod+h exec $terminal "--app-id=launcher -e nvim Dotfiles/bindings-qwerty/.config/sway/config.d/bindings"
 bindsym $mod+n exec makoctl dismiss
@@ -87,7 +87,7 @@ mode launch {
   bindsym c exec "clipman pick -t rofi", mode default
   bindsym d exec "$terminal --app-id=launcher -e .local/bin/fdocu", mode default
   bindsym shift+d exec "$terminal --app-id=launcher -e .local/bin/fdocu \*", mode default
-  bindsym e exec "$terminal -e .local/bin/nvim_sessions", mode default
+  bindsym e exec "$terminal -e .local/bin/nvim_session", mode default
   bindsym shift+e  exec "$terminal -e .local/bin/nvim_ghost", mode default
   bindsym f exec "$terminal --app-id=launcher -e .local/bin/fdoku", mode default
   bindsym g exec "rofi -show drun", mode default
@@ -98,6 +98,7 @@ mode launch {
   bindsym s exec "rofi -show ssh", mode default
   bindsym t exec ".local/bin/new_term", mode default
   bindsym shift+t exec "foot", mode default
+  bindsym w exec "$terminal --app-id=launcher -e .local/bin/fwin_switch", mode default
   bindsym x exec ".local/bin/new_term xplr", mode default
   bindsym y exec "$terminal --app-id=launcher -e .local/bin/fbookmark", mode default
   bindsym shift+y exec "$terminal -e nvim Personal/bookmarks.csv", mode default

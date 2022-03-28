@@ -1,7 +1,7 @@
 local utils = require 'modules.utils'
 local command = utils.command
 
-command('Lua', { nargs = 1 }, function(name)
+command('Dump', { nargs = 1 }, function(name)
   vim.cmd(string.format('lua require"modules.utils".dump(%s)', name))
 end)
 
@@ -13,11 +13,15 @@ command('LaunchOSV', {}, function()
 end)
 
 command('EditSnippet', {}, function()
+  local l = vim.bo.filetype
+  if l == 'javascript' then
+    l = 'javascript/javascript'
+  end
   vim.cmd(
     string.format(
       ':edit %s/snippets/%s.json',
       utils.local_repo'friendly-snippets',
-      vim.bo.filetype
+      l
     )
   )
 end)

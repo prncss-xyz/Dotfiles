@@ -1,2 +1,4 @@
 --hidden
 --smart-case
+--glob=!{.git,.svn,.tldr,node_modules,Trash,vendor,build}-
+--glob=!{package-lock.json,pnpm-lock.yaml}

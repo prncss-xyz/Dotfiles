@@ -1,20 +1,18 @@
-require 'plugins.luasnip'
 local cmp = require 'cmp'
 
 local sources = {
   { name = 'luasnip' },
   { name = 'nvim_lua' },
   { name = 'nvim_lsp' },
-  { name = 'spell' },
   { name = 'path' },
   { name = 'buffer' },
-  -- { name = 'fuzzy_path' },
-  -- { name = 'fuzzy_buffer' },
+  { name = 'spell' },
   { name = 'neorg' },
 }
 
 local symbolic = require('symbols').symbolic
 
+---@diagnostic disable-next-line: redundant-parameter
 cmp.setup {
   snippet = {
     expand = function(args)
@@ -30,21 +28,10 @@ cmp.setup {
     end,
   },
   sources = sources,
-  mapping = {
-    ['<c-x>'] = cmp.mapping.select_prev_item {
-      behavior = cmp.SelectBehavior.Select,
-    },
-    ['<c-j>'] = cmp.mapping.select_next_item {
-      behavior = cmp.SelectBehavior.Select,
-    },
-    -- ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    -- ['<C-f>'] = cmp.mapping.scroll_docs(4),
-  },
   experimental = {
     ghost_text = false,
   },
 }
-
 
 cmp.setup.cmdline('/', {
   sources = {
@@ -52,23 +39,9 @@ cmp.setup.cmdline('/', {
   },
 })
 
-require('cmp').setup.cmdline(':', {
+cmp.setup.cmdline(':', {
   sources = {
     { name = 'cmdline' },
     { name = 'path' },
   },
 })
-
-if false then
-  require('modules.utils').augroup('CmpNvimLua', {
-    {
-      events = { 'FileType' },
-      targets = { 'lua' },
-      command = function()
-        require('cmp').setup.buffer {
-          sources = {}, -- additional sources
-        }
-      end,
-    },
-  })
-end

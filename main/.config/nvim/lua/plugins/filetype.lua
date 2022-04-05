@@ -1,19 +1,19 @@
 require('filetype').setup {
   overrides = {
-    extensions = {
-    },
+    extensions = {},
     literal = {
       BufRead = 'json',
       BufNewFile = 'json',
       ['.eslintrc'] = 'json',
       ['.stylelintrc'] = 'json',
       ['.htmlhintrc'] = 'json',
-      ['.busted'] = 'lua'
+      ['.busted'] = 'lua',
     },
     complex = {
       ['.config/sway/config'] = 'sway',
       ['.config/sway/config.d/*'] = 'sway',
-      ['.config/kitty/*'] = 'kitty'
+      ['.config/kitty/*'] = 'kitty',
+      ['.config/waybar/config'] = 'json',
     },
   },
 }

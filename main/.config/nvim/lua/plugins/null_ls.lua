@@ -2,9 +2,10 @@ M = {}
 
 local on_attach = function(client)
   client.config.flags.debounce_text_changes = 150
-  if client.resolved_capabilities.document_formatting then
-    vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
-  end
+  -- if client.resolved_capabilities.document_formatting then
+  --   vim.cmd 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()' -- FIXME:
+  --   vim.cmd 'autocmd InsertLeave <buffer> lua vim.lsp.buf.formatting_sync()'
+  -- end
 end
 
 function M.setup()

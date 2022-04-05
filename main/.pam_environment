@@ -7,21 +7,18 @@ FZF_DEFAULT_COMMAND DEFAULT="fd --type file --follow --hidden --exclude .git"
 FZF_DEFAULT_OPTS DEFAULT="--bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)'"
 GRIM_DEFAULT_DIR DEFAULT=${HOME}/Media/Pictures/Captures
 GUI DEFAULT=${HOME}/.local/bin/newterm
-MANPAGER DEFAULT="nvim_pager"
-#
 MANPATH DEFAULT=${NPM_PACKAGES}/share/man:${MANPATH}
 MBSYNC_CONFIG DEFAULT=${HOME}/.config/mbsync/config
 MOZ_ENABLE_WAYLAND DEFAULT=1
 NODE_OPTIONS DEFAULT=--experimental-vm-modules
 NOTMUCH_CONFIG DEFAULT=${HOME}/.config/notmuch/config
-PAGER DEFAULT=nvim_pager
 #
 PASSWORD_STORE_CHARACTER_SET DEFAULT="a-zA-Z0-9~!\@#\$%^&*()-_=+[]{};:,.<>?"
 PASSWORD_STORE_DIR DEFAULT=${HOME}/Personal/pass
 PASSWORD_STORE_ENABLE_EXTENSIONS DEFAULT=true
 PASSWORD_STORE_GENERATED_LENGTH DEFAULT=20
 # PATH=$HOME/.local/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:$HOME/.pnpm-global-bin:$HOME/.cargo/bin
-PATH DEFAULT=${HOME}/.local/bin:${HOME}/.pnpm-global-bin:${HOME}/.cargo/bin:/local/bin:/usr/bin:
+PATH OVERRIDE=${HOME}/.local/bin:${HOME}/.pnpm-global-bin:${HOME}/.cargo/bin:/local/bin:/usr/bin:
 PATHMARKS_FILE DEFAULT=${HOME}/Personal/xplr_bookmarks
 PROJECTS DEFAULT=${HOME}/Media/Projects
 QT_QPA_PLATFORM DEFAULT=wayland

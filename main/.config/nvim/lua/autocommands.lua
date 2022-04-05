@@ -1,14 +1,11 @@
 local augroup = require('modules.utils').augroup
-local dotfiles = os.getenv 'DOTFILES'
 
-augroup('FishCmd', {
+augroup('Templates', {
   {
-    events = { 'BufEnter' },
-    targets = { 'tmp.*.fish' },
+    events = { 'BufNewFile' },
+    targets = { '*' },
     command = function()
-      vim.bo.filetype = 'fish'
-      -- FIXME: find when to call telescope
-      -- require('telescope').extensions.luasnip.luasnip {}
+      require('modules.templates').template_match()
     end,
   },
 })
@@ -20,25 +17,6 @@ augroup('TmpFiles', {
     command = function()
       vim.bo.bufhidden = 'delete'
     end,
-  },
-})
-
-augroup('PackerCompile', {
-  {
-    events = { 'BufWritePost' },
-    targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
-    command = 'update luafile % | PackerCompile',
-    -- command = 'PackerCompile',
-    -- need to fix PackerCompile related bug
-  },
-})
-
-augroup('Autosave', {
-  {
-    events = { 'TabLeave', 'FocusLost', 'BufLeave' },
-    targets = { '*' },
-    modifiers = { 'silent!' },
-    command = ':stopinsert',
   },
 })
 
@@ -96,30 +74,6 @@ local function set_title(branch)
   vim.cmd(string.format('let &titlestring=%q', titlestring))
 end
 
--- keep cursor in place while yankink
--- local cursor
--- augroup('CursorGet', {
---   {
---     events = { 'VimEnter', 'CursorMoved' },
---     targets = { '*' },
---     command = function()
---       cursor = vim.fn.getpos '.'
---     end,
---   },
--- })
--- augroup('CursorSet', {
---   {
---     events = { 'TextYankPost' },
---     targets = { '*' },
---     command = function()
---       if vim.fn.eval('v:event').operator == 'y' then
---         vim.fn.setpos('.', cursor)
---       end
---     end,
---   },
--- })
--- for operators: https://vimways.org/2019/making-things-flow/
-
 local function set_title_git_plenary()
   local job = require 'plenary.job'
   local branch
@@ -157,34 +111,6 @@ augroup('SetTitleGitsigns', {
   },
 })
 
-augroup('IlluminateInsert', {
-  {
-    events = { 'VimEnter', 'InsertEnter' },
-    targets = { '*' },
-    command = function()
-      vim.g.Illuminate_delay = 1000
-    end,
-  },
-})
-
-augroup('IlluminateInsert', {
-  {
-    events = { 'InsertLeave' },
-    targets = { '*' },
-    command = function()
-      vim.g.Illuminate_delay = 0
-    end,
-  },
-})
-
-augroup('Outline', {
-  {
-    events = { 'FileType' },
-    targets = { 'Outline' },
-    command = 'setlocal scl=no',
-  },
-})
-
 -- FIXME: these are NOT working
 augroup('ConcealLua', {
   {
@@ -212,27 +138,51 @@ augroup('ConcealLuaB', {
     end,
   },
 })
--- augroup('SelectProject', {
---   {
---     events = { 'VimEnter' },
---     targets = { '*' },
---     command = function()
---       if os.getenv 'HOME' == os.getenv 'PWD' then
---         -- if vim.fn.getcwd() == vim.loop.os_homedir() then
---         vim.cmd 'Telescope projects'
---         -- require('telescope').extensions.repo.list()
---         -- set_title_gitsigns()
---       else
---         set_title_gitsigns()
---       end
---     end,
---   },
--- })
 
--- augroup('LastFile', {
---   {
---     events = {'VimEnter'},
---     targets = {'*'},
---     command = require('bufjump').local_backward,
---   }
--- })
+-- TODO: make it work with BufRead or FileType
+-- issue: having Telescope properly read filetype
+augroup('FishEditCmdline', {
+  {
+    events = { 'VimEnter' },
+    targets = { 'tmp.*.fish' },
+    -- events = { 'FileType' },
+    -- targets = { 'fish' },
+    command = function()
+      if false then
+        local filename = vim.fn.expand '%'
+        if not string.find(filename, 'tmp%..+%.fish') then
+          return
+        end
+      end
+      vim.bo.filetype = 'fish'
+      local buf = vim.api.nvim_buf_get_lines(0, 0, 1, false)
+      -- launch telescope if buffer is empty
+      if buf[1] == '' then
+        vim.schedule(function()
+          require('telescope').extensions.luasnip.luasnip {}
+        end)
+      end
+    end,
+  },
+})
+
+-- Without wrapping in an autocommand, you don't see the status line while telescope
+augroup('StartupSession', {
+  {
+    events = { 'VimEnter' },
+    targets = { '*' },
+    command = function()
+      vim.schedule(function()
+        if #vim.fn.argv() > 0 then
+          return
+        end
+        if vim.fn.getcwd() == os.getenv 'HOME' then
+          require('telescope').extensions.my_projects.my_projects {}
+        else
+          -- TODO: open last file
+        end
+        set_title_git_plenary()
+      end)
+    end,
+  },
+})

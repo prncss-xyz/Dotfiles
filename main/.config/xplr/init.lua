@@ -85,7 +85,7 @@ local common = {
     -- TODO: position to active mode
     messages = {
       {
-        BashExec = 'nvim_paging markdown -R "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"',
+        BashExec = 'less "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"',
       },
     },
   },

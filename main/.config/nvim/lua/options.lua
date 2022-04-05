@@ -1,10 +1,6 @@
-local full = require('pager').full
-
-if not full then
-  -- vim.cmd 'set shada="NONE"'
-end
-local deep_merge = require('modules.utils').deep_merge
 local indent = 2
+
+local deep_merge = require('modules.utils').deep_merge
 deep_merge(vim, {
   bo = {
     expandtab = true,
@@ -16,7 +12,7 @@ deep_merge(vim, {
     compatible = false,
     autoindent = true,
     autoread = true,
-    autowriteall = full,
+    autowriteall = true,
     backup = false,
     clipboard = 'unnamedplus',
     cmdheight = 1,
@@ -58,12 +54,14 @@ deep_merge(vim, {
   },
   g = {
     -- what's that ? -- FIXME:
-    autosave = full and 1 or 0,
+    autosave = 1,
     ['asterisk#keeppos'] = 1,
     -- plasticboy/vim-markdown
     -- do not seem to work in setup
     -- vim_markdown_folding_disabled = 0,
     matchup_mappings_enabled = 0,
+    splitjoin_join_mapping = '',
+    splitjoin_split_mapping = '',
     targets_nl = 'np',
     vim_markdown_folding_level = 6,
     vim_markdown_no_default_key_mappings = 1,
@@ -85,7 +83,7 @@ deep_merge(vim, {
   wo = {
     number = false,
     relativenumber = false,
-    signcolumn = full and 'yes' or 'no',
+    signcolumn = 'yes',
   },
   -- like set
   opt = {
@@ -105,9 +103,10 @@ deep_merge(vim, {
     lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
     secure = true, -- disable autocmd etc for project local vimrc files
     sessionoptions = 'curdir,folds,tabpages,winsize',
-    -- spelloptions = "camel",
+    spell = true,
+    spelloptions = "camel",
     -- textwidth = 80,
-    undofile = full,
+    undofile = true,
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
   },
   -- like setglobal

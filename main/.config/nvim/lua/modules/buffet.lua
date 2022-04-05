@@ -39,10 +39,10 @@ local conf = {
     Nl = 'iNl',
   },
   recipies = {
-    { '', ' ', key = 'w'},
-    { ', ', '', key = 'a'},
-    { '', '_', key = 'v'},
-    { '', '.', key = 's'},
+    { '', ' ', key = 'w' },
+    { ', ', '', key = 'a' },
+    { '', '_', key = 'v' },
+    { '', '.', key = 's' },
     { '[[', ']]', key = 'B', filetype = 'lua' },
     { '(', ')', key = 'b' },
     { '{', '}', key = 'B' },
@@ -55,10 +55,10 @@ local conf = {
     -- key = '',
   },
   add = {
-    w = {'', ' '},
-    a = {',', ''},
-    v = {'', '_'},
-    s = {'', '.'},
+    w = { '', ' ' },
+    a = { ',', '' },
+    v = { '', '_' },
+    s = { '', '.' },
     q = "'",
     Q = '`',
     ['('] = { '(', ')' },
@@ -83,6 +83,19 @@ local last_char
 local rep
 local will_rep
 local snips
+
+local function load_snippets()
+  if snips then
+    return
+  end
+  local BUFFET = require 'plugins.luasnip.buffet'
+  snips = {}
+  local ls = require 'luasnip'
+  for _, value in pairs(BUFFET) do
+    snips[value.trigger] = value
+    value.trigger = trigger_char
+  end
+end
 
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
@@ -214,6 +227,7 @@ end
 
 local function add(char, marks, line_wise)
   local filetype = conf.filetype[vim.bo.filetype] or vim.bo.filetype
+  load_snippets()
   local snip = snips
     and (snips[filetype .. ':' .. char] or snips['all:' .. char])
   if snip then
@@ -369,6 +383,7 @@ function M.delete_query()
 end
 
 function M.replace_query()
+  loads_snippets()
   local snip = snips
     and (
       snips[vim.bo.filetype .. ':' .. last_char]
@@ -560,15 +575,6 @@ end
 function G.predot()
   will_rep = true
   return conf.dot
-end
-
-function M.load_snippets()
-  snips = {}
-  local ls = require 'luasnip'
-  for _, value in pairs(ls.snippets.BUFFET) do
-    snips[value.trigger] = value
-    value.trigger = trigger_char
-  end
 end
 
 function M.setup()

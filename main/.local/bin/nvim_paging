@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-export NVIM_PAGING="$1"
-shift
-nvim "$@"

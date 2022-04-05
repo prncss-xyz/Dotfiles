@@ -111,13 +111,12 @@ local function map_command_lang()
       i = {
         ['<c-k>'] = '<c-o>d$',
         ['<c-o>'] = '<c-o>',
-        ['<c-v>'] = '<esc>pa',
+        ['<c-v>'] = cmd 'normal! pa',
       },
       is = {
-        ['<c-d>'] = { require('bindutils').s_tab },
-        ['<c-f>'] = { require('bindutils').tab },
+        ['<s-tab>'] = { require('bindutils').s_tab },
+        ['<tab>'] = { require('bindutils').tab },
         ['<c-e>'] = { require('bindutils').cmp_toggle },
-        ['<tab>'] = { require('bindutils').cmp_confirm },
       },
       c = {
         ['<c-s>'] = { '<c-f>', 'edit command line' },
@@ -146,6 +145,20 @@ local function map_search(url, help)
       },
     },
   }
+end
+
+local count = 0
+
+local function repeatable_cmd(rhs, opts)
+  count = count + 1
+  local map = string.format('(u-%i)', count)
+  vim.api.nvim_set_keymap(
+    'n',
+    '<Plug>' .. map,
+    '<cmd>' .. rhs .. '<cr>',
+    opts or {}
+  )
+  return replug(map)
 end
 
 local function map_basic()
@@ -239,6 +252,13 @@ local function map_basic()
         end,
       },
     },
+    ['<c-f>'] = {
+      function()
+        require('luasnip.extras.otf').on_the_fly 'f'
+      end,
+      modes = 'vi',
+    },
+    ['<c-g>'] = cmd { 'Telescope luasnip', modes = 'ni' },
     ['<c-i>'] = '<c-i>',
     ['<c-n>'] = {
       function()
@@ -254,12 +274,16 @@ local function map_basic()
       'jump previous buffer',
     },
     ['<c-r>'] = '<c-r>',
-    ['<c-g>'] = cmd { 'Telescope luasnip', modes = 'ni' },
     ['<c-s>'] = {
-      function()
-        vim.lsp.buf.formatting_sync()
-      end,
-      modes = 'ni',
+      modes = {
+        n = function()
+          vim.lsp.buf.formatting_sync()
+        end,
+        i = function()
+          vim.api.nvim_feedkeys('\\<esc>', 'n', false)
+          vim.lsp.buf.formatting_sync()
+        end,
+      },
     },
     ['<c-v>'] = { 'gp', modes = 'nv' },
     ['<c-w>'] = {
@@ -275,6 +299,7 @@ local function map_basic()
     [dd.left] = { 'h', 'left', modes = 'nxo' },
     [dd.up] = { 'k', 'up', modes = 'nxo' },
     [dd.down] = { 'j', 'down', modes = 'nxo' },
+    -- also: require("luasnip.extras.select_choice")
     [dd.prev_search] = {
       "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
       noremap = false,
@@ -304,15 +329,19 @@ local function map_basic()
       end,
       d = {
         name = '+DAP',
+        pb = function()
+          require('dap').clear_breakpoints()
+        end,
         b = {
           "<cmd>lua require'dap'.toggle_breakpoint()<cr>",
           'toggle breakpoints',
         },
-        c = { "<cmd>lua require'dap'.continue()<cr>", 'continue' },
-        s = { "<cmd>lua require'dap'.stop()<cr>", 'stop' },
-        o = { "<cmd>lua require'dap'.step_over()<cr>", 'step over' },
-        po = { "<cmd>lua require'dap'.step_out()<cr>", 'step out' },
-        i = { "<cmd>lua require'dap'.step_into()<cr>", 'step into' },
+        c = repeatable_cmd "lua require'dap'.continue()",
+        i = repeatable_cmd "lua require'dap'.step_into()",
+        po = repeatable_cmd "lua require'dap'.step_out()",
+        o = repeatable_cmd "lua require'dap'.step_over()",
+        px = { "<cmd>lua require'dap'.disconnect()<cr>", 'stop' },
+        x = { "<cmd>lua require'dap'.terminate()<cr>", 'stop' },
         ['.'] = { "<cmd>lua require'dap'.run_last()<cr>", 'run last' },
         -- u = { "<cmd>lua require'dapui'.eval()<cr>", 'toggle dapui' },
         k = { "<cmd>lua require'dap'.up()<cr>", 'up' },
@@ -334,10 +363,6 @@ local function map_basic()
           "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
           'variables scopes',
         },
-        pb = {
-          "<cmd>lua require'dap'.set_exception_breakpoints({'all'})<cr>",
-          'set exception breakoints',
-        },
         tc = {
           "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
           'commands',
@@ -358,6 +383,7 @@ local function map_basic()
           "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
           'dap frames',
         },
+        ['<cr>'] = repeatable_cmd "lua require'dap'.run_to_cursor()",
       },
       q = {
         r = plug '(Mac_RecordNew)',
@@ -405,15 +431,19 @@ local function map_basic()
           'stop active clients',
         },
       },
+      t = plug 'PlenaryTestFile',
       v = 'gv',
-      W = require('modules.split').test,
-      pw = require('modules.split').lsp,
-      w = {
-        modes = {
-          n = require('modules.split').normal,
-          x = ":<c-u>lua require('modules.split').visual()<cr>",
-        },
-      },
+      pw = plug '(Marks-prev-bookmark1)',
+      w = plug '(Marks-next-bookmark1)',
+      -- w = function()
+      --   require('bindutils').paste('"', 'V', 'p')
+      -- end,
+      -- w = {
+      --   modes = {
+      --     n = require('modules.split').normal,
+      --     x = ":<c-u>lua require('modules.split').visual()<cr>",
+      --   },
+      -- },
       y = {
         arch = map_search(
           'https://wiki.archlinux.org/index.php?search=',
@@ -541,6 +571,8 @@ local function map_basic()
       r = { require('bindutils').next_reference },
       -- s = cmd 'Telescope treesitter',
       s = cmd 'Telescope lsp_document_symbols',
+      pt = plug '(ultest-prev-fail)',
+      t = plug '(ultest-next-fail)',
       pu = require('bindutils').scroll_up,
       u = require('bindutils').scroll_down,
       pv = { '`<', modes = 'nxo' },
@@ -679,6 +711,7 @@ local function map_basic()
         'spell suggest',
         modes = 'nx',
       },
+      -- FIXME:
       ['p' .. dd.comment] = plug { '(u-comment-opleader-block)', modes = 'nx' },
       [dd.comment] = {
         modes = {
@@ -692,18 +725,23 @@ local function map_basic()
           },
         },
       },
+      -- ['p' .. '<cr>'] = {
+      --   cmd 'SplitjoinJoin',
+      -- },
+      ['p' .. '<cr>'] = cmd 'SplitjoinJoin',
+      ['<cr>'] = cmd 'SplitjoinSplit',
       [dd.join] = { 'J', 'join', modes = 'nx' },
-      ['p' .. dd.join] = {
-        modes = {
-          n = '<Plug>(u-revj-operator)',
-          x = {
-            function()
-              require('revj').format_visual()
-            end,
-            'rev join',
-          },
-        },
-      },
+      -- ['p' .. dd.join] = {
+      --   modes = {
+      --     n = '<Plug>(u-revj-operator)',
+      --     x = {
+      --       function()
+      --         require('revj').format_visual()
+      --       end,
+      --       'rev join',
+      --     },
+      --   },
+      -- },
       [q.previous .. 't'] = {
         modes = {
           n = plug '(ninja-insert)i',
@@ -873,6 +911,7 @@ local function map_basic()
       v = cmd { 'Telescope help_tags', 'help tags' },
     },
     [a.editor] = {
+      -- require'dap'.list_breakpoints() -- Lists all breakpoints and log points in quickfix window.
       pa = {
         function()
           require('modules.toggler').open(
@@ -907,9 +946,12 @@ local function map_basic()
         require('marks').bookmark_state:all_to_list 'quickfixlist'
         vim.cmd 'Trouble quickfix'
       end,
-      d = function()
-        require('modules.toggler').open('DiffviewOpen', 'DiffviewClose')
-      end,
+      d = {
+        function()
+          require('dapui').toggle() -- .open() .close()
+        end,
+        'toggle dapui',
+      },
       pe = { require('bindutils').reset_editor, 'reset editor' },
       e = { require('bindutils').edit_current, 'current in new editor' },
       f = {
@@ -923,12 +965,6 @@ local function map_basic()
       end,
       ph = cmd { 'DiffviewClose', 'diffview close' },
       h = cmd { 'DiffviewFileHistory', 'diffview open' },
-      i = {
-        function()
-          require('dapui').toggle()
-        end,
-        'toggle dapui',
-      },
       j = {
         name = '+peek',
         l = plug {
@@ -947,6 +983,7 @@ local function map_basic()
           end,
           'referenes',
         },
+        t = cmd 'UltestOutput',
       },
       pk = { vim.lsp.buf.signature_help, 'signature help' },
       k = { vim.lsp.buf.hover, 'hover' },
@@ -958,16 +995,7 @@ local function map_basic()
       n = cmd { 'Telescope modules', 'node modules' },
       o = { require('bindutils').open_current, 'open current external' },
       pp = { require('modules.setup-session').develop, 'session develop' },
-      pr = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
-      r = {
-        function()
-          require('modules.toggler').open(
-            'Trouble lsp_references',
-            'TroubleClose'
-          )
-        end,
-        'lsp document diagnostics',
-      },
+      r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
       ps = {
         function()
           require('modules.toggler').open(
@@ -985,6 +1013,9 @@ local function map_basic()
         'undo tree',
       },
       t = { require('bindutils').term, 'new terminal' },
+      pu = function()
+        require('modules.toggler').open('DiffviewOpen', 'DiffviewClose')
+      end,
       u = {
         function()
           require('modules.toggler').open('Gitsigns setqflist', 'TroubleClose')
@@ -995,14 +1026,14 @@ local function map_basic()
       v = cmd { 'Telescope my_projects', 'sessions' },
       pw = {
         modes = {
-          n = cmd 'q',
-          x = plug { '(Visual-Split-VSResize)', modes = 'x' },
+          n = require('modules.split').lsp,
+          x = ":<c-u>lua require('modules.split').resize()<cr>",
         },
       },
       w = {
         modes = {
-          n = cmd 'split',
-          x = plug { '(Visual-Split-VSSplitBelow)', modes = 'x' },
+          n = require('modules.split').normal,
+          x = ":<c-u>lua require('modules.split').visual()<cr>",
         },
       },
       W = cmd 'TodoTrouble',
@@ -1130,7 +1161,7 @@ local function map_textobjects()
       f = ts 'function',
       -- gG: ninja
       -- h: qualifier
-      -- i: node
+      -- i: node; see also: David-Kunz/treesitter-unit
       j = ts 'block',
       k = ts 'call',
       l = ts 'token',
@@ -1198,14 +1229,12 @@ local function map_markdown()
       [dd.down] = { 'j', 'physical line down', modes = 'nxo' },
     },
   }
-  if require('pager').full then
-    -- vim.fn.call('textobj#sentence#init', {})
-    reg {
-      -- both are identical
-      ad = { '<Plug>(textobj-datetime-auto)', noremap = false, modes = 'ox' },
-      id = { '<Plug>(textobj-datetime-auto)', noremap = false, modes = 'ox' },
-    }
-  end
+  -- vim.fn.call('textobj#sentence#init', {})
+  reg {
+    -- both are identical
+    ad = { '<Plug>(textobj-datetime-auto)', noremap = false, modes = 'ox' },
+    id = { '<Plug>(textobj-datetime-auto)', noremap = false, modes = 'ox' },
+  }
 end
 
 local function map_readonly()

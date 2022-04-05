@@ -23,12 +23,6 @@ function M.split_string(str, delimiter)
   return result
 end
 
-function M.dump(...)
-  local objects = vim.tbl_map(vim.inspect, { ... })
-  print(unpack(objects))
-  return ...
-end
-
 function M.local_repo(name)
   return os.getenv 'PROJECTS' .. '/' .. name
 end
@@ -165,5 +159,17 @@ function M.encode_uri(str)
   end
   return str
 end
+
+
+function M.dump(...)
+  local objects = vim.tbl_map(vim.inspect, { ... })
+  print(unpack(objects))
+  return ...
+end
+
+M.command('Dump', { nargs = 1 }, function(name)
+  vim.cmd(string.format('lua require"modules.utils".dump(%s)', name))
+end)
+
 
 return M

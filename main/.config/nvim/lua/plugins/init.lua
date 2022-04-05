@@ -1,16 +1,8 @@
 local install_path = vim.fn.stdpath 'data'
   .. '/site/pack/packer/start/packer.nvim'
 
-local function full()
-  return require('pager').full
-end
-
 local function ghost()
   return os.getenv 'GHOST_NVIM' or false
-end
-
-local function never()
-  return false
 end
 
 local function local_repo(name)
@@ -26,6 +18,16 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   }
   vim.cmd 'packadd packer.nvim'
 end
+
+-- FIXME:
+local dotfiles = os.getenv 'DOTFILES'
+require('modules.utils').augroup('PackerCompile', {
+  {
+    events = { 'BufWritePost' },
+    targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
+    command = 'update luafile % | PackerCompile',
+  },
+})
 
 return require('packer').startup {
   function()
@@ -68,7 +70,7 @@ return require('packer').startup {
           'nvim-treesitter/nvim-treesitter-textobjects',
           module = 'nvim-treesitter.textobjects',
         },
-        { 'mfussenegger/nvim-ts-hint-textobject', cmd = 'tsht' },
+        { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' },
         -- Use tressitter to autoclose and autorename html tag
         { 'windwp/nvim-ts-autotag', after = 'nvim-treesitter' },
         {
@@ -111,9 +113,9 @@ return require('packer').startup {
     -- use 'fladson/vim-kitty'
 
     -- luv docs in :help
-    use { 'nanotee/luv-vimdocs', cond = full }
+    use { 'nanotee/luv-vimdocs' }
     -- lua docs in :help
-    use { 'milisims/nvim-luaref', cond = full }
+    use { 'milisims/nvim-luaref' }
 
     -- edit browser's textinput in nvim instance
     use {
@@ -127,17 +129,6 @@ return require('packer').startup {
     -- DAP
     use {
       'nvim-telescope/telescope-dap.nvim',
-      cond = full,
-    }
-    use {
-      'Pocco81/DAPInstall.nvim',
-      module = 'dap-install',
-      cmd = {
-        'DIInstall',
-        'IUninstall',
-        'DIList',
-      },
-      -- TODO: autoinstall some servers
     }
     use {
       'mfussenegger/nvim-dap',
@@ -154,7 +145,7 @@ return require('packer').startup {
         require('dapui').setup()
       end,
     }
-    -- tests
+    use 'jbyuki/one-small-step-for-vimkind'
     use {
       'rcarriga/vim-ultest',
       requires = { 'vim-test/vim-test' },
@@ -184,6 +175,14 @@ return require('packer').startup {
 
     -- LSP
     use {
+      'neovim/nvim-lspconfig',
+      module = 'lspconfig',
+      event = 'BufReadPost',
+      config = function()
+        require('plugins.lsp').setup()
+      end,
+    }
+    use {
       'jose-elias-alvarez/null-ls.nvim',
       event = 'BufReadPost',
       config = function()
@@ -197,15 +196,8 @@ return require('packer').startup {
       module = 'nvim-lsp-ts-utils',
     }
     use {
-      'neovim/nvim-lspconfig',
-      -- cond = full,
-      module = 'lspconfig',
-      config = function()
-        require('plugins.lsp').setup()
-      end,
-    }
-    use {
       'simrat39/symbols-outline.nvim',
+      after = 'nvim-lspconfig',
       cmd = { 'SymbolsOutline', 'SymbolsOutlineOpen' },
       setup = function()
         local symbols = require('symbols').symbols
@@ -247,7 +239,18 @@ return require('packer').startup {
             'null-ls',
           },
         }
+        require('modules.utils').augroup('Outline', {
+          {
+            events = { 'FileType' },
+            targets = { 'Outline' },
+            -- command = function()
+            --   vim.opt_local.scl = 'no'
+            -- end,
+            command = 'setlocal scl=no',
+          },
+        })
       end,
+      -- config = function() end,
     }
     use {
       'ThePrimeagen/refactoring.nvim',
@@ -272,6 +275,29 @@ return require('packer').startup {
     }
     use {
       'RRethy/vim-illuminate',
+      config = function()
+        local augroup = require('modules.utils').augroup
+        -- diminishes flashing while typing
+        augroup('IlluminateInsert', {
+          {
+            events = { 'VimEnter', 'InsertEnter' },
+            targets = { '*' },
+            command = function()
+              vim.g.Illuminate_delay = 1000
+            end,
+          },
+        })
+
+        augroup('IlluminateNormal', {
+          {
+            events = { 'InsertLeave' },
+            targets = { '*' },
+            command = function()
+              vim.g.Illuminate_delay = 0
+            end,
+          },
+        })
+      end,
       module = 'illuminate',
     }
     use {
@@ -301,7 +327,13 @@ return require('packer').startup {
         { 'f3fora/cmp-spell', after = 'nvim-cmp' },
         { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' },
         { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' },
-        { 'L3MON4D3/LuaSnip', module = 'luasnip' },
+        {
+          'L3MON4D3/LuaSnip',
+          module = 'luasnip',
+          config = function()
+            require 'plugins.luasnip'
+          end,
+        },
       },
       config = function()
         require 'plugins.cmp'
@@ -321,10 +353,9 @@ return require('packer').startup {
 
     -- Tracking
     -- use { 'ThePrimeagen/vim-apm' } -- not working
-    -- use { 'git-time-metric/gtm-vim-plugin', cond = full }
+    -- use { 'git-time-metric/gtm-vim-plugin'}
     use {
       'chrisbra/BufTimer',
-      cond = full,
       setup = function()
         vim.g.buf_report_autosave_dir = os.getenv 'HOME'
           .. '-'
@@ -339,7 +370,6 @@ return require('packer').startup {
       event = 'BufReadPost',
       wants = 'plenary.nvim',
       requires = { 'nvim-lua/plenary.nvim' },
-      cond = full,
       config = function()
         require('plugins.gitsigns').setup()
       end,
@@ -397,7 +427,7 @@ return require('packer').startup {
     }
     use {
       'glepnir/galaxyline.nvim',
-      module = 'galaxyline',
+      event = 'BufEnter',
       config = function()
         require 'plugins.galaxyline'
       end,
@@ -521,10 +551,10 @@ return require('packer').startup {
       end,
     }
     use {
-      'chentau/marks.nvim',
+      local_repo 'marks.nvim',
+      -- 'chentau/marks.nvim',
       event = 'BufReadPost',
       config = function()
-        -- cond = full,
         require('marks').setup {
           default_mappings = false,
           mappings = require('modules.binder').captures.marks,
@@ -534,8 +564,7 @@ return require('packer').startup {
     use {
       event = 'BufReadPost',
       'andymass/vim-matchup',
-      -- cond = full,
-      cond = never,
+      disable = true,
       setup = function()
         vim.g.matchup_matchparen_offscreen = {}
       end,
@@ -607,7 +636,6 @@ return require('packer').startup {
     }
     use {
       local_repo 'nononotes-nvim',
-      cond = full,
       config = function()
         require('plugins.nononotes').setup()
       end,
@@ -632,7 +660,6 @@ return require('packer').startup {
     -- bindings
     use {
       'folke/which-key.nvim',
-      -- cond = never,
       event = 'VimEnter',
       config = function()
         require('which-key').setup {
@@ -672,6 +699,10 @@ return require('packer').startup {
     }
 
     -- Edition
+    use {
+      'AndrewRadev/splitjoin.vim',
+      cmd = { 'SplitjoinJoin', 'SplitjoinSplit' },
+    }
     use {
       'JoseConseco/vim-case-change',
       event = 'BufReadPost',
@@ -801,7 +832,6 @@ return require('packer').startup {
     }
     use {
       'ahmedkhalf/project.nvim',
-      cond = full,
       config = function()
         require('project_nvim').setup {}
       end,

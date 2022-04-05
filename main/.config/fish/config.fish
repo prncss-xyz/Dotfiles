@@ -11,7 +11,6 @@ abbr -g gncc 'commit -a --allow-empty-message -m ""'
 abbr hm 'man -H'
 alias l 'exa --icons --git'
 alias nod 'nodemon --config ~/.config/nodemon/config.json'
-alias m nvim_pager
 alias o xdg-open
 # alias plopg 'plop --plopfile="$HOME/Media/Projects/plopg/plopfile.js" --dest=.'
 # alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvim /tmp/sway-tree.json'
@@ -27,3 +26,10 @@ kitty + complete setup fish | source
 # pnpm: tabtab source for packages
 # uninstall by removing these lines
 [ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true# Get the colors in the opened man page itself
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba init' !!
+set -gx MAMBA_EXE "/usr/bin/micromamba"
+set -gx MAMBA_ROOT_PREFIX "/home/prncss/micromamba"
+eval "/usr/bin/micromamba" shell hook --shell fish --prefix "/home/prncss/micromamba" | source
+# <<< mamba initialize <<<

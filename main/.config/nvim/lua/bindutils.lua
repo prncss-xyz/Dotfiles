@@ -5,6 +5,19 @@ local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
+-- TODO: respect indent
+function M.split_line()
+  vim.api.nvim_feedkeys('a' .. t '<cr><cr><up>', 'n', false)
+end
+
+-- https://vim.fandom.com/wiki/Unconditional_linewise_or_characterwise_paste
+function M.paste(regname, paste_type, paste_cmd)
+  local reg_type = vim.fn.getregtype(regname)
+  vim.fn.setreg(regname, vim.fn.getreg(regname), paste_type)
+  vim.cmd('normal! ' .. '"' .. regname .. paste_cmd)
+  vim.fn.setreg(regname, vim.fn.getreg(regname), reg_type)
+end
+
 -- FIXME:
 -- https://github.com/neovim/neovim/pull/12368
 
@@ -229,6 +242,8 @@ function M.repeatable(rhs)
   return string.format('%s<cmd>call repeat#set(%q, v:count)<cr>', rhs, t(rhs))
 end
 
+function M.repeatable_cmd(rhs) end
+
 function M.outliner()
   if vim.bo.filetype == 'markdown' then
     require('modules.toggler').open('Toc', nil)
@@ -280,6 +295,7 @@ function M.cmp_confirm()
 end
 
 --- <s-tab> to jump to next snippet's placeholder
+
 function M.s_tab()
   local r = require('luasnip').jump(-1)
   if r then
@@ -290,6 +306,11 @@ function M.s_tab()
 end
 
 function M.tab()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    cmp.confirm { select = true }
+    return
+  end
   local r = require('luasnip').jump(1)
   if r then
     return
@@ -321,8 +342,8 @@ function M.onlyBuffer()
 end
 
 local alt_patterns = {
-  { '(.+)_spec.lua$', '%1.lua' },
-  { '(.+).lua$', '%1_spec.lua' },
+  { '(.+)%_spec(%.[%w%d]+)$', '%1%2' },
+  { '(.+)(%.[%w%d]+)$', '%1_spec%2' },
   { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
   { '(.+)(%.[%w%d]+)$', '%1.test%2' },
 }

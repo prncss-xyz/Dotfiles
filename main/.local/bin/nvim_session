@@ -1,16 +1,9 @@
 #!/usr/bin/env sh
 
 # this is a workaround for gdm messing with PATH
+# see issue: https://gitlab.gnome.org/GNOME/gdm/-/issues/692
+# setting gdm.conf option does not seem any more effective (under Wayland at least): https://www.jirka.org/gdm-documentation/x220.html
+
 export PATH="/home/prncss/.local/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/prncss/.pnpm-global-bin:/home/prncss/.cargo/bin"
 
-if [ -z "$1" ]; then
-	if [ "$PWD" = "$HOME" ]; then
-		nvim +"Telescope my_projects"
-	else
-		# FIXME:
-		nvim
-		# nvim +"lua require'bufjump'.local_backward()"
-	fi
-else
-	nvim "$@"
-fi
+nvim "$@"

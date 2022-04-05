@@ -2,6 +2,10 @@ local m = {}
 
 function m.setup()
   require('modules.utils').deep_merge(vim.g, {
+    -- ['test#strategy'] = 'neovim', -- 'shtuff' , 'harpoon', 'neovim'
+    shtuff_receiver = 'devrunner',
+    -- ['test#lua#busted#executable'] = 'caca',
+    -- nvim --headless -c "PlenaryBustedDirectory tests/plenary/ {minimal=true}"
     ultest_use_pty = 1,
     ultest_env = {
       NODE_OPTIONS = '--experimental-vm-modules',
@@ -36,6 +40,14 @@ function m.config()
       end,
     },
   }
+  require('modules.utils').augroup('Tests', {
+    {
+      events = { 'BufWritePost' },
+      targets = { '*' },
+      modifiers = { 'silent!' },
+      command = 'UltestNearest',
+    },
+  })
 end
 
 return m

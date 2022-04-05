@@ -1,9 +1,9 @@
-local m = {}
+local M = {}
 
--- symbols to have keep consistancy between Outiliner, cmp and gps
+-- symbols to keep consistancy between Outiliner, cmp and gps
 
-m.symbols = {
-  -- LSP kind
+-- derived from onsails/lspkind-nvim
+M.symbols = {
   Array = '',
   Boolean = '⊨',
   Class = '𝓒',
@@ -40,10 +40,12 @@ m.symbols = {
   Variable = '',
 }
 
-function m.symbolic(kind)
-  local symbol = m.symbols[kind]
+-- format symbols to be used by hrsh7th/nvim-cmp
+-- derived from onsails/lspkind-nvim
+function M.symbolic(kind)
+  local symbol = M.symbols[kind]
   symbol = symbol and (symbol .. ' ') or ''
   return string.format('%s%s', symbol, kind)
 end
 
-return m
+return M

@@ -13,13 +13,13 @@ local delai = 9
 local global_opts = {
   height = 10,
   max_height = 10,
-  direction = 'below', -- or 'above' or ''
+  -- direction = 'below',
+  direction = 'above',
 }
 
 local a = vim.api
 
 local function count()
-  print('..', vim.v.count, vim.v.count1)
   if vim.v.count == vim.v.count1 then
     return vim.v.count
   end
@@ -35,6 +35,8 @@ local function get_marks_pos(mode)
   end
   local pos1 = vim.api.nvim_buf_get_mark(0, mark1)
   local pos2 = vim.api.nvim_buf_get_mark(0, mark2)
+  Dump(pos1)
+  Dump(pos2)
   return pos1, pos2
 end
 
@@ -59,9 +61,11 @@ end
 function M.visual(opts)
   opts = opts and vim.tbl_extend('keep', opts, global_opts) or global_opts
   local height = count()
+  local delta
   if not height then
     local pos1, pos2 = get_marks_pos 'x'
-    height = math.abs(pos2[1] - pos1[1]) + 1
+    delta = pos2[1] - pos1[1]
+    height = math.abs(delta) + 1
     if height > opts.max_height then
       height = opts.max_height
     end
@@ -69,7 +73,11 @@ function M.visual(opts)
   local win = a.nvim_get_current_win()
   vim.cmd(opts.direction .. tostring(height) .. 'split ' .. '')
   vim.cmd 'setlocal scrolloff=0' -- also working
-  a.nvim_feedkeys('zt', 'n', true)
+  if opts.direction == 'above' then
+    a.nvim_feedkeys('zb', 'n', true)
+  else
+    a.nvim_feedkeys('zt', 'n', true)
+  end
   vim.defer_fn(function()
     a.nvim_set_current_win(win)
   end, delai)

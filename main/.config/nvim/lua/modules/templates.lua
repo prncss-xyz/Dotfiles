@@ -3,12 +3,13 @@ local M = {}
 local templates
 
 local function load_templates()
+  local snips = require 'plugins.luasnip.templates'
   templates = {}
   local ls = require 'luasnip'
   if not ls then
     return
   end
-  for _, value in pairs(ls.snippets.TEMPLATES) do
+  for _, value in pairs(snips) do
     local glob = value.trigger
     value.trigger = ''
     local re_string = vim.fn.glob2regpat(glob)
@@ -21,7 +22,7 @@ local function load_templates()
   end
 end
 
--- picks the most specific match by the following startegy:
+-- picks the most specific match by the following strategy:
 -- amongst all the matching patters, the most specific is the pattern that is
 -- matched by every patter (patterns always match themselves)
 local function match(filename)
@@ -52,23 +53,11 @@ end
 function M.template_match()
   local template = match(vim.fn.expand '%')
   if template then
-    local snippet = (template.value):copy()
-    snippet.trigger = ''
-    snippet:trigger_expand(
-      require('luasnip').session.current_nodes[vim.api.nvim_get_current_buf()]
-    )
+    local snippet = template.value
+    require('luasnip').snip_expand(snippet, {})
   end
 end
 
-function M.setup()
-  load_templates()
-  require('modules.utils').augroup('Templates', {
-    {
-      events = { 'BufNewFile' },
-      targets = { '*' },
-      command = 'lua require "modules.templates".template_match()',
-    },
-  })
-end
+load_templates()
 
 return M

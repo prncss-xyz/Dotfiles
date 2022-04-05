@@ -6,7 +6,6 @@ parser_configs.norg = {
     branch = 'main',
   },
 }
-local full = require('pager').full
 require('nvim-treesitter.configs').setup {
   rainbow = {
     enable = true,
@@ -55,10 +54,10 @@ require('nvim-treesitter.configs').setup {
     enable = false,
   },
   indent = {
-    enable = full,
+    enable = true,
   },
   context_commentstring = {
-    enable = full,
+    enable = true,
     enable_autocommand = false,
   },
   matchup = {
@@ -66,11 +65,11 @@ require('nvim-treesitter.configs').setup {
   },
   textobjects = {
     select = {
-      enable = full,
+      enable = true,
       lookahead = true,
     },
     move = {
-      enable = full,
+      enable = true,
       set_jumps = true,
     },
     swap = {

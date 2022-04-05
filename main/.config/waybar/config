@@ -10,11 +10,11 @@
     },
     "custom/timinou": {
       "exec": "cat /tmp/timinou.txt",
-      "interval": 1,
+      "interval": 1
     },
     "sway/window": {
       "max-length": 90,
-      "tooltip": false,
+      "tooltip": false
     },
     "cpu": {
       "interval": 10,

@@ -54,7 +54,7 @@ return require('packer').startup {
       end,
     }
 
-    -- treesitter
+    -- Treesitter
     use {
       'nvim-treesitter/nvim-treesitter',
       run = ':TSUpdate',
@@ -72,7 +72,11 @@ return require('packer').startup {
         },
         { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' },
         -- Use tressitter to autoclose and autorename html tag
-        { 'windwp/nvim-ts-autotag', after = 'nvim-treesitter' },
+        {
+          'windwp/nvim-ts-autotag',
+          after = 'nvim-treesitter',
+          event = 'InsertEnter',
+        },
         {
           'JoosepAlviste/nvim-ts-context-commentstring',
           after = 'nvim-treesitter',
@@ -305,6 +309,7 @@ return require('packer').startup {
       config = function()
         require 'plugins.goto-preview'
       end,
+      module = 'goto-preview',
     }
 
     -- completion
@@ -315,15 +320,15 @@ return require('packer').startup {
       module = 'cmp',
       event = { 'CmdlineEnter', 'CmdlineEnter' },
       requires = {
+        { 'tzachar/fuzzy.nvim', module = 'fuzzy', disable = true },
+        { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp', disable = true },
+        { 'tzachar/cmp-fuzzy-path', after = 'nvim-cmp', disable = true },
         { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' },
         {
           'hrsh7th/cmp-path',
           module = 'cmp-path',
           after = 'nvim-cmp',
         },
-        -- { 'tzachar/fuzzy.nvim', module = 'fuzzy' },
-        -- { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp' },
-        -- { 'tzachar/cmp-fuzzy-path', after = 'nvim-cmp' },
         { 'f3fora/cmp-spell', after = 'nvim-cmp' },
         { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' },
         { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' },
@@ -865,14 +870,6 @@ return require('packer').startup {
           },
         },
       },
-    }
-    use {
-      'rafcamlet/nvim-luapad',
-      module = 'luapd',
-      cmd = { 'Luapad', 'LuaRun', 'Lua' },
-      config = function()
-        require('luapad').setup {}
-      end,
     }
 
     -- Various

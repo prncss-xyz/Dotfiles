@@ -1,4 +1,5 @@
-_G.Dump = require'modules.utils'.dump
+-- _G.Dump = require'modules.utils'.dump
+_G.Dump = vim.inspect
 
 require 'modules.edit_snippets'
 

@@ -55,6 +55,7 @@ deep_merge(vim, {
   g = {
     -- what's that ? -- FIXME:
     autosave = 1,
+    illuminae_ftblacklist = { 'NeogitStatus' },
     ['asterisk#keeppos'] = 1,
     -- plasticboy/vim-markdown
     -- do not seem to work in setup
@@ -104,7 +105,7 @@ deep_merge(vim, {
     secure = true, -- disable autocmd etc for project local vimrc files
     sessionoptions = 'curdir,folds,tabpages,winsize',
     spell = true,
-    spelloptions = "camel",
+    spelloptions = 'camel',
     -- textwidth = 80,
     undofile = true,
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,

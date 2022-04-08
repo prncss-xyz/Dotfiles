@@ -32,7 +32,7 @@ local function fallback_register0(t, mode, prefix)
     else
       if value[1] then
         -- print(prefix .. key, value[1], mode)
-        require('modules.utils').map(mode, prefix .. key, value[1])
+        require('utils').map(mode, prefix .. key, value[1])
         -- desc = desc .. prefix .. key .. ' -> ' .. value[2] .. '\n'
       else
         fallback_register0(value, mode, prefix .. key)
@@ -58,7 +58,7 @@ M.help = {}
 local function map(bufnr, mode, keys, rhs, map_opts)
   -- TODO: map function
   -- print(mode,keys, rhs)
-  -- require('modules.utils').dump(map_opts)
+  -- require('utils').dump(map_opts)
   if bufnr then
     vim.api.nvim_buf_set_keymap(bufnr, mode, keys, rhs, map_opts)
   else

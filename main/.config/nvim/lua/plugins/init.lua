@@ -21,7 +21,7 @@ end
 
 -- FIXME:
 local dotfiles = os.getenv 'DOTFILES'
-require('modules.utils').augroup('PackerCompile', {
+require('utils').augroup('PackerCompile', {
   {
     events = { 'BufWritePost' },
     targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
@@ -35,7 +35,7 @@ return require('packer').startup {
     use {
       'nathom/filetype.nvim',
       config = function()
-        require 'plugins.filetype'
+        require('plugins.filetype').config()
       end,
     }
     use {
@@ -61,7 +61,7 @@ return require('packer').startup {
       module = { 'nvim-treesitter', 'nvim-treesitter.parsers' }, -- HACK: why do I need this?
       module_pattern = 'nvim-treesitter.*',
       config = function()
-        require 'plugins.treesitter'
+        require('plugins.treesitter').config()
       end,
       requires = { -- TODO: lazy
         { 'p00f/nvim-ts-rainbow', after = 'nvim-treesitter' },
@@ -81,6 +81,9 @@ return require('packer').startup {
           'JoosepAlviste/nvim-ts-context-commentstring',
           after = 'nvim-treesitter',
         },
+        -- You can toggle automatic highlighting for the current treesitter unit.
+        -- :lua require"treesitter-unit".toggle_highlighting(higroup?)
+        { 'David-Kunz/treesitter-unit', module = 'treesitter-unit' },
       },
     }
     use {
@@ -102,7 +105,13 @@ return require('packer').startup {
       end,
       requires = 'nvim-treesitter/nvim-treesitter',
     }
-    use { 'SmiteshP/nvim-gps', module = 'nvim-gps' }
+    use {
+      'SmiteshP/nvim-gps',
+      module = 'nvim-gps',
+      config = function()
+        require('plugins.nvim-gps').config()
+      end,
+    }
     use {
       'mizlan/iswap.nvim',
       cmd = { 'ISwap', 'ISwapWith' },
@@ -138,7 +147,7 @@ return require('packer').startup {
       'mfussenegger/nvim-dap',
       module = 'dap',
       config = function()
-        require('plugins.dap').setup()
+        require('plugins.dap').config()
       end,
     }
     use {
@@ -151,8 +160,20 @@ return require('packer').startup {
     }
     use 'jbyuki/one-small-step-for-vimkind'
     use {
+      'vim-test/vim-test',
+      cmd = {
+        'TestNearest',
+        'TestFile',
+        'TestSuite',
+        'TestLast',
+        'TestVisit',
+      },
+    }
+    use {
       'rcarriga/vim-ultest',
-      requires = { 'vim-test/vim-test' },
+      requires = {
+        'vim-test/vim-test',
+      },
       run = ':UpdateRemotePlugins',
       cmd = {
         'Ultest',
@@ -182,79 +203,20 @@ return require('packer').startup {
       'neovim/nvim-lspconfig',
       module = 'lspconfig',
       event = 'BufReadPost',
-      config = function()
+      setup = function()
         require('plugins.lsp').setup()
       end,
-    }
-    use {
-      'jose-elias-alvarez/null-ls.nvim',
-      event = 'BufReadPost',
       config = function()
-        require('plugins.null_ls').setup()
+        require('plugins.lsp').config()
       end,
-    }
-    use { 'folke/lua-dev.nvim', module = 'lua-dev' }
-    use { 'b0o/schemastore.nvim', module = 'schemastore' }
-    use {
-      'jose-elias-alvarez/nvim-lsp-ts-utils',
-      module = 'nvim-lsp-ts-utils',
     }
     use {
       'simrat39/symbols-outline.nvim',
       after = 'nvim-lspconfig',
       cmd = { 'SymbolsOutline', 'SymbolsOutlineOpen' },
       setup = function()
-        local symbols = require('symbols').symbols
-        vim.g.symbols_outline = {
-          width = 30,
-          show_guides = false,
-          auto_preview = false,
-          position = 'left',
-          symbols = {
-            Array = { icon = symbols.Array, hl = 'TSConstant' },
-            Boolean = { icon = symbols.Boolean, hl = 'TSBoolean' },
-            Class = { icon = symbols.Class, hl = 'TSType' },
-            Constant = { icon = symbols.Constant, hl = 'TSConstant' },
-            Constructor = { icon = symbols.Constructor, hl = 'TSConstructor' },
-            Enum = { icon = symbols.Enum, hl = 'TSType' },
-            EnumMember = { icon = symbols.EnumMember, hl = 'TSField' },
-            Event = { icon = symbols.Event, hl = 'TSType' },
-            Field = { icon = symbols.Field, hl = 'TSField' },
-            File = { icon = symbols.File, hl = 'TSURI' },
-            Function = { icon = symbols.Function, hl = 'TSFunction' },
-            Interface = { icon = symbols.Interface, hl = 'TSType' },
-            Key = { icon = symbols.Keyword, hl = 'TSType' },
-            Method = { icon = symbols.Method, hl = 'TSMethod' },
-            Module = { icon = symbols.Module, hl = 'TSNamespace' },
-            Namespace = { icon = symbols.Namespace, hl = 'TSNamespace' },
-            Null = { icon = symbols.Null, hl = 'TSType' },
-            Number = { icon = symbols.Number, hl = 'TSNumber' },
-            Object = { icon = symbols.Object, hl = 'TSType' },
-            Operator = { icon = symbols.Operator, hl = 'TSOperator' },
-            Package = { icon = symbols.Package, hl = 'TSNamespace' },
-            Property = { icon = symbols.Property, hl = 'TSMethod' },
-            String = { icon = symbols.String, hl = 'TSString' },
-            Struct = { icon = symbols.Struct, hl = 'TSType' },
-            Variable = { icon = symbols.Variable, hl = 'TSConstant' },
-          },
-          show_symbol_details = false,
-          symbol_blacklist = {},
-          lsp_blacklist = {
-            'null-ls',
-          },
-        }
-        require('modules.utils').augroup('Outline', {
-          {
-            events = { 'FileType' },
-            targets = { 'Outline' },
-            -- command = function()
-            --   vim.opt_local.scl = 'no'
-            -- end,
-            command = 'setlocal scl=no',
-          },
-        })
+        require('plugins.symbols-outline').setup()
       end,
-      -- config = function() end,
     }
     use {
       'ThePrimeagen/refactoring.nvim',
@@ -262,11 +224,6 @@ return require('packer').startup {
       config = function()
         require('refactoring').setup {}
       end,
-    }
-    use {
-      'weilbith/nvim-code-action-menu',
-      wants = 'telescope.nvim',
-      cmd = 'CodeActionMenu',
     }
     use {
       'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
@@ -279,38 +236,36 @@ return require('packer').startup {
     }
     use {
       'RRethy/vim-illuminate',
+      setup = function()
+        require('plugins.illuminate').setup()
+      end,
       config = function()
-        local augroup = require('modules.utils').augroup
-        -- diminishes flashing while typing
-        augroup('IlluminateInsert', {
-          {
-            events = { 'VimEnter', 'InsertEnter' },
-            targets = { '*' },
-            command = function()
-              vim.g.Illuminate_delay = 1000
-            end,
-          },
-        })
-
-        augroup('IlluminateNormal', {
-          {
-            events = { 'InsertLeave' },
-            targets = { '*' },
-            command = function()
-              vim.g.Illuminate_delay = 0
-            end,
-          },
-        })
+        require('plugins.illuminate').config()
       end,
       module = 'illuminate',
     }
     use {
       'rmagatti/goto-preview',
       config = function()
-        require 'plugins.goto-preview'
+        require('plugins.goto-preview').config()
       end,
       module = 'goto-preview',
     }
+    -- LSP, language-specific
+    use {
+      'jose-elias-alvarez/null-ls.nvim',
+      event = 'BufReadPost',
+      config = function()
+        require('plugins.null-ls').config()
+      end,
+    }
+    use {
+      'jose-elias-alvarez/nvim-lsp-ts-utils',
+      module = 'nvim-lsp-ts-utils',
+    }
+    use { 'folke/lua-dev.nvim', module = 'lua-dev' }
+    use { 'b0o/schemastore.nvim', module = 'schemastore' }
+    use { 'nanotee/sqls.nvim', module = 'sqls' }
 
     -- completion
     use { local_repo 'friendly-snippets' }
@@ -336,13 +291,21 @@ return require('packer').startup {
           'L3MON4D3/LuaSnip',
           module = 'luasnip',
           config = function()
-            require 'plugins.luasnip'
+            require('plugins.luasnip').config()
           end,
         },
       },
       config = function()
-        require 'plugins.cmp'
+        require('plugins.cmp').config()
       end,
+    }
+    use {
+      'tzachar/cmp-tabnine',
+      run = './install.sh',
+      requires = 'hrsh7th/nvim-cmp',
+      after = 'nvim-cmp',
+      cmd = 'CmpTabnineHub',
+      disable = true,
     }
     use { 'hrsh7th/cmp-cmdline', after = 'nvim-cmp' }
     -- insert or delete brackets, parentheses, quotes in pair
@@ -357,7 +320,6 @@ return require('packer').startup {
     }
 
     -- Tracking
-    -- use { 'ThePrimeagen/vim-apm' } -- not working
     -- use { 'git-time-metric/gtm-vim-plugin'}
     use {
       'chrisbra/BufTimer',
@@ -376,7 +338,7 @@ return require('packer').startup {
       wants = 'plenary.nvim',
       requires = { 'nvim-lua/plenary.nvim' },
       config = function()
-        require('plugins.gitsigns').setup()
+        require('plugins.gitsigns').config()
       end,
     }
     use {
@@ -431,18 +393,11 @@ return require('packer').startup {
       end,
     }
     use {
+      -- TODO: replace by maintained plugin
       'glepnir/galaxyline.nvim',
       event = 'BufEnter',
       config = function()
-        require 'plugins.galaxyline'
-      end,
-    }
-    use {
-      'karb94/neoscroll.nvim',
-      config = function()
-        require('neoscroll').setup {
-          mappings = {},
-        }
+        require('plugins.galaxyline').config()
       end,
     }
     use {
@@ -451,7 +406,6 @@ return require('packer').startup {
         require('dressing').setup {}
       end,
     }
-    -- Navigation
     use {
       'folke/trouble.nvim',
       -- module = 'trouble.providers.telescope',
@@ -463,7 +417,7 @@ return require('packer').startup {
         'TodoTelescope',
       },
       config = function()
-        require 'plugins.trouble'
+        require('plugins.trouble').config()
       end,
     }
     use {
@@ -476,28 +430,10 @@ return require('packer').startup {
       end,
     }
     use {
-      'kevinhwang91/nvim-hlslens',
-      config = function()
-        require('hlslens').setup {
-          calm_down = true,
-        }
-      end,
-    }
-    use {
-      'haya14busa/vim-asterisk',
-    }
-    use {
-      'edluffy/specs.nvim',
-      after = 'neoscroll.nvim',
-      config = function()
-        require('specs').setup {}
-      end,
-    }
-    use {
       'folke/zen-mode.nvim',
       cmd = { 'ZenMode' },
       config = function()
-        require('plugins.zen-mode').setup()
+        require('plugins.zen-mode').config()
       end,
     }
     use {
@@ -505,15 +441,8 @@ return require('packer').startup {
       config = function()
         require('twilight').setup {}
       end,
+      module = 'twilight',
       cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
-    }
-    use {
-      'wellle/visual-split.vim',
-      keys = {
-        '<Plug>(Visual-Split-VSSplit)',
-        '<Plug>(Visual-Split-VSSplitAbove)',
-        '<Plug>(Visual-Split-VSSplitBelow)',
-      },
     }
     use {
       'kyazdani42/nvim-tree.lua',
@@ -542,9 +471,45 @@ return require('packer').startup {
       end,
       module = 'xplr',
       config = function()
-        require('plugins.xplr').setup()
+        require('plugins.xplr').config()
       end,
       requires = { { 'nvim-lua/plenary.nvim' }, { 'MunifTanjim/nui.nvim' } },
+    }
+    use {
+      local_repo 'split.nvim',
+      module = 'split',
+    }
+
+    -- Navigation
+    use {
+      'karb94/neoscroll.nvim',
+      module = 'neoscroll',
+      config = function()
+        require('neoscroll').setup {
+          mappings = {},
+        }
+      end,
+    }
+    use {
+      'kevinhwang91/nvim-hlslens',
+      config = function()
+        require('hlslens').setup {
+          calm_down = true,
+        }
+      end,
+    }
+    use {
+      'haya14busa/vim-asterisk',
+      setup = function()
+        vim.g['asterisk#keeppos'] = 1
+      end,
+    }
+    use {
+      'edluffy/specs.nvim',
+      after = 'neoscroll.nvim',
+      config = function()
+        require('specs').setup {}
+      end,
     }
     use {
       local_repo 'bufjump.nvim',
@@ -567,14 +532,6 @@ return require('packer').startup {
       end,
     }
     use {
-      event = 'BufReadPost',
-      'andymass/vim-matchup',
-      disable = true,
-      setup = function()
-        vim.g.matchup_matchparen_offscreen = {}
-      end,
-    }
-    use {
       'phaazon/hop.nvim',
       module = 'hop',
       config = function()
@@ -594,11 +551,12 @@ return require('packer').startup {
         }
       end,
     }
+
     -- Telescope
     use {
       'nvim-telescope/telescope.nvim',
       config = function()
-        require('plugins.telescope').setup()
+        require('plugins.telescope').config()
       end,
       module = 'telescope',
       module_pattern = 'telescope.*',
@@ -652,14 +610,13 @@ return require('packer').startup {
     use {
       'mbbill/undotree',
       setup = function()
-        vim.g.undotree_SplitWidth = 30
-        vim.g.undotree_TreeVertShape = '│'
+        require('plugins.undotree').setup()
       end,
       cmd = { 'UndotreeToggle' },
     }
     use {
-      -- 'benfowler/telescope-luasnip.nvim',
-      local_repo 'telescope-luasnip.nvim',
+      'benfowler/telescope-luasnip.nvim',
+      -- local_repo 'telescope-luasnip.nvim',
       module = 'telescope._extensions.luasnip', -- if you wish to lazy-load
     }
     -- bindings
@@ -688,7 +645,7 @@ return require('packer').startup {
       'kevinhwang91/nvim-hclipboard',
       event = 'InsertEnter',
       config = function()
-        require 'plugins.hclipboard'
+        require('plugins.hclipboard').config()
       end,
     }
     use {
@@ -706,6 +663,10 @@ return require('packer').startup {
     -- Edition
     use {
       'AndrewRadev/splitjoin.vim',
+      setup = function()
+        vim.g.splitjoin_join_mapping = ''
+        vim.g.splitjoin_split_mapping = ''
+      end,
       cmd = { 'SplitjoinJoin', 'SplitjoinSplit' },
     }
     use {
@@ -726,7 +687,7 @@ return require('packer').startup {
       'monaqa/dial.nvim',
       event = 'BufReadPost',
       config = function()
-        require 'plugins.dial'
+        require('plugins.dial').config()
       end,
     }
     use {
@@ -754,11 +715,9 @@ return require('packer').startup {
       wants = 'nvim-ts-context-commentstring',
       requires = { 'JoosepAlviste/nvim-ts-context-commentstring' },
       config = function()
-        require('plugins.comment').setup()
+        require('plugins.comment').config()
       end,
     }
-
-    -- TODO: https://github.com/AndrewRadev/splitjoin.vim
     use {
       'bkad/CamelCaseMotion',
       event = 'BufReadPost',
@@ -767,7 +726,7 @@ return require('packer').startup {
       'kana/vim-textobj-user',
       event = 'BufReadPost',
       setup = function()
-        require('modules.utils').deep_merge(vim, require('bindings').plugins)
+        require('utils').deep_merge(vim, require('bindings').plugins)
       end,
       requires = {
         {
@@ -791,14 +750,23 @@ return require('packer').startup {
     use {
       'wellle/targets.vim',
       event = 'BufReadPost',
+      setup = function()
+        vim.g.targets_nl = 'np'
+      end,
     }
-    use { local_repo 'flies.nvim' }
     use {
       -- 'tommcdo/vim-ninja-feet',
       local_repo 'vim-ninja-feet',
       event = 'BufReadPost',
       setup = function()
         vim.g.ninja_feet_no_mappings = 1
+      end,
+    }
+    use { local_repo 'flies.nvim' }
+    use {
+      local_repo 'buffet.nvim',
+      config = function()
+        require('buffet').setup()
       end,
     }
 

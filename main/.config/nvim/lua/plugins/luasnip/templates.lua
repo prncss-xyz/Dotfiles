@@ -18,7 +18,7 @@ local function li(n, cb, ...)
   end, {})
 end
 
-local split_string = require('modules.utils').split_string
+local split_string = require('utils').split_string
 
 local M = {
   s(

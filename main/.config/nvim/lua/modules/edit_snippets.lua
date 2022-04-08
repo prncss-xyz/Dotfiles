@@ -1,54 +1,63 @@
-local utils = require 'modules.utils'
+local utils = require 'utils'
 local command = utils.command
 
 -- TODO: combine the two into a vararg with command line completion
 
-command('EditSnippets', {}, function()
+command('EditLSSnippets', {}, function()
   local l = vim.bo.filetype
   if l == '' then
-    return
-  end
-  if l == 'javascript' then
-    l = 'javascript/javascript'
-  elseif l == 'javascriptreact' then
-    l = 'javascript/react'
-  elseif l == 'typescript' then
-    l = 'javascript/typescript'
-  elseif l == 'typescriptreact' then
-    l = 'javascript/react-ts'
+    l = 'all'
   end
   vim.cmd(
     string.format(
-      ':edit %s/snippets/%s.json',
-      utils.local_repo 'friendly-snippets',
+      ':edit %s%s%s.lua',
+      vim.fn.getenv 'DOTFILES',
+      '/main/.config/nvim/lua/snippets/luasnip/',
       l
     )
   )
 end)
 
-command('EditSnippetsA', { nargs = 1 }, function(l)
-  if l == 'js' then
-    l = 'javascript'
-  elseif l == 'ts' then
-    l = 'typescript'
-  elseif l == 'jsx' then
-    l = 'javascriptreact'
-  elseif l == 'tsx' then
-    l = 'typescriptreact'
-  end
-  if l == 'javascript' then
-    l = 'javascript/javascript'
-  elseif l == 'javascriptreact' then
-    l = 'javascript/react'
-  elseif l == 'typescript' then
-    l = 'javascript/typescript'
-  elseif l == 'typescriptreact' then
-    l = 'javascript/react-ts'
+command('EditLSSnippetsA', { nargs = 1 }, function(l)
+  local l = vim.bo.filetype
+  if l == '' then
+    l = 'all'
   end
   vim.cmd(
     string.format(
-      ':edit %s/snippets/%s.json',
-      utils.local_repo 'friendly-snippets',
+      ':edit %s%s%s.lua',
+      vim.fn.getenv 'DOTFILES',
+      '/main/.config/nvim/lua/snippets/luasnip/',
+      l
+    )
+  )
+end)
+
+command('EditTSSnippets', {}, function()
+  local l = vim.bo.filetype
+  if l == '' then
+    l = 'all'
+  end
+  vim.cmd(
+    string.format(
+      ':edit %s%s%s.json',
+      vim.fn.getenv 'DOTFILES',
+      '/main/.config/nvim/lua/snippets/textmate/',
+      l
+    )
+  )
+end)
+
+command('EditTSSnippetsA', { nargs = 1 }, function(l)
+  local l = vim.bo.filetype
+  if l == '' then
+    l = 'all'
+  end
+  vim.cmd(
+    string.format(
+      ':edit %s%s%s.json',
+      vim.fn.getenv 'DOTFILES',
+      '/main/.config/nvim/lua/snippets/textmate/',
       l
     )
   )

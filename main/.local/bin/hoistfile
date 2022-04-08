@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# TODO hoist theme
+# TODO: hoist theme
 
 if [ -z "$DOTFILES" ]; then
 	echo DOTFILES variable expected to be set
@@ -53,7 +53,10 @@ case "$REL" in
 *)
 	mkdir -p "$DOTFILES/$PAC/$REL"
 	mv "$ABS" "$DOTFILES/$PAC/$REL"
-	stow "$PAC"
+  rm "$HOME""$REL"
+  if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
+    stow "$PAC" # only if active
+  fi
 	echo "$DOTFILES/$PAC/$REL"
 	exit 0
 	;;

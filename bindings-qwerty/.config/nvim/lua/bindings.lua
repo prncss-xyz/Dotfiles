@@ -1,11 +1,5 @@
 local M = {}
-local invert = require('modules.utils').invert
-
--- no default maps, so you may want to define some here
--- local opts = { silent = true }
--- vim.api.nvim_buf_set_keymap(bufnr, "n", "gs", ":TSLspOrganize<CR>", opts)
--- vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", ":TSLspRenameFile<CR>", opts)
--- vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", ":TSLspImportAll<CR>", opts)
+local invert = require('utils').invert
 
 local function s(char)
   return '<s-' .. char .. '>'
@@ -86,7 +80,6 @@ local function map_command_lang()
   local reg = require('modules.binder').reg
   reg {
     modes = {
-      -- TODO: l is not what I thought
       nvoil = {
         ['<c-c>'] = '<esc>',
         ['<c-n>'] = { '<down>' }, -- FIXME: won't work line <down> in command mode
@@ -111,7 +104,7 @@ local function map_command_lang()
       i = {
         ['<c-k>'] = '<c-o>d$',
         ['<c-o>'] = '<c-o>',
-        ['<c-v>'] = cmd 'normal! pa',
+        ['<c-v>'] = cmd 'normal! Pl',
       },
       is = {
         ['<s-tab>'] = { require('bindutils').s_tab },
@@ -171,15 +164,24 @@ local function map_basic()
   reg {
     A = 'A',
     a = 'a',
-    B = plug { '(matchup-g%)', 'matchup cycle backward', modes = 'nxo' },
-    b = plug { '(matchup-%)', 'matchup cycle forward', modes = 'nxo' },
+    b = plug { '%', 'matchup cycle forward', modes = 'nxo' },
     C = { '<nop>', modes = 'nx' },
     c = { '""c', modes = 'nx' },
     D = { '<nop>', modes = 'nx' },
     d = { '""d', modes = 'nx' },
-    E = { 'W', 'previous bigword', modes = 'nxo' },
+    E = {
+      modes = {
+        n = 'W',
+        xo = 'E',
+      },
+    },
     -- e = { 'w', 'next word ', modes = 'nxo' },
-    e = plug { 'CamelCaseMotion_w', 'next subword ', modes = 'nxo' },
+    e = {
+      modes = {
+        n = plug { 'CamelCaseMotion_w', 'next subword ' },
+        xo = plug { 'CamelCaseMotion_e', 'next subword ' },
+      },
+    },
     f = { require('bindutils').meta_move, mode = true, modes = 'nxo' },
     I = 'I',
     i = 'i',
@@ -280,18 +282,12 @@ local function map_basic()
           vim.lsp.buf.formatting_sync()
         end,
         i = function()
-          vim.api.nvim_feedkeys('\\<esc>', 'n', false)
+          vim.cmd 'stopinsert'
           vim.lsp.buf.formatting_sync()
         end,
       },
     },
-    ['<c-v>'] = { 'gp', modes = 'nv' },
-    ['<c-w>'] = {
-      r = plug { '(Visual-Split-VSResize)', modes = 'x' },
-      S = plug { '(Visual-Split-VSSplit)', modes = 'x' },
-      [dd.up] = plug { '(Visual-Split-VSSplitAbove)', modes = 'x' },
-      [dd.down] = plug { '(Visual-Split-VSSplitBelow)', modes = 'x' },
-    },
+    ['<c-v>'] = { 'P', modes = 'nv' },
     ['<a-a>'] = cmd { 'e#', 'previous buffer' },
     ['<a-b>'] = cmd { 'wincmd p', 'window back' },
     ['<a-w>'] = cmd { 'q', 'close window' },
@@ -300,6 +296,7 @@ local function map_basic()
     [dd.up] = { 'k', 'up', modes = 'nxo' },
     [dd.down] = { 'j', 'down', modes = 'nxo' },
     -- also: require("luasnip.extras.select_choice")
+    -- TODO: require luasnip
     [dd.prev_search] = {
       "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
       noremap = false,
@@ -435,15 +432,6 @@ local function map_basic()
       v = 'gv',
       pw = plug '(Marks-prev-bookmark1)',
       w = plug '(Marks-next-bookmark1)',
-      -- w = function()
-      --   require('bindutils').paste('"', 'V', 'p')
-      -- end,
-      -- w = {
-      --   modes = {
-      --     n = require('modules.split').normal,
-      --     x = ":<c-u>lua require('modules.split').visual()<cr>",
-      --   },
-      -- },
       y = {
         arch = map_search(
           'https://wiki.archlinux.org/index.php?search=',
@@ -518,7 +506,7 @@ local function map_basic()
         b = cmd { 'setlocal spell spelllang=en_us,fr,cjk', 'en fr' },
         e = cmd { 'setlocal spell spelllang=en_us,cjk', 'en' },
         f = cmd { 'setlocal spell spelllang=fr,cjk', 'fr' },
-        g = cmd { 'zg', 'add to spellfile' },
+        g = { 'zg', 'add to spellfile' },
         x = cmd { 'setlocal nospell spelllang=', 'none' },
       },
     },
@@ -577,14 +565,12 @@ local function map_basic()
       u = require('bindutils').scroll_down,
       pv = { '`<', modes = 'nxo' },
       v = { '`>', modes = 'nxo' },
-      -- Z = { '<cmd>lua require"bindutils".spell_next(-1)<cr>', 'prevous misspelled' },
-      -- z = { '<cmd>lua require"bindutils".spell_next()<cr>', 'next misspelled' },
       ['p;'] = { 'g,', 'newer change' },
       [';'] = { 'g;', 'older changer' },
       [dd.up] = { 'gk', 'visual up', modes = 'nxo' },
       [dd.down] = { 'gj', 'visual down', modes = 'nxo' },
-      [q.previous .. dd.spell] = { '[s', 'prevous misspelled' },
-      [dd.spell] = { ']s', 'next misspelled' },
+      [q.previous .. dd.spell] = { '[s', 'prevous misspelled' }, -- FIXME:
+      [dd.spell] = { ']s', 'next misspelled' }, -- FIXME:
       [dd.search] = cmd {
         'Telescope current_buffer_fuzzy_find',
         'Telescope current_buffer_fuzzy_find',
@@ -603,16 +589,12 @@ local function map_basic()
       name = '+edit',
       a = {
         modes = {
-          n = function()
-            vim.lsp.buf.code_action()
-          end,
-          -- n = { '<cmd>lua vim.lsp.buf.code_action()<cr>' },
+          -- n = cmd { 'CodeActionMenu', 'code action',
+          n = vim.lsp.buf.code_action,
           v = { ":'<,'>lua vim.lsp.buf.range_code_action()<cr>" },
         },
       },
-      -- a = cmd { 'CodeActionMenu', 'code action', modes = 'nx' },
       b = { 'gi', 'last insert point' },
-      -- f = cmd { 'Telescope refactoring', 'refactoring', modes = 'nx' },
       d = plug '(u-flies-operator-swap)', -- FIXME:
       he = cmd 'ISwapWith',
       pe = {
@@ -913,21 +895,17 @@ local function map_basic()
     [a.editor] = {
       -- require'dap'.list_breakpoints() -- Lists all breakpoints and log points in quickfix window.
       pa = {
-        function()
-          require('modules.toggler').open(
-            'Trouble lsp_document_diagnostics',
-            'TroubleClose'
-          )
-        end,
+        require('modules.toggler').cb(
+          'Trouble document_diagnostics',
+          'TroubleClose'
+        ),
         'lsp document diagnostics',
       },
       a = {
-        function()
-          require('modules.toggler').open(
-            'Trouble lsp_workspace_diagnostics',
-            'TroubleClose'
-          )
-        end,
+        require('modules.toggler').cb(
+          'Trouble workspace_diagnostics',
+          'TroubleClose'
+        ),
         'lsp worspace diagnostics',
       },
       -- pb = { -- FIXME:
@@ -942,29 +920,26 @@ local function map_basic()
       --   end,
       --   'next workspace',
       -- },
-      b = function()
+      b = require('modules.toggler').cb(function()
         require('marks').bookmark_state:all_to_list 'quickfixlist'
         vim.cmd 'Trouble quickfix'
-      end,
+      end, 'TroubleClose'),
       d = {
-        function()
-          require('dapui').toggle() -- .open() .close()
-        end,
+        require('modules.toggler').cb(function()
+          require('dapui').open()
+        end, function()
+          require('dapui').close()
+        end),
         'toggle dapui',
       },
       pe = { require('bindutils').reset_editor, 'reset editor' },
       e = { require('bindutils').edit_current, 'current in new editor' },
       f = {
-        function()
-          require('modules.toggler').open('NvimTreeOpen', 'NvimTreeClose')
-        end,
+        require('modules.toggler').cb('NvimTreeOpen', 'NvimTreeClose'),
         'nvim tree',
       },
-      g = function()
-        require('modules.toggler').open('Neogit', ':q')
-      end,
-      ph = cmd { 'DiffviewClose', 'diffview close' },
-      h = cmd { 'DiffviewFileHistory', 'diffview open' },
+      g = require('modules.toggler').cb('Neogit', ':q'),
+      h = require('modules.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
       j = {
         name = '+peek',
         l = plug {
@@ -984,61 +959,73 @@ local function map_basic()
           'referenes',
         },
         t = cmd 'UltestOutput',
+        [dd.git] = function()
+          require('gitsigns').blame_line { full = true }
+        end,
       },
       pk = { vim.lsp.buf.signature_help, 'signature help' },
       k = { vim.lsp.buf.hover, 'hover' },
-      l = function()
+      l = require('modules.toggler').cb(function()
         require('marks').mark_state:all_to_list 'quickfixlist'
         vim.cmd 'Trouble quickfix'
-      end,
+      end, 'TroubleClose'),
       m = cmd { 'Telescope installed_plugins', 'plugins' },
       n = cmd { 'Telescope modules', 'node modules' },
       o = { require('bindutils').open_current, 'open current external' },
       pp = { require('modules.setup-session').develop, 'session develop' },
-      r = { '<cmd>update<cr><cmd>luafile %<cr>', 'reload' },
+      r = { '<cmd>update<cr><cmd>so %<cr>', 'reload' },
       ps = {
-        function()
-          require('modules.toggler').open(
-            'TroubleToggle lsp_references',
-            'TroubleClose'
-          )
-        end,
+        require('modules.toggler').cb(
+          'TroubleToggle references',
+          'TroubleClose'
+        ),
         'lsp references',
       },
-      s = { require('bindutils').outliner, 'outliner' },
-      y = {
-        function()
-          require('modules.toggler').open('UndotreeToggle', 'UndotreeToggle')
-        end,
-        'undo tree',
+      s = {
+        require('modules.toggler').cb(
+          'SymbolsOutlineOpen',
+          'SymbolsOutlineClose'
+        ),
+        'outliner',
       },
       t = { require('bindutils').term, 'new terminal' },
-      pu = function()
-        require('modules.toggler').open('DiffviewOpen', 'DiffviewClose')
-      end,
-      u = {
-        function()
-          require('modules.toggler').open('Gitsigns setqflist', 'TroubleClose')
-        end,
-        'hunks',
-      },
       pv = cmd { 'Telescope project_directory', 'projects' },
       v = cmd { 'Telescope my_projects', 'sessions' },
-      pw = {
+      cs = {
+        function()
+          require('split').open_lsp()
+        end,
+      },
+      pc = {
         modes = {
-          n = require('modules.split').lsp,
-          x = ":<c-u>lua require('modules.split').resize()<cr>",
+          n = function()
+            require('split').close()
+          end,
         },
       },
-      w = {
+      cr = {
         modes = {
-          n = require('modules.split').normal,
-          x = ":<c-u>lua require('modules.split').visual()<cr>",
+          n = function()
+            require('split').open({ target = 'here' }, 'n')
+          end,
+          x = ":<c-u>lua require('split').open({target='here'}, 'x')<cr>",
         },
       },
-      W = cmd 'TodoTrouble',
+      co = {
+        modes = {
+          n = function()
+            require('split').open({}, 'n')
+          end,
+          x = ":<c-u>lua require('split').open({}, 'x')<cr>",
+        },
+      },
+      w = require('modules.toggler').cb('TodoTrouble', 'TroubleClose'),
       x = { require('bindutils').xplr_launch, 'xplr' },
-      z = cmd 'ZenMode',
+      y = {
+        require('modules.toggler').cb('UndotreeToggle', 'UndotreeToggle'),
+        'undo tree',
+      },
+      z = require('modules.toggler').cb('ZenMode', 'ZenMode'),
       ['.'] = { require('bindutils').dotfiles, 'dotfiles' },
       ['"'] = {
         function()
@@ -1047,7 +1034,14 @@ local function map_basic()
         'pick note',
       },
       [' '] = cmd { 'Telescope commands', 'commands' },
-      [dd.git] = cmd { 'lua require"gitsigns".blame_line{full=true}' },
+      ['p' .. dd.git] = require('modules.toggler').cb(
+        'DiffviewOpen',
+        'DiffviewClose'
+      ),
+      [dd.git] = {
+        require('modules.toggler').cb('Gitsigns setqflist', 'TroubleClose'),
+        'hunks',
+      },
       [s(a.editor)] = { require('modules.toggler').back, 'toggle' },
       [a.editor] = { require('modules.toggler').toggle, 'toggle' },
     },
@@ -1057,8 +1051,8 @@ end
 local function map_textobj_add_name(t, name)
   if type(t) ~= 'table' then
     t = { t }
+    t.name = t.name or name
   end
-  t.name = t.name or name
   return t
 end
 
@@ -1077,7 +1071,7 @@ end
 -- FIXME: not working in visual mode: comment, ninja
 
 local function map_textobjects()
-  local map = require('modules.utils').map
+  local map = require('utils').map
 
   -- entire buffer
   -- map('n', 'fhe', '<cmd>Telescope buffers<cr>')
@@ -1123,20 +1117,25 @@ local function map_textobjects()
   --   }
   -- TODO: flies-exchange
 
-  map('o', 'ai', ":<C-U>lua require('tsht').nodes()<cr>")
-  map('x', 'ai', ":lua require('tsht').nodes()<cr>")
-  map('o', 'ihi', ":<C-U>lua require('tsht').nodes()<cr>")
-  map('x', 'ihi', ":lua require('tsht').nodes()<cr>")
-  map(
-    'o',
-    'ii',
-    ":<c-u>lua require('nvim-treesitter.textobjects.select').select_textobject( '@node', 'o')<cr>"
-  )
-  map(
-    'x',
-    'ii',
-    ":lua require('nvim-treesitter.textobjects.select').select_textobject( '@node', 'x')<cr>"
-  )
+  map('o', 'ai', ":<c-u>lua require('treesitter-unit').select(true)<cr>")
+  map('x', 'ai', ":lua require('treesitter-unit').select(true)<cr>")
+  if true then
+    map('o', 'ii', ":<c-u>lua require('treesitter-unit').select()<cr>")
+    map('x', 'ii', ":lua require('treesitter-unit').select()<cr>")
+    map(
+      'o',
+      'ii',
+      ":<c-u>lua require('nvim-treesitter.textobjects.select').select_textobject( '@node', 'o')<cr>"
+    )
+    map(
+      'x',
+      'ii',
+      ":lua require('nvim-treesitter.textobjects.select').select_textobject( '@node', 'x')<cr>"
+    )
+  else
+    map('o', 'ihi', ":<c-u>lua require('tsht').nodes()<cr>")
+    map('x', 'ihi', ":lua require('tsht').nodes()<cr>")
+  end
 
   local ts = require('flies.objects.treesitter').new
   local buf = require('flies.objects.buffer').new()
@@ -1239,7 +1238,7 @@ end
 
 local function map_readonly()
   if vim.bo.buftype == 'prompt' then
-    local map = require('modules.utils').buf_map
+    local map = require('utils').buf_map
     map('nxo', '<esc>', ':q!<cr>')
     map('nxo', '<a-w>', ':q!<cr>')
     map('nxo', '<c-c>', ':q!<cr>')
@@ -1264,7 +1263,7 @@ local function map_readonly()
 end
 
 function M.setup()
-  local map = require('modules.utils').map
+  local map = require('utils').map
   map('nxo', 'q', '<nop>')
   map('nxo', a.edit, '<nop>')
   map('nxo', a.jump, '<nop>')
@@ -1283,25 +1282,27 @@ function M.setup()
   map('nxo', 'gg', '<nop>')
   map('', '<c-u>', '<nop>')
   map('', '<c-d>', '<nop>')
-  require('modules.utils').augroup('ReadonlyMappings', {
+  require('utils').augroup('ReadonlyMappings', {
     {
       events = { 'BufNew' },
       targets = { '*' },
       command = map_readonly,
     },
   })
-  require('modules.utils').augroup('MarkdownBindings', {
-    {
-      events = { 'FileType' },
-      targets = { 'markdown' },
-      command = map_markdown,
-    },
-  })
+  if false then
+    require('utils').augroup('MarkdownBindings', {
+      {
+        events = { 'FileType' },
+        targets = { 'markdown' },
+        command = map_markdown,
+      },
+    })
+  end
   -- ordering of the matters for: i) overriding, ii) captures
   map_command_lang()
   map_basic()
   map_textobjects()
-  -- require('modules.utils').dump(require('modules.binder').counters)
+  -- require('utils').dump(require('modules.binder').counters)
 end
 
 local vim = vim

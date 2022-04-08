@@ -249,7 +249,7 @@ function M.outliner()
     require('modules.toggler').open('Toc', nil)
     vim.cmd 'Toc'
   else
-    require('modules.toggler').open('SymbolsOutlineOpen', 'SymbolsOutlineClose')
+    require('modules.toggler').cb('SymbolsOutlineOpen', 'SymbolsOutlineClose')
   end
 end
 
@@ -436,7 +436,7 @@ end
 
 function M.searchCword(base)
   local word = vim.fn.expand '<cword>'
-  local qs = require('modules.utils').encode_uri(word)
+  local qs = require('utils').encode_uri(word)
   M.open(base .. qs)
 end
 

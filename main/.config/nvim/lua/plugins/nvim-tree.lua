@@ -1,7 +1,7 @@
 local M = {}
 
 M.setup = function()
-  require('modules.utils').deep_merge(vim.g, {
+  require('utils').deep_merge(vim.g, {
     nvim_tree_ignore_ft = {},
     -- nvim_tree_quit_on_open = 1,
     nvim_tree_highlight_opened_files = 1,
@@ -56,7 +56,7 @@ local function custom_setup()
   setup_bindings(buf_id)
 end
 
-require('modules.utils').augroup('NvimTreeConfig', {
+require('utils').augroup('NvimTreeConfig', {
   {
     events = { 'FileType' },
     targets = { 'NvimTree' },
@@ -77,6 +77,7 @@ M.config = function()
     tree_follow = true,
     tree_disable_default_keybindings = true,
     show_hidden = true,
+    view = { width = vim.g.u_pane_width },
   }
   require('nvim-tree.events').on_file_created(function(ev)
     local fname = ev.fname

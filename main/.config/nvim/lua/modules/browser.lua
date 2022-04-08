@@ -1,6 +1,6 @@
 local M = {}
 
-local get_visual_selection = require('modules.utils').get_visual_selection
+local get_visual_selection = require('utils').get_visual_selection
 local browser = os.getenv 'BROWSER'
 
 function M.open(url)
@@ -14,7 +14,7 @@ end
 
 function M.search_cword(base)
   local word = vim.fn.expand '<cword>'
-  local qs = require('modules.utils').encode_uri(word)
+  local qs = require('utils').encode_uri(word)
   M.open(base .. qs)
 end
 
@@ -28,7 +28,7 @@ end
 
 function M.search_visual(base)
   get_visual_selection(function(word)
-    local qs = require('modules.utils').encode_uri(word)
+    local qs = require('utils').encode_uri(word)
     M.open(base .. qs)
   end)
 end

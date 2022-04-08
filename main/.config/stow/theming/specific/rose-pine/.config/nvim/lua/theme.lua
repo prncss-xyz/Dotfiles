@@ -7,7 +7,7 @@ M.galaxyline = {
 }
 
 M.setup = function()
-  require('modules.utils').deep_merge(vim.g, {
+  require('utils').deep_merge(vim.g, {
     rose_pine_variant = 'dawn',
     rose_pine_enable_italics = true,
     rose_pine_disable_background = false,

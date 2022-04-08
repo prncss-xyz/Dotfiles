@@ -1,10 +1,12 @@
-local utils = require 'modules.utils'
-local command = utils.command
+function _G.dump(...)
+  local objects = vim.tbl_map(vim.inspect, { ... })
+  if #objects == 0 then
+    print 'nil'
+  end
+  print(unpack(objects))
+  return ...
+end
 
--- trying to figure it out
-command('Conceal', {}, function()
-  vim.cmd [[
-    syntax match True "true" conceal cchar=⊤
-    syntax match False "false" conceal cchar=⊥
-      ]]
+require('utils').command('Dump', { nargs = 1 }, function(name)
+  vim.cmd(string.format('lua dump(%s)', name))
 end)

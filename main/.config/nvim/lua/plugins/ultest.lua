@@ -1,10 +1,9 @@
-local m = {}
+local M = {}
 
-function m.setup()
-  require('modules.utils').deep_merge(vim.g, {
+function M.setup()
+  require('utils').deep_merge(vim.g, {
     -- ['test#strategy'] = 'neovim', -- 'shtuff' , 'harpoon', 'neovim'
     shtuff_receiver = 'devrunner',
-    -- ['test#lua#busted#executable'] = 'caca',
     -- nvim --headless -c "PlenaryBustedDirectory tests/plenary/ {minimal=true}"
     ultest_use_pty = 1,
     ultest_env = {
@@ -13,13 +12,13 @@ function m.setup()
   })
 end
 
-function m.config()
+function M.config()
   require('ultest').setup {
     builders = {
       ['javascript#jest'] = function(cmd)
         local filename = cmd[#cmd]
         print(filename)
-        -- require('modules.utils').dump(cmd)
+        -- require('utils').dump(cmd)
         return {
           dap = {
             type = 'node2',
@@ -40,7 +39,7 @@ function m.config()
       end,
     },
   }
-  require('modules.utils').augroup('Tests', {
+  require('utils').augroup('Tests', {
     {
       events = { 'BufWritePost' },
       targets = { '*' },
@@ -50,4 +49,4 @@ function m.config()
   })
 end
 
-return m
+return M

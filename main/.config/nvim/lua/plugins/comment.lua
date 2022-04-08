@@ -17,7 +17,7 @@ local function pre_hook(ctx)
   }
 end
 
-function M.setup()
+function M.config()
   local ft = require 'Comment.ft'
   -- ft.set('fish', '#%s')
   require('Comment').setup {
@@ -31,8 +31,10 @@ function M.setup()
       line = '<plug>(u-comment-toggler-line)',
     },
   }
+
   vim.api.nvim_del_keymap('n', 'gcA' )
   vim.api.nvim_del_keymap('n', 'gcO' )
   vim.api.nvim_del_keymap('n', 'gco' )
 end
+
 return M

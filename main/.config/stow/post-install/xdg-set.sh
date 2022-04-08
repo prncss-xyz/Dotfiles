@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# apps keep rewriting that file, which blocked stow
+
 cat >~/.config/user-dirs.dirs <<EOF
 XDG_DOWNLOAD_DIR="$HOME/Downloads"
 XDG_PICTURES_DIR="$HOME/Media/Pictures"

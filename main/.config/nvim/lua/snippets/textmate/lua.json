@@ -1,0 +1,141 @@
+{
+  "require": {
+    "prefix": "require",
+    "body": ["require'${1:module}'"],
+    "description": "Require module"
+  },
+  "return": {
+    "prefix": "return",
+    "body": ["return "],
+    "description": "return value"
+  },
+  "assignment": {
+    "prefix": "local assign",
+    "body": ["local ${1:name} = ${0:0}"],
+    "description": "create a variable"
+  },
+  "declaration": {
+    "prefix": "local declare",
+    "body": ["local ${0:name}"],
+    "description": "create a variable"
+  },
+  "locreq": {
+    "prefix": "local require",
+    "body": ["local ${1:name} = require'${2:module}'"],
+    "description": "require module as a variable"
+  },
+  "class": {
+    "prefix": "class",
+    "body": [
+      "local ${1:name} = {}",
+      "",
+      "$1.new = function($2)",
+      "\tlocal o = {$3}",
+      "\t${4: -- block}",
+      "\treturn o",
+      "end",
+      ""
+    ],
+    "description": "Create a class"
+  },
+  "if": {
+    "prefix": "if ",
+    "body": ["if ${1:true} then", "\t${2: -- block}", "end"]
+  },
+  "elseif": {
+    "prefix": "elseif ",
+    "body": ["elseif ${1:true} then", "\t${2: -- block}"]
+  },
+  "else": {
+    "prefix": "else ",
+    "body": ["else", "\t${1: -- block}"]
+  },
+  "for": {
+    "prefix": "for ",
+    "body": ["for ${2:_} in ${1:iterator} do", "\t${3: -- block}", "end"]
+  },
+  "for c": {
+    "prefix": "for c",
+    "body": ["for ${1:i} = ${2:1}, ${3:10} do", "\t${4: -- block}", "end"],
+    "description": "for loop range"
+  },
+  "for each": {
+    "prefix": "for pairs",
+    "body": [
+      "for ${1:k}, ${2:v} in pairs(${3:table}) do",
+      "\t${4: block}",
+      "end"
+    ]
+  },
+  "for ipairs": {
+    "prefix": "for ipairs",
+    "body": [
+      "for ${1:i}, ${2:v} in ipairs(${3:array}) do",
+      "\t{$4: -- block}",
+      "end"
+    ]
+  },
+  "forline": {
+    "prefix": "forline",
+    "body": [
+      "f = io.open(${1:'${2:filename}'}, '${3:r}')\n",
+      "while true do",
+      "\tline = f:read()",
+      "\tif line == nil then break end\n",
+      "\t${4:-- block}",
+      "end"
+    ],
+    "description": "read file line by line"
+  },
+  "function": {
+    "prefix": "function",
+    "body": ["function ${1:name}($2)", "\t${3:-- block}", "end", ""]
+  },
+  "function, lambda": {
+    "prefix": "function lambda",
+    "body": ["function($1)", "\t${2:-- block}", "end$0"]
+  },
+  "function, local": {
+    "prefix": "local function",
+    "body": ["local function ${1:name}($2)", "\t${3:-- block}", "end"]
+  },
+  "function, self": {
+    "prefix": "function self:",
+    "body": [
+      "function self:${1:method_name}($2)",
+      "\t{$3:-- block}",
+      "end",
+      ""
+    ]
+  },
+  "while": {
+    "prefix": "while",
+    "body": ["while ${1:true} do", "\t${2:-- block}", "end"]
+  },
+  "test": {
+    "prefix": "test",
+    "body": [
+      "describe('${1:description}', function()",
+      "\tit('${2:description}', function()",
+      "\t\t${3:-- assertions}",
+      "\tend)",
+      "end)"
+    ]
+  },
+  "test, describe": {
+    "prefix": "describe",
+    "body": [
+      "describe('${1:description}', function()",
+      "\t${2:-- tests}",
+      "end)"
+    ]
+  },
+  "test, it": {
+    "prefix": "it",
+    "body": ["it('${1:description}', function()", "\t${2:-- test}", "end)"]
+  },
+  "test, same": {
+    "prefix": "same",
+    "body": ["assert.are.same(${1:expected}, ${2:passed})"]
+  }
+}

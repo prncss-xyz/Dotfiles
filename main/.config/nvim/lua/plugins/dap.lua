@@ -32,7 +32,7 @@ local function pick_process()
   return procs[choice].pid
 end
 
-function M.setup()
+function M.config()
   local dap = require 'dap'
   vim.fn.sign_define(
     'DapBreakpoint',
@@ -107,7 +107,9 @@ function M.setup()
       name = 'Attach to process',
       type = 'node2',
       request = 'attach',
-      processId = require('dap.utils').pick_process,
+      processId = function()
+        return require('dap.utils').pick_process()
+      end,
     },
   }
   -- git clone https://github.com/Microsoft/vscode-chrome-debug

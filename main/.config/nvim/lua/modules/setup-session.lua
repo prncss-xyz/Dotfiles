@@ -90,7 +90,7 @@ end
 
 function M.setup(conf0)
   conf = conf0
-  require('modules.utils').augroup('SetupSession', {
+  require('utils').augroup('SetupSession', {
     {
       events = { 'VimEnter', 'DirChanged' },
       targets = { '*' },
@@ -98,8 +98,8 @@ function M.setup(conf0)
     },
   })
 
-  require('modules.utils').command('SetupSessionInfo', {}, function()
-    require('modules.utils').dump(scheme)
+  require('utils').command('SetupSessionInfo', {}, function()
+    require('utils').dump(scheme)
   end)
 end
 

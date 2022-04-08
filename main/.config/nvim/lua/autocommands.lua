@@ -1,4 +1,19 @@
-local augroup = require('modules.utils').augroup
+local augroup = require('utils').augroup
+
+-- Makes terminal aware of current directory
+-- if nut running from a GUI
+if vim.fn.has 'gui' == 0 then
+  augroup('OSC7', {
+    {
+      events = { 'DirChanged' },
+      targets = { '*' },
+      command = function()
+        local uri = 'file://localhost/' .. vim.fn.getcwd()
+        vim.fn.chansend(vim.v.stderr, '\x1B]7;' .. uri .. '\x1B\\')
+      end,
+    },
+  })
+end
 
 augroup('Templates', {
   {
@@ -39,6 +54,7 @@ augroup('SaveShada', {
   },
 })
 
+-- avoid keeping undo for temporary or confidential files
 augroup('NoUndoFile', {
   {
     events = { 'BufWritePre' },
@@ -101,8 +117,6 @@ local function set_title_git()
   end
 end
 
--- works with kitty terminal
--- do not work with foot terminal
 augroup('SetTitleGitsigns', {
   {
     events = { 'VimEnter', 'DirChanged', 'CursorHold' },
@@ -111,36 +125,8 @@ augroup('SetTitleGitsigns', {
   },
 })
 
--- FIXME: these are NOT working
-augroup('ConcealLua', {
-  {
-    events = { 'BufNewFile', 'BufRead' },
-    targets = { '*.lua' },
-    command = function()
-      vim.cmd [[
-        set syntax=on
-        syntax match True "true" conceal cchar=⊤
-        syntax match False "false" conceal cchar=⊥
-      ]]
-    end,
-  },
-})
-augroup('ConcealLuaB', {
-  {
-    events = { 'FileType' },
-    targets = { 'lua' },
-    command = function()
-      vim.cmd [[
-        set syntax=on
-        syntax match True "true" conceal cchar=⊤
-        syntax match False "false" conceal cchar=⊥
-      ]]
-    end,
-  },
-})
-
 -- TODO: make it work with BufRead or FileType
--- issue: having Telescope properly read filetype
+-- (having Telescope luasnip properly read filetype)
 augroup('FishEditCmdline', {
   {
     events = { 'VimEnter' },

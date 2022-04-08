@@ -6,7 +6,7 @@ local M = {}
 local cursor
 
 function M.setup()
-  local augroup = require('modules.utils').augroup
+  local augroup = require('utils').augroup
   augroup('CursorGet', {
     {
       events = { 'VimEnter', 'CursorMoved' },

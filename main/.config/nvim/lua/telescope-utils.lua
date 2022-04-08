@@ -1,4 +1,4 @@
-local m = {}
+local M = {}
 
 local entry_display = require 'telescope.pickers.entry_display'
 
@@ -17,7 +17,7 @@ local function make_display(entry)
   }
 end
 
-function m.entry_maker(entry)
+function M.entry_maker(entry)
   local name = vim.fn.fnamemodify(entry, ':t')
   return {
     display = make_display,
@@ -27,4 +27,4 @@ function m.entry_maker(entry)
   }
 end
 
-return m
+return M

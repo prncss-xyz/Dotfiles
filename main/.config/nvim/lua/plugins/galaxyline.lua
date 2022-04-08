@@ -1,4 +1,4 @@
--- configuration
+local M = {}
 
 local short_line_list = { 'NvimTree', 'Outline', 'Trouble', 'DiffviewFiles' }
 local no_num_list = {
@@ -19,8 +19,6 @@ local no_num_list = {
   'dap-scopes',
 }
 
-vim.opt.laststatus = 2
-
 -- local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'dbui', 'help' }
 local skipLock = {}
 
@@ -35,23 +33,6 @@ local buf_icon = {
   Outline = ' ',
   DiffviewFiles = ' ',
   NvimTree = ' ',
-}
-
-local gl = require 'galaxyline'
-local gls = gl.section
-gl.short_line_list = short_line_list
-local gps = require 'nvim-gps'
-local symbols = require('symbols').symbols
-gps.setup {
-  enabled = true,
-  icons = {
-    ['class-name'] = symbols.Class .. ' ',
-    ['function-name'] = symbols.Function .. ' ',
-    ['method-name'] = symbols.Method .. ' ',
-    ['container-name'] = symbols.Array .. ' ',
-    ['tag-name'] = symbols.Property .. ' ',
-  },
-  separator = ' > ',
 }
 
 local vim = vim
@@ -91,16 +72,16 @@ end
 
 local trouble_mode = function()
   local mode = require('trouble.config').options.mode
-  if mode == 'lsp_workspace_diagnostics' then
+  if mode == 'workspace_diagnostics' then
     return 'Workspace diagnostics'
   end
-  if mode == 'lsp_document_diagnostics' then
+  if mode == 'document_diagnostics' then
     return 'Document diagnostics'
   end
-  if mode == 'lsp_references' then
+  if mode == 'references' then
     return 'References'
   end
-  if mode == 'lsp_definitions' then
+  if mode == 'definitions' then
     return 'Definitions'
   end
   if mode == 'todo' then
@@ -155,7 +136,7 @@ local coordinates = function()
   return string.format('%3d:%02d %d ', line, column, line_count)
 end
 
-local function get_lsp_diagnostic()
+local function get_diagnostic()
   local res = {}
   for _, diag in ipairs(vim.diagnostic.get(0, nil)) do
     res[diag.severity] = (res[diag.severity] or 0) + 1
@@ -183,132 +164,126 @@ local function get_status_icons()
   end
 
   -- diagnostics
-  local lsp_diagnostic = get_lsp_diagnostic()
-  if lsp_diagnostic[vim.diagnostic.severity.ERROR] then
+  local diagnostic = get_diagnostic()
+  if diagnostic[vim.diagnostic.severity.ERROR] then
     icons = icons .. ' '
   end
-  if lsp_diagnostic[vim.diagnostic.severity.WARN] then
+  if diagnostic[vim.diagnostic.severity.WARN] then
     icons = icons .. ' '
   end
 
   return icons
 end
 
-local colors = {
-  warn = vim.g.terminal_color_3,
-  error = vim.g.terminal_color_1,
-  background_active = vim.g.terminal_color_14, -- TODO: use gitgutters highlight groups
-  background_inactive = vim.g.terminal_color_12,
-  text = vim.g.terminal_color_7,
-}
+function M.config()
+  vim.opt.laststatus = 2
 
-local theme = require 'theme'
-if theme.galaxyline then
-  require('modules.utils').deep_merge(colors, theme.galaxyline)
+  local gl = require 'galaxyline'
+  local gls = gl.section
+  gl.short_line_list = short_line_list
+
+  local colors = {
+    warn = vim.g.terminal_color_3,
+    error = vim.g.terminal_color_1,
+    background_active = vim.g.terminal_color_14, -- TODO: use gitgutters highlight groups
+    background_inactive = vim.g.terminal_color_12,
+    text = vim.g.terminal_color_7,
+  }
+
+  local theme = require 'theme'
+  if theme.galaxyline then
+    require('utils').deep_merge(colors, theme.galaxyline)
+  end
+
+  local text = colors.text
+  local background_active = colors.background_active
+  local background_inactive = colors.background_inactive
+
+  local gps = require 'nvim-gps'
+
+  gls.left = {
+    {
+      FileName = {
+        provider = get_name_iconified,
+        highlight = { text, background_active },
+      },
+    },
+    {
+      Space = {
+        provider = function()
+          return ' '
+        end,
+        highlight = { text, background_inactive },
+      },
+    },
+    {
+      NvimGPS = {
+        highlight = { text, background_inactive },
+        provider = function()
+          if gps.is_available() then
+            return gps.get_location()
+          end
+        end,
+      },
+    },
+  }
+
+  gls.right = {
+    {
+      StatusIcons = {
+        provider = get_status_icons,
+        highlight = { text, background_inactive },
+      },
+    },
+    {
+      LineColumn = {
+        provider = coordinates,
+        highlight = { text, background_inactive },
+      },
+    },
+  }
+
+  gls.short_line_left = {
+    {
+      FileNameB = {
+        provider = get_name_iconified,
+        highlight = { text, background_inactive },
+      },
+    },
+    {
+      SpaceB = {
+        provider = function()
+          return ' '
+        end,
+        highlight = { text, background_inactive },
+      },
+    },
+    {
+      NvimGPSB = {
+        highlight = { text, background_inactive },
+        provider = function()
+          if gps.is_available() then
+            return gps.get_location()
+          end
+        end,
+      },
+    },
+  }
+
+  gls.short_line_right = {
+    {
+      StatusIconsB = {
+        provider = get_status_icons,
+        highlight = { text, background_inactive },
+      },
+    },
+    {
+      LineColumnB = {
+        provider = coordinates,
+        highlight = { text, background_inactive },
+      },
+    },
+  }
 end
 
-local text = colors.text
-local background_active = colors.background_active
-local background_inactive = colors.background_inactive
-
-local function starts_with(str, start)
-  return string.sub(str, 1, string.len(start)) == start
-end
-
-local function gps_cond()
-  if starts_with(vim.bo.filetype, 'dapui_') then
-    return false
-  end
-  if vim.bo.filetype == 'dap-repl' then
-    return false
-  end
-  if vim.bo.filetype == 'dap-scopes' then
-    return false
-  end
-  print('___', vim.bo.filetype)
-  return gps.is_available()
-end
-
-gls.left = {
-  {
-    FileName = {
-      provider = get_name_iconified,
-      highlight = { text, background_active },
-    },
-  },
-  {
-    Space = {
-      provider = function()
-        return ' '
-      end,
-      highlight = { text, background_inactive },
-    },
-  },
-  {
-    NvimGPS = {
-      highlight = { text, background_inactive },
-      provider = function()
-        if gps.is_available() then
-          return gps.get_location()
-        end
-      end,
-    },
-  },
-}
-
-gls.right = {
-  {
-    StatusIcons = {
-      provider = get_status_icons,
-      highlight = { text, background_inactive },
-    },
-  },
-  {
-    LineColumn = {
-      provider = coordinates,
-      highlight = { text, background_inactive },
-    },
-  },
-}
-
-gls.short_line_left = {
-  {
-    FileNameB = {
-      provider = get_name_iconified,
-      highlight = { text, background_inactive },
-    },
-  },
-  {
-    SpaceB = {
-      provider = function()
-        return ' '
-      end,
-      highlight = { text, background_inactive },
-    },
-  },
-  {
-    NvimGPSB = {
-      highlight = { text, background_inactive },
-      provider = function()
-        if gps.is_available() then
-          return gps.get_location()
-        end
-      end,
-    },
-  },
-}
-
-gls.short_line_right = {
-  {
-    StatusIconsB = {
-      provider = get_status_icons,
-      highlight = { text, background_inactive },
-    },
-  },
-  {
-    LineColumnB = {
-      provider = coordinates,
-      highlight = { text, background_inactive },
-    },
-  },
-}
+return M

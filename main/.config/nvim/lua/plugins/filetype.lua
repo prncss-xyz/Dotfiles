@@ -1,19 +1,25 @@
-require('filetype').setup {
-  overrides = {
-    extensions = {},
-    literal = {
-      BufRead = 'json',
-      BufNewFile = 'json',
-      ['.eslintrc'] = 'json',
-      ['.stylelintrc'] = 'json',
-      ['.htmlhintrc'] = 'json',
-      ['.busted'] = 'lua',
+local M = {}
+
+function M.config()
+  require('filetype').setup {
+    overrides = {
+      extensions = {},
+      literal = {
+        BufRead = 'json',
+        BufNewFile = 'json',
+        ['.eslintrc'] = 'json',
+        ['.stylelintrc'] = 'json',
+        ['.htmlhintrc'] = 'json',
+        ['.busted'] = 'lua',
+      },
+      complex = {
+        ['.config/sway/config'] = 'sway',
+        ['.config/sway/config.d/*'] = 'sway',
+        ['.config/kitty/*'] = 'kitty',
+        ['.config/waybar/config'] = 'json',
+      },
     },
-    complex = {
-      ['.config/sway/config'] = 'sway',
-      ['.config/sway/config.d/*'] = 'sway',
-      ['.config/kitty/*'] = 'kitty',
-      ['.config/waybar/config'] = 'json',
-    },
-  },
-}
+  }
+end
+
+return M

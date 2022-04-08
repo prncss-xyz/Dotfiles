@@ -1,5 +1,5 @@
 -- TODO: require theme plugins here
-local dm = require('modules.utils').deep_merge
+local dm = require('utils').deep_merge
 local theme = require 'theme'
 
 -- local theme = require 'theme'

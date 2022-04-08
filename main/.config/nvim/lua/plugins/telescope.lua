@@ -1,6 +1,6 @@
 local M = {}
 
-function M.setup()
+function M.config()
   local telescope = require 'telescope'
   local mappings = require('bindings').plugins.telescope()
   telescope.setup {

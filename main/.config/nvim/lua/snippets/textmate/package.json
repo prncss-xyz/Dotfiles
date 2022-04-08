@@ -1,0 +1,36 @@
+{
+  "contributes": {
+    "snippets": [
+      {
+        "language": [
+          "global"
+        ],
+        "path": "./all.json"
+      },
+      {
+        "language": "lua",
+        "path": "./lua.json"
+      },
+      {
+        "language": "markdown",
+        "path": "./markdown.json"
+      },
+      {
+        "language": "html",
+        "path": "./html.json"
+      },
+      {
+        "language": "javascript",
+        "path": "./javascript.json"
+      },
+      {
+        "language": "json",
+        "path": "./json.json"
+      },
+      {
+          "language": "python",
+          "path": "./python.json"
+       }
+    ]
+  }
+}

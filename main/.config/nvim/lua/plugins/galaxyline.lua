@@ -1,5 +1,7 @@
 local M = {}
 
+-- Galaxyline seams to make Neogit flicker. We need to change to a maintained statusline, anyhow.
+
 local short_line_list = { 'NvimTree', 'Outline', 'Trouble', 'DiffviewFiles' }
 local no_num_list = {
   'NvimTree',

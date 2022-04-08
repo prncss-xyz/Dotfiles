@@ -1,0 +1,77 @@
+#!/usr/bin/env sh
+
+# TODO: hoist theme
+
+if [ -z "$DOTFILES" ]; then
+	echo DOTFILES env variable expected to be set
+	exit 1
+fi
+PAC="$1"
+if [ -z "$PAC" ]; then
+	echo "package name expected"
+	exit 1
+fi
+
+if [ ! -d "$DOTFILES/$PAC" ]; then
+	echo "package $PAC do not exists."
+	exit 1
+fi
+
+if [ -z "$2" ]; then
+	echo "package name expected"
+	exit 0
+fi
+
+if [ ! -f "$2" ]; then
+	echo "file $2 does not exist"
+	exit 1
+fi
+ABS=$(realpath "$2")
+DIR=$(dirname "$ABS")
+
+if [ "$DIR" = "$DOTFILES" ]; then
+	echo "file $2 is not part of a package"
+	exit 1
+fi
+
+REL=$(realpath --relative-base="$DOTFILES" "$DIR")
+case "$REL" in
+/*) ;;
+*)
+	echo $REL
+	tail="${REL#*/}" # removed package name
+	mkdir -p "$DOTFILES/$PAC/$tail"
+	mv "$ABS" "$DOTFILES/$PAC/$tail"
+	if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
+		stow "$PAC" # only if active
+	fi
+	# TODO: should also unlink original symlink if from active package
+	echo "moved to $DOTFILES/$PAC/$tail"
+	exit 0
+	;;
+esac
+
+REL=$(realpath --relative-base="$HOME" "$DIR")
+case "$REL" in
+/*) ;;
+*)
+	mkdir -p "$DOTFILES/$PAC/$REL"
+	mv "$ABS" "$DOTFILES/$PAC/$REL"
+	rm "$HOME""$REL"
+	if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
+		stow "$PAC" # only if active
+	fi
+	echo "moved to $DOTFILES/$PAC/$REL"
+	exit 0
+	;;
+esac
+
+mkdir -p "$DOTFILES/$PAC/.config/stow/sysfiles/$DIR"
+if [ -f "$ABS" ]; then
+	cp "$ABS" "$DOTFILES/$PAC/.config/stow/sysfiles/$DIR"
+fi
+stow "$PAC"
+if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
+	stow "$PAC" # only if active
+fi
+echo "copied to $DOTFILES/$PAC/.config/stow/sysfiles/$DIR"

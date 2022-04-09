@@ -5,6 +5,30 @@ local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
+function M.luasnip_choice_or_dial_next(mode)
+  if require('luasnip').choice_active() then
+    require('luasnip').change_choice(1)
+    return
+  end
+  if mode == 'n' then
+    vim.api.nvim_feedkeys(t '<Plug>(dial-increment)', 'm', true)
+  else
+    vim.api.nvim_feedkeys(t('<Plug>(dial-increment)' .. 'gv'), 'm', true)
+  end
+end
+
+function M.luasnip_choice_or_dial_previous(mode)
+  if require('luasnip').choice_active() then
+    require('luasnip').change_choice(-1)
+    return
+  end
+  if mode == 'n' then
+    vim.api.nvim_feedkeys(t '<Plug>(dial-decrement)', 'm', true)
+  else
+    vim.api.nvim_feedkeys(t('<Plug>(dial-decrement)' .. 'gv'), 'm', true)
+  end
+end
+
 -- TODO: respect indent
 function M.split_line()
   vim.api.nvim_feedkeys('a' .. t '<cr><cr><up>', 'n', false)
@@ -16,6 +40,14 @@ function M.paste(regname, paste_type, paste_cmd)
   vim.fn.setreg(regname, vim.fn.getreg(regname), paste_type)
   vim.cmd('normal! ' .. '"' .. regname .. paste_cmd)
   vim.fn.setreg(regname, vim.fn.getreg(regname), reg_type)
+end
+
+function M.telescope_symbols_md_lsp()
+  if vim.bo.filetype == 'markdown' then
+    require('telescope').extensions.heading.heading()
+  else
+    require('telescope.builtin').lsp_document_symbols()
+  end
 end
 
 -- FIXME:
@@ -319,9 +351,9 @@ function M.tab()
   vim.fn.feedkeys(t '<Plug>(Tabout)', '')
 end
 
+-- not used
 function M.spell_next(dir)
-  local word = vim.fn.expand '<cword>'
-  local res = vim.fn.spellbadword(word)
+  local res = vim.fn.spellbadword()
   if dir == -1 then
     vim.cmd 'normal! [s'
   elseif res[1]:len() == 0 then
@@ -364,7 +396,7 @@ function M.edit_alt()
 end
 
 function M.term()
-  require('plenary.job')
+  require('plenary').job
     :new({
       command = vim.env.TERMINAL,
       args = {},
@@ -373,7 +405,7 @@ function M.term()
 end
 
 function M.open_current()
-  require('plenary.job')
+  require('plenary').job
     :new({
       command = 'xdg-open',
       args = { vim.fn.expand '%' },
@@ -382,7 +414,7 @@ function M.open_current()
 end
 
 function M.xplr_launch()
-  require('plenary.job')
+  require('plenary').job
     :new({
       command = vim.env.TERMINAL,
       args = { 'xplr', vim.fn.expand '%' },
@@ -395,7 +427,7 @@ function M.dotfiles()
 end
 
 function M.docu_current()
-  require('plenary.job')
+  require('plenary').job
     :new({
       command = vim.env.TERMINAL,
       args = {
@@ -411,7 +443,7 @@ end
 
 function M.edit_current()
   local current = vim.fn.expand '%'
-  require('plenary.job')
+  require('plenary').job
     :new({
       command = vim.env.TERMINAL,
       -- args = {'-e', 'nvim', current},
@@ -423,7 +455,7 @@ end
 
 function M.reset_editor()
   local current = vim.fn.expand '%'
-  require('plenary.job')
+  require('plenary').job
     :new({
       command = 'swaymsg',
       -- args = {'-e', 'nvim', current},

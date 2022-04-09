@@ -44,8 +44,8 @@ case "$REL" in
 	mv "$ABS" "$DOTFILES/$PAC/$tail"
 	if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
 		stow "$PAC" # only if active
+    # stow will rewrite link
 	fi
-	# TODO: should also unlink original symlink if from active package
 	echo "moved to $DOTFILES/$PAC/$tail"
 	exit 0
 	;;

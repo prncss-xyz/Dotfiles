@@ -1,7 +1,8 @@
 local indent = 2
+local dotfiles = vim.env.DOTFILES or vim.fn.expand '~/.dotfiles'
 
 local deep_merge = require('utils').deep_merge
-deep_merge(vim, {
+vim_setup {
   bo = {
     expandtab = true,
     shiftwidth = indent,
@@ -54,8 +55,19 @@ deep_merge(vim, {
   },
   g = {
     autosave = 1,
+    dotfiles = dotfiles,
+    -- FIXME: not respected by new treesitter grammar
+    markdown_fenced_languages = {
+      'js=javascript',
+      'ts=typescript',
+      'shell=sh',
+      'bash=sh',
+      'console=sh',
+    },
+    targets_nl = 'np', -- FIXME: setting it from packer does not seem to work
     u_lsp_lines = false,
-    u_pane_width = 40,
+    u_pane_width = 55,
+    vim_dir = dotfiles .. '/.config/nvim',
   },
   wo = {
     number = false,
@@ -77,6 +89,7 @@ deep_merge(vim, {
     spell = true,
     spelloptions = 'camel',
     -- textwidth = 80,
+    titlestring = '%{v:lua.my_title()}',
     undofile = true,
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
   },
@@ -85,7 +98,7 @@ deep_merge(vim, {
   -- like setlocal
   opt_local = {},
   env = {},
-})
+}
 
 -- neovim-qt
 if not vim.fn.exists 'GuiFont' then

@@ -29,6 +29,26 @@ require('utils').augroup('PackerCompile', {
   },
 })
 
+local function default_config(name, config)
+  return string.format(
+    "require('%s').setup(%s)",
+    name,
+    vim.inspect(config or {})
+  )
+end
+
+local function config(name)
+  return string.format("require('plugins.%s').config()", name)
+end
+
+local function g_setup(o)
+  return string.format('vim_g_setup(%s)', vim.inspect(o))
+end
+
+local function setup(name)
+  return string.format("require('plugins.%s').setup()", name)
+end
+
 return require('packer').startup {
   function()
     use 'wbthomason/packer.nvim'
@@ -90,7 +110,7 @@ return require('packer').startup {
       'lewis6991/spellsitter.nvim',
       after = 'nvim-treesitter',
       config = function()
-        require('spellsitter').setup()
+        require('spellsitter').setup {}
       end,
     }
     use {
@@ -203,6 +223,7 @@ return require('packer').startup {
       'neovim/nvim-lspconfig',
       module = 'lspconfig',
       event = 'BufReadPost',
+      cmd = { 'GrammarlyStart', 'GrammarlyStop' },
       setup = function()
         require('plugins.lsp').setup()
       end,
@@ -268,7 +289,6 @@ return require('packer').startup {
     use { 'nanotee/sqls.nvim', module = 'sqls' }
 
     -- completion
-    use { local_repo 'friendly-snippets' }
     use { 'hrsh7th/cmp-nvim-lsp', module = 'cmp_nvim_lsp' }
     use {
       'hrsh7th/nvim-cmp',
@@ -385,7 +405,7 @@ return require('packer').startup {
           show_current_context = false,
           char = ' ',
           buftype_exclude = { 'terminal', 'help', 'nofile' },
-          filetype_exclude = { 'markdown', 'help', 'packer' },
+          filetype_exclude = { 'help', 'packer' },
           char_highlight_list = highlitght_list,
           space_char_highlight_list = highlitght_list,
           space_char_blankline_highlight_list = highlitght_list,
@@ -396,9 +416,7 @@ return require('packer').startup {
       -- TODO: replace by maintained plugin
       'glepnir/galaxyline.nvim',
       event = 'BufEnter',
-      config = function()
-        require('plugins.galaxyline').config()
-      end,
+      config = config 'galaxyline',
     }
     use {
       'stevearc/dressing.nvim',
@@ -432,15 +450,11 @@ return require('packer').startup {
     use {
       'folke/zen-mode.nvim',
       cmd = { 'ZenMode' },
-      config = function()
-        require('plugins.zen-mode').config()
-      end,
+      config = config 'zen-mode',
     }
     use {
       'folke/twilight.nvim',
-      config = function()
-        require('twilight').setup {}
-      end,
+      config = default_config 'twilight',
       module = 'twilight',
       cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
     }
@@ -500,9 +514,7 @@ return require('packer').startup {
     }
     use {
       'haya14busa/vim-asterisk',
-      setup = function()
-        vim.g['asterisk#keeppos'] = 1
-      end,
+      setup = g_setup { ['asterisk#keeppos'] = 1 },
     }
     use {
       'edluffy/specs.nvim',

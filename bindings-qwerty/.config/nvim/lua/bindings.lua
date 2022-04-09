@@ -298,16 +298,24 @@ local function map_basic()
     -- also: require("luasnip.extras.select_choice")
     -- TODO: require luasnip
     [dd.prev_search] = {
-      "luasnip#choice_active() ? '<plug>luasnip-next-choice' : '<plug>(dial-increment)'",
-      noremap = false,
-      expr = true,
-      modes = 'nx',
+      modes = {
+        n = function()
+          require('bindutils').luasnip_choice_or_dial_previous 'n'
+        end,
+        x = function()
+          require('bindutils').luasnip_choice_or_dial_previous 'x'
+        end,
+      },
     },
     [dd.next_search] = {
-      "luasnip#choice_active() ? '<plug>luasnip-previous-choice' : '<plug>(dial-decrement)'",
-      noremap = false,
-      expr = true,
-      modes = 'nx',
+      modes = {
+        n = function()
+          require('bindutils').luasnip_choice_or_dial_next 'n'
+        end,
+        x = function()
+          require('bindutils').luasnip_choice_or_dial_next 'x'
+        end,
+      },
     },
     [alt(dd.left)] = { require('modules.wrap_win').left, 'window left' },
     [alt(dd.down)] = { require('modules.wrap_win').down, 'window down' },
@@ -558,7 +566,8 @@ local function map_basic()
       pr = { require('bindutils').previous_reference },
       r = { require('bindutils').next_reference },
       -- s = cmd 'Telescope treesitter',
-      s = cmd 'Telescope lsp_document_symbols',
+      -- s = cmd 'Telescope lsp_document_symbols',
+      s = require('bindutils').telescope_symbols_md_lsp,
       pt = plug '(ultest-prev-fail)',
       t = plug '(ultest-next-fail)',
       pu = require('bindutils').scroll_up,
@@ -569,8 +578,10 @@ local function map_basic()
       [';'] = { 'g;', 'older changer' },
       [dd.up] = { 'gk', 'visual up', modes = 'nxo' },
       [dd.down] = { 'gj', 'visual down', modes = 'nxo' },
-      [q.previous .. dd.spell] = { '[s', 'prevous misspelled' }, -- FIXME:
-      [dd.spell] = { ']s', 'next misspelled' }, -- FIXME:
+      -- FIXME: built-in previous/next misspelled do not work with spellsitter
+      -- replace with search function based on highlight group
+      [q.previous .. dd.spell] = { '[s', 'prevous misspelled' },
+      [dd.spell] = { ']s', 'next misspelled' },
       [dd.search] = cmd {
         'Telescope current_buffer_fuzzy_find',
         'Telescope current_buffer_fuzzy_find',
@@ -1033,7 +1044,11 @@ local function map_basic()
         end,
         'pick note',
       },
-      [' '] = cmd { 'Telescope commands', 'commands' },
+      [' '] = require('modules.toggler').cb(
+        require('modules.blank_pane').open,
+        require('modules.blank_pane').close
+      ),
+      -- [' '] = cmd { 'Telescope commands', 'commands' },
       ['p' .. dd.git] = require('modules.toggler').cb(
         'DiffviewOpen',
         'DiffviewClose'

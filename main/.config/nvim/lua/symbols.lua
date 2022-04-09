@@ -40,6 +40,10 @@ M.symbols = {
   Variable = '',
 }
 
+M.signs = {
+  -- TODO:
+}
+
 -- format symbols to be used by hrsh7th/nvim-cmp
 -- derived from onsails/lspkind-nvim
 function M.symbolic(kind)

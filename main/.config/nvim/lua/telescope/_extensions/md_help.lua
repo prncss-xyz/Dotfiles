@@ -3,7 +3,7 @@ local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
 local state = require 'telescope.actions.state'
-local Job = require 'plenary/job'
+local Job = require 'plenary'.job
 local conf = require('telescope.config').values
 
 local function open(path)

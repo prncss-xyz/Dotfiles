@@ -1,7 +1,9 @@
+local M = {}
+
 local utils = require 'utils'
 local command = utils.command
 
-function get_lsp_client(name)
+function M.get_lsp_client(name)
   local clients = vim.lsp.get_active_clients()
   for _, client in ipairs(clients) do
     if client.name == name then
@@ -10,7 +12,7 @@ function get_lsp_client(name)
   end
 end
 
-function stop_by_name(name)
+function M.stop_by_name(name)
   local client = M.get_client(name)
   if not client then
     return
@@ -19,10 +21,12 @@ function stop_by_name(name)
 end
 
 command('GrammarlyStop', {}, function()
-  stop_by_name 'grammarly'
+  M.stop_by_name 'grammarly'
 end)
 
 command('GrammarlyStart', {}, function()
   local lspconfig = require 'lspconfig'
   lspconfig.grammarly.setup {}
 end)
+
+return M

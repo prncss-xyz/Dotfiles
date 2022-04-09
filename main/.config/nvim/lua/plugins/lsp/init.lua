@@ -45,6 +45,13 @@ function M.setup()
 end
 
 function M.config()
+  -- Are also used by vim-illuminate.
+  -- The defaults option (CursorLine) was quite unreadable.
+  -- Actual settings cause issue when cursor it at the beginning or end.
+  vim.cmd 'highlight! link LspReferenceText DiffChange'
+  vim.cmd 'highlight! link LspReferenceWrite DiffAdd'
+  vim.cmd 'highlight! link LspReferenceRead DiffChange'
+
   local function noformat_on_attach(client, _)
     -- TODO: bindings
     client.resolved_capabilities.document_formatting = false

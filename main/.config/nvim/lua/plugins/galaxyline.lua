@@ -21,6 +21,14 @@ local no_num_list = {
   'dap-scopes',
 }
 
+-- TODO:
+function debugger()
+  if not package.loaded['dap'] then
+    return ''
+  end
+  return require('dap').status()
+end
+
 -- local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'dbui', 'help' }
 local skipLock = {}
 
@@ -69,7 +77,7 @@ local function get_file_icon()
 end
 
 local function get_buffer_type_icon()
-  return buf_icon[vim.bo.filetype]
+  return buf_icon[vim.bo.filetype] and ''
 end
 
 local trouble_mode = function()

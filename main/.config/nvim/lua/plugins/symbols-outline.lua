@@ -4,6 +4,7 @@ M.setup = function()
   local symbols = require('symbols').symbols
   vim.g.symbols_outline = {
     width = vim.g.u_pane_width,
+    relative_width = false,
     show_guides = false,
     auto_preview = false,
     position = 'left',
@@ -44,10 +45,10 @@ M.setup = function()
     {
       events = { 'FileType' },
       targets = { 'Outline' },
-      -- command = function()
-      --   vim.opt_local.scl = 'no'
-      -- end,
-      command = 'setlocal scl=no',
+      command = function()
+        vim.opt_local.scl = 'no'
+        vim.opt_local.spell = false
+      end,
     },
   })
 end

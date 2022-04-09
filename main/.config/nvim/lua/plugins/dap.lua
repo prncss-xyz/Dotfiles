@@ -1,5 +1,14 @@
 local M = {}
 
+--[[
+.. https://www.reddit.com/r/neovim/comments/tylrud/how_can_i_skip_unecessary_files_before_debugging/
+dap.run({
+  type = "node2",
+  skipFiles = { "<node_internals>/**/*.js" },
+  -- ...
+})
+--]]
+
 local function pick_process()
   local dap = require 'dap'
   local output = vim.fn.system { 'ps', 'a' }

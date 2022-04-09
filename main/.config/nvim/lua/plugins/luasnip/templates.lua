@@ -18,6 +18,11 @@ local function li(n, cb, ...)
   end, {})
 end
 
+-- TODO: use regex trigger
+-- prioritize first matching snippet
+-- exact string matches filename only (no dir)
+-- regex matches against whole path
+
 local split_string = require('utils').split_string
 
 local M = {
@@ -97,7 +102,7 @@ local cache_name
 local function name()
   if not cache_name then
     -- git config --get user.name
-    local Job = require 'plenary.job'
+    local Job = require 'plenary'.job
     Job
       :new({
         command = 'git',

@@ -4,7 +4,7 @@ local get_visual_selection = require('utils').get_visual_selection
 local browser = os.getenv 'BROWSER'
 
 function M.open(url)
-  require('plenary.job')
+  require('plenary').job
     :new({
       command = browser,
       args = { '--new-window', url },
@@ -38,7 +38,7 @@ function M.man()
   file:write 'next browser'
   file:close()
   local word = vim.fn.expand '<cword>'
-  require('plenary.job')
+  require('plenary').job
     :new({
       command = 'man',
       args = { '-h', word },

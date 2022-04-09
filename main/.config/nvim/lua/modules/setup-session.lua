@@ -14,7 +14,7 @@ local scheme = { type = 'unknown' }
 
 local function setup(port, command)
   local dirname
-  local job = require 'plenary.job'
+  local job = require 'plenary'.job
   job
     :new({
       command = 'realpath',

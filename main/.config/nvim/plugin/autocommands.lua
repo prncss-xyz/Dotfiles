@@ -118,8 +118,8 @@ augroup('StartupSession', {
     targets = { '*' },
     command = function()
       vim.schedule(function()
-        -- require('modules.blank_pane').open()
-        require('modules.toggler').open(
+        pcall(
+          require('modules.toggler').open,
           require('modules.blank_pane').open,
           require('modules.blank_pane').close
         )
@@ -127,7 +127,9 @@ augroup('StartupSession', {
           return
         end
         if vim.fn.getcwd() == os.getenv 'HOME' then
-          require('telescope').extensions.my_projects.my_projects {}
+          vim.schedule(function()
+            require('telescope').extensions.my_projects.my_projects {}
+          end)
         else
           -- TODO: open last file
         end

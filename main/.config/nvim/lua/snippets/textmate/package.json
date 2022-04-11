@@ -20,7 +20,32 @@
         "path": "./html.json"
       },
       {
-        "language": "javascript",
+        "language": [
+          "typescriptreact"
+        ],
+        "path": "./typescriptreact.json"
+      },
+      {
+        "language": [
+          "typescript",
+          "typescriptreact"
+        ],
+        "path": "./typescript.json"
+      },
+      {
+        "language": [
+          "javascriptreact",
+          "typescriptreact"
+        ],
+        "path": "./javascriptreact.json"
+      },
+      {
+        "language": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
         "path": "./javascript.json"
       },
       {
@@ -28,9 +53,9 @@
         "path": "./json.json"
       },
       {
-          "language": "python",
-          "path": "./python.json"
-       }
+        "language": "python",
+        "path": "./python.json"
+      }
     ]
   }
 }

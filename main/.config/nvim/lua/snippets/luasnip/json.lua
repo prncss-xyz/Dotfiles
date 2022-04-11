@@ -2,12 +2,12 @@ local ls = require 'luasnip'
 local s = ls.snippet
 local sn = ls.snippet_node
 local t = ls.text_node
-local isn = ls.indent_snippet_node
+-- local isn = ls.indent_snippet_node
 local i = ls.insert_node
-local f = ls.function_node
-local c = ls.choice_node
+-- local f = ls.function_node
+-- local c = ls.choice_node
 local d = ls.dynamic_node
-local p = require('luasnip.extras').partial
+-- local p = require('luasnip.extras').partial
 
 local function clip_to_snip()
   local clip = vim.fn.getreg '+'
@@ -39,7 +39,7 @@ local function clip_to_snip()
     end
     table.insert(res, t { '', '' })
   end
-  return sn(nil, res)
+  return sn(1, res)
 end
 
 return {
@@ -51,11 +51,11 @@ return {
     t { '\t"prefix": "' },
     i(2, 'prefix'),
     t { '",', '' },
-    t { '\t"description": "' },
-    i(3, 'description'),
-    t { '",', '' },
+    -- t { '\t"description": "' },
+    -- i(3, 'description'),
+    -- t { '",', '' },
     t { '\t"body": [', '' },
-    d(4, clip_to_snip, {}),
+    d(3, clip_to_snip, {}),
     t { '\t]', '},' },
   }),
 }

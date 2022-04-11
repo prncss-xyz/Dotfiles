@@ -12,7 +12,8 @@ function M.config()
       end
       return ret
     end,
-  }).start()
+  })
+  require('hclipboard').start()
 end
 
 return M

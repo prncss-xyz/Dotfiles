@@ -18,22 +18,18 @@ command('EditLSSnippets', {}, function()
   )
 end)
 
-command('EditLSSnippetsA', { nargs = 1 }, function(l)
-  local l = vim.bo.filetype
-  if l == '' then
-    l = 'all'
-  end
+command('EditLSSnippetsAll', {}, function()
   vim.cmd(
     string.format(
       ':edit %s%s%s.lua',
       vim.fn.getenv 'DOTFILES',
       '/main/.config/nvim/lua/snippets/luasnip/',
-      l
+      'all'
     )
   )
 end)
 
-command('EditTSSnippets', {}, function()
+command('EditTMSnippets', {}, function()
   local l = vim.bo.filetype
   if l == '' then
     l = 'all'
@@ -48,17 +44,13 @@ command('EditTSSnippets', {}, function()
   )
 end)
 
-command('EditTSSnippetsA', { nargs = 1 }, function(l)
-  local l = vim.bo.filetype
-  if l == '' then
-    l = 'all'
-  end
+command('EditTMSnippetsAll', {}, function()
   vim.cmd(
     string.format(
       ':edit %s%s%s.json',
       vim.fn.getenv 'DOTFILES',
       '/main/.config/nvim/lua/snippets/textmate/',
-      l
+      'all'
     )
   )
 end)

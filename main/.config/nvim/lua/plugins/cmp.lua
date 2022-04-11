@@ -19,14 +19,18 @@ function M.config()
         vim_item.abbr = string.sub(vim_item.abbr, 1, 50)
         return vim_item
       end,
+      sorting = {
+        priority_weight = 10,
+      },
     },
     sources = {
-    { name = 'cmp_tabnine' }, -- not currently in use
-    { name = 'luasnip' },
-    { name = 'nvim_lua' },
-    { name = 'nvim_lsp' },
-    { name = 'path' },
-    { name = 'buffer' },
+      { name = 'cmp_tabnine' }, -- not currently in use
+      { name = 'luasnip' },
+      { name = 'nvim_lua' },
+      { name = 'nvim_lsp' },
+      { name = 'path' },
+      { name = 'buffer' },
+      -- { name = 'rg' },
     },
     experimental = {
       ghost_text = false,
@@ -35,25 +39,26 @@ function M.config()
 
   cmp.setup.cmdline('/', {
     sources = {
-    { name = 'buffer' },
+      { name = 'buffer' },
     },
   })
 
   cmp.setup.cmdline(':', {
     sources = {
-    { name = 'cmdline' },
-    { name = 'path' },
+      { name = 'cmdline' },
+      { name = 'path' },
     },
   })
 
   cmp.setup.markdown = {
     sources = {
-    { name = 'luasnip' },
-    { name = 'nvim_lsp' },
-    { name = 'path' },
-    { name = 'buffer' },
-    { name = 'spell' },
-    }
+      { name = 'luasnip' },
+      { name = 'nvim_lsp' },
+      { name = 'path' },
+      { name = 'buffer' },
+      { name = 'rg' },
+      -- { name = 'spell' },
+    },
   }
 end
 

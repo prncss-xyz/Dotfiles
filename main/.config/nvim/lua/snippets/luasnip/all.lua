@@ -17,7 +17,7 @@ local function first_word(s)
   return s
 end
 
-return {
+local M = {
   s({ trig = 't', dscr = 'tag' }, {
     t '<',
     i(1, 'tag'),
@@ -34,3 +34,63 @@ return {
   s('datetime', p(os.date, '%x, %H:%M')),
   s('timestamp', p(os.date, '%c')),
 }
+
+local function get_comment(ctype)
+  local U = require 'Comment.utils'
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local range = {
+    srow = cursor[1],
+    scol = cursor[2],
+    erow = cursor[1],
+    ecol = cursor[2],
+  }
+  local ctx = {
+    cmode = U.cmode.comment,
+    cmotion = ctype == 'line' and U.cmotion.char or U.cmotion.line,
+    ctype = ctype == 'line' and U.ctype.line or U.ctype.block,
+    range = range,
+  }
+  local Config = require 'Comment.config'
+  local cfg = Config:get()
+  local lcs, rcs = U.parse_cstr(cfg, ctx)
+  lcs = lcs and lcs .. ' ' or ''
+  rcs = rcs and ' ' .. rcs or ''
+  return lcs, rcs
+end
+
+table.insert(
+  M,
+  s({ trig = 'c', descr = 'comment' }, {
+    d(1, function()
+      local lc, rc = get_comment 'line'
+      return sn(1, { t(lc), i(1, 'comment'), t(rc) })
+    end, {}),
+  })
+)
+
+table.insert(
+  M,
+  s({ trig = 'cc', descr = 'multiline comment' }, {
+    d(1, function()
+      local lc, rc = get_comment 'block'
+      return sn(1, { t(lc), i(1, 'comment'), t(rc) })
+    end, {}),
+  })
+)
+
+local function todo_comment(str)
+  return {
+    d(1, function()
+      local lc, rc = get_comment 'line'
+      return sn(nil, { t(lc), t(str .. ': '), i(1, ''), t(rc) })
+    end, {}),
+  }
+end
+
+for _, str in ipairs { 'TODO', 'HACK', 'WARN', 'PERF', 'NOTE', 'FIXME' } do
+  table.insert(M, s({ trig = 'c' .. str .. ':', descr = str }, todo_comment(str)))
+  -- needs this to write a todo comment while already in a comment
+  table.insert(M, s({ trig = str .. ':', descr = str }, {t (str .. ': ')}))
+end
+
+return M

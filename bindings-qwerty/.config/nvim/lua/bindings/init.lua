@@ -9,40 +9,9 @@ local function alt(key)
   return string.format('<a-%s>', key)
 end
 
-local a = invert {
-  g = 'jump',
-  H = 'help',
-  h = 'edit',
-  z = 'move',
-  m = 'mark',
-  Q = 'macro',
-  q = 'editor',
-  o = 'various',
-  [' '] = 'leader',
-}
-local dd = invert {
-  a = 'diagnostic',
-  b = 'join',
-  c = 'comment',
-  g = 'ninja',
-  u = 'git',
-  j = 'up',
-  k = 'down',
-  L = 'loclist',
-  l = 'left',
-  s = 'symbol',
-  z = 'spell',
-  [';'] = 'right',
-  ['é'] = 'search',
-  ['<c-j>'] = 'next_search',
-  ['<c-x>'] = 'prev_search',
-}
-local qualifiers = {
-  p = 'previous',
-  n = 'next',
-  h = 'hint',
-}
-local q = invert(qualifiers)
+local a = require('bindings.parameters').a
+local dd = require('bindings.parameters').d
+local p = require('bindings.parameters').p
 
 local function plug(t)
   if type(t) == 'string' then
@@ -158,8 +127,6 @@ local function map_basic()
   -- TODO:
   -- - map('n', '<a-t>', '"zdh"zp') -- transpose
   -- - map reselect "gv"
-  -- al = { '<Plug>(textobj-line-a)', 'line' },
-  -- il = { '<Plug>(textobj-line-i)', 'line' },
   local reg = require('modules.binder').reg
   reg {
     A = 'A',
@@ -182,7 +149,20 @@ local function map_basic()
         xo = plug { 'CamelCaseMotion_e', 'next subword ' },
       },
     },
-    f = { require('bindutils').meta_move, mode = true, modes = 'nxo' },
+    -- f = { require('flies').meta_move, mode = true, modes = 'nx' },
+    f = {
+      modes = {
+        n = function()
+          require('flies').meta_move 'n'
+        end,
+        o = function()
+          require('flies').meta_move 'o'
+        end,
+        x = function()
+          require('flies').meta_move 'x'
+        end,
+      },
+    },
     I = 'I',
     i = 'i',
     p = {
@@ -204,20 +184,25 @@ local function map_basic()
       'hop char2',
       modes = 'nxo',
     },
-    T = {
-      modes = {
-        x = require('bindutils').pre,
-        o = plug '(ninja-left-foot-inner)',
-      },
-    },
+    -- T = {
+    --   modes = {
+    --     x = require('bindutils').pre,
+    --     o = plug '(ninja-left-foot-inner)',
+    --   },
+    -- },
+    -- t = {
+    --   modes = {
+    --     n = function()
+    --       require('bindutils').tobj_extreme()
+    --     end,
+    --     x = require('bindutils').post,
+    --     o = plug '(ninja-right-foot-inner)',
+    --   },
+    -- },
     t = {
-      modes = {
-        n = function()
-          require('bindutils').tobj_extreme()
-        end,
-        x = require('bindutils').post,
-        o = plug '(ninja-right-foot-inner)',
-      },
+      function()
+        require('flies').append_insert()
+      end,
     },
     ou = 'U',
     u = 'u',
@@ -514,8 +499,8 @@ local function map_basic()
         b = cmd { 'setlocal spell spelllang=en_us,fr,cjk', 'en fr' },
         e = cmd { 'setlocal spell spelllang=en_us,cjk', 'en' },
         f = cmd { 'setlocal spell spelllang=fr,cjk', 'fr' },
-        g = { 'zg', 'add to spellfile' },
-        x = cmd { 'setlocal nospell spelllang=', 'none' },
+        y = { 'zg', 'add to spellfile' },
+        x = cmd { 'setlocal nospell', 'none' },
       },
     },
     [a.jump] = {
@@ -531,7 +516,7 @@ local function map_basic()
         end,
         modes = 'nxo',
       },
-      b = '%',
+      b = { '%', modes = 'nxo' },
       pc = {
         function()
           require('bindutils').search_asterisk(false)
@@ -580,10 +565,9 @@ local function map_basic()
       [dd.down] = { 'gj', 'visual down', modes = 'nxo' },
       -- FIXME: built-in previous/next misspelled do not work with spellsitter
       -- replace with search function based on highlight group
-      [q.previous .. dd.spell] = { '[s', 'prevous misspelled' },
+      [p(dd.spell)] = { '[s', 'prevous misspelled' },
       [dd.spell] = { ']s', 'next misspelled' },
       [dd.search] = cmd {
-        'Telescope current_buffer_fuzzy_find',
         'Telescope current_buffer_fuzzy_find',
         modes = 'nxo',
       },
@@ -626,6 +610,8 @@ local function map_basic()
         end,
         'annotate (neogen)',
       },
+      [p 'o'] = 'O',
+      o = 'o',
       -- n = {
       --   name = '+annotate',
       --   c = {
@@ -647,8 +633,6 @@ local function map_basic()
       --     'type',
       --   },
       -- },
-      po = 'O',
-      o = 'o',
       pr = plug {
         '(buffet-operator-extract)',
         'buffet extract',
@@ -691,10 +675,13 @@ local function map_basic()
           n = plug '(Exchange)',
         },
       },
-      py = plug { '(buffet-operator-delete)', modes = 'nx' },
+      [p 'y'] = plug { '(buffet-operator-delete)', modes = 'nx' },
       y = plug { '(buffet-operator-add)', modes = 'nx' },
+      [p '<tab>'] = { '<<', 'dedent', modes = 'nx' },
       ['<tab>'] = { '>>', 'indent', modes = 'nx' },
-      ['p<tab>'] = { '<<', 'dedent', modes = 'nx' },
+      -- https://vi.stackexchange.com/questions/3875/how-to-insert-a-newline-without-leaving-normal-mode
+      [p '<cr>'] = plug 'unimpairedBlankUp',
+      ['<cr>'] = plug 'unimpairedBlankDown',
       [dd.spell] = {
         function()
           require('telescope.builtin').spell_suggest(
@@ -721,8 +708,8 @@ local function map_basic()
       -- ['p' .. '<cr>'] = {
       --   cmd 'SplitjoinJoin',
       -- },
-      ['p' .. '<cr>'] = cmd 'SplitjoinJoin',
-      ['<cr>'] = cmd 'SplitjoinSplit',
+      [p(p(dd.join))] = cmd 'SplitjoinJoin',
+      [p(dd.join)] = cmd 'SplitjoinSplit',
       [dd.join] = { 'J', 'join', modes = 'nx' },
       -- ['p' .. dd.join] = {
       --   modes = {
@@ -735,7 +722,7 @@ local function map_basic()
       --     },
       --   },
       -- },
-      [q.previous .. 't'] = {
+      [p 't'] = {
         modes = {
           n = plug '(ninja-insert)i',
           x = require('bindutils').pre,
@@ -747,7 +734,7 @@ local function map_basic()
           x = require('bindutils').post,
         },
       },
-      [q.previous .. 'f'] = {
+      [p 'f'] = {
         modes = {
           n = plug '(ninja-insert)a',
           x = require('bindutils').pre,
@@ -1017,7 +1004,7 @@ local function map_basic()
       cr = {
         modes = {
           n = function()
-            require('split').open({ target = 'here' }, 'n')
+            require('split').pop({ target = 'here' }, 'n')
           end,
           x = ":<c-u>lua require('split').open({target='here'}, 'x')<cr>",
         },
@@ -1059,158 +1046,6 @@ local function map_basic()
       },
       [s(a.editor)] = { require('modules.toggler').back, 'toggle' },
       [a.editor] = { require('modules.toggler').toggle, 'toggle' },
-    },
-  }
-end
-
-local function map_textobj_add_name(t, name)
-  if type(t) ~= 'table' then
-    t = { t }
-    t.name = t.name or name
-  end
-  return t
-end
-
-local function map_textobj(key, inner, outer, name)
-  local reg = require('modules.binder').reg
-  reg {
-    modes = {
-      ox = {
-        ['i' .. key] = map_textobj_add_name(inner, name),
-        ['a' .. key] = map_textobj_add_name(outer, name),
-      },
-    },
-  }
-end
-
--- FIXME: not working in visual mode: comment, ninja
-
-local function map_textobjects()
-  local map = require('utils').map
-
-  -- entire buffer
-  -- map('n', 'fhe', '<cmd>Telescope buffers<cr>')
-  -- map('n', 'fe', '<cmd>lua require("bufjump").forward()<cr>')
-  -- map('n', 'fpe', '<cmd>lua require("bufjump").backward()<cr>')
-
-  map('nox', 'gi', '<nop>', {})
-  map('nox', 'ga', '<nop>', {})
-  -- map('ox', 'ar', 'ap', {})
-  -- map('ox', 'ir', 'ip', {})
-  map('ox', 'a' .. dd.git, ':<c-u>Gitsigns select_hunk<cr>')
-  -- map('nox', 'f' .. dd.git, '<cmd>Gitsigns next_hunk<cr>')
-  -- map('nox', 'fp' .. dd.git, '<cmd>Gitsigns prev_hunk<cr>')
-  -- map('nox', 'fhb', '<cmd>lua require"hop".hint_patterns({}, "[({[]")<cr>', {})
-  -- map(
-  --   'nox',
-  --   'fhq',
-  --   '<cmd>lua require"hop".hint_patterns({}, "[\'\\"`]")<cr>',
-  --   {}
-  -- )
-  -- map('nox', 'fhl', '<cmd>lua require"hop".hint_lines()<cr>', {})
-
-  -- vim.g.targets_nl = 'np' -- when option is here, target does not bind iq in x mode (only o)
-  --
-  -- map_textobj(
-  --   q.previous .. dd.ninja,
-  --   plug '(ninja-left-foot-inner)',
-  --   plug '(ninja-left-foot-a)',
-  --   'ninja left foot'
-  -- )
-  -- map_textobj(
-  --   dd.ninja,
-  --   plug '(ninja-right-foot-inner)',
-  --   plug '(ninja-right-foot-a)',
-  --   'ninja right foot'
-  -- )
-  -- local map = require('modules.binder').map
-  -- not working
-  -- map('ox', 'z', function()
-  --   require('hop').hint_char2 {
-  --     direction = require('hop.hint').hintdirection.before_cursor,
-  -- end, { noremap = false })
-  --   }
-  -- TODO: flies-exchange
-
-  map('o', 'ai', ":<c-u>lua require('treesitter-unit').select(true)<cr>")
-  map('x', 'ai', ":lua require('treesitter-unit').select(true)<cr>")
-  if true then
-    map('o', 'ii', ":<c-u>lua require('treesitter-unit').select()<cr>")
-    map('x', 'ii', ":lua require('treesitter-unit').select()<cr>")
-    map(
-      'o',
-      'ii',
-      ":<c-u>lua require('nvim-treesitter.textobjects.select').select_textobject( '@node', 'o')<cr>"
-    )
-    map(
-      'x',
-      'ii',
-      ":lua require('nvim-treesitter.textobjects.select').select_textobject( '@node', 'x')<cr>"
-    )
-  else
-    map('o', 'ihi', ":<c-u>lua require('tsht').nodes()<cr>")
-    map('x', 'ihi', ":lua require('tsht').nodes()<cr>")
-  end
-
-  local ts = require('flies.objects.treesitter').new
-  local buf = require('flies.objects.buffer').new()
-  local vo = require 'flies.objects.vim'
-  buf.move_outer_hint = function()
-    require('telescope.builtin').buffers()
-  end
-  buf.move_outer_next = function()
-    require('bufjump').forward()
-  end
-  buf.move_outer_previous = function()
-    require('bufjump').backward()
-  end
-  require('flies').setup {
-    queries = {
-      -- a: argument (targets)
-      a = ts 'parameter',
-      -- b: brackets (targets)
-      c = ts 'komment',
-      -- d: datetime
-      e = buf,
-      f = ts 'function',
-      -- gG: ninja
-      -- h: qualifier
-      -- i: node; see also: David-Kunz/treesitter-unit
-      j = ts 'block',
-      k = ts 'call',
-      l = ts 'token',
-      -- n: qualifier
-      -- r = vo.paragraph,
-      -- p: qualifier
-      s = vo.sentence,
-      -- t: tag (targets)
-      T = ts 'tag',
-      -- q: quotes (targets)
-      -- u: hunk (gitsigns)
-      -- v: variable segment
-      Q = ts 'string',
-      -- w: word
-      y = ts 'conditional',
-      z = ts 'loop',
-      ['<space>'] = vo.bigword,
-      ['<tab>'] = require('flies.objects.indent').new(),
-      ['<cr>'] = require('flies.objects.line').new(),
-    },
-    qualifiers = {
-      p = 'previous',
-      n = 'next',
-      h = 'hint',
-      [''] = 'plain',
-    },
-    textobjects = {
-      i = 'inner',
-      a = 'outer',
-    },
-    maps = {
-      f = {
-        domain = 'inner',
-        start = true,
-      },
     },
   }
 end
@@ -1316,7 +1151,7 @@ function M.setup()
   -- ordering of the matters for: i) overriding, ii) captures
   map_command_lang()
   map_basic()
-  map_textobjects()
+  require('bindings.textobjects').setup()
   -- require('utils').dump(require('modules.binder').counters)
 end
 

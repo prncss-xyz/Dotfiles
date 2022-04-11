@@ -14,7 +14,7 @@ local l = require('luasnip.extras').lambda
 local function li(n, cb, ...)
   local str = cb(...)
   return d(n, function()
-    return sn(nil, { i(1, str) })
+    return sn(1, { i(1, str) })
   end, {})
 end
 
@@ -101,7 +101,6 @@ end
 local cache_name
 local function name()
   if not cache_name then
-    -- git config --get user.name
     local Job = require 'plenary'.job
     Job
       :new({
@@ -112,7 +111,7 @@ local function name()
           cache_name = j:result()[1] or 'name'
         end,
       })
-      :sync() -- or start()
+      :sync()
   end
   return cache_name
 end

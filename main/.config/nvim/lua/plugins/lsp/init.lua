@@ -61,6 +61,7 @@ function M.config()
   end
 
   -- will be called before noformat_on_attach
+  -- TODO: compare to base tsserver + cmp
   local function ts_uttils_on_attach(client, _)
     local ts_utils = require 'nvim-lsp-ts-utils'
     ts_utils.setup {
@@ -187,11 +188,14 @@ function M.config()
   -- require('grammar-guard').init()
   -- nvim_lsp.grammar_guard.setup {}
 
-  --TODO:
-  lspconfig.emmet_ls.setup {
-    capabilities = capabilities,
-    filetypes = { 'html', 'css', 'typescriptreact', 'javascriptreact' },
-  }
+  -- FIXME: emmet is always the first completion match, making it a nuisance
+  if false then
+    lspconfig.emmet_ls.setup {
+      capabilities = capabilities,
+      filetypes = { 'html', 'css', 'typescriptreact', 'javascriptreact' },
+    }
+  end
+
   require 'plugins.lsp.utils'
 end
 

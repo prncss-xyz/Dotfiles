@@ -19,7 +19,7 @@ end
 
 function M.config()
   local ft = require 'Comment.ft'
-  -- ft.set('fish', '#%s')
+  ft.set('fish', '#%s')
   require('Comment').setup {
     pre_hook = pre_hook,
     opleader = {
@@ -32,9 +32,9 @@ function M.config()
     },
   }
 
-  vim.api.nvim_del_keymap('n', 'gcA' )
-  vim.api.nvim_del_keymap('n', 'gcO' )
-  vim.api.nvim_del_keymap('n', 'gco' )
+  vim.api.nvim_del_keymap('n', 'gcA')
+  vim.api.nvim_del_keymap('n', 'gcO')
+  vim.api.nvim_del_keymap('n', 'gco')
 end
 
 return M

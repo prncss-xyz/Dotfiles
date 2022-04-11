@@ -1,4 +1,9 @@
 {
+  "local" : {
+    "prefix": "local",
+    "body": ["local "],
+    "description": "local keyword"
+  },
   "require": {
     "prefix": "require",
     "body": ["require'${1:module}'"],

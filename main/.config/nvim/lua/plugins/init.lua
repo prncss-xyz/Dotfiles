@@ -67,6 +67,10 @@ return require('packer').startup {
       module = 'popup',
     }
     use {
+      'MunifTanjim/nui.nvim',
+      module = 'nui',
+    }
+    use {
       'kyazdani42/nvim-web-devicons',
       module = 'nvim-web-devicons',
       config = function()
@@ -304,6 +308,7 @@ return require('packer').startup {
           module = 'cmp-path',
           after = 'nvim-cmp',
         },
+        { 'lukas-reineke/cmp-rg', after = 'nvim-cmp' },
         { 'f3fora/cmp-spell', after = 'nvim-cmp' },
         { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' },
         { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' },
@@ -457,6 +462,14 @@ return require('packer').startup {
       config = default_config 'twilight',
       module = 'twilight',
       cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
+    }
+    use {
+      'nvim-neo-tree/neo-tree.nvim',
+      branch = 'v2.x',
+      config = default_config 'neo-tree',
+      cmd = { 'Neotree' },
+      disable = true,
+      -- promising but not ready
     }
     use {
       'kyazdani42/nvim-tree.lua',

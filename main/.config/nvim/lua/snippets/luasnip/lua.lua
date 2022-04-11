@@ -33,13 +33,13 @@ return {
     t { '', 'end' },
   }),
   s({ trig = 'f' }, {
-    t 'local function ',
-    i(1, 'name'),
+    t 'function ',
+    i(1),
     t '(',
     i(2),
     t ')',
     t { '', '  ' },
-    i(3),
+    i(3, '-- bloc'),
     t { '', 'end', '' },
   }),
 }

@@ -1,4 +1,15 @@
 {
+  "test snapshot": {
+    "prefix": "test.snapshot",
+    "body": [
+      "describe('$1', () => {",
+      "\tit('renders correctly', () => {",
+      "\t\tconst tree = renderer.create(<$2 />).toJSON();",
+      "\t\texpect(tree).toMatchSnapshot();",
+      "\t});",
+      "});"
+    ]
+  },
   "destructuring of props": {
     "prefix": "dp",
     "body": ["const { ${1:name} } = this.props"]
@@ -346,15 +357,5 @@
       "const ${1:memoizedValue} = useMemo(() => ${2:computeExpensiveValue}(${3:a}, ${4:b}), [${5:a}, ${6:b}])$0"
     ],
     "description": "React useMemo() hook"
-  },
-  "jest file": {
-    "prefix": "jest file",
-    "body": [
-      "import React from 'react';",
-      "import renderer from 'react-test-renderer';",
-      "",
-      "import { $1 } from './${2}';",
-      ""
-    ]
   }
 }

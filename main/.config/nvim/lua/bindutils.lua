@@ -1,6 +1,23 @@
 -- small commands directly meant for bindings
 local M = {}
 
+vim.cmd[[
+function! BlankUp(count) abort
+  put!=repeat(nr2char(10), a:count)
+  ']+1
+  silent! call repeat#set("\<Plug>unimpairedBlankUp", a:count)
+endfunction
+
+function! BlankDown(count) abort
+  put =repeat(nr2char(10), a:count)
+  '[-1
+  silent! call repeat#set("\<Plug>unimpairedBlankDown", a:count)
+endfunction
+
+nnoremap <Plug>unimpairedBlankUp :call BlankUp(v:count1)<CR>
+nnoremap <Plug>unimpairedBlankDown :call BlankDown(v:count1)<CR>
+]]
+
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
@@ -50,9 +67,6 @@ function M.telescope_symbols_md_lsp()
   end
 end
 
--- FIXME:
--- https://github.com/neovim/neovim/pull/12368
-
 local function pre_jump()
   local pos = vim.api.nvim_win_get_cursor(0)
   vim.api.nvim_buf_set_mark(0, "'", pos[1], pos[2], {})
@@ -65,44 +79,6 @@ end
 
 local cache
 
-local function meta_move(char, qualifier, mode)
-  print(char, qualifier, mode)
-  if mode == 'n' then
-    require('flies').move(char, qualifier, 'outer', true, mode)
-    return
-  end
-  if mode == 'o' then
-    require('flies').move(char, qualifier, 'outer', qualifier == 'next', mode)
-    return
-  end
-  if mode == 'x' then
-    require('flies').move(
-      char,
-      qualifier,
-      'outer',
-      qualifier == 'previous',
-      mode
-    )
-    return
-  end
-end
-
-function M.meta_move(mode)
-  local qualifier, char = require('flies').query_obj()
-  if not qualifier then
-    return
-  end
-  if qualifier == 'plain' then
-    qualifier = 'next'
-  end
-  require('flies').repeat_register(function(mode0)
-    meta_move(char, 'previous', mode0)
-  end, function(mode0)
-    meta_move(char, 'next', mode0)
-  end)
-  meta_move(char, qualifier, mode)
-end
-
 local function query_obj()
   local qualifier
   while true do
@@ -110,7 +86,7 @@ local function query_obj()
     char = vim.fn.nr2char(char)
     if not qualifier and vim.tbl_contains(qualifiers, char) then
       qualifier = char
-    elseif char == t '<esc>' then
+    elseif char == t '<esc>' or char == t '<c-c>' then
       return false
     else
       qualifier = qualifier or ''
@@ -118,6 +94,18 @@ local function query_obj()
       return true
     end
   end
+end
+
+local function auto_domain(opchar, domain)
+  vim.fn.feedkeys(opchar, 'n')
+  local res
+  if vim.v.count == vim.v.count1 then
+    res = tostring(vim.v.count)
+  else
+    res = ''
+  end
+  res = cache.qualifier .. cache.query
+  vim.fn.feedkeys(res, 'm')
 end
 
 function M.tobj_extreme()
@@ -375,8 +363,8 @@ end
 
 local alt_patterns = {
   { '(.+)%_spec(%.[%w%d]+)$', '%1%2' },
-  { '(.+)(%.[%w%d]+)$', '%1_spec%2' },
   { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
+  { '(.+)%.lua$', '%1_spec.lua' },
   { '(.+)(%.[%w%d]+)$', '%1.test%2' },
 }
 
@@ -420,10 +408,6 @@ function M.xplr_launch()
       args = { 'xplr', vim.fn.expand '%' },
     })
     :start()
-end
-
-function M.dotfiles()
-  require('telescope.builtin').git_files { cwd = os.getenv 'DOTFILES' }
 end
 
 function M.docu_current()

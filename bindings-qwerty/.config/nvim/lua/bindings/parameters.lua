@@ -18,7 +18,6 @@ M.d = invert {
   a = 'diagnostic',
   b = 'join',
   c = 'comment',
-  g = 'ninja',
   u = 'git',
   j = 'up',
   k = 'down',

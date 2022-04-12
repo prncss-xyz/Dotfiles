@@ -779,14 +779,6 @@ return require('packer').startup {
         vim.g.targets_nl = 'np'
       end,
     }
-    use {
-      -- 'tommcdo/vim-ninja-feet',
-      local_repo 'vim-ninja-feet',
-      event = 'BufReadPost',
-      setup = function()
-        vim.g.ninja_feet_no_mappings = 1
-      end,
-    }
     use { local_repo 'flies.nvim' }
     use {
       local_repo 'buffet.nvim',

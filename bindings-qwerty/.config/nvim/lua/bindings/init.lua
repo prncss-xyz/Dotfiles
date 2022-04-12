@@ -78,7 +78,7 @@ local function map_command_lang()
       is = {
         ['<s-tab>'] = { require('bindutils').s_tab },
         ['<tab>'] = { require('bindutils').tab },
-        ['<c-e>'] = { require('bindutils').cmp_toggle },
+        ['<c-e>'] = { require('plugins.cmp').utils.toggle },
       },
       c = {
         ['<c-s>'] = { '<c-f>', 'edit command line' },
@@ -129,6 +129,11 @@ local function map_basic()
   -- - map reselect "gv"
   local reg = require('modules.binder').reg
   reg {
+    fn = {
+      [dd.search] = cmd 'Telescope current_buffer_fuzzy_find',
+    },
+  }
+  reg {
     A = 'A',
     a = 'a',
     b = plug { '%', 'matchup cycle forward', modes = 'nxo' },
@@ -145,8 +150,10 @@ local function map_basic()
     -- e = { 'w', 'next word ', modes = 'nxo' },
     e = {
       modes = {
-        n = plug { 'CamelCaseMotion_w', 'next subword ' },
-        xo = plug { 'CamelCaseMotion_e', 'next subword ' },
+        n = 'w',
+        xo = 'e',
+        -- n = plug { 'CamelCaseMotion_w', 'next subword ' },
+        -- xo = plug { 'CamelCaseMotion_e', 'next subword ' },
       },
     },
     -- f = { require('flies').meta_move, mode = true, modes = 'nx' },
@@ -184,21 +191,6 @@ local function map_basic()
       'hop char2',
       modes = 'nxo',
     },
-    -- T = {
-    --   modes = {
-    --     x = require('bindutils').pre,
-    --     o = plug '(ninja-left-foot-inner)',
-    --   },
-    -- },
-    -- t = {
-    --   modes = {
-    --     n = function()
-    --       require('bindutils').tobj_extreme()
-    --     end,
-    --     x = require('bindutils').post,
-    --     o = plug '(ninja-right-foot-inner)',
-    --   },
-    -- },
     t = {
       function()
         require('flies').append_insert()
@@ -504,34 +496,11 @@ local function map_basic()
       },
     },
     [a.jump] = {
-      pa = {
-        function()
-          require('bindutils').search(false)
-        end,
-        modes = 'nxo',
-      },
-      a = {
-        function()
-          require('bindutils').search(true)
-        end,
-        modes = 'nxo',
+      a = cmd {
+        'Telescope current_buffer_fuzzy_find',
       },
       b = { '%', modes = 'nxo' },
-      pc = {
-        function()
-          require('bindutils').search_asterisk(false)
-        end,
-        noremap = false,
-        modes = 'nx',
-      },
-      c = {
-        function()
-          require('bindutils').search_asterisk(true)
-        end,
-        noremap = false,
-        modes = 'nx',
-      },
-      pd = {
+      [p 'd'] = {
         function()
           vim.diagnostic.goto_prev { float = not vim.g.u_virtual_lines }
         end,
@@ -543,10 +512,20 @@ local function map_basic()
         end,
         'go next diagnostic',
       },
+      [p 'f'] = plug {
+        '(buffet-operator-extract)',
+        'buffet extract',
+        modes = 'nx',
+      },
+      f = plug {
+        '(buffet-operator-replace)',
+        'buffet replace',
+        modes = 'nx',
+      },
       g = { '``', 'before last jump' },
       o = { '`.', 'last change' },
       l = '`', -- jump
-      pm = { '`[', 'start of last mod', modes = 'nxo' },
+      [p 'm'] = { '`[', 'start of last mod', modes = 'nxo' },
       m = { '`]', 'begin of last mod', modes = 'nxo' },
       pr = { require('bindutils').previous_reference },
       r = { require('bindutils').next_reference },
@@ -567,8 +546,16 @@ local function map_basic()
       -- replace with search function based on highlight group
       [p(dd.spell)] = { '[s', 'prevous misspelled' },
       [dd.spell] = { ']s', 'next misspelled' },
-      [dd.search] = cmd {
-        'Telescope current_buffer_fuzzy_find',
+      [p(dd.search)] = {
+        function()
+          require('flies.objects.search').search('?', true, false)
+        end,
+        modes = 'nxo',
+      },
+      [dd.search] = {
+        function()
+          require('flies.objects.search').search('/', true, true)
+        end,
         modes = 'nxo',
       },
       ['p' .. a.mark] = {
@@ -592,7 +579,7 @@ local function map_basic()
       b = { 'gi', 'last insert point' },
       d = plug '(u-flies-operator-swap)', -- FIXME:
       he = cmd 'ISwapWith',
-      pe = {
+      [p 'e'] = {
         function()
           require('nvim-treesitter.textobjects.swap').swap_previous '@swappable'
         end,
@@ -604,56 +591,51 @@ local function map_basic()
         end,
         'swap',
       },
-      n = {
-        function()
-          require('neogen').generate {}
-        end,
-        'annotate (neogen)',
-      },
+      [p 'g'] = cmd 'SplitjoinJoin',
+      g = cmd 'SplitjoinSplit',
+      m = { 'J', 'join', modes = 'nx' },
       [p 'o'] = 'O',
       o = 'o',
-      -- n = {
-      --   name = '+annotate',
-      --   c = {
-      --     function()
-      --       require('neogen').generate { type = 'class' }
-      --     end,
-      --     'class',
-      --   },
-      --   f = {
-      --     function()
-      --       require('neogen').generate { type = 'func' }
-      --     end,
-      --     'function',
-      --   },
-      --   t = {
-      --     function()
-      --       require('neogen').generate { type = 'type' }
-      --     end,
-      --     'type',
-      --   },
-      -- },
-      pr = plug {
-        '(buffet-operator-extract)',
-        'buffet extract',
-        modes = 'nx',
+      n = {
+        name = '+annotate',
+        n = {
+          function()
+            require('neogen').generate {}
+          end,
+          'all',
+          -- 'annotate (neogen)',
+        },
+        c = {
+          function()
+            require('neogen').generate { type = 'class' }
+          end,
+          'class',
+        },
+        f = {
+          function()
+            require('neogen').generate { type = 'func' }
+          end,
+          'function',
+        },
+        t = {
+          function()
+            require('neogen').generate { type = 'type' }
+          end,
+          'type',
+        },
       },
-      r = plug {
-        '(buffet-operator-replace)',
-        'buffet replace',
-        modes = 'nx',
-      },
+      r = 'R',
       s = { vim.lsp.buf.rename, 'rename' },
       -- s = { vim.lsp.buf.rename, 'rename', modes = 'nx' },
-      ppu = {
+      [p(p 'u')] = {
         rep [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']],
         'change case',
         modes = 'nx',
       }, -- FIXME: not repeatable
-      pu = { 'gU', 'uppercase', modes = 'nx' },
+      [p 'u'] = { 'gU', 'uppercase', modes = 'nx' },
       u = { 'gu', 'lowercase', modes = 'nx' },
+      [p 'v'] = { 'P', modes = 'nx' },
       v = { 'p', modes = 'nx' },
-      pv = { 'P', modes = 'nx' },
       -- v = { 'g~', 'toggle case', modes = 'nx' },
       w = {
         function()
@@ -664,7 +646,7 @@ local function map_basic()
         'symbols',
         modes = 'n',
       },
-      px = plug {
+      [p 'x'] = plug {
         '(ExchangeClear)',
         modes = 'nx',
       },
@@ -691,59 +673,23 @@ local function map_basic()
         'spell suggest',
         modes = 'nx',
       },
-      -- FIXME:
-      ['p' .. dd.comment] = plug { '(u-comment-opleader-block)', modes = 'nx' },
+      [p(dd.comment)] = plug { '(u-comment-opleader-block)', modes = 'nx' },
       [dd.comment] = {
         modes = {
           n = {
-            o = cmd 'lua ___comment_norm_o()',
-            O = cmd 'lua ___comment_norm_O()',
-            A = cmd 'lua ___comment_norm_A()',
+            o = function()
+              require('Comment.api').locked.insert_linewise_below()
+            end,
+            po = function()
+              require('Comment.api').locked.insert_linewise_above()
+            end,
+            pp = function()
+              require('Comment.api').locked.insert_linewise_eol()
+            end,
           },
           nx = {
             [''] = plug '(u-comment-opleader-line)',
           },
-        },
-      },
-      -- ['p' .. '<cr>'] = {
-      --   cmd 'SplitjoinJoin',
-      -- },
-      [p(p(dd.join))] = cmd 'SplitjoinJoin',
-      [p(dd.join)] = cmd 'SplitjoinSplit',
-      [dd.join] = { 'J', 'join', modes = 'nx' },
-      -- ['p' .. dd.join] = {
-      --   modes = {
-      --     n = '<Plug>(u-revj-operator)',
-      --     x = {
-      --       function()
-      --         require('revj').format_visual()
-      --       end,
-      --       'rev join',
-      --     },
-      --   },
-      -- },
-      [p 't'] = {
-        modes = {
-          n = plug '(ninja-insert)i',
-          x = require('bindutils').pre,
-        },
-      },
-      t = {
-        modes = {
-          n = plug '(ninja-append)i',
-          x = require('bindutils').post,
-        },
-      },
-      [p 'f'] = {
-        modes = {
-          n = plug '(ninja-insert)a',
-          x = require('bindutils').pre,
-        },
-      },
-      f = {
-        modes = {
-          n = plug '(ninja-append)a',
-          x = require('bindutils').post,
         },
       },
       [dd.left] = {

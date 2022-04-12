@@ -195,8 +195,11 @@ function M.config()
   local colors = {
     warn = vim.g.terminal_color_3,
     error = vim.g.terminal_color_1,
-    background_active = vim.g.terminal_color_14, -- TODO: use gitgutters highlight groups
-    background_inactive = vim.g.terminal_color_12,
+    -- background_active = vim.g.terminal_color_14, -- TODO: use gitgutters highlight groups
+    -- background_inactive = vim.g.terminal_color_12,
+    -- neon colorscheme
+    background_active = '#8ec07c', -- TODO: use gitgutters highlight groups
+    background_inactive = '#458588',
     text = vim.g.terminal_color_7,
   }
 

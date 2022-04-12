@@ -44,7 +44,6 @@ function M.setup()
       -- d: datetime
       e = buf,
       f = ts 'function',
-      -- gG: ninja
       -- h: qualifier
       -- i: node; see also: David-Kunz/treesitter-unit
       j = ts 'block',
@@ -69,6 +68,7 @@ function M.setup()
       ['<space>'] = vo.bigword,
       ['<tab>'] = require('flies.objects.indent').new(),
       ['<cr>'] = require('flies.objects.line').new(),
+      ['é'] = require('flies.objects.search').asterisk_z,
     },
     qualifiers = require('bindings.parameters').qualifiers,
     domains = require('bindings.parameters').domains,

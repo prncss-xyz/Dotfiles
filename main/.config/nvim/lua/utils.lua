@@ -1,5 +1,25 @@
 local M = {}
 
+function M.t(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+function M.feed_plug(str)
+  vim.api.nvim_feedkeys(M.t '<Plug>' .. str, 'm', true)
+end
+
+function M.first_cb(...)
+  local args = { ... }
+  return function()
+    for _, cb in ipairs(args) do
+      local r = cb()
+      if r then
+        return r
+      end
+    end
+  end
+end
+
 function M.get_visual_selection(cb)
   local old = vim.fn.getreg 'z'
   vim.fn.feedkeys('"zy', 'n')

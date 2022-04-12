@@ -1,7 +1,7 @@
 -- small commands directly meant for bindings
 local M = {}
 
-vim.cmd[[
+vim.cmd [[
 function! BlankUp(count) abort
   put!=repeat(nr2char(10), a:count)
   ']+1
@@ -23,32 +23,29 @@ local function t(str)
 end
 
 function M.luasnip_choice_or_dial_next(mode)
-  if require('luasnip').choice_active() then
-    require('luasnip').change_choice(1)
-    return
-  end
-  if mode == 'n' then
-    vim.api.nvim_feedkeys(t '<Plug>(dial-increment)', 'm', true)
-  else
-    vim.api.nvim_feedkeys(t('<Plug>(dial-increment)' .. 'gv'), 'm', true)
-  end
+  require('utils').first_cb(
+    require('plugins.luasnip').utils.next_choice,
+    function()
+      if mode == 'n' then
+        require('utils').feed_plug '(dial-increment)'
+      elseif mode == 'x' then
+        vim.api.nvim_feedkeys(t('<Plug>(dial-increment)' .. 'gv'), 'm', true)
+      end
+    end
+  )()
 end
 
 function M.luasnip_choice_or_dial_previous(mode)
-  if require('luasnip').choice_active() then
-    require('luasnip').change_choice(-1)
-    return
-  end
-  if mode == 'n' then
-    vim.api.nvim_feedkeys(t '<Plug>(dial-decrement)', 'm', true)
-  else
-    vim.api.nvim_feedkeys(t('<Plug>(dial-decrement)' .. 'gv'), 'm', true)
-  end
-end
-
--- TODO: respect indent
-function M.split_line()
-  vim.api.nvim_feedkeys('a' .. t '<cr><cr><up>', 'n', false)
+  require('utils').first_cb(
+    require('plugins.luasnip').utils.previous_choice,
+    function()
+      if mode == 'n' then
+        require('utils').feed_plug '(dial-decrement)'
+      elseif mode == 'x' then
+        vim.api.nvim_feedkeys(t('<Plug>(dial-decrement)' .. 'gv'), 'm', true)
+      end
+    end
+  )()
 end
 
 -- https://vim.fandom.com/wiki/Unconditional_linewise_or_characterwise_paste
@@ -149,51 +146,6 @@ function M.post()
   vim.fn.feedkeys(t(prefix .. '<esc>' .. postfix))
 end
 
-local search_forward
-
-function M.search(forward)
-  search_forward = forward
-  require('flies').repeat_register(function()
-    M.n(false)
-  end, function()
-    M.n(true)
-  end)
-  if forward then
-    vim.fn.feedkeys('/', 'n')
-  else
-    vim.fn.feedkeys('?', 'n')
-  end
-end
-
-function M.search_asterisk(exact)
-  search_forward = true
-  require('flies').repeat_register(function()
-    M.n(false)
-  end, function()
-    M.n(true)
-  end)
-  if exact then
-    vim.fn.feedkeys(t '<plug>(asterisk-z*)')
-  else
-    vim.fn.feedkeys(t '<plug>(asterisk-gz*)')
-  end
-  require('hlslens').start()
-end
-
-function M.n(forward)
-  require('flies').repeat_register(function()
-    M.n(false)
-  end, function()
-    M.n(true)
-  end)
-  if forward == search_forward then
-    vim.fn.feedkeys(vim.v.count1 .. 'n', 'n')
-  else
-    vim.fn.feedkeys(vim.v.count1 .. 'N', 'n')
-  end
-  require('hlslens').start()
-end
-
 local repeatable = require('flies').repeatable
 
 M.scroll_up, M.scroll_down = repeatable(function()
@@ -285,59 +237,25 @@ function M.project_files()
   require('telescope.builtin').find_files()
 end
 
-function M.cmp_toggle()
-  local cmp = require 'cmp'
-  if cmp.visible() then
-    cmp.close()
-  else
-    cmp.complete() -- not working
+M.s_tab = require('utils').first_cb(
+  require('plugins.cmp').utils.confirm,
+  function()
+    return require('luasnip').jump(-1)
+  end,
+  function()
+    require('utils').feed_plug '(TaboutBack)'
   end
-end
+)
 
-function M.up()
-  local cmp = require 'cmp'
-  if cmp.visible() then
-    cmp.select_prev_item()
-    return
+M.tab = require('utils').first_cb(
+  require('plugins.cmp').utils.confirm,
+  function()
+    return require('luasnip').jump(1)
+  end,
+  function()
+    require('utils').feed_plug '(Tabout)'
   end
-  vim.fn.feedkeys(t '<up>', '')
-end
-
-function M.cmp_confirm()
-  local cmp = require 'cmp'
-  if cmp.visible() then
-    cmp.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    }
-    return
-  end
-end
-
---- <s-tab> to jump to next snippet's placeholder
-
-function M.s_tab()
-  local r = require('luasnip').jump(-1)
-  if r then
-    return
-  end
-  -- vim.fn.feedkeys(t '<Plug>(TaboutBackMulti)', '')
-  vim.fn.feedkeys(t '<Plug>(TaboutBack)', '')
-end
-
-function M.tab()
-  local cmp = require 'cmp'
-  if cmp.visible() then
-    cmp.confirm { select = true }
-    return
-  end
-  local r = require('luasnip').jump(1)
-  if r then
-    return
-  end
-  -- vim.fn.feedkeys(t '<Plug>(TaboutMulti)', '')
-  vim.fn.feedkeys(t '<Plug>(Tabout)', '')
-end
+)
 
 -- not used
 function M.spell_next(dir)

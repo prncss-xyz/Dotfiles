@@ -48,9 +48,15 @@ function M.config()
   -- Are also used by vim-illuminate.
   -- The defaults option (CursorLine) was quite unreadable.
   -- Actual settings cause issue when cursor it at the beginning or end.
-  vim.cmd 'highlight! link LspReferenceText DiffChange'
-  vim.cmd 'highlight! link LspReferenceWrite DiffAdd'
-  vim.cmd 'highlight! link LspReferenceRead DiffChange'
+  -- vim.cmd 'highlight! link LspReferenceText String'
+  -- for Neon colorscheme:
+  vim.cmd 'highlight! LspReferenceText guibg=#333644 guifg=#ecee7b'
+  vim.cmd 'highlight! LspReferenceWrite guibg=#8ec07c guifg=#ecee7b'
+  vim.cmd 'highlight! LspReferenceRead guibg=#458588 guifg=#ecee7b'
+
+  -- FIXME: not working
+  -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
+  vim.cmd [[autocmd! CursorHold * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
   local function noformat_on_attach(client, _)
     -- TODO: bindings

@@ -11,4 +11,22 @@ function M.config()
   require 'snippets.luasnip'
 end
 
+local U = {}
+
+M.utils = U
+
+function U.next_choice()
+  if require('luasnip').choice_active() then
+    require('luasnip').change_choice(1)
+    return true
+  end
+end
+
+function U.previous_choice()
+  if require('luasnip').choice_active() then
+    require('luasnip').change_choice(-1)
+    return true
+  end
+end
+
 return M

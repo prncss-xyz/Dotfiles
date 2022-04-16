@@ -66,7 +66,7 @@ augroup('SaveShada', {
   {
     events = { 'VimLeave' },
     targets = { '*' },
-    command = 'wshada!',
+    command = 'wshada',
   },
 })
 
@@ -118,23 +118,25 @@ augroup('StartupSession', {
     targets = { '*' },
     command = function()
       vim.schedule(function()
-        pcall(
-          require('modules.toggler').open,
-          require('modules.blank_pane').open,
-          require('modules.blank_pane').close
-        )
-        if #vim.fn.argv() > 0 then
-          return
+        if false then
+          pcall(
+            require('modules.toggler').open,
+            require('modules.blank_pane').open,
+            require('modules.blank_pane').close
+          )
         end
-        if vim.fn.getcwd() == os.getenv 'HOME' then
+        if #vim.fn.argv() > 0 then
+        elseif vim.fn.getcwd() == os.getenv 'HOME' then
           vim.schedule(function()
             require('telescope').extensions.my_projects.my_projects {}
           end)
+        elseif vim.fn.getcwd() == os.getenv 'HOME' .. '/Personal/neuron' then
+          require('nononotes').prompt('edit', false, 'all')
         else
-          -- TODO: open last file
+          require('telescope').extensions.frecency.frecency {}
         end
-        -- sets title (branch part) correctly before a first buffer is loaded
         fetch_git_branch_plenary()
+        -- TODO: force statusline refresh
       end)
     end,
   },

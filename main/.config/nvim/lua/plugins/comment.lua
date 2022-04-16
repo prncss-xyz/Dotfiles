@@ -19,8 +19,12 @@ end
 
 function M.config()
   local ft = require 'Comment.ft'
-  ft.set('fish', '#%s')
+  ft.set('sway', '#%s')
   require('Comment').setup {
+    mappings = {
+      basic = false,
+      extra = false,
+    },
     pre_hook = pre_hook,
     opleader = {
       block = '<plug>(u-comment-opleader-block)',
@@ -31,10 +35,6 @@ function M.config()
       line = '<plug>(u-comment-toggler-line)',
     },
   }
-
-  vim.api.nvim_del_keymap('n', 'gcA')
-  vim.api.nvim_del_keymap('n', 'gcO')
-  vim.api.nvim_del_keymap('n', 'gco')
 end
 
 return M

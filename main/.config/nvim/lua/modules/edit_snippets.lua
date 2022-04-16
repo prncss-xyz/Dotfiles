@@ -1,56 +1,57 @@
 local utils = require 'utils'
 local command = utils.command
 
--- TODO: combine the two into a vararg with command line completion
+if false then
+  command('EditSnippets', {}, function()
+    require('luasnip.loaders.from_lua').edit_snippet_files()
+  end)
+end
 
-command('EditLSSnippets', {}, function()
-  local l = vim.bo.filetype
-  if l == '' then
-    l = 'all'
+local function format_item(choice)
+  return choice.name
+end
+
+local function on_choice(choice)
+  if not choice then
+    return
   end
-  vim.cmd(
-    string.format(
-      ':edit %s%s%s.lua',
-      vim.fn.getenv 'DOTFILES',
-      '/main/.config/nvim/lua/snippets/luasnip/',
-      l
-    )
-  )
-end)
+  vim.cmd('edit ' .. choice.path)
+end
 
-command('EditLSSnippetsAll', {}, function()
-  vim.cmd(
-    string.format(
-      ':edit %s%s%s.lua',
-      vim.fn.getenv 'DOTFILES',
-      '/main/.config/nvim/lua/snippets/luasnip/',
-      'all'
-    )
-  )
-end)
-
-command('EditTMSnippets', {}, function()
-  local l = vim.bo.filetype
-  if l == '' then
-    l = 'all'
+command('C', {}, function()
+  local vim_dir = vim.g.vim_dir
+  local snip_dir = vim_dir .. '/snippets'
+  local languages = {}
+  local ft = vim.bo.filetype
+  table.insert(languages, ft)
+  if ft == 'javascriptreact' then
+    table.insert(languages, 'javascript')
+  elseif ft == 'typescript' then
+    table.insert(languages, 'javascript')
+  elseif ft == 'typescriptreact' then
+    table.insert(languages, 'javascriptreact')
+    table.insert(languages, 'typescript')
+    table.insert(languages, 'javascript')
   end
-  vim.cmd(
-    string.format(
-      ':edit %s%s%s.json',
-      vim.fn.getenv 'DOTFILES',
-      '/main/.config/nvim/lua/snippets/textmate/',
-      l
+  table.insert(languages, 'all')
+  local items = {}
+  for _, language in ipairs(languages) do
+    local item_ls = {}
+    item_ls.name = language .. ' -- LuaSnip'
+    item_ls.path = string.format('%s%s/%s.lua', snip_dir, '/luasnip', language)
+    table.insert(items, item_ls)
+    local item_tm = {}
+    item_tm.name = language .. '-- TextMate'
+    item_tm.path = string.format(
+      '%s%s/%s.json',
+      snip_dir,
+      '/textmate',
+      language
     )
-  )
-end)
-
-command('EditTMSnippetsAll', {}, function()
-  vim.cmd(
-    string.format(
-      ':edit %s%s%s.json',
-      vim.fn.getenv 'DOTFILES',
-      '/main/.config/nvim/lua/snippets/textmate/',
-      'all'
-    )
-  )
+    table.insert(items, item_tm)
+  end
+  table.insert(items, { name = 'bindings -- Conf', path = vim_dir .. '/lua/bindings/init.lua' })
+  table.insert(items, { name = 'textobjects -- Conf', path = vim_dir .. '/lua/bindings/textobjects.lua' })
+  table.insert(items, { name = 'plugins -- Conf', path = vim_dir .. '/lua/plugins/init.lua' })
+  vim.ui.select(items, { format_item = format_item }, on_choice)
 end)

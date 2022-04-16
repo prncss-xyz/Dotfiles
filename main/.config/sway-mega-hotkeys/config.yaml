@@ -1,7 +1,7 @@
 matcher:
   - label: "editor"
     criteria: "name"
-    value: " NVIM$"
+    value: "NVIM$"
   - label: "terminal"
     criteria: "app_id"
     value: "foot"

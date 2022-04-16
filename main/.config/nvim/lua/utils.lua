@@ -4,8 +4,23 @@ function M.t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-function M.feed_plug(str)
-  vim.api.nvim_feedkeys(M.t '<Plug>' .. str, 'm', true)
+function M.lazy(fn, ...)
+  local args = { ... }
+  return function()
+    return fn(unpack(args))
+  end
+end
+
+function M.lazy_req(module, fn_path, ...)
+  local args = { ... }
+  return function()
+    local path = vim.split(fn_path, '.', { plain = true })
+    local fn = require(module)
+    for _, p in ipairs(path) do
+      fn = fn[p]
+    end
+    return fn(unpack(args))
+  end
 end
 
 function M.first_cb(...)
@@ -20,6 +35,26 @@ function M.first_cb(...)
   end
 end
 
+function M.all_cb(...)
+  local args = { ... }
+  return function()
+    for _, cb in ipairs(args) do
+      cb()
+    end
+  end
+end
+
+function M.feed_plug_cb(str)
+  return function()
+    vim.api.nvim_feedkeys(M.t '<Plug>' .. str, 'm', true)
+  end
+end
+
+function M.feed_vim_cb(str)
+  return function()
+    vim.cmd('normal! ' .. str)
+  end
+end
 function M.get_visual_selection(cb)
   local old = vim.fn.getreg 'z'
   vim.fn.feedkeys('"zy', 'n')

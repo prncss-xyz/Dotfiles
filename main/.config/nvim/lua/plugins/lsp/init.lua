@@ -50,7 +50,7 @@ function M.config()
   -- Actual settings cause issue when cursor it at the beginning or end.
   -- vim.cmd 'highlight! link LspReferenceText String'
   -- for Neon colorscheme:
-  vim.cmd 'highlight! LspReferenceText guibg=#333644 guifg=#ecee7b'
+  vim.cmd 'highlight! LspReferenceText guibg=#4db5bd guifg=#ecee7b'
   vim.cmd 'highlight! LspReferenceWrite guibg=#8ec07c guifg=#ecee7b'
   vim.cmd 'highlight! LspReferenceRead guibg=#458588 guifg=#ecee7b'
 

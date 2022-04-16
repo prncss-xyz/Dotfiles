@@ -28,4 +28,21 @@ function M.config()
   }
 end
 
+local U = {}
+
+M.utils = U
+
+local utils = require 'utils'
+local feed_plug_cb = utils.feed_plug_cb
+local feed_vim_cb = utils.feed_vim_cb
+local all_cb = utils.all_cb
+
+function U.decrement_x()
+  all_cb(feed_plug_cb '(dial-decrement)', feed_vim_cb 'gv')
+end
+
+function U.increment_x()
+  all_cb(feed_plug_cb '(dial-increment)', feed_vim_cb 'gv')
+end
+
 return M

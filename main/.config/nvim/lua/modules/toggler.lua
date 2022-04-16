@@ -62,7 +62,6 @@ function M.toggle()
 end
 
 function M.back()
-  require('utils').dump(toggler)
   if not toggler.opened then
     return M.show()
   end

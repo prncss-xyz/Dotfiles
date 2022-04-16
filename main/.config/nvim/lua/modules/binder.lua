@@ -58,7 +58,6 @@ M.help = {}
 local function map(bufnr, mode, keys, rhs, map_opts)
   -- TODO: map function
   -- print(mode,keys, rhs)
-  -- require('utils').dump(map_opts)
   if bufnr then
     vim.api.nvim_buf_set_keymap(bufnr, mode, keys, rhs, map_opts)
   else

@@ -1,6 +1,6 @@
 {
   "test snapshot": {
-    "prefix": "test.snapshot",
+    "prefix": "test snapshot",
     "body": [
       "describe('$1', () => {",
       "\tit('renders correctly', () => {",

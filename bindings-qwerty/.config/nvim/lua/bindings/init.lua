@@ -1,16 +1,20 @@
 local M = {}
 local invert = require('utils').invert
 
-local function s(char)
-  return '<s-' .. char .. '>'
-end
+local utils = require 'utils'
+local feed_plug_cb = utils.feed_plug_cb
+local feed_vim_cb = utils.feed_vim_cb
+local first_cb = utils.first_cb
+local all_cb = utils.all_cb
+local lazy = utils.lazy
+local lazy_req = utils.lazy_req
 
 local function alt(key)
   return string.format('<a-%s>', key)
 end
 
 local a = require('bindings.parameters').a
-local dd = require('bindings.parameters').d
+local d = require('bindings.parameters').d
 local p = require('bindings.parameters').p
 
 local function plug(t)
@@ -74,6 +78,7 @@ local function map_command_lang()
         ['<c-k>'] = '<c-o>d$',
         ['<c-o>'] = '<c-o>',
         ['<c-v>'] = cmd 'normal! Pl',
+        ['<c-space>'] = ' <left>', -- FIXME: make it work with shift-space
       },
       is = {
         ['<s-tab>'] = { require('bindutils').s_tab },
@@ -130,17 +135,17 @@ local function map_basic()
   local reg = require('modules.binder').reg
   reg {
     fn = {
-      [dd.search] = cmd 'Telescope current_buffer_fuzzy_find',
+      [d.search] = cmd 'Telescope current_buffer_fuzzy_find',
     },
   }
   reg {
     A = 'A',
     a = 'a',
-    b = plug { '%', 'matchup cycle forward', modes = 'nxo' },
+    b = plug { '%', 'matchparen', modes = 'nxo' },
     C = { '<nop>', modes = 'nx' },
-    c = { '""c', modes = 'nx' },
+    c = { '"cc', modes = 'nx' },
     D = { '<nop>', modes = 'nx' },
-    d = { '""d', modes = 'nx' },
+    d = { '"dd', modes = 'nx' },
     E = {
       modes = {
         n = 'W',
@@ -159,43 +164,34 @@ local function map_basic()
     -- f = { require('flies').meta_move, mode = true, modes = 'nx' },
     f = {
       modes = {
-        n = function()
-          require('flies').meta_move 'n'
-        end,
-        o = function()
-          require('flies').meta_move 'o'
-        end,
-        x = function()
-          require('flies').meta_move 'x'
-        end,
+        n = lazy_req('flies.moves', 'meta_move', 'n'),
+        o = lazy_req('flies.moves', 'meta_move', 'o'),
+        x = lazy_req('flies.moves', 'meta_move', 'x'),
       },
     },
     I = 'I',
     i = 'i',
     p = {
-      require('flies').repeat_previous,
-      mode = true,
-      modes = 'nxo',
+      lazy_req('flies.move_again', 'previous'),
     },
-    n = { require('flies').repeat_next, mode = true, modes = 'nxo' },
+    n = lazy_req('flies.move_again', 'next'),
     O = { '<nop>', modes = 'nx' },
     o = { '<nop>', modes = 'nx' },
-    R = { 'R', modes = 'nx' },
-    r = { 'r', modes = 'nx' },
+    r = { '"', modes = 'nx' },
     s = {
-      function()
-        require('hop').hint_char2 {
-          char2_fallback_key = '<cr>',
-        }
-      end,
-      'hop char2',
-      modes = 'nxo',
+      modes = {
+        nx = function()
+          require('bindutils').hop12()
+        end,
+        -- o = ":<c-u>lua require'bindutils'.hop12()<cr>",-- FIXME:
+        o = function()
+          require('hop').hint_char2 {
+            char2_fallback_key = '<cr>',
+          }
+        end,
+      },
     },
-    t = {
-      function()
-        require('flies').append_insert()
-      end,
-    },
+    t = lazy_req('flies.moves', 'append_insert'),
     ou = 'U',
     u = 'u',
     V = { '<c-v>', modes = 'nxo' },
@@ -206,7 +202,8 @@ local function map_basic()
     W = '<nop>',
     -- W = { 'B', 'previous word', modes = 'nxo' },
     -- w = { 'b', 'next word', modes = 'nxo' },
-    w = plug { 'CamelCaseMotion_b', 'previous subword ', modes = 'nxo' },
+    -- w = plug { 'CamelCaseMotion_b', 'previous subword ', modes = 'nxo' },
+    w = { 'b', 'previous word ', modes = 'nxo' },
     X = { '"+d$', modes = 'nx' },
     x = { '"+d', modes = 'nx' },
     cc = '""S',
@@ -268,73 +265,52 @@ local function map_basic()
     ['<a-a>'] = cmd { 'e#', 'previous buffer' },
     ['<a-b>'] = cmd { 'wincmd p', 'window back' },
     ['<a-w>'] = cmd { 'q', 'close window' },
-    [dd.right] = { 'l', 'right', modes = 'nxo' },
-    [dd.left] = { 'h', 'left', modes = 'nxo' },
-    [dd.up] = { 'k', 'up', modes = 'nxo' },
-    [dd.down] = { 'j', 'down', modes = 'nxo' },
+    [d.right] = { 'l', 'right', modes = 'nxo' },
+    [d.left] = { 'h', 'left', modes = 'nxo' },
+    [d.up] = { 'k', 'up', modes = 'nxo' },
+    [d.down] = { 'j', 'down', modes = 'nxo' },
     -- also: require("luasnip.extras.select_choice")
     -- TODO: require luasnip
-    [dd.prev_search] = {
+    [d.prev_search] = {
       modes = {
-        n = function()
-          require('bindutils').luasnip_choice_or_dial_previous 'n'
-        end,
-        x = function()
-          require('bindutils').luasnip_choice_or_dial_previous 'x'
-        end,
+        n = plug '(dial-decrement)',
+        x = require('plugins.dial').utils.decrement_x,
+        i = lazy_req('luasnip', 'change_choice', -1),
       },
     },
-    [dd.next_search] = {
+    [d.next_search] = {
       modes = {
-        n = function()
-          require('bindutils').luasnip_choice_or_dial_next 'n'
-        end,
-        x = function()
-          require('bindutils').luasnip_choice_or_dial_next 'x'
-        end,
+        n = plug '(dial-increment)',
+        x = require('plugins.dial').utils.increment_x,
+        i = lazy_req('luasnip', 'change_choice', 1),
       },
     },
-    [alt(dd.left)] = { require('modules.wrap_win').left, 'window left' },
-    [alt(dd.down)] = { require('modules.wrap_win').down, 'window down' },
-    [alt(dd.up)] = { require('modules.wrap_win').up, 'window up' },
-    [alt(dd.right)] = { require('modules.wrap_win').right, 'window right' },
+    [alt(d.left)] = { lazy_req('modules.wrap_win', 'left'), 'window left' },
+    [alt(d.down)] = { lazy_req('modules.wrap_win', 'down'), 'window down' },
+    [alt(d.up)] = { lazy_req('modules.wrap_win', 'up'), 'up' },
+    [alt(d.right)] = { lazy_req('modules.wrap_win', 'right'), 'window right' },
     -- normal mode only, because mapped to o
     [a.various] = {
-      pb = function()
-        require('neoscroll').zt(250)
-      end,
-      b = function()
-        require('neoscroll').zb(250)
-      end,
-      c = function()
-        require('neoscroll').zz(250)
-      end,
+      pb = lazy_req('neoscroll', 'zt', 250),
+      b = lazy_req('neoscroll', 'zb', 250),
+      c = lazy_req('neoscroll', 'zz', 250),
       d = {
         name = '+DAP',
-        pb = function()
-          require('dap').clear_breakpoints()
-        end,
-        b = {
-          "<cmd>lua require'dap'.toggle_breakpoint()<cr>",
-          'toggle breakpoints',
-        },
+        pb = lazy_req('dap', 'clear_breakpoints'),
+        b = lazy_req('dap', 'toggle_breakpoints'),
         c = repeatable_cmd "lua require'dap'.continue()",
         i = repeatable_cmd "lua require'dap'.step_into()",
         po = repeatable_cmd "lua require'dap'.step_out()",
         o = repeatable_cmd "lua require'dap'.step_over()",
-        px = { "<cmd>lua require'dap'.disconnect()<cr>", 'stop' },
-        x = { "<cmd>lua require'dap'.terminate()<cr>", 'stop' },
-        ['.'] = { "<cmd>lua require'dap'.run_last()<cr>", 'run last' },
-        -- u = { "<cmd>lua require'dapui'.eval()<cr>", 'toggle dapui' },
-        k = { "<cmd>lua require'dap'.up()<cr>", 'up' },
-        j = { "<cmd>lua require'dap'.down()<cr>", 'down' },
-        l = { "<cmd>lua require'plugins.dap'.launch()<cr>", 'launch' },
-        r = { "<cmd>lua require'dap'.repl.open()<cr>", 'repl' },
-        a = { "<cmd>lua require'plugins.dap'.attach()<cr>", 'attach' },
-        pa = {
-          "<cmd>lua require'plugins.dap'.attachToRemote()<cr>",
-          'attach to remote',
-        },
+        px = lazy_req('dap', 'disconnect'),
+        x = lazy_req('dap', 'terminate'),
+        ['.'] = lazy_req('dap', 'run_last'),
+        k = lazy_req('dap', 'up'),
+        j = lazy_req('dap', 'down'),
+        l = lazy_req('dap', 'launch'),
+        r = lazy_req('dap', 'repl.open'),
+        [p 'a'] = lazy_req('dap', 'attachToRemote'),
+        a = lazy_req('dap', 'attach'),
         h = { "<cmd>lua require'dap.ui.widgets'.hover()<cr>", 'widgets' },
         ph = { "<cmd>lua require'dap.ui.variables'.hover()<cr>", 'hover' },
         v = {
@@ -378,7 +354,7 @@ local function map_basic()
         sw = plug '(Mac_NameCurrentMacroForCurrentSession)',
         l = cmd 'DisplayMacroHistory',
         [a.macro] = { '<plug>(Mac_Play)', noremap = false },
-        [dd.search] = {
+        [d.search] = {
           w = plug '(Mac_SearchForNamedMacroAndOverwrite)',
           r = plug '(Mac_SearchForNamedMacroAndRename)',
           d = plug '(Mac_SearchForNamedMacroAndDelete)',
@@ -506,6 +482,8 @@ local function map_basic()
         end,
         'go previous diagnostic',
       },
+      [p 'c'] = require('bindutils').asterisk_gz,
+      c = require('bindutils').asterisk_z,
       d = {
         function()
           vim.diagnostic.goto_next { float = not vim.g.u_lsp_lines }
@@ -540,19 +518,19 @@ local function map_basic()
       v = { '`>', modes = 'nxo' },
       ['p;'] = { 'g,', 'newer change' },
       [';'] = { 'g;', 'older changer' },
-      [dd.up] = { 'gk', 'visual up', modes = 'nxo' },
-      [dd.down] = { 'gj', 'visual down', modes = 'nxo' },
+      [d.up] = { 'gk', 'visual up', modes = 'nxo' },
+      [d.down] = { 'gj', 'visual down', modes = 'nxo' },
       -- FIXME: built-in previous/next misspelled do not work with spellsitter
       -- replace with search function based on highlight group
-      [p(dd.spell)] = { '[s', 'prevous misspelled' },
-      [dd.spell] = { ']s', 'next misspelled' },
-      [p(dd.search)] = {
+      [p(d.spell)] = { '[s', 'prevous misspelled' },
+      [d.spell] = { ']s', 'next misspelled' },
+      [p(d.search)] = {
         function()
           require('flies.objects.search').search('?', true, false)
         end,
         modes = 'nxo',
       },
-      [dd.search] = {
+      [d.search] = {
         function()
           require('flies.objects.search').search('/', true, true)
         end,
@@ -624,7 +602,8 @@ local function map_basic()
           'type',
         },
       },
-      r = 'R',
+      [p 'r'] = 'R',
+      r = 'r',
       s = { vim.lsp.buf.rename, 'rename' },
       -- s = { vim.lsp.buf.rename, 'rename', modes = 'nx' },
       [p(p 'u')] = {
@@ -662,9 +641,9 @@ local function map_basic()
       [p '<tab>'] = { '<<', 'dedent', modes = 'nx' },
       ['<tab>'] = { '>>', 'indent', modes = 'nx' },
       -- https://vi.stackexchange.com/questions/3875/how-to-insert-a-newline-without-leaving-normal-mode
-      [p '<cr>'] = plug 'unimpairedBlankUp',
-      ['<cr>'] = plug 'unimpairedBlankDown',
-      [dd.spell] = {
+      [p '<cr>'] = plug '(unimpaired-blank-up)',
+      ['<cr>'] = plug '(unimpaired-blank-down)',
+      [d.spell] = {
         function()
           require('telescope.builtin').spell_suggest(
             require('telescope.themes').get_cursor {}
@@ -673,55 +652,56 @@ local function map_basic()
         'spell suggest',
         modes = 'nx',
       },
-      [p(dd.comment)] = plug { '(u-comment-opleader-block)', modes = 'nx' },
-      [dd.comment] = {
+
+      [p(d.comment)] = plug { '(u-comment-opleader-block)', modes = 'nx' },
+      [d.comment] = {
+        o = function()
+          require('Comment.api').locked.insert_linewise_below()
+        end,
+        po = function()
+          require('Comment.api').locked.insert_linewise_above()
+        end,
+        pp = function()
+          require('Comment.api').locked.insert_linewise_eol()
+        end,
+      },
+      [d.comment] = {
         modes = {
-          n = {
-            o = function()
-              require('Comment.api').locked.insert_linewise_below()
-            end,
-            po = function()
-              require('Comment.api').locked.insert_linewise_above()
-            end,
-            pp = function()
-              require('Comment.api').locked.insert_linewise_eol()
-            end,
-          },
           nx = {
             [''] = plug '(u-comment-opleader-line)',
           },
         },
       },
-      [dd.left] = {
+      [d.left] = {
         name = 'move left',
         modes = {
           n = replug 'MoveCharLeft',
           x = replug 'MoveBlockLeft',
         },
       },
-      [dd.right] = {
+      [d.right] = {
         name = 'move right',
         modes = {
           n = replug 'MoveCharRight',
           x = replug 'MoveBlockRight',
         },
       },
-      [dd.up] = {
+      [d.up] = {
         name = 'move up',
         modes = {
           n = replug 'MoveLineUp',
           x = replug 'MoveBlockUp',
         },
       },
-      [dd.down] = {
+      [d.down] = {
         name = 'move down',
         modes = {
           n = replug 'MoveLineDown',
           x = replug 'MoveBlockDown',
         },
       },
-      [dd.prev_search] = plug { '(dial-increment-additional)', modes = 'x' },
-      [dd.next_search] = plug { '(dial-decrement-additional)', modes = 'x' },
+      [d.prev_search] = plug { '(dial-increment-additional)', modes = 'x' },
+      [d.next_search] = plug { '(dial-decrement-additional)', modes = 'x' },
       [a.edit] = {
         name = '+line',
         py = { '<Plug>(buffet-operator-delete)il', noremap = false },
@@ -729,9 +709,9 @@ local function map_basic()
         pr = { '<Plug>(buffet-operator-extract)il', noremap = false },
         r = { '<Plug>(buffet-operator-replace)il', noremap = false },
         x = plug '(ExchangeLine)',
-        [dd.join] = plug '(u-revj-line)',
-        [s(dd.comment)] = plug '(u-comment-toggler-block)',
-        [dd.comment] = plug '(u-comment-toggler-line)',
+        [d.join] = plug '(u-revj-line)',
+        [p(d.comment)] = plug '(u-comment-toggler-block)',
+        [d.comment] = plug '(u-comment-toggler-line)',
       },
     },
     [a.mark] = {
@@ -823,7 +803,7 @@ local function map_basic()
         end,
         pl = plug { '(Marks-next)', name = 'Goes to next mark in buffer.' },
       },
-      [dd.search] = cmd { 'Telescope live_grep', 'live grep' },
+      [d.search] = cmd { 'Telescope live_grep', 'live grep' },
       [a.move] = { require('bindutils').project_files, 'project file' },
     },
     [a.help] = {
@@ -868,6 +848,36 @@ local function map_basic()
         require('marks').bookmark_state:all_to_list 'quickfixlist'
         vim.cmd 'Trouble quickfix'
       end, 'TroubleClose'),
+      [p 'c'] = {
+        modes = {
+          n = function()
+            require('split').close()
+          end,
+        },
+      },
+      c = {
+        s = {
+          function()
+            require('split').open_lsp()
+          end,
+        },
+        r = {
+          modes = {
+            n = function()
+              require('split').pop({ target = 'here' }, 'n')
+            end,
+            x = ":<c-u>lua require('split').open({target='here'}, 'x')<cr>",
+          },
+        },
+        o = {
+          modes = {
+            n = function()
+              require('split').open({}, 'n')
+            end,
+            x = ":<c-u>lua require('split').open({}, 'x')<cr>",
+          },
+        },
+      },
       d = {
         require('modules.toggler').cb(function()
           require('dapui').open()
@@ -884,6 +894,8 @@ local function map_basic()
       },
       g = require('modules.toggler').cb('Neogit', ':q'),
       h = require('modules.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
+      [p 'i'] = plug '(unimpaired-directory-previous)',
+      i = plug '(unimpaired-directory-next)',
       j = {
         name = '+peek',
         l = plug {
@@ -903,7 +915,7 @@ local function map_basic()
           'referenes',
         },
         t = cmd 'UltestOutput',
-        [dd.git] = function()
+        [d.git] = function()
           require('gitsigns').blame_line { full = true }
         end,
       },
@@ -935,34 +947,6 @@ local function map_basic()
       t = { require('bindutils').term, 'new terminal' },
       pv = cmd { 'Telescope project_directory', 'projects' },
       v = cmd { 'Telescope my_projects', 'sessions' },
-      cs = {
-        function()
-          require('split').open_lsp()
-        end,
-      },
-      pc = {
-        modes = {
-          n = function()
-            require('split').close()
-          end,
-        },
-      },
-      cr = {
-        modes = {
-          n = function()
-            require('split').pop({ target = 'here' }, 'n')
-          end,
-          x = ":<c-u>lua require('split').open({target='here'}, 'x')<cr>",
-        },
-      },
-      co = {
-        modes = {
-          n = function()
-            require('split').open({}, 'n')
-          end,
-          x = ":<c-u>lua require('split').open({}, 'x')<cr>",
-        },
-      },
       w = require('modules.toggler').cb('TodoTrouble', 'TroubleClose'),
       x = { require('bindutils').xplr_launch, 'xplr' },
       y = {
@@ -982,15 +966,15 @@ local function map_basic()
         require('modules.blank_pane').close
       ),
       -- [' '] = cmd { 'Telescope commands', 'commands' },
-      ['p' .. dd.git] = require('modules.toggler').cb(
+      ['p' .. d.git] = require('modules.toggler').cb(
         'DiffviewOpen',
         'DiffviewClose'
       ),
-      [dd.git] = {
+      [d.git] = {
         require('modules.toggler').cb('Gitsigns setqflist', 'TroubleClose'),
         'hunks',
       },
-      [s(a.editor)] = { require('modules.toggler').back, 'toggle' },
+      [p(a.editor)] = { require('modules.toggler').back, 'toggle' },
       [a.editor] = { require('modules.toggler').toggle, 'toggle' },
     },
   }
@@ -1001,8 +985,8 @@ local function map_markdown()
   reg {
     ['<c-a>'] = { modes = { nvo = 'g^', i = '<c-o>g^' } },
     ['<c-e>'] = { modes = { nvo = 'g$', i = '<c-o>g$' } },
-    [dd.up] = { 'gk', 'visual line up', modes = 'nxo' },
-    [dd.down] = { 'gj', 'visual line down', modes = 'nxo' },
+    [d.up] = { 'gk', 'visual line up', modes = 'nxo' },
+    [d.down] = { 'gj', 'visual line down', modes = 'nxo' },
     [a.move] = {
       y = plug { 'Markdown_OpenUrlUnderCursor', 'follow url' },
     },
@@ -1020,8 +1004,8 @@ local function map_markdown()
         'parent header',
         modes = 'nxo',
       },
-      [dd.up] = { 'k', 'physical line up', modes = 'nxo' },
-      [dd.down] = { 'j', 'physical line down', modes = 'nxo' },
+      [d.up] = { 'k', 'physical line up', modes = 'nxo' },
+      [d.down] = { 'j', 'physical line down', modes = 'nxo' },
     },
   }
   -- vim.fn.call('textobj#sentence#init', {})
@@ -1098,7 +1082,6 @@ function M.setup()
   map_command_lang()
   map_basic()
   require('bindings.textobjects').setup()
-  -- require('utils').dump(require('modules.binder').counters)
 end
 
 local vim = vim
@@ -1116,8 +1099,8 @@ M.plugins = {
     close_folds = {},
     hover = 'h',
     open_folds = {},
-    next = dd.down,
-    previous = dd.up,
+    next = d.down,
+    previous = d.up,
     toggle_mode = 'm', -- toggle between "workspace" and "document" diagnostics mode
     toggle_preview = 'l', -- toggle auto_preview
     preview = 'p', -- preview the diagnostic location

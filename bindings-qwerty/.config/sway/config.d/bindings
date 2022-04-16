@@ -83,7 +83,8 @@ bindsym $mod+shift+$up move up, mode default
 bindsym $mod+shift+$right move right, mode default
 
 mode launch {
-  bindsym j exec 'bash -c "wtype $(date +%y-%m-%d)"', mode default
+  bindsym a for_window [title="^Dotfiles — main — NVIM$"] focus, mode default # FIXME: 
+  # # bindsym j exec 'bash -c "wtype $(date +%y-%m-%d)"', mode default
   bindsym c exec "clipman pick -t rofi", mode default
   bindsym d exec "$terminal --app-id=launcher -e .local/bin/fdocu", mode default
   bindsym shift+d exec "$terminal --app-id=launcher -e .local/bin/fdocu \*", mode default

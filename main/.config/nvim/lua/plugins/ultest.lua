@@ -18,7 +18,6 @@ function M.config()
       ['javascript#jest'] = function(cmd)
         local filename = cmd[#cmd]
         print(filename)
-        -- require('utils').dump(cmd)
         return {
           dap = {
             type = 'node2',

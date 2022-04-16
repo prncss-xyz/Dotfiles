@@ -1,13 +1,4 @@
-local ls = require 'luasnip'
-local s = ls.snippet
-local sn = ls.snippet_node
-local t = ls.text_node
--- local isn = ls.indent_snippet_node
-local i = ls.insert_node
--- local f = ls.function_node
--- local c = ls.choice_node
-local d = ls.dynamic_node
--- local p = require('luasnip.extras').partial
+---@diagnostic disable: undefined-global
 
 local function clip_to_snip()
   local clip = vim.fn.getreg '+'

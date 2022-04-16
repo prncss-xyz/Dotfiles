@@ -35,7 +35,6 @@ M.qualifiers = {
   p = 'previous',
   n = 'next',
   h = 'hint',
-  [''] = 'plain',
 }
 
 -- TODO: default configuration

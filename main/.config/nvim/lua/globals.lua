@@ -22,20 +22,19 @@ function _G.vim_g_setup(o)
 end
 
 function _G.my_title()
+  local dir = vim.env.PWD
+  local home = vim.env.HOME
+  if dir == home then
+    return 'NVIM'
+  end
   local branch = vim.b.gitsigns_head
   local titlestring = ''
-  local home = vim.loop.os_homedir()
-  local dir = vim.fn.getcwd()
-  if dir == home then
-    dir = '~'
-  else
-    local _, i = dir:find(home .. '/', 1, true)
-    if i then
-      dir = dir:sub(i + 1)
-    end
+  local _, i = dir:find(home .. '/', 1, true)
+  if i then
+    dir = dir:sub(i + 1)
   end
-  titlestring = titlestring .. dir
   if branch then
+    titlestring = titlestring .. dir
     titlestring = titlestring .. ' — ' .. branch
   end
   titlestring = titlestring .. ' — NVIM'

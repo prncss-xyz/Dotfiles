@@ -1,51 +1,126 @@
 -- small commands directly meant for bindings
 local M = {}
 
-vim.cmd [[
-function! BlankUp(count) abort
-  put!=repeat(nr2char(10), a:count)
-  ']+1
-  silent! call repeat#set("\<Plug>unimpairedBlankUp", a:count)
-endfunction
-
-function! BlankDown(count) abort
-  put =repeat(nr2char(10), a:count)
-  '[-1
-  silent! call repeat#set("\<Plug>unimpairedBlankDown", a:count)
-endfunction
-
-nnoremap <Plug>unimpairedBlankUp :call BlankUp(v:count1)<CR>
-nnoremap <Plug>unimpairedBlankDown :call BlankDown(v:count1)<CR>
-]]
+local utils = require 'utils'
+local first_cb = utils.first_cb
+local all_cb = utils.all_cb
+local lazy = utils.lazy
+local lazy_req = utils.lazy_req
 
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-function M.luasnip_choice_or_dial_next(mode)
-  require('utils').first_cb(
-    require('plugins.luasnip').utils.next_choice,
-    function()
-      if mode == 'n' then
-        require('utils').feed_plug '(dial-increment)'
-      elseif mode == 'x' then
-        vim.api.nvim_feedkeys(t('<Plug>(dial-increment)' .. 'gv'), 'm', true)
-      end
-    end
-  )()
+function M.asterisk_z()
+  vim.fn.feedkeys(t '<plug>(asterisk-z*)')
+  require('flies.objects.search').set_search(true)
+  require('hlslens').start()
 end
 
-function M.luasnip_choice_or_dial_previous(mode)
-  require('utils').first_cb(
-    require('plugins.luasnip').utils.previous_choice,
-    function()
-      if mode == 'n' then
-        require('utils').feed_plug '(dial-decrement)'
-      elseif mode == 'x' then
-        vim.api.nvim_feedkeys(t('<Plug>(dial-decrement)' .. 'gv'), 'm', true)
-      end
+function M.asterisk_gz()
+  vim.fn.feedkeys(t '<plug>(asterisk-gz*)')
+  require('flies.objects.search').set_search(true)
+  require('hlslens').start()
+end
+
+vim.api.nvim_set_keymap(
+  'n',
+  '<Plug>(u-hop-char2)',
+  '<cmd>lua require"hop".hint_char2()<cr>',
+  { noremap = true }
+)
+vim.api.nvim_set_keymap(
+  'n',
+  '<Plug>(u-hop-char1)',
+  '<cmd>lua require"hop".hint_char1()<cr>',
+  { noremap = true }
+)
+vim.api.nvim_set_keymap(
+  'o',
+  '<Plug>(u-hop-char2)',
+  ':<c-u>lua require"hop".hint_char2()<cr>',
+  { noremap = true }
+) -- FIXME:
+vim.api.nvim_set_keymap(
+  'o',
+  '<Plug>(u-hop-char1)',
+  ':<c-u>lua require"hop".hint_char1()<cr>',
+  { noremap = true }
+) -- FIXME:
+vim.api.nvim_set_keymap(
+  'x',
+  '<Plug>(u-hop-char2)',
+  '<cmd>lua require"hop".hint_char2()<cr>',
+  { noremap = true }
+)
+vim.api.nvim_set_keymap(
+  'x',
+  '<Plug>(u-hop-char1)',
+  '<cmd>lua require"hop".hint_char1()<cr>',
+  { noremap = true }
+)
+
+function M.hop12()
+  local char = vim.fn.getchar()
+  char = vim.fn.nr2char(char)
+  if char == t '<esc>' then
+    return
+  end
+  local one_char = false
+  if string.find(',=;+-*/_', char, 1, true) then
+    one_char = true
+  end
+  if vim.bo.filetype == 'markdown' and string.find('.:', char, 1, true) then
+    one_char = true
+  end
+  if one_char then
+    vim.fn.feedkeys(t '<Plug>(u-hop-char1)' .. char, 'm')
+  else
+    vim.fn.feedkeys(t '<Plug>(u-hop-char2)' .. char, 'm')
+  end
+end
+
+-- https://github.com/ibhagwan/fzf-lua/blob/f7f54dd685cfdf5469a763d3a00392b9291e75f2/lua/fzf-lua/utils.lua#L372-L404
+function M.get_visual_selection()
+  -- this will exit visual mode
+  -- use 'gv' to reselect the text
+  local _, csrow, cscol, cerow, cecol
+  local mode = vim.fn.mode()
+  if mode == 'v' or mode == 'V' or mode == '' then
+    -- if we are in visual mode use the live position
+    _, csrow, cscol, _ = unpack(vim.fn.getpos '.')
+    _, cerow, cecol, _ = unpack(vim.fn.getpos 'v')
+    if mode == 'V' then
+      -- visual line doesn't provide columns
+      cscol, cecol = 0, 999
     end
-  )()
+    -- exit visual mode
+    vim.api.nvim_feedkeys(
+      vim.api.nvim_replace_termcodes('<Esc>', true, false, true),
+      'n',
+      true
+    )
+  else
+    -- otherwise, use the last known visual position
+    _, csrow, cscol, _ = unpack(vim.fn.getpos "'<")
+    _, cerow, cecol, _ = unpack(vim.fn.getpos "'>")
+  end
+  -- swap vars if needed
+  if cerow < csrow then
+    csrow, cerow = cerow, csrow
+  end
+  if cecol < cscol then
+    cscol, cecol = cecol, cscol
+  end
+  local lines = vim.fn.getline(csrow, cerow)
+  -- local n = cerow-csrow+1
+  local n = M.tbl_length(lines)
+  if n <= 0 then
+    return ''
+  end
+  lines[n] = string.sub(lines[n], 1, cecol)
+  lines[1] = string.sub(lines[1], cscol)
+  return table.concat(lines, '\n')
 end
 
 -- https://vim.fandom.com/wiki/Unconditional_linewise_or_characterwise_paste
@@ -64,110 +139,28 @@ function M.telescope_symbols_md_lsp()
   end
 end
 
-local function pre_jump()
-  local pos = vim.api.nvim_win_get_cursor(0)
-  vim.api.nvim_buf_set_mark(0, "'", pos[1], pos[2], {})
-end
+local recompose = require('flies.move_again').recompose
 
-local qualifiers = { 'p', 'n', 'h' }
-for i, v in ipairs(qualifiers) do
-  qualifiers[i] = t(v)
-end
-
-local cache
-
-local function query_obj()
-  local qualifier
-  while true do
-    local char = vim.fn.getchar()
-    char = vim.fn.nr2char(char)
-    if not qualifier and vim.tbl_contains(qualifiers, char) then
-      qualifier = char
-    elseif char == t '<esc>' or char == t '<c-c>' then
-      return false
-    else
-      qualifier = qualifier or ''
-      cache = { query = char, qualifier = qualifier }
-      return true
-    end
-  end
-end
-
-local function auto_domain(opchar, domain)
-  vim.fn.feedkeys(opchar, 'n')
-  local res
-  if vim.v.count == vim.v.count1 then
-    res = tostring(vim.v.count)
-  else
-    res = ''
-  end
-  res = cache.qualifier .. cache.query
-  vim.fn.feedkeys(res, 'm')
-end
-
-function M.tobj_extreme()
-  if not query_obj() then
-    return
-  end
-  local query = cache.query
-  local outer
-  if vim.tbl_contains({ t '<cr>', 'e' }, query) then
-    outer = 'i'
-  else
-    outer = 'a'
-  end
-  pre_jump()
-  local r = cache.qualifier == 'p' and 'o' or ''
-  if outer == 'i' then
-    vim.api.nvim_feedkeys('va' .. query .. 'o' .. t '<esc>', '', false)
-  end
-  vim.api.nvim_feedkeys('v' .. outer .. query .. r .. t '<esc>', '', false)
-end
-
-function M.pre()
-  local prefix = ''
-  local p0 = vim.fn.getpos 'v'
-  local p1 = vim.fn.getpos '.'
-  if p0[2] < p1[2] or p0[2] == p1[2] and p0[3] < p1[3] then
-    prefix = 'o'
-  end
-  local postfix = true and 'i' or 'I' -- TODO: detect selection module
-  vim.fn.feedkeys(t(prefix .. '<esc>' .. postfix))
-end
-
-function M.post()
-  local prefix = ''
-  local p0 = vim.fn.getpos 'v'
-  local p1 = vim.fn.getpos '.'
-  local postfix = true and 'a' or 'A' -- TODO: detect selection mode
-  if p0[2] > p1[2] or p0[2] == p1[2] and p0[3] > p1[3] then
-    prefix = 'o'
-  end
-  vim.fn.feedkeys(t(prefix .. '<esc>' .. postfix))
-end
-
-local repeatable = require('flies').repeatable
-
-M.scroll_up, M.scroll_down = repeatable(function()
+M.scroll_up, M.scroll_down = recompose(function()
   require('neoscroll').scroll(-0.9, true, 250)
 end, function()
   require('neoscroll').scroll(0.9, true, 250)
 end)
 
-M.previous_reference, M.next_reference = repeatable(function()
+M.previous_reference, M.next_reference = recompose(function()
   require('illuminate').next_reference { wrap = true, reverse = true }
 end, function()
   require('illuminate').next_reference { wrap = true }
 end)
 
-M.mark_previous, M.mark_next = repeatable(function()
+M.mark_previous, M.mark_next = recompose(function()
   require('marks').bookmark_state:previous()
 end, function()
   require('marks').bookmark_state:next()
 end)
 
 local function mv_bookmark(i)
-  return repeatable(function()
+  return recompose(function()
     require('marks').bookmark_state:previous(i)
   end, function()
     require('marks').bookmark_state:next(i)
@@ -184,23 +177,11 @@ function M.bookmark_next(i)
   return cb
 end
 
-M.all_bookmarks_previous, M.all_bookmarks_next = repeatable(function()
+M.all_bookmarks_previous, M.all_bookmarks_next = recompose(function()
   require('marks').prev_bookmark()
 end, function()
   require('marks').next_bookmark()
 end)
-
-local function preview_location_callback(_, method, result)
-  if result == nil or vim.tbl_isempty(result) then
-    vim.lsp.log.info(method, 'No location found')
-    return nil
-  end
-  if vim.tbl_islist(result) then
-    vim.lsp.util.preview_location(result[1])
-  else
-    vim.lsp.util.preview_location(result)
-  end
-end
 
 function M.ro_quit_else(lhs, mode)
   if vim.bo.readonly then
@@ -238,46 +219,16 @@ function M.project_files()
 end
 
 M.s_tab = require('utils').first_cb(
-  require('plugins.cmp').utils.confirm,
-  function()
-    return require('luasnip').jump(-1)
-  end,
-  function()
-    require('utils').feed_plug '(TaboutBack)'
-  end
+  lazy_req('plugins.cmp', 'utils.confirm'),
+  lazy_req('luasnip', 'jump', -1),
+  lazy_req('tabout', 'taboutBack')
 )
 
 M.tab = require('utils').first_cb(
-  require('plugins.cmp').utils.confirm,
-  function()
-    return require('luasnip').jump(1)
-  end,
-  function()
-    require('utils').feed_plug '(Tabout)'
-  end
+  lazy_req('plugins.cmp', 'utils.confirm'),
+  lazy_req('luasnip', 'jump', 1),
+  lazy_req('tabout', 'tabout')
 )
-
--- not used
-function M.spell_next(dir)
-  local res = vim.fn.spellbadword()
-  if dir == -1 then
-    vim.cmd 'normal! [s'
-  elseif res[1]:len() == 0 then
-    vim.cmd 'normal! ]s'
-  end
-  require('telescope.builtin').spell_suggest(
-    require('telescope.themes').get_cursor {}
-  )
-end
-
-function M.onlyBuffer()
-  local cur_buf = vim.api.nvim_get_current_buf()
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if cur_buf ~= buf then
-      pcall(vim.cmd, 'bd ' .. buf)
-    end
-  end
-end
 
 local alt_patterns = {
   { '(.+)%_spec(%.[%w%d]+)$', '%1%2' },

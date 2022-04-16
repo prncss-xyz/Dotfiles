@@ -89,7 +89,8 @@ input "1133:45890:Keyboard_K380_Keyboard" {
 #   xkb_variant multi
 # }
 
-# FIXME
+
+# FIXME: 
 for_window [app_id=^chromium$] inhibit_idle fullscreen
 for_window [app_id=^firefox$] inhibit_idle fullscreen
 for_window [app_id=^celluloid$] inhibit_idle fullscreen

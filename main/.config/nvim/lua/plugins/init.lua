@@ -71,6 +71,10 @@ return require('packer').startup {
       module = 'nui',
     }
     use {
+      'tami5/sqlite.lua',
+      module = 'sqlite',
+    }
+    use {
       'kyazdani42/nvim-web-devicons',
       module = 'nvim-web-devicons',
       config = function()
@@ -569,12 +573,7 @@ return require('packer').startup {
     use {
       'abecodes/tabout.nvim',
       event = 'InsertEnter',
-      config = function()
-        require('tabout').setup {
-          tabkey = '',
-          backwards_tabkey = '',
-        }
-      end,
+      config = config 'tabout',
     }
 
     -- Telescope
@@ -642,8 +641,15 @@ return require('packer').startup {
     use {
       'benfowler/telescope-luasnip.nvim',
       -- local_repo 'telescope-luasnip.nvim',
-      module = 'telescope._extensions.luasnip', -- if you wish to lazy-load
+      module = 'telescope._extensions.luasnip',
     }
+    use {
+      local_repo 'telescope-frecency.nvim',
+      -- 'nvim-telescope/telescope-frecency.nvim',
+      requires = { 'tami5/sqlite.lua' },
+      module = 'telescope._extensions.frecency',
+    }
+
     -- bindings
     use {
       'folke/which-key.nvim',
@@ -779,7 +785,10 @@ return require('packer').startup {
         vim.g.targets_nl = 'np'
       end,
     }
-    use { local_repo 'flies.nvim' }
+    use {
+      local_repo 'flies.nvim',
+      config = config 'flies',
+    }
     use {
       local_repo 'buffet.nvim',
       config = function()
@@ -891,3 +900,6 @@ return require('packer').startup {
     },
   },
 }
+
+
+

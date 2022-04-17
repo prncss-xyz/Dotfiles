@@ -12,7 +12,9 @@ function M.config()
         require('luasnip').lsp_expand(args.body)
       end,
     },
-    dcumentation = {},
+    window = {
+      documentation = true,
+    },
     formatting = {
       format = function(_, vim_item)
         vim_item.kind = symbolic(vim_item.kind)
@@ -24,13 +26,11 @@ function M.config()
       },
     },
     sources = {
-      { name = 'cmp_tabnine' }, -- not currently in use
       { name = 'luasnip' },
       { name = 'nvim_lua' },
       { name = 'nvim_lsp' },
       { name = 'path' },
       { name = 'buffer' },
-      -- { name = 'rg' },
     },
     experimental = {
       ghost_text = false,

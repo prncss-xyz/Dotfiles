@@ -212,8 +212,6 @@ function M.config()
   local background_active = colors.background_active
   local background_inactive = colors.background_inactive
 
-  local gps = require 'nvim-gps'
-
   gls.left = {
     {
       FileName = {
@@ -233,6 +231,7 @@ function M.config()
       NvimGPS = {
         highlight = { text, background_inactive },
         provider = function()
+          local gps = require 'nvim-gps'
           if gps.is_available() then
             return gps.get_location()
           end
@@ -275,6 +274,7 @@ function M.config()
       NvimGPSB = {
         highlight = { text, background_inactive },
         provider = function()
+          local gps = require 'nvim-gps'
           if gps.is_available() then
             return gps.get_location()
           end

@@ -88,6 +88,9 @@ local function map_command_lang()
       c = {
         ['<c-s>'] = { '<c-f>', 'edit command line' },
         ['<c-v>'] = { '<c-r>+', 'paste to command line' },
+        ['<tab>'] = {
+          lazy_req('plugins.cmp', 'utils.confirm')
+        },
       },
     },
     ['<c-a>'] = { modes = { i = '<c-o>^', nv = '^' } },
@@ -477,17 +480,13 @@ local function map_basic()
       },
       b = { '%', modes = 'nxo' },
       [p 'd'] = {
-        function()
-          vim.diagnostic.goto_prev { float = not vim.g.u_virtual_lines }
-        end,
+        vim.diagnostic.goto_prev,
         'go previous diagnostic',
       },
       [p 'c'] = require('bindutils').asterisk_gz,
       c = require('bindutils').asterisk_z,
       d = {
-        function()
-          vim.diagnostic.goto_next { float = not vim.g.u_lsp_lines }
-        end,
+        vim.diagnostic.goto_next,
         'go next diagnostic',
       },
       [p 'f'] = plug {

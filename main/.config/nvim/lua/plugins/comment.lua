@@ -22,7 +22,7 @@ function M.config()
   ft.set('sway', '#%s')
   require('Comment').setup {
     mappings = {
-      basic = false,
+      basic = true,
       extra = false,
     },
     pre_hook = pre_hook,

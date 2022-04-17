@@ -1,4 +1,5 @@
 pcall(require, 'impatient')
+-- require 'impatient'.enable_profile()
 
 -- https://github.com/akinsho/dotfiles/blob/main/.config/nvim/init.lua
 local ok, reload = pcall(require, 'plenary.reload')

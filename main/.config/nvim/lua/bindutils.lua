@@ -222,12 +222,14 @@ M.s_tab = require('utils').first_cb(
   lazy_req('plugins.cmp', 'utils.confirm'),
   lazy_req('luasnip', 'jump', -1),
   lazy_req('tabout', 'taboutBack')
+  -- lazy_req('tabout', 'taboutBackMulti')
 )
 
 M.tab = require('utils').first_cb(
   lazy_req('plugins.cmp', 'utils.confirm'),
   lazy_req('luasnip', 'jump', 1),
   lazy_req('tabout', 'tabout')
+  -- lazy_req('tabout', 'taboutMulti')
 )
 
 local alt_patterns = {

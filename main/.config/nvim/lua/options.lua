@@ -65,7 +65,6 @@ vim_setup {
       'console=sh',
     },
     targets_nl = 'np', -- FIXME: setting it from packer does not seem to work
-    u_lsp_lines = false,
     u_pane_width = 55,
     vim_dir = vim.env.HOME .. '/.config/nvim',
   },

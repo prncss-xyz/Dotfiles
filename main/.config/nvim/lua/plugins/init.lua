@@ -166,6 +166,12 @@ return require('packer').startup {
       end,
       cond = ghost,
     }
+    use {
+      'RRethy/nvim-treesitter-endwise',
+      opt = true,
+      -- event = 'InsertEnter'
+      ft = { 'ruby', 'lua', 'vim', 'sh' },
+    }
 
     -- DAP
     use {
@@ -231,53 +237,29 @@ return require('packer').startup {
       'neovim/nvim-lspconfig',
       module = 'lspconfig',
       event = 'BufReadPost',
-      cmd = { 'GrammarlyStart', 'GrammarlyStop' },
-      setup = function()
-        require('plugins.lsp').setup()
-      end,
-      config = function()
-        require('plugins.lsp').config()
-      end,
+      setup = setup 'lsp',
+      config = config 'lsp',
     }
     use {
       'simrat39/symbols-outline.nvim',
       after = 'nvim-lspconfig',
       cmd = { 'SymbolsOutline', 'SymbolsOutlineOpen' },
-      setup = function()
-        require('plugins.symbols-outline').setup()
-      end,
+      setup = setup 'symbols-outline',
     }
     use {
       'ThePrimeagen/refactoring.nvim',
       module = 'refactoring',
-      config = function()
-        require('refactoring').setup {}
-      end,
-    }
-    use {
-      'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
-      config = function()
-        if vim.g.u_lsp_lines then
-          require('lsp_lines').register_lsp_virtual_lines()
-        end
-      end,
-      after = 'nvim-lspconfig',
+      config = default_config 'refactoring',
     }
     use {
       'RRethy/vim-illuminate',
-      setup = function()
-        require('plugins.illuminate').setup()
-      end,
-      config = function()
-        require('plugins.illuminate').config()
-      end,
+      setup = setup 'illuminate',
+      config = config 'illuminate',
       module = 'illuminate',
     }
     use {
       'rmagatti/goto-preview',
-      config = function()
-        require('plugins.goto-preview').config()
-      end,
+      config = config 'goto-preview',
       module = 'goto-preview',
     }
     -- LSP, language-specific
@@ -341,11 +323,7 @@ return require('packer').startup {
     use {
       'windwp/nvim-autopairs',
       after = 'nvim-cmp',
-      config = function()
-        require('nvim-autopairs').setup {
-          disable_in_macro = true,
-        }
-      end,
+      config = config 'autopairs',
     }
 
     -- Tracking
@@ -591,9 +569,7 @@ return require('packer').startup {
       after = 'telescope.nvim',
     }
     use {
-      -- personal branch for pnpm compat
-      -- https://github.com/nvim-telescope/telescope-node-modules.nvim/pull/3
-      local_repo 'telescope-node-modules.nvim',
+      'nvim-telescope/telescope-node-modules.nvim',
       after = 'telescope.nvim',
       config = function()
         require('telescope').load_extension 'node_modules'
@@ -745,55 +721,49 @@ return require('packer').startup {
       event = 'BufReadPost',
       wants = 'nvim-ts-context-commentstring',
       requires = { 'JoosepAlviste/nvim-ts-context-commentstring' },
-      config = function()
-        require('plugins.comment').config()
-      end,
-    }
-    use {
-      'bkad/CamelCaseMotion',
-      event = 'BufReadPost',
-    }
-    use {
-      'kana/vim-textobj-user',
-      event = 'BufReadPost',
-      setup = function()
-        require('utils').deep_merge(vim, require('bindings').plugins)
-      end,
-      requires = {
-        {
-          'Julian/vim-textobj-variable-segment',
-          opt = true,
-          after = 'vim-textobj-user',
-        },
-        {
-          'kana/vim-textobj-datetime',
-          after = 'vim-textobj-user',
-          setup = function()
-            vim.g.textobj_datetime_no_default_key_mappings = 0
-          end,
-        },
-        {
-          'preservim/vim-textobj-sentence',
-          after = 'vim-textobj-user',
-        },
-      },
+      config = config 'comment',
     }
     use {
       'wellle/targets.vim',
-      event = 'BufReadPost',
+      after = 'flies.nvim',
       setup = function()
         vim.g.targets_nl = 'np'
+        vim.cmd [[
+          autocmd User targets#mappings#user call targets#mappings#extend({
+          \ ',': {},
+          \ '.': {},
+          \ ';': {},
+          \ ':': {},
+          \ '+': {},
+          \ '-': {},
+          \ '=': {},
+          \ '~': {},
+          \ '_': {},
+          \ '*': {},
+          \ '#': {},
+          \ '/': {},
+          \ '\': {},
+          \ '|': {},
+          \ '&': {},
+          \ '$': {},
+          \ 'a': {},
+          \ })
+          ]]
       end,
     }
     use {
       local_repo 'flies.nvim',
       config = config 'flies',
+      opt = true,
+      module = 'flies',
+      module_pattern = 'flies.*',
+      event = 'BufReadPost',
     }
     use {
       local_repo 'buffet.nvim',
-      config = function()
-        require('buffet').setup()
-      end,
+      opt = true,
+      module = 'buffer',
+      config = default_config 'buffet',
     }
 
     -- Session
@@ -816,24 +786,19 @@ return require('packer').startup {
     use {
       'ethanholz/nvim-lastplace',
       event = 'BufReadPre',
-      config = function()
-        require('nvim-lastplace').setup {
-          lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
-          lastplace_ignore_filetype = {
-            'gitcommit',
-            'gitrebase',
-            'svn',
-            'hgcommit',
-          },
-          lastplace_open_folds = true,
-        }
-      end,
+      config = default_config('nvim-lastplace', {
+        lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
+        lastplace_ignore_filetype = {
+          'gitcommit',
+          'gitrebase',
+          'svn',
+          'hgcommit',
+        },
+      }),
     }
     use {
       'ahmedkhalf/project.nvim',
-      config = function()
-        require('project_nvim').setup {}
-      end,
+      config = default_config 'project_nvim',
     }
 
     -- Themes
@@ -855,7 +820,7 @@ return require('packer').startup {
         'SnipReplMemoryClean',
         'SnipClose',
       },
-      config = {
+      config = default_config('sniprun', {
         require('sniprun').setup {
           live_mode_toggle = 'on',
           selected_interpreters = {
@@ -863,7 +828,7 @@ return require('packer').startup {
             -- 'JS_TS_deno'
           },
         },
-      },
+      }),
     }
 
     -- Various
@@ -900,6 +865,3 @@ return require('packer').startup {
     },
   },
 }
-
-
-

@@ -14,6 +14,7 @@ function M.setup()
     )
   end
   local unit = 'u'
+  -- outer unit includes blank lines above
   map('o', 'a' .. unit, ":<c-u>lua require('treesitter-unit').select(true)<cr>")
   map('x', 'a' .. unit, ":lua require('treesitter-unit').select(true)<cr>")
   if false then

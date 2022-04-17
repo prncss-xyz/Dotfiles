@@ -17,6 +17,9 @@ function M.config()
     autotag = {
       enable = true,
     },
+    endwise = {
+      enable = true,
+    },
     ensure_installed = {
       -- 'norg',
       'markdown',

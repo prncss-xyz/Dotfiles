@@ -3,41 +3,22 @@ local M = {}
 -- null_ls uses its own configuration file
 
 function M.setup()
-  if vim.g.u_lsp_lines then
-    vim.fn.sign_define(
-      'DiagnosticSignError',
-      { text = '', texthl = 'diagnosticvirtualtextError' }
-    )
-    vim.fn.sign_define(
-      'DiagnosticSignWarn',
-      { text = '', texthl = 'diagnosticvirtualtextWarn' }
-    )
-    vim.fn.sign_define(
-      'DiagnosticSignHint',
-      { text = '', texthl = 'diagnosticvirtualtextHint' }
-    )
-    vim.fn.sign_define(
-      'DiagnosticSignInfo',
-      { text = '', texthl = 'diagnosticvirtualtextInfo' }
-    )
-  else
-    vim.fn.sign_define(
-      'DiagnosticSignError',
-      { text = ' ', texthl = 'diagnosticvirtualtextError' }
-    )
-    vim.fn.sign_define(
-      'DiagnosticSignWarn',
-      { text = ' ', texthl = 'diagnosticvirtualtextWarn' }
-    )
-    vim.fn.sign_define(
-      'DiagnosticSignHint',
-      { text = '', texthl = 'diagnosticvirtualtextHint' }
-    )
-    vim.fn.sign_define(
-      'DiagnosticSignInfo',
-      { text = ' ', texthl = 'diagnosticvirtualtextInfo' }
-    )
-  end
+  vim.fn.sign_define(
+    'DiagnosticSignError',
+    { text = ' ', texthl = 'diagnosticvirtualtextError' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignWarn',
+    { text = ' ', texthl = 'diagnosticvirtualtextWarn' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignHint',
+    { text = '', texthl = 'diagnosticvirtualtextHint' }
+  )
+  vim.fn.sign_define(
+    'DiagnosticSignInfo',
+    { text = ' ', texthl = 'diagnosticvirtualtextInfo' }
+  )
 
   vim.diagnostic.config {
     virtual_text = false,
@@ -151,6 +132,7 @@ function M.config()
             globals = {
               -- nvim
               'vim',
+              'dump',
               -- packer.nvim
               'use',
               -- xplr

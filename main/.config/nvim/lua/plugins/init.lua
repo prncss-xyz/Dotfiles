@@ -37,6 +37,10 @@ local function default_config(name, config)
   )
 end
 
+local function telescope_config(name)
+  return string.format([[require('telescope').load_extension '%s']], name)
+end
+
 local function config(name)
   return string.format("require('plugins.%s').config()", name)
 end
@@ -135,22 +139,18 @@ return require('packer').startup {
     }
     use {
       'SmiteshP/nvim-gps',
+      config = config 'nvim-gps',
       module = 'nvim-gps',
-      config = function()
-        require('plugins.nvim-gps').config()
-      end,
     }
     use {
       'mizlan/iswap.nvim',
       cmd = { 'ISwap', 'ISwapWith' },
-      config = function()
-        require('iswap').setup {}
-      end,
+      config = default_config 'iswap',
     }
     use { 'mfussenegger/nvim-treehopper', module = 'tsht' }
 
     -- syntax
-    use 'ajouellette/sway-vim-syntax'
+    use { 'ajouellette/sway-vim-syntax', ft = 'sway' }
     -- use 'fladson/vim-kitty'
 
     -- luv docs in :help
@@ -165,12 +165,6 @@ return require('packer').startup {
         vim.fn['nvim_ghost#installer#install']()
       end,
       cond = ghost,
-    }
-    use {
-      'RRethy/nvim-treesitter-endwise',
-      opt = true,
-      -- event = 'InsertEnter'
-      ft = { 'ruby', 'lua', 'vim', 'sh' },
     }
 
     -- DAP
@@ -284,28 +278,6 @@ return require('packer').startup {
       'hrsh7th/nvim-cmp',
       module = 'cmp',
       event = { 'CmdlineEnter', 'CmdlineEnter' },
-      requires = {
-        { 'tzachar/fuzzy.nvim', module = 'fuzzy', disable = true },
-        { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp', disable = true },
-        { 'tzachar/cmp-fuzzy-path', after = 'nvim-cmp', disable = true },
-        { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' },
-        {
-          'hrsh7th/cmp-path',
-          module = 'cmp-path',
-          after = 'nvim-cmp',
-        },
-        { 'lukas-reineke/cmp-rg', after = 'nvim-cmp' },
-        { 'f3fora/cmp-spell', after = 'nvim-cmp' },
-        { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' },
-        { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' },
-        {
-          'L3MON4D3/LuaSnip',
-          module = 'luasnip',
-          config = function()
-            require('plugins.luasnip').config()
-          end,
-        },
-      },
       config = function()
         require('plugins.cmp').config()
       end,
@@ -318,12 +290,43 @@ return require('packer').startup {
       cmd = 'CmpTabnineHub',
       disable = true,
     }
+    use { 'tzachar/fuzzy.nvim', module = 'fuzzy', disable = true }
+    use { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp', disable = true }
+    use { 'tzachar/cmp-fuzzy-path', after = 'nvim-cmp', disable = true }
+    use { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' }
+    use {
+      'hrsh7th/cmp-path',
+      module = 'cmp-path',
+      after = 'nvim-cmp',
+    }
+    use { 'lukas-reineke/cmp-rg', after = 'nvim-cmp' }
+    use { 'f3fora/cmp-spell', after = 'nvim-cmp' }
+    use { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' }
+    use { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' }
+    use {
+      'David-Kunz/cmp-npm',
+      after = 'nvim-cmp',
+      requires = {
+        'nvim-lua/plenary.nvim',
+      },
+    }
+    use { 'max397574/cmp-greek', after = 'nvim-cmp' }
+    use { 'hrsh7th/cmp-emoji', after = 'nvim-cmp' }
+    use { 'mtoohey31/cmp-fish', ft = 'fish' }
     use { 'hrsh7th/cmp-cmdline', after = 'nvim-cmp' }
+    use { 'dmitmel/cmp-cmdline-history', after = 'nvim-cmp' }
     -- insert or delete brackets, parentheses, quotes in pair
     use {
       'windwp/nvim-autopairs',
       after = 'nvim-cmp',
-      config = config 'autopairs',
+      config = config 'nvim-autopairs',
+    }
+    use {
+      'L3MON4D3/LuaSnip',
+      module = 'luasnip',
+      config = function()
+        require('plugins.luasnip').config()
+      end,
     }
 
     -- Tracking
@@ -386,18 +389,7 @@ return require('packer').startup {
     use {
       'lukas-reineke/indent-blankline.nvim',
       event = 'BufReadPre',
-      config = function()
-        local highlitght_list = { 'CursorLine', 'Function' }
-        require('indent_blankline').setup {
-          show_current_context = false,
-          char = ' ',
-          buftype_exclude = { 'terminal', 'help', 'nofile' },
-          filetype_exclude = { 'help', 'packer' },
-          char_highlight_list = highlitght_list,
-          space_char_highlight_list = highlitght_list,
-          space_char_blankline_highlight_list = highlitght_list,
-        }
-      end,
+      config = config('indent-blankline')
     }
     use {
       -- TODO: replace by maintained plugin
@@ -407,32 +399,25 @@ return require('packer').startup {
     }
     use {
       'stevearc/dressing.nvim',
-      config = function()
-        require('dressing').setup {}
-      end,
+      config = default_config 'dressing',
     }
     use {
       'folke/trouble.nvim',
-      -- module = 'trouble.providers.telescope',
-      wants = 'telescope.nvim',
+      module = 'trouble',
+      module_pattern = 'trouble.*',
       cmd = {
         'TodoQuickFix',
         'TodoLocList',
         'TodoTrouble',
         'TodoTelescope',
       },
-      config = function()
-        require('plugins.trouble').config()
-      end,
+      config = config 'trouble',
     }
     use {
       'folke/todo-comments.nvim',
-      wants = 'trouble.nvim',
       event = 'BufReadPost',
       cmd = { 'TodoTrouble', 'TodoTelescope' },
-      config = function()
-        require('todo-comments').setup {}
-      end,
+      config = default_config 'todo-comments',
     }
     use {
       'folke/zen-mode.nvim',
@@ -444,6 +429,13 @@ return require('packer').startup {
       config = default_config 'twilight',
       module = 'twilight',
       cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
+    }
+    use {
+      'mbbill/undotree',
+      setup = function()
+        require('plugins.undotree').setup()
+      end,
+      cmd = { 'UndotreeToggle' },
     }
     use {
       'nvim-neo-tree/neo-tree.nvim',
@@ -566,64 +558,44 @@ return require('packer').startup {
     }
     use {
       'nvim-telescope/telescope-symbols.nvim',
-      after = 'telescope.nvim',
+      module = 'telescope._extensions.symbols',
     }
     use {
       'nvim-telescope/telescope-node-modules.nvim',
-      after = 'telescope.nvim',
-      config = function()
-        require('telescope').load_extension 'node_modules'
-      end,
+      module = 'telescope._extensions.node_modules',
+      -- config = function()
+      --   require('telescope').load_extension 'node_modules'
+      -- end,
     }
     use {
       'nvim-telescope/telescope-fzf-native.nvim',
       run = 'make',
-      after = 'telescope.nvim',
-      config = function()
-        require('telescope').load_extension 'fzf'
-      end,
+      module = 'telescope._extensions.fzf',
     }
     use {
       'crispgm/telescope-heading.nvim',
-      after = 'telescope.nvim',
-      config = function()
-        require('telescope').load_extension 'heading'
-      end,
+      module = 'telescope._extensions.heading',
     }
     use {
       'nvim-telescope/telescope-project.nvim',
-      after = 'telescope.nvim',
-      config = function()
-        require('telescope').load_extension 'project'
-      end,
+      module = 'telescope._extensions.project',
+    }
+    use {
+      'benfowler/telescope-luasnip.nvim',
+      module = 'telescope._extensions.luasnip',
+    }
+    use {
+      local_repo 'telescope-frecency.nvim',
+      requires = { 'tami5/sqlite.lua' },
+      module = 'telescope._extensions.frecency',
+      disable = true,
     }
     use {
       local_repo 'nononotes-nvim',
       config = function()
         require('plugins.nononotes').setup()
       end,
-    }
-    use {
-      'metakirby5/codi.vim',
-      cmd = { 'Codi', 'Codi!', 'Codi!!' },
-    }
-    use {
-      'mbbill/undotree',
-      setup = function()
-        require('plugins.undotree').setup()
-      end,
-      cmd = { 'UndotreeToggle' },
-    }
-    use {
-      'benfowler/telescope-luasnip.nvim',
-      -- local_repo 'telescope-luasnip.nvim',
-      module = 'telescope._extensions.luasnip',
-    }
-    use {
-      local_repo 'telescope-frecency.nvim',
-      -- 'nvim-telescope/telescope-frecency.nvim',
-      requires = { 'tami5/sqlite.lua' },
-      module = 'telescope._extensions.frecency',
+      -- ft = 'markdown',
     }
 
     -- bindings
@@ -829,6 +801,17 @@ return require('packer').startup {
           },
         },
       }),
+    }
+    use {
+      'metakirby5/codi.vim',
+      cmd = { 'Codi', 'Codi!', 'Codi!!' },
+    }
+    use {
+      'rafcamlet/nvim-luapad',
+      cmd = { 'Luapad', 'LuaRun' },
+      module = 'luapad',
+      module_pattern = 'luapad.*',
+      config = default_config 'luapad',
     }
 
     -- Various

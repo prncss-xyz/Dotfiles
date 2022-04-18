@@ -117,6 +117,7 @@ augroup('StartupSession', {
     events = { 'VimEnter' },
     targets = { '*' },
     command = function()
+      vim.o.laststatus = 3 -- gets overwritten when set in 'options'
       vim.schedule(function()
         if false then
           pcall(
@@ -130,10 +131,8 @@ augroup('StartupSession', {
           vim.schedule(function()
             require('telescope').extensions.my_projects.my_projects {}
           end)
-        elseif vim.fn.getcwd() == os.getenv 'HOME' .. '/Personal/neuron' then
-          require('nononotes').prompt('edit', false, 'all')
         else
-          require('telescope').extensions.frecency.frecency {}
+          require('bindutils').project_files()
         end
         fetch_git_branch_plenary()
         -- TODO: force statusline refresh

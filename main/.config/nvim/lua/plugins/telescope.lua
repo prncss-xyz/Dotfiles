@@ -36,15 +36,6 @@ function M.config()
       },
     },
   }
-
-  telescope.load_extension 'md_help'
-  telescope.load_extension 'gitignore'
-  telescope.load_extension 'project_directory'
-  telescope.load_extension 'my_projects'
-  telescope.load_extension 'modules'
-  telescope.load_extension 'installed_plugins'
-  telescope.load_extension 'luasnip'
-  telescope.load_extension 'frecency'
 end
 
 return M

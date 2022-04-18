@@ -2,7 +2,7 @@ local indent = 2
 local dotfiles = vim.env.DOTFILES or vim.fn.expand '~/.dotfiles'
 
 local deep_merge = require('utils').deep_merge
-vim_setup {
+deep_merge(vim, {
   bo = {
     expandtab = true,
     shiftwidth = indent,
@@ -25,7 +25,6 @@ vim_setup {
     hidden = true,
     ignorecase = true,
     incsearch = true,
-    lazyredraw = true,
     linebreak = true,
     mouse = 'a',
     shiftwidth = indent,
@@ -56,6 +55,8 @@ vim_setup {
   g = {
     autosave = 1,
     dotfiles = dotfiles,
+    do_filetype_lua = 1,
+    did_load_filetypes = 0,
     -- FIXME: not respected by new treesitter grammar
     markdown_fenced_languages = {
       'js=javascript',
@@ -73,7 +74,6 @@ vim_setup {
     relativenumber = false,
     signcolumn = 'yes',
   },
-  -- like set
   opt = {
     diffopt = 'internal,filler,closeoff,algorithm:patience',
     cc = '+1',
@@ -97,7 +97,7 @@ vim_setup {
   -- like setlocal
   opt_local = {},
   env = {},
-}
+})
 
 -- neovim-qt
 if not vim.fn.exists 'GuiFont' then

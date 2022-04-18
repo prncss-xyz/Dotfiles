@@ -25,41 +25,49 @@ function M.config()
         priority_weight = 10,
       },
     },
+    experimental = {
+      ghost_text = false,
+    },
     sources = {
       { name = 'luasnip' },
+      { name = 'fish' },
+      { name = 'npm', keyword_length = 4 },
       { name = 'nvim_lua' },
       { name = 'nvim_lsp' },
       { name = 'path' },
       { name = 'buffer' },
-    },
-    experimental = {
-      ghost_text = false,
+      { name = 'emoji' },
+      { name = 'greek' },
     },
   }
 
-  cmp.setup.cmdline('/', {
-    sources = {
+  for _, f in ipairs { 'gitcommit', 'NeogitCommitMessage' } do
+    cmp.setup.filetype(f, {
+      { name = 'cmp_git' },
+      { name = 'cmp-conventionalcommits' },
+      { name = 'path' },
       { name = 'buffer' },
-    },
-  })
+    })
+  end
 
+  for _, c in ipairs { '/', '?' } do
+    cmp.setup.cmdline(c, {
+      { name = 'cmp-cmdline-history' },
+      { name = 'buffer' },
+    })
+  end
+  -- input commandline
+  cmp.setup.cmdline('@', {
+    { name = 'cmp-cmdline-history' },
+    { name = 'buffer' },
+  })
   cmp.setup.cmdline(':', {
     sources = {
+      { name = 'cmp-cmdline-history' },
       { name = 'cmdline' },
       { name = 'path' },
     },
   })
-
-  cmp.setup.markdown = {
-    sources = {
-      { name = 'luasnip' },
-      { name = 'nvim_lsp' },
-      { name = 'path' },
-      { name = 'buffer' },
-      { name = 'rg' },
-      -- { name = 'spell' },
-    },
-  }
 end
 
 local U = {}

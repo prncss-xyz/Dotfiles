@@ -28,6 +28,7 @@ return {
     { trig = '', dscr = 'remove broken symlinks' },
     { t 'find . -xtype l -delete' }
   ),
+  s({ trig = 'git undo', dscr = 'undo last commit' }, { t 'git reset HEAD~' }),
   s(
     { trig = '', dscr = 'git: restore <file> to last commit' },
     { t 'git restore ', i(1, 'file') }

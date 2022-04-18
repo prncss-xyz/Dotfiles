@@ -55,8 +55,6 @@ local function map_command_lang()
     modes = {
       nvoil = {
         ['<c-c>'] = '<esc>',
-        ['<c-n>'] = { '<down>' }, -- FIXME: won't work line <down> in command mode
-        ['<c-p>'] = { '<up>' }, -- FIXME: won't work line <down> in command mode
         ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
       },
       l = {
@@ -74,13 +72,17 @@ local function map_command_lang()
   }
   reg {
     modes = {
-      i = {
+      isc = {
+        ['<c-p>'] = { require('bindutils').cmd_previous },
+        ['<c-n>'] = { require('bindutils').cmd_next },
+        -- ['<c-p>'] = { lazy_req('cmp', 'select_prev_item') },
+        -- ['<c-n>'] = { lazy_req('cmp', 'select_next_item') },
+      },
+      is = {
         ['<c-k>'] = '<c-o>d$',
         ['<c-o>'] = '<c-o>',
         ['<c-v>'] = cmd 'normal! Pl',
-        ['<c-space>'] = ' <left>', -- FIXME: make it work with shift-space
-      },
-      is = {
+        ['<s-space>'] = ' <left>',
         ['<s-tab>'] = { require('bindutils').s_tab },
         ['<tab>'] = { require('bindutils').tab },
         ['<c-e>'] = { require('plugins.cmp').utils.toggle },
@@ -89,7 +91,7 @@ local function map_command_lang()
         ['<c-s>'] = { '<c-f>', 'edit command line' },
         ['<c-v>'] = { '<c-r>+', 'paste to command line' },
         ['<tab>'] = {
-          lazy_req('plugins.cmp', 'utils.confirm')
+          lazy_req('plugins.cmp', 'utils.confirm'),
         },
       },
     },
@@ -256,11 +258,11 @@ local function map_basic()
     ['<c-s>'] = {
       modes = {
         n = function()
-          vim.lsp.buf.formatting_sync()
+          require('bindutils').lsp_format()
         end,
         i = function()
           vim.cmd 'stopinsert'
-          vim.lsp.buf.formatting_sync()
+          require('bindutils').lsp_format()
         end,
       },
     },

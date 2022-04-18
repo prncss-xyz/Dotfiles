@@ -38,7 +38,7 @@ function M.config()
     ['é'] = require('flies.objects.search').new(),
   }
   for c in string.gmatch(',.;:+-=~_*#/|\\&$', '.') do
-    queries[c] = require('flies.objects.regex').separator(c)
+    queries[c] = require('flies.objects.regex').separator.new(c)
   end
 
   require('flies').setup {
@@ -46,7 +46,6 @@ function M.config()
     qualifiers = require('bindings.parameters').qualifiers,
     domains = require('bindings.parameters').domains,
   }
-
 end
 
 return M

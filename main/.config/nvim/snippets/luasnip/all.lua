@@ -76,6 +76,15 @@ local region = require('Comment.utils').get_region
 local ctype_enum = require('Comment.utils').ctype
 
 local function get_comment(ctype_string)
+  -- Don't add comment string inside a comment
+  local context = require 'cmp.config.context'
+  if
+    context.in_treesitter_capture 'comment'
+    or context.in_syntax_group 'Comment'
+  then
+    return '', ''
+  end
+
   local cstring = calculate_comment_string {
     ctype = ctype_enum[ctype_string],
     range = region(),
@@ -119,8 +128,6 @@ end
 
 for _, str in ipairs { 'TODO', 'HACK', 'WARN', 'PERF', 'NOTE', 'FIXME' } do
   -- needs this to write a todo comment while already in a comment
-  table.insert(M, s({ trig = str .. ':', descr = str }, { t(str .. ': ') }))
-
   table.insert(
     M,
     s({ trig = str .. ' comment', descr = str }, todo_comment(str))

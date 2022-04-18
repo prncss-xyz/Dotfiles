@@ -139,6 +139,17 @@ function M.telescope_symbols_md_lsp()
   end
 end
 
+function M.lsp_format()
+  if false then
+    local format = vim.b.format
+    if format then
+      format()
+    end
+  else
+    vim.lsp.buf.formatting_sync()
+  end
+end
+
 local recompose = require('flies.move_again').recompose
 
 M.scroll_up, M.scroll_down = recompose(function()
@@ -216,6 +227,24 @@ function M.project_files()
     return
   end
   require('telescope.builtin').find_files()
+end
+
+function M.cmd_previous()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    cmp.select_prev_item()
+  else
+    vim.fn.feedkeys(t '<up>', 'n')
+  end
+end
+
+function M.cmd_next()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    cmp.select_next_item()
+  else
+    vim.fn.feedkeys(t '<down>', 'n')
+  end
 end
 
 M.s_tab = require('utils').first_cb(

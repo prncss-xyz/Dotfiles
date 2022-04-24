@@ -58,6 +58,14 @@ function M.template_match()
   end
 end
 
-load_templates()
+function M.setup(_)
+  load_templates()
+  vim.api.nvim_create_autocmd('BufNewFile', {
+    pattern = '*',
+    callback = function()
+      require('modules.templates').template_match()
+    end,
+  })
+end
 
 return M

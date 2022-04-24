@@ -1,5 +1,5 @@
 ---@diagnostic disable: undefined-global
---
+
 return {
   s({ trig = 'k' }, {
     i(1, 'name'),

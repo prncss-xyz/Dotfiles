@@ -44,11 +44,9 @@ function M.config()
       'regex',
       'rust',
       'scss',
-      'svelte',
       'toml',
       'tsx',
       'typescript',
-      'vue',
       'yaml',
     },
     -- ensure_installed = "maintained",
@@ -65,9 +63,6 @@ function M.config()
     context_commentstring = {
       enable = true,
       enable_autocommand = false,
-    },
-    matchup = {
-      enable = true,
     },
     textobjects = {
       select = {

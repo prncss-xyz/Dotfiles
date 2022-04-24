@@ -2,58 +2,22 @@
 -- won't be sourced unless env NVIM_EXPERIMENTS is set to 'true'
 -- can also be sourced manually
 
-
-local augroup = require('utils').augroup
-local command = require('utils').command
-
-augroup('Illuminate', {
-  {
-    events = { 'VimEnter' },
-    targets = { '*' },
-    command = function()
-      vim.cmd 'hi link illuminateWord cursorline'
-    end,
-  },
-})
-
-vim.cmd [[
-augroup illuminate_augroup
-    autocmd!
-    autocmd VimEnter * hi illuminatedCurWord cterm=italic gui=italic
-augroup END
-]]
-
--- trying to figure it out
-command('Conceal', {}, function()
+local function conceal()
   vim.cmd [[
+    set syntax=on
     syntax match True "true" conceal cchar=⊤
     syntax match False "false" conceal cchar=⊥
   ]]
-end)
+end
 
-augroup('ConcealLua', {
-  {
-    events = { 'BufNewFile', 'BufRead' },
-    targets = { '*.lua' },
-    command = function()
-      vim.cmd [[
-        set syntax=on
-        syntax match True "true" conceal cchar=⊤
-        syntax match False "false" conceal cchar=⊥
-      ]]
-    end,
-  },
+-- trying to figure it out
+vim.api.nvim_create_user_command('Conceal', conceal, { nargs = 0 })
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = '*.lua',
+  callback = conceal,
 })
-augroup('ConcealLuaB', {
-  {
-    events = { 'FileType' },
-    targets = { 'lua' },
-    command = function()
-      vim.cmd [[
-        set syntax=on
-        syntax match True "true" conceal cchar=⊤
-        syntax match False "false" conceal cchar=⊥
-      ]]
-    end,
-  },
-})
+
+local test = true
+
+-- true

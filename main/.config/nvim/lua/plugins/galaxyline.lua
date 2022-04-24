@@ -1,8 +1,11 @@
 local M = {}
 
+local vim = vim
+
 -- Galaxyline seams to make Neogit flicker. We need to change to a maintained statusline, anyhow.
 
-local short_line_list = { 'NvimTree', 'Outline', 'Trouble', 'DiffviewFiles' }
+local short_line_list = {}
+-- local short_line_list = { 'NvimTree', 'Outline', 'Trouble', 'DiffviewFiles' }
 local no_num_list = {
   'NvimTree',
   'Outline',
@@ -30,7 +33,7 @@ function debugger()
 end
 
 -- local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'dbui', 'help' }
-local skipLock = {}
+local skip_lock = {}
 
 local user_icons = {}
 
@@ -45,12 +48,6 @@ local buf_icon = {
   NvimTree = ' ',
 }
 
-local vim = vim
-
-local function get_file_info()
-  return vim.fn.expand '%:t', vim.fn.expand '%:e'
-end
-
 local function get_file_icon()
   local icon = ''
   if vim.fn.exists '*WebDevIconsGetFileTypeSymbol' == 1 then
@@ -62,7 +59,9 @@ local function get_file_icon()
     print "No icon plugin found. Please install 'kyazdani42/nvim-web-devicons'"
     return ''
   end
-  local f_name, f_extension = get_file_info()
+  local f_name = vim.fn.expand '%:t'
+  local f_extension
+  vim.fn.expand '%:e'
   icon = devicons.get_icon(f_name, f_extension)
   if icon == nil then
     if user_icons[vim.bo.filetype] ~= nil then
@@ -77,7 +76,7 @@ local function get_file_icon()
 end
 
 local function get_buffer_type_icon()
-  return buf_icon[vim.bo.filetype] and ''
+  return buf_icon[vim.bo.filetype]
 end
 
 local trouble_mode = function()
@@ -129,8 +128,60 @@ local function get_name_iconified()
   end
   local res = '  '
   res = res .. (get_buffer_type_icon() or get_file_icon())
-  res = res .. get_displayed_name() .. ' '
+  res = res .. get_displayed_name()
   return res
+end
+
+local function get_diagnostic()
+  local res = {}
+  for _, diag in ipairs(vim.diagnostic.get(0, nil)) do
+    res[diag.severity] = (res[diag.severity] or 0) + 1
+  end
+  return res
+end
+
+local function get_status_icons()
+  -- modified
+  local file = vim.fn.expand '%:t'
+  local count = 0
+  local icons = {}
+  if vim.fn.empty(file) ~= 1 and vim.bo.modifiable and vim.bo.modified then
+    table.insert(icons, '')
+  end
+  -- read only
+  if
+    vim.bo.buftype ~= 'nofile'
+    -- and vim.fn.index(skipLock, vim.bo.filetype) ~= -1
+    and vim.tbl_contains(skip_lock, vim.bo.filetype)
+    and vim.bo.readonly == true
+  then
+    table.insert(icons, '')
+  end
+
+  -- diagnostics
+  local diagnostic = get_diagnostic()
+  if diagnostic[vim.diagnostic.severity.ERROR] then
+    table.insert(icons, '')
+  end
+  if diagnostic[vim.diagnostic.severity.WARN] then
+    table.insert(icons, '')
+  end
+  local icons_string = table.concat(icons, ' ')
+  if count > 0 then
+    icons_string = '   ' .. icons_string
+  end
+  if #icons > 0 then
+    icons_string = '   ' .. icons_string
+  end
+  return icons_string
+end
+
+local function get_name_part()
+  local str = get_name_iconified()
+  if str then
+    str = str .. get_status_icons() .. '   '
+  end
+  return str
 end
 
 local coordinates = function()
@@ -146,47 +197,9 @@ local coordinates = function()
   return string.format('%3d:%02d %d ', line, column, line_count)
 end
 
-local function get_diagnostic()
-  local res = {}
-  for _, diag in ipairs(vim.diagnostic.get(0, nil)) do
-    res[diag.severity] = (res[diag.severity] or 0) + 1
-  end
-  return res
-end
-
-local function get_status_icons()
-  local icons = '  '
-
-  -- modified
-  local file = vim.fn.expand '%:t'
-  if vim.fn.empty(file) ~= 1 and vim.bo.modifiable and vim.bo.modified then
-    icons = icons .. ' '
-  end
-
-  -- read only
-  if
-    vim.bo.buftype ~= 'nofile'
-    -- and vim.fn.index(skipLock, vim.bo.filetype) ~= -1
-    and vim.tbl_contains(skipLock, vim.bo.filetype)
-    and vim.bo.readonly == true
-  then
-    icons = icons .. ' '
-  end
-
-  -- diagnostics
-  local diagnostic = get_diagnostic()
-  if diagnostic[vim.diagnostic.severity.ERROR] then
-    icons = icons .. ' '
-  end
-  if diagnostic[vim.diagnostic.severity.WARN] then
-    icons = icons .. ' '
-  end
-
-  return icons
-end
-
 function M.config()
-  vim.opt.laststatus = 2
+  vim.opt.laststatus = 3
+  -- vim.opt.laststatus = 2
 
   local gl = require 'galaxyline'
   local gls = gl.section
@@ -199,6 +212,7 @@ function M.config()
     -- background_inactive = vim.g.terminal_color_12,
     -- neon colorscheme
     background_active = '#8ec07c', -- TODO: use gitgutters highlight groups
+    -- background_active = '#8ec07c', -- TODO: use gitgutters highlight groups
     background_inactive = '#458588',
     text = vim.g.terminal_color_7,
   }
@@ -215,14 +229,14 @@ function M.config()
   gls.left = {
     {
       FileName = {
-        provider = get_name_iconified,
+        provider = get_name_part,
         highlight = { text, background_active },
       },
     },
     {
       Space = {
         provider = function()
-          return ' '
+          return '   '
         end,
         highlight = { text, background_inactive },
       },
@@ -242,56 +256,7 @@ function M.config()
 
   gls.right = {
     {
-      StatusIcons = {
-        provider = get_status_icons,
-        highlight = { text, background_inactive },
-      },
-    },
-    {
       LineColumn = {
-        provider = coordinates,
-        highlight = { text, background_inactive },
-      },
-    },
-  }
-
-  gls.short_line_left = {
-    {
-      FileNameB = {
-        provider = get_name_iconified,
-        highlight = { text, background_inactive },
-      },
-    },
-    {
-      SpaceB = {
-        provider = function()
-          return ' '
-        end,
-        highlight = { text, background_inactive },
-      },
-    },
-    {
-      NvimGPSB = {
-        highlight = { text, background_inactive },
-        provider = function()
-          local gps = require 'nvim-gps'
-          if gps.is_available() then
-            return gps.get_location()
-          end
-        end,
-      },
-    },
-  }
-
-  gls.short_line_right = {
-    {
-      StatusIconsB = {
-        provider = get_status_icons,
-        highlight = { text, background_inactive },
-      },
-    },
-    {
-      LineColumnB = {
         provider = coordinates,
         highlight = { text, background_inactive },
       },

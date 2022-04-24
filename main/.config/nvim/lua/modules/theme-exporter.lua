@@ -13,7 +13,7 @@ local function getColors0(name)
   return bg, fg
 end
 
-function M.getColors()
+local function getColors()
   local res = {}
   local bg, fg
   bg, fg = getColors0 'Normal'
@@ -29,10 +29,10 @@ end
 
 local dir = vim.fn.expand '~/Dotfiles/main/.config/theming/theme-vars'
 
-function M.export_theme(name)
+local function export_theme(name)
   dir = vim.fn.expand(dir)
   local colorscheme = vim.api.nvim_exec('colorscheme', true)
-  local colors = M.getColors()
+  local colors = getColors()
   os.execute('mkdir -p ' .. dir)
   local dest = io.open(dir .. '/' .. name .. '-generated', 'w')
   dest:write(string.format('export name=%q\n', name))
@@ -63,9 +63,9 @@ function M.export_theme(name)
 end
 
 function M.setup()
-  require('utils').command('ExportTheme', { nargs = 1 }, function(name)
-    require('modules.theme-exporter').export_theme(name)
-  end)
+  vim.api.nvim_create_user_command('ExportTheme', function(a)
+    export_theme(a.fargs[1])
+  end, { nargs = 1 })
 end
 
 return M

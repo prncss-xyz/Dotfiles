@@ -15,7 +15,7 @@ deep_merge(vim, {
     autoread = true,
     autowriteall = true,
     backup = false,
-    clipboard = 'unnamedplus',
+    -- clipboard = 'unnamedplus',
     cmdheight = 1,
     completeopt = 'menuone,noselect',
     cursorline = true,
@@ -85,11 +85,11 @@ deep_merge(vim, {
     lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
     secure = true, -- disable autocmd etc for project local vimrc files
     sessionoptions = 'curdir,folds,tabpages,winsize',
-    spell = true,
+    spell = false,
     spelloptions = 'camel',
     -- textwidth = 80,
     titlestring = '%{v:lua.my_title()}',
-    undofile = true,
+    undofile = true, -- FIXME: not working
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
   },
   -- like setglobal
@@ -104,16 +104,13 @@ if not vim.fn.exists 'GuiFont' then
   vim.opt.guifont = 'Victor Mono:h8'
 end
 
-require('utils').augroup('MarkdownOptions', {
-  {
-    events = { 'FileType' },
-    targets = { 'markdown' },
-    command = function()
-      -- I write poetry
-      deep_merge(vim.opt_local, {
-        breakindent = true,
-        breakindentopt = 'shift:2',
-      })
-    end,
-  },
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'markdown',
+  callback = function()
+    -- I write poetry
+    deep_merge(vim.opt_local, {
+      breakindent = true,
+      breakindentopt = 'shift:2',
+    })
+  end,
 })

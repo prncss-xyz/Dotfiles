@@ -4,7 +4,8 @@ function M.config()
   local ts = require('flies.objects.treesitter').new
   local buf = require('flies.objects.buffer').new()
   local queries = {
-    a = ts 'parameter',
+    A = ts 'parameter',
+    a = ts 'swappable',
     -- b: brackets (targets)
     c = ts 'komment',
     -- d:
@@ -25,20 +26,33 @@ function M.config()
     -- s:
     -- t: tag (targets)
     T = ts 'tag',
-    Q = ts 'string',
-    -- u: node; see also: David-Kunz/treesitter-unit
-    v = require('flies.objects.regex').variable_segment,
-    w = require('flies.objects.regex').vimword,
+    -- Q = ts 'string',
+    q = require('flies.objects.subline').string('"', "'", '`'),
+    -- u: node; see also: David-Kunz/treesitter-unit(
+    --
+    -- )
+    v = require('flies.objects.subline').variable_segment,
+    w = require('flies.objects.subline').word,
     x = ts 'class',
     y = ts 'loop',
     -- z:
-    [' '] = require('flies.objects.regex').bigword,
+    [' '] = require('flies.objects.subline').bigword,
     ['<tab>'] = require('flies.objects.indent').new(),
     ['<cr>'] = require('flies.objects.line').new(),
     ['é'] = require('flies.objects.search').new(),
+    ['"'] = require('flies.objects.subline').string '"',
+    ["'"] = require('flies.objects.subline').string "'",
+    ['`'] = require('flies.objects.subline').string '`',
+    b = require('flies.objects.pair').new {
+      { '(', ')' },
+      { '[', ']' },
+      { '{', '}' },
+    },
   }
-  for c in string.gmatch(',.;:+-=~_*#/|\\&$', '.') do
-    queries[c] = require('flies.objects.regex').separator.new(c)
+  -- targets: separator is multiline
+  for c in string.gmatch('.;:+-=~_*#/|\\&$', '.') do
+    -- for c in string.gmatch(',.;:+-=~_*#/|\\&$', '.') do
+    queries[c] = require('flies.objects.subline').separator.new(c)
   end
 
   require('flies').setup {

@@ -22,18 +22,10 @@ function M.config()
   ft.set('sway', '#%s')
   require('Comment').setup {
     mappings = {
-      basic = true,
+      basic = false,
       extra = false,
     },
     pre_hook = pre_hook,
-    opleader = {
-      block = '<plug>(u-comment-opleader-block)',
-      line = '<plug>(u-comment-opleader-line)',
-    },
-    toggler = {
-      block = '<plug>(u-comment-toggler-block)',
-      line = '<plug>(u-comment-toggler-line)',
-    },
   }
 end
 

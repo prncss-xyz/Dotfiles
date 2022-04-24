@@ -81,15 +81,17 @@ local function map_command_lang()
       is = {
         ['<c-k>'] = '<c-o>d$',
         ['<c-o>'] = '<c-o>',
-        ['<c-v>'] = cmd 'normal! Pl',
-        ['<s-space>'] = ' <left>',
+        ['<c-v>'] = { '<c-r>"' },
+        ['<c-r>r'] = { '<c-r>+' },
+        ['<c-space>'] = '<space><left>',
+        ['<s-space>'] = '<space><left>',
         ['<s-tab>'] = { require('bindutils').s_tab },
         ['<tab>'] = { require('bindutils').tab },
         ['<c-e>'] = { require('plugins.cmp').utils.toggle },
       },
       c = {
         ['<c-s>'] = { '<c-f>', 'edit command line' },
-        ['<c-v>'] = { '<c-r>+', 'paste to command line' },
+        ['<c-v>'] = { '<c-r>"', 'paste to command line' },
         ['<tab>'] = {
           lazy_req('plugins.cmp', 'utils.confirm'),
         },
@@ -98,6 +100,31 @@ local function map_command_lang()
     ['<c-a>'] = { modes = { i = '<c-o>^', nv = '^' } },
     ['<c-e>'] = { modes = { i = '<c-o>$', nv = '$' } },
   }
+
+  -- prevent s-mode text to overwrite clipboard
+  local t = require('utils').t
+  -- Add a map for every printable character to copy to black hole register
+  for char_nr = 33, 126 do
+    local char = vim.fn.nr2char(char_nr)
+    vim.api.nvim_set_keymap(
+      's',
+      char,
+      '<c-o>"_c' .. t(char),
+      { noremap = true, silent = true }
+    )
+  end
+  vim.api.nvim_set_keymap(
+    's',
+    '<bs>',
+    '<c-o>"_c',
+    { noremap = true, silent = true }
+  )
+  vim.api.nvim_set_keymap(
+    's',
+    '<space>',
+    '<c-o>"_c<space>',
+    { noremap = true, silent = true }
+  )
 end
 
 local function map_search(url, help)
@@ -148,9 +175,11 @@ local function map_basic()
     a = 'a',
     b = plug { '%', 'matchparen', modes = 'nxo' },
     C = { '<nop>', modes = 'nx' },
-    c = { '"cc', modes = 'nx' },
+    c = { '"_c', modes = 'nx' },
+    cc = { '"_cc', modes = 'n' },
     D = { '<nop>', modes = 'nx' },
-    d = { '"dd', modes = 'nx' },
+    d = { '"_d', modes = 'nx' },
+    dd = { '"_dd', modes = 'n' },
     E = {
       modes = {
         n = 'W',
@@ -182,13 +211,13 @@ local function map_basic()
     n = lazy_req('flies.move_again', 'next'),
     O = { '<nop>', modes = 'nx' },
     o = { '<nop>', modes = 'nx' },
+    rp = { '"+', modes = 'nx' },
     r = { '"', modes = 'nx' },
     s = {
       modes = {
         nx = function()
           require('bindutils').hop12()
         end,
-        -- o = ":<c-u>lua require'bindutils'.hop12()<cr>",-- FIXME:
         o = function()
           require('hop').hint_char2 {
             char2_fallback_key = '<cr>',
@@ -209,11 +238,14 @@ local function map_basic()
     -- w = { 'b', 'next word', modes = 'nxo' },
     -- w = plug { 'CamelCaseMotion_b', 'previous subword ', modes = 'nxo' },
     w = { 'b', 'previous word ', modes = 'nxo' },
-    X = { '"+d$', modes = 'nx' },
-    x = { '"+d', modes = 'nx' },
-    cc = '""S',
-    dd = '""dd',
-    xx = '"+dd',
+    X = { 'd$', modes = 'nx' },
+    x = { 'd', modes = 'nx' },
+    xx = 'dd',
+    yy = { 'yy', modes = 'n' },
+    -- y = { function ()
+    --   require 'bindutils'.static_yank('y')
+    -- end  , modes = 'nx' },
+    y = { 'y', modes = 'nx' },
     -- ['É'] = { '?', modes = 'nxo' },
     -- ['é'] = { '/', modes = 'nxo' },
     ['.'] = '.',
@@ -507,6 +539,7 @@ local function map_basic()
       [p 'm'] = { '`[', 'start of last mod', modes = 'nxo' },
       m = { '`]', 'begin of last mod', modes = 'nxo' },
       pr = { require('bindutils').previous_reference },
+      hr = { lazy_req('hop-extensions', 'hint_references', '<cWORD>') }, -- FIXME: not working
       r = { require('bindutils').next_reference },
       -- s = cmd 'Telescope treesitter',
       -- s = cmd 'Telescope lsp_document_symbols',
@@ -614,9 +647,35 @@ local function map_basic()
       }, -- FIXME: not repeatable
       [p 'u'] = { 'gU', 'uppercase', modes = 'nx' },
       u = { 'gu', 'lowercase', modes = 'nx' },
-      [p 'v'] = { 'P', modes = 'nx' },
-      v = { 'p', modes = 'nx' },
+      -- [p 'v'] = { 'P', modes = 'nx' },
+      -- v = { 'p', modes = 'nx' },
+      -- specify register 1
+      [p 'v'] = {
+        n = function()
+          require('bindutils').keys 'P'
+        end,
+        x = {
+          function()
+            local rs = '"' .. vim.v.register
+            require('bindutils').keys('"_d' .. rs .. 'P')
+          end,
+        },
+      },
+      v = {
+        -- adsfsda
+        modes = {
+          n = 'p',
+          x = {
+            function()
+              local rs = '"' .. vim.v.register
+              print(rs)
+              require('bindutils').keys('"_d' .. rs .. 'P')
+            end,
+          },
+        },
+      },
       -- v = { 'g~', 'toggle case', modes = 'nx' },
+      --
       w = {
         function()
           require('telescope.builtin').symbols {
@@ -654,7 +713,12 @@ local function map_basic()
         modes = 'nx',
       },
 
-      [p(d.comment)] = plug { '(u-comment-opleader-block)', modes = 'nx' },
+      [p(d.comment)] = {
+        modes = {
+          n = plug '(comment_toggle_blockwise)',
+          x = plug '(comment_toggle_blockwise_visual)',
+        },
+      },
       [d.comment] = {
         o = function()
           require('Comment.api').locked.insert_linewise_below()
@@ -667,9 +731,10 @@ local function map_basic()
         end,
       },
       [d.comment] = {
-        modes = {
-          nx = {
-            [''] = plug '(u-comment-opleader-line)',
+        [''] = {
+          modes = {
+            n = plug '(comment_toggle_linewise)',
+            x = plug '(comment_toggle_linewise_visual)',
           },
         },
       },
@@ -710,9 +775,9 @@ local function map_basic()
         pr = { '<Plug>(buffet-operator-extract)il', noremap = false },
         r = { '<Plug>(buffet-operator-replace)il', noremap = false },
         x = plug '(ExchangeLine)',
-        [d.join] = plug '(u-revj-line)',
-        [p(d.comment)] = plug '(u-comment-toggler-block)',
-        [d.comment] = plug '(u-comment-toggler-line)',
+        j = plug '(u-revj-line)',
+        [p(d.comment)] = plug '(comment_toggle_current_blockwise)',
+        [d.comment] = plug '(comment_toggle_current_linewise)',
       },
     },
     [a.mark] = {
@@ -819,20 +884,20 @@ local function map_basic()
     },
     [a.editor] = {
       -- require'dap'.list_breakpoints() -- Lists all breakpoints and log points in quickfix window.
-      pa = {
-        require('modules.toggler').cb(
-          'Trouble document_diagnostics',
-          'TroubleClose'
-        ),
-        'lsp document diagnostics',
-      },
-      a = {
-        require('modules.toggler').cb(
-          'Trouble workspace_diagnostics',
-          'TroubleClose'
-        ),
-        'lsp worspace diagnostics',
-      },
+      -- pa = {
+      --   require('modules.toggler').cb(
+      --     'Trouble document_diagnostics',
+      --     'TroubleClose'
+      --   ),
+      --   'lsp document diagnostics',
+      -- },
+      -- a = {
+      --   require('modules.toggler').cb(
+      --     'Trouble workspace_diagnostics',
+      --     'TroubleClose'
+      --   ),
+      --   'lsp worspace diagnostics',
+      -- },
       -- pb = { -- FIXME:
       --   function()
       --     require('bufjump').backward(require('bufjump').not_under_cwd)
@@ -845,10 +910,10 @@ local function map_basic()
       --   end,
       --   'next workspace',
       -- },
-      b = require('modules.toggler').cb(function()
-        require('marks').bookmark_state:all_to_list 'quickfixlist'
-        vim.cmd 'Trouble quickfix'
-      end, 'TroubleClose'),
+      -- b = require('modules.toggler').cb(function()
+      --   require('marks').bookmark_state:all_to_list 'quickfixlist'
+      --   vim.cmd 'Trouble quickfix'
+      -- end, 'TroubleClose'),
       [p 'c'] = {
         modes = {
           n = function()
@@ -962,10 +1027,13 @@ local function map_basic()
         end,
         'pick note',
       },
-      [' '] = require('modules.toggler').cb(
-        require('modules.blank_pane').open,
-        require('modules.blank_pane').close
-      ),
+      -- ['<space>'] = {
+      --   lazy_req('telescope', 'extensions.command_center.command_center', {}),
+      -- },
+      -- [' '] = require('modules.toggler').cb(
+      --   require('modules.blank_pane').open,
+      --   require('modules.blank_pane').close
+      -- ),
       -- [' '] = cmd { 'Telescope commands', 'commands' },
       ['p' .. d.git] = require('modules.toggler').cb(
         'DiffviewOpen',
@@ -1017,6 +1085,25 @@ local function map_markdown()
   }
 end
 
+local function map_search(url, help)
+  return {
+    modes = {
+      n = {
+        function()
+          require('modules.browser').search_cword(url)
+        end,
+        help,
+      },
+      x = {
+        function()
+          require('modules.browser').search_visual(url)
+        end,
+        help,
+      },
+    },
+  }
+end
+
 local function map_readonly()
   if vim.bo.buftype == 'prompt' then
     local map = require('utils').buf_map
@@ -1063,22 +1150,6 @@ function M.setup()
   map('nxo', 'gg', '<nop>')
   map('', '<c-u>', '<nop>')
   map('', '<c-d>', '<nop>')
-  require('utils').augroup('ReadonlyMappings', {
-    {
-      events = { 'BufNew' },
-      targets = { '*' },
-      command = map_readonly,
-    },
-  })
-  if false then
-    require('utils').augroup('MarkdownBindings', {
-      {
-        events = { 'FileType' },
-        targets = { 'markdown' },
-        command = map_markdown,
-      },
-    })
-  end
   -- ordering of the matters for: i) overriding, ii) captures
   map_command_lang()
   map_basic()

@@ -170,13 +170,13 @@ function M.launch()
   print('no launcher for filetype ' .. filetype)
 end
 
-require('utils').command('LaunchOSV', {}, function()
+vim.api.nvim_create_user_command('LaunchOSV', function()
   local filetype = vim.bo.filetype
   if filetype == 'lua' then
     -- require('osv').run_this()
     require('osv').launch { type = 'server', host = '127.0.0.1', port = 30000 }
   end
-end)
+end, { narg = 0 })
 
 --   local dap_install = require 'dap-install'
 --   dap_install.setup {}

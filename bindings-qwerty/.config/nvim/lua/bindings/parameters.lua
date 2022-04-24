@@ -16,8 +16,9 @@ M.a = invert {
 
 M.d = invert {
   a = 'diagnostic',
-  b = 'join',
+  b = 'bookmark',
   c = 'comment',
+  d = 'dap',
   u = 'git',
   j = 'up',
   k = 'down',
@@ -30,6 +31,7 @@ M.d = invert {
   ['<c-j>'] = 'next_search',
   ['<c-x>'] = 'prev_search',
 }
+M.d.basic_mark = 'l'
 
 M.qualifiers = {
   p = 'previous',

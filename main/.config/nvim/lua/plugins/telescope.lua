@@ -23,6 +23,7 @@ function M.config()
       },
     },
     extensions = {
+      -- currently not in use
       frecency = {
         default_workspace = 'CWD',
         ignore_patterns = { '*.git/*', '*/tmp/*', 'node_modules/*' },

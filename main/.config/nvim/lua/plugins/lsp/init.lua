@@ -31,9 +31,10 @@ function M.config()
   -- Actual settings cause issue when cursor it at the beginning or end.
   -- vim.cmd 'highlight! link LspReferenceText String'
   -- for Neon colorscheme:
-  vim.cmd 'highlight! LspReferenceText guibg=#4db5bd guifg=#ecee7b'
+  -- vim.cmd 'highlight! LspReferenceText guibg=#4db5bd guifg=#ecee7b'
   vim.cmd 'highlight! LspReferenceWrite guibg=#8ec07c guifg=#ecee7b'
   vim.cmd 'highlight! LspReferenceRead guibg=#458588 guifg=#ecee7b'
+  vim.cmd 'highlight! LspReferenceText guibg=#458588 guifg=#ecee7b'
 
   -- FIXME: not working
   -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
@@ -170,11 +171,30 @@ function M.config()
     },
   }
 
-  -- use GrammaryStart
-  -- lspconfig.grammarly.setup {}
-  -- also:
-  -- require('grammar-guard').init()
-  -- nvim_lsp.grammar_guard.setup {}
+  -- I eats potatoes.
+
+  require('lspconfig').ltex.setup {
+    filetypes = {
+      'html',
+      'bib',
+      'gitcommit',
+      'markdown',
+      'org',
+      'plaintex',
+      'rst',
+      'rnoweb',
+      'tex',
+      'go',
+      'javascript',
+      'javascriptreact',
+      'lua',
+      'python',
+      'sql',
+      'typescript',
+      'typescriptreact',
+      'NeogitCommitMessage',
+    },
+  }
 
   -- FIXME: emmet is always the first completion match, making it a nuisance
   if false then

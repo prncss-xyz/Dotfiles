@@ -1,6 +1,10 @@
 local M = {}
 
 function M.config()
+  if false then
+    print 'not cmp'
+    return
+  end
   local cmp = require 'cmp'
 
   local symbolic = require('symbols').symbolic

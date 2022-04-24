@@ -48,7 +48,7 @@ exec pactl set-sink-mute @DEFAULT_SINK@ 0
 for_window [title="^scratchpad$"] move scratchpad
 # FIXME:
 # exec xdg-settings set default-web-browser firefox.desktop
-exec sh -c "BROWSER=/home/prncss/.local/bin/browser foot --server"
+exec sh -c "BROWSER=/home/prncss/.local/bin/browser kitty --server"
 # exec foot --server
 
 exec sh -c "sleep 1; $TERMINAL --title=scratchpad"

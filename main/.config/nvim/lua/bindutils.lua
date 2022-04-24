@@ -11,14 +11,39 @@ local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
+function M.keys(keys)
+  vim.api.nvim_feedkeys(t(keys), 'n', true)
+end
+
+function M.normal(keys)
+  vim.cmd('normal! ' .. keys)
+end
+
+function M.plug(name)
+  local keys = '<Plug>' .. name
+  vim.api.nvim_feedkeys(t(keys), 'm', true)
+end
+
+-- FIXME: not working at all
+function M.static_yank(keys)
+  local cursor = vim.fn.getpos '.'
+  print('#')
+  vim.defer_fn(function()
+    dump('!', cursor)
+    M.keys(keys)
+    vim.fn.setpos('.', cursor)
+  end, 1)
+end
+
 function M.asterisk_z()
-  vim.fn.feedkeys(t '<plug>(asterisk-z*)')
+  M.plug '(asterisk-z*)'
+  -- vim.fn.feedkeys(t '<plug>(asterisk-z*)')
   require('flies.objects.search').set_search(true)
   require('hlslens').start()
 end
 
 function M.asterisk_gz()
-  vim.fn.feedkeys(t '<plug>(asterisk-gz*)')
+  M.plug '(asterisk_gz*)'
   require('flies.objects.search').set_search(true)
   require('hlslens').start()
 end

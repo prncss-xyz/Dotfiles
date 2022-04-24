@@ -56,12 +56,9 @@ local function custom_setup()
   setup_bindings(buf_id)
 end
 
-require('utils').augroup('NvimTreeConfig', {
-  {
-    events = { 'FileType' },
-    targets = { 'NvimTree' },
-    command = custom_setup,
-  },
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'NvimTree' },
+  callback = custom_setup,
 })
 
 M.config = function()

@@ -1,14 +1,12 @@
 M = {}
 local formatting_callback = function(client, bufnr)
-  print 'attached'
   vim.b.lsp_format = function()
     local params = vim.lsp.util.make_formatting_params {}
-    if false  then
-      print 'sync'
-      dump(client.request_sync('textDocument/formatting', params, 1000, bufnr))
+    if false then
+      client.request_sync('textDocument/formatting', params, 1000, bufnr)
     else
       -- print 'async'
-      dump(client.request('textDocument/formatting', params, nil, bufnr))
+      client.request('textDocument/formatting', params, nil, bufnr)
     end
   end
 end

@@ -14,7 +14,7 @@ local scheme = { type = 'unknown' }
 
 local function setup(port, command)
   local dirname
-  local job = require 'plenary'.job
+  local job = require('plenary').job
   job
     :new({
       command = 'realpath',
@@ -90,17 +90,13 @@ end
 
 function M.setup(conf0)
   conf = conf0
-  require('utils').augroup('SetupSession', {
-    {
-      events = { 'VimEnter', 'DirChanged' },
-      targets = { '*' },
-      command = setup_scheme,
-    },
+  vim.api.nvim_create_user_command('SetupSessionInfo', function()
+    dump(scheme)
+  end, { nargs = 0 })
+  setup_scheme()
+  vim.api.nvim_create_autocmd('DirChanged', {
+    callback = setup_scheme,
   })
-
-  require('utils').command('SetupSessionInfo', {}, function()
-    require('utils').dump(scheme)
-  end)
 end
 
 return M

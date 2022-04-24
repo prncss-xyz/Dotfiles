@@ -1,11 +1,4 @@
-local utils = require 'utils'
-local command = utils.command
-
-if false then
-  command('EditSnippets', {}, function()
-    require('luasnip.loaders.from_lua').edit_snippet_files()
-  end)
-end
+local command = vim.api.nvim_create_user_command
 
 local function format_item(choice)
   return choice.name
@@ -18,12 +11,18 @@ local function on_choice(choice)
   vim.cmd('edit ' .. choice.path)
 end
 
-command('C', {}, function()
+command('C', function()
+  if false then
+    require('luasnip.loaders.from_lua').edit_snippet_files()
+    return
+  end
   local vim_dir = vim.g.vim_dir
   local snip_dir = vim_dir .. '/snippets'
   local languages = {}
   local ft = vim.bo.filetype
-  table.insert(languages, ft)
+  if ft ~= '' then
+    table.insert(languages, ft)
+  end
   if ft == 'javascriptreact' then
     table.insert(languages, 'javascript')
   elseif ft == 'typescript' then
@@ -50,8 +49,17 @@ command('C', {}, function()
     )
     table.insert(items, item_tm)
   end
-  table.insert(items, { name = 'bindings -- Conf', path = vim_dir .. '/lua/bindings/init.lua' })
-  table.insert(items, { name = 'textobjects -- Conf', path = vim_dir .. '/lua/bindings/textobjects.lua' })
-  table.insert(items, { name = 'plugins -- Conf', path = vim_dir .. '/lua/plugins/init.lua' })
+  table.insert(
+    items,
+    { name = 'bindings -- Conf', path = vim_dir .. '/lua/bindings/init.lua' }
+  )
+  table.insert(items, {
+    name = 'textobjects -- Conf',
+    path = vim_dir .. '/lua/bindings/textobjects.lua',
+  })
+  table.insert(
+    items,
+    { name = 'plugins -- Conf', path = vim_dir .. '/lua/plugins/init.lua' }
+  )
   vim.ui.select(items, { format_item = format_item }, on_choice)
-end)
+end, {})

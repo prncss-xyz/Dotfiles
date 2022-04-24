@@ -40,35 +40,37 @@ table.insert(
   })
 )
 
-table.insert(
-  M,
-  s('b', {
-    c(1, {
-      sn(nil, { t '{', r(1, 'user_text'), t '}' }),
-      sn(nil, { t '[', r(1, 'user_text'), t ']' }),
-      sn(nil, { t '(', r(1, 'user_text'), t ')' }),
-    }),
-  }, {
-    stored = {
-      user_text = i(1, ''),
-    },
-  })
-)
+if true then
+  table.insert(
+    M,
+    s('b', {
+      c(1, {
+        sn(nil, { t '{', r(1, 'user_text'), t '}' }),
+        sn(nil, { t '[', r(1, 'user_text'), t ']' }),
+        sn(nil, { t '(', r(1, 'user_text'), t ')' }),
+      }),
+    }, {
+      stored = {
+        user_text = i(1, ''),
+      },
+    })
+  )
 
-table.insert(
-  M,
-  s('q', {
-    c(1, {
-      sn(nil, { t '`', r(1, 'user_text'), t '`' }),
-      sn(nil, { t "'", r(1, 'user_text'), t "'" }),
-      sn(nil, { t '"', r(1, 'user_text'), t '"' }),
-    }),
-  }, {
-    stored = {
-      user_text = i(1, ''),
-    },
-  })
-)
+  table.insert(
+    M,
+    s('q', {
+      c(1, {
+        sn(nil, { t '`', r(1, 'user_text'), t '`' }),
+        sn(nil, { t "'", r(1, 'user_text'), t "'" }),
+        sn(nil, { t '"', r(1, 'user_text'), t '"' }),
+      }),
+    }, {
+      stored = {
+        user_text = i(1, ''),
+      },
+    })
+  )
+end
 
 -- https://github.com/L3MON4D3/LuaSnip/wiki/Cool-Snippets
 local calculate_comment_string = require('Comment.ft').calculate

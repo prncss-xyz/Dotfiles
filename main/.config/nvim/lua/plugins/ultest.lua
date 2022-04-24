@@ -17,7 +17,6 @@ function M.config()
     builders = {
       ['javascript#jest'] = function(cmd)
         local filename = cmd[#cmd]
-        print(filename)
         return {
           dap = {
             type = 'node2',
@@ -38,13 +37,11 @@ function M.config()
       end,
     },
   }
-  require('utils').augroup('Tests', {
-    {
-      events = { 'BufWritePost' },
-      targets = { '*' },
-      modifiers = { 'silent!' },
-      command = 'UltestNearest',
-    },
+  vim.api.nvim_create_autocmd('BufWritePost', {
+    targets = '*',
+    callback = function()
+      vim.cmd 'UltestNearest'
+    end,
   })
 end
 

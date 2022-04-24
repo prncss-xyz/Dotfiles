@@ -55,6 +55,7 @@ function M.feed_vim_cb(str)
     vim.cmd('normal! ' .. str)
   end
 end
+
 function M.get_visual_selection(cb)
   local old = vim.fn.getreg 'z'
   vim.fn.feedkeys('"zy', 'n')
@@ -143,59 +144,6 @@ end
 
 function M._execute(id, args)
   store[id](args)
-end
-
--- @Description create a nammed command
--- @Param  name string
--- @Param  opts {nargs, types}
--- @Param  rhs
-function M.command(name, opts, rhs)
-  local nargs = opts.nargs or 0
-  local types = (opts.types and type(opts.types) == 'table')
-      and table.concat(opts.types, ' ')
-    or ''
-
-  if type(rhs) == 'function' then
-    local fn_id = create(rhs)
-    rhs = string.format(
-      "lua require'utils'._execute(%d%s)",
-      fn_id,
-      nargs > 0 and ', <f-args>' or ''
-    )
-  end
-
-  vim.cmd(string.format('command! -nargs=%s %s %s %s', nargs, types, name, rhs))
-end
-
----@class Autocmd
----@field events string[] list of autocommand events
----@field targets string[] list of autocommand patterns
----@field modifiers string[] e.g. nested, once
----@field command string | function
-
----Create an autocommand
----@param name string
----@param commands Autocmd[]
-function M.augroup(name, commands)
-  vim.cmd('augroup ' .. name)
-  vim.cmd 'autocmd!'
-  for _, c in ipairs(commands) do
-    local command = c.command
-    if type(command) == 'function' then
-      local fn_id = create(command)
-      command = string.format("lua require'utils'._execute(%s)", fn_id)
-    end
-    vim.cmd(
-      string.format(
-        'autocmd %s %s %s %s',
-        table.concat(c.events, ','),
-        table.concat(c.targets or {}, ','),
-        table.concat(c.modifiers or {}, ' '),
-        command
-      )
-    )
-  end
-  vim.cmd 'augroup END'
 end
 
 function M.lambda(cb)

@@ -20,14 +20,6 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
 end
 
 -- FIXME:
-local dotfiles = os.getenv 'DOTFILES'
-require('utils').augroup('PackerCompile', {
-  {
-    events = { 'BufWritePost' },
-    targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
-    command = 'update luafile % | PackerCompile',
-  },
-})
 
 local function default_config(name, config)
   return string.format(
@@ -56,28 +48,10 @@ end
 return require('packer').startup {
   function()
     use 'wbthomason/packer.nvim'
-    use {
-      'nathom/filetype.nvim',
-      config = function()
-        require('plugins.filetype').config()
-      end,
-    }
-    use {
-      'nvim-lua/plenary.nvim',
-      module = 'plenary',
-    }
-    use {
-      'nvim-lua/popup.nvim',
-      module = 'popup',
-    }
-    use {
-      'MunifTanjim/nui.nvim',
-      module = 'nui',
-    }
-    use {
-      'tami5/sqlite.lua',
-      module = 'sqlite',
-    }
+    use { 'nvim-lua/plenary.nvim', module = 'plenary' }
+    use { 'nvim-lua/popup.nvim', module = 'popup' }
+    use { 'MunifTanjim/nui.nvim', module = 'nui' }
+    use { 'tami5/sqlite.lua', module = 'sqlite' }
     use {
       'kyazdani42/nvim-web-devicons',
       module = 'nvim-web-devicons',
@@ -95,35 +69,20 @@ return require('packer').startup {
       config = function()
         require('plugins.treesitter').config()
       end,
-      requires = { -- TODO: lazy
-        { 'p00f/nvim-ts-rainbow', after = 'nvim-treesitter' },
-        { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } },
-        {
-          'nvim-treesitter/nvim-treesitter-textobjects',
-          module = 'nvim-treesitter.textobjects',
-        },
-        { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' },
-        -- Use tressitter to autoclose and autorename html tag
-        {
-          'windwp/nvim-ts-autotag',
-          after = 'nvim-treesitter',
-          event = 'InsertEnter',
-        },
-        {
-          'JoosepAlviste/nvim-ts-context-commentstring',
-          after = 'nvim-treesitter',
-        },
-        -- You can toggle automatic highlighting for the current treesitter unit.
-        -- :lua require"treesitter-unit".toggle_highlighting(higroup?)
-        { 'David-Kunz/treesitter-unit', module = 'treesitter-unit' },
-      },
     }
+    use { 'p00f/nvim-ts-rainbow', after = 'nvim-treesitter' }
     use {
-      'lewis6991/spellsitter.nvim',
-      after = 'nvim-treesitter',
-      config = function()
-        require('spellsitter').setup {}
-      end,
+      'nvim-treesitter/nvim-treesitter-textobjects',
+      module = 'nvim-treesitter.textobjects',
+    }
+    use { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' }
+    use { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } }
+    -- Use tressitter to autoclose and autorename html tag
+    use { 'windwp/nvim-ts-autotag', event = 'InsertEnter' }
+    use { 'David-Kunz/treesitter-unit', module = 'treesitter-unit' }
+    use {
+      'JoosepAlviste/nvim-ts-context-commentstring',
+      module = 'ts_context_commentstring',
     }
     use {
       -- annotation toolkit
@@ -235,6 +194,13 @@ return require('packer').startup {
       config = config 'lsp',
     }
     use {
+      'jose-elias-alvarez/null-ls.nvim',
+      event = 'BufReadPost',
+      config = function()
+        require('plugins.null-ls').config()
+      end,
+    }
+    use {
       'simrat39/symbols-outline.nvim',
       after = 'nvim-lspconfig',
       cmd = { 'SymbolsOutline', 'SymbolsOutlineOpen' },
@@ -258,37 +224,28 @@ return require('packer').startup {
     }
     -- LSP, language-specific
     use {
-      'jose-elias-alvarez/null-ls.nvim',
-      event = 'BufReadPost',
-      config = function()
-        require('plugins.null-ls').config()
-      end,
-    }
-    use {
       'jose-elias-alvarez/nvim-lsp-ts-utils',
       module = 'nvim-lsp-ts-utils',
     }
     use { 'folke/lua-dev.nvim', module = 'lua-dev' }
     use { 'b0o/schemastore.nvim', module = 'schemastore' }
     use { 'nanotee/sqls.nvim', module = 'sqls' }
+    use {
+      'brymer-meneses/grammar-guard.nvim',
+      after = 'nvim-lspconfig',
+      config = config 'grammar-guard',
+      disable = true,
+    }
 
     -- completion
     use { 'hrsh7th/cmp-nvim-lsp', module = 'cmp_nvim_lsp' }
     use {
       'hrsh7th/nvim-cmp',
       module = 'cmp',
-      event = { 'CmdlineEnter', 'CmdlineEnter' },
+      event = { 'InsertEnter', 'CmdlineEnter' },
       config = function()
         require('plugins.cmp').config()
       end,
-    }
-    use {
-      'tzachar/cmp-tabnine',
-      run = './install.sh',
-      requires = 'hrsh7th/nvim-cmp',
-      after = 'nvim-cmp',
-      cmd = 'CmpTabnineHub',
-      disable = true,
     }
     use { 'tzachar/fuzzy.nvim', module = 'fuzzy', disable = true }
     use { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp', disable = true }
@@ -318,17 +275,27 @@ return require('packer').startup {
     -- insert or delete brackets, parentheses, quotes in pair
     use {
       'windwp/nvim-autopairs',
-      after = 'nvim-cmp',
+      -- after = 'nvim-cmp',
       config = config 'nvim-autopairs',
+      event = 'InsertEnter',
+      disable = true,
+    }
+    use {
+      'echasnovski/mini.nvim',
+      event = 'InsertEnter',
+      -- config = default_config 'mini.pairs',
+      config = function()
+        require('mini.pairs').setup {}
+      end,
     }
     use {
       'L3MON4D3/LuaSnip',
       module = 'luasnip',
+      event = 'InsertEnter',
       config = function()
         require('plugins.luasnip').config()
       end,
     }
-
     -- Tracking
     -- use { 'git-time-metric/gtm-vim-plugin'}
     use {
@@ -339,7 +306,6 @@ return require('packer').startup {
           .. (os.getenv 'hostname' or 'unknown') -- FIXME:
       end,
     }
-
     -- Git
     use {
       'lewis6991/gitsigns.nvim',
@@ -389,7 +355,7 @@ return require('packer').startup {
     use {
       'lukas-reineke/indent-blankline.nvim',
       event = 'BufReadPre',
-      config = config('indent-blankline')
+      config = config 'indent-blankline',
     }
     use {
       -- TODO: replace by maintained plugin
@@ -585,10 +551,14 @@ return require('packer').startup {
       module = 'telescope._extensions.luasnip',
     }
     use {
-      local_repo 'telescope-frecency.nvim',
-      requires = { 'tami5/sqlite.lua' },
-      module = 'telescope._extensions.frecency',
+      'FeiyouG/command_center.nvim',
+      module = { 'telescope._extensions.command_center', 'command_center' },
       disable = true,
+    }
+    use {
+      'mrjones2014/legendary.nvim',
+      event = 'VimEnter',
+      config = config 'legendary',
     }
     use {
       local_repo 'nononotes-nvim',
@@ -618,7 +588,6 @@ return require('packer').startup {
         }
       end,
     }
-
     -- Clipboard
     use {
       'kevinhwang91/nvim-hclipboard',
@@ -626,6 +595,7 @@ return require('packer').startup {
       config = function()
         require('plugins.hclipboard').config()
       end,
+      disable = true,
     }
     use {
       'bfredl/nvim-miniyank',
@@ -638,7 +608,6 @@ return require('packer').startup {
       'svermeulen/vim-yoink',
       disable = true,
     }
-
     -- Edition
     use {
       'AndrewRadev/splitjoin.vim',
@@ -691,37 +660,16 @@ return require('packer').startup {
     use {
       'numToStr/Comment.nvim',
       event = 'BufReadPost',
-      wants = 'nvim-ts-context-commentstring',
-      requires = { 'JoosepAlviste/nvim-ts-context-commentstring' },
+      module = 'Comment',
+      module_pattern = 'Comment.*',
+      after = 'nvim-treesitter',
+      -- TODO: replace after with key = {...}
       config = config 'comment',
     }
     use {
       'wellle/targets.vim',
       after = 'flies.nvim',
-      setup = function()
-        vim.g.targets_nl = 'np'
-        vim.cmd [[
-          autocmd User targets#mappings#user call targets#mappings#extend({
-          \ ',': {},
-          \ '.': {},
-          \ ';': {},
-          \ ':': {},
-          \ '+': {},
-          \ '-': {},
-          \ '=': {},
-          \ '~': {},
-          \ '_': {},
-          \ '*': {},
-          \ '#': {},
-          \ '/': {},
-          \ '\': {},
-          \ '|': {},
-          \ '&': {},
-          \ '$': {},
-          \ 'a': {},
-          \ })
-          ]]
-      end,
+      setup = setup 'targets',
     }
     use {
       local_repo 'flies.nvim',
@@ -772,6 +720,9 @@ return require('packer').startup {
       'ahmedkhalf/project.nvim',
       config = default_config 'project_nvim',
     }
+
+    -- Theming
+    use { 'mvllow/modes.nvim', config = default_config 'modes' }
 
     -- Themes
     use 'rafamadriz/neon'

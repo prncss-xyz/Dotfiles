@@ -5,26 +5,18 @@ function M.setup()
 end
 
 function M.config()
-  local augroup = require('utils').augroup
   -- diminishes flashing while typing
-  augroup('IlluminateInsert', {
-    {
-      events = { 'InsertEnter' },
-      targets = { '*' },
-      command = function()
-        vim.g.Illuminate_delay = 1000
-      end,
-    },
+  vim.api.nvim_create_autocmd('InsertEnter', {
+    pattern = '*',
+    callback = function()
+      vim.g.Illuminate_delay = 1000
+    end,
   })
-
-  augroup('IlluminateNormal', {
-    {
-      events = { 'InsertLeave' },
-      targets = { '*' },
-      command = function()
-        vim.g.Illuminate_delay = 0
-      end,
-    },
+  vim.api.nvim_create_autocmd('InsertEnter', {
+    pattern = '*',
+    callback = function()
+      vim.g.Illuminate_delay = 0
+    end,
   })
 end
 

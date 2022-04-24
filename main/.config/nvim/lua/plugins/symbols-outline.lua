@@ -41,15 +41,12 @@ M.setup = function()
       'null-ls',
     },
   }
-  require('utils').augroup('Outline', {
-    {
-      events = { 'FileType' },
-      targets = { 'Outline' },
-      command = function()
-        vim.opt_local.scl = 'no'
-        vim.opt_local.spell = false
-      end,
-    },
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 'Outline' },
+    callback = function()
+      vim.opt_local.scl = 'no'
+      vim.opt_local.spell = false
+    end,
   })
 end
 

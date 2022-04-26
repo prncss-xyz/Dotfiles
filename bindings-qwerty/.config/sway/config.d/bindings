@@ -105,6 +105,7 @@ mode launch {
   bindsym shift+y exec "$terminal -e nvim Personal/bookmarks.csv", mode default
 
   bindsym ctrl+c mode default
+  bindsym escape mode default
   bindsym return mode default
 }
 
@@ -132,7 +133,7 @@ mode workspace {
   bindsym shift+d move container to workspace number 2 
   bindsym shift+f move container to workspace number 3 
 
-  bindsym h toggle split, mode default
+  # bindsym h toggle split, mode default
   bindsym j layout stacking, mode default
   bindsym k layout tabbed, mode default
   bindsym l splitv, mode default
@@ -147,6 +148,7 @@ mode workspace {
   bindsym shift+o move container to workspace next, workspace next
 
   bindsym ctrl+c mode default
+  bindsym escape mode default
   bindsym return mode default
 }
 
@@ -164,7 +166,9 @@ mode audio {
   bindsym $down exec pamixer -ud 2 && pamixer --get-volume > $WOBSOCK
   bindsym shift+$up exec pamixer -ui 12 && pamixer --get-volume > $WOBSOCK
   bindsym shift+$down exec pamixer -ud 12 && pamixer --get-volume > $WOBSOCK
+
   bindsym ctrl+c mode default
+  bindsym escape mode default
   bindsym return mode default
 }
 
@@ -182,6 +186,7 @@ mode mouse1 {
   bindsym d exec ydotool click right
   bindsym s exec ydotool click middle
   bindsym ctrl+c mode default
+  bindsym escape mode default
   bindsym return mode default
 }
 mode mouse2 {
@@ -195,6 +200,7 @@ mode mouse2 {
   bindsym d exec ydotool click right
   bindsym s exec ydotool click middle
   bindsym ctrl+c mode default
+  bindsym escape mode default
   bindsym return mode default
 }
 mode mouse3 {
@@ -208,6 +214,7 @@ mode mouse3 {
   bindsym d exec ydotool click right
   bindsym s exec ydotool click middle
   bindsym ctrl+c mode default
+  bindsym escape mode default
   bindsym return mode default
 }
 
@@ -217,6 +224,7 @@ mode lumino {
   bindsym shift+$up exec brightnessctl set 12%+ | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym shift+$down exec brightnessctl set 12%- | sed -En 's/.*\(([0-9]+)%\).*/\1/p' > $WOBSOCK
   bindsym ctrl+c mode default
+  bindsym escape mode default
   bindsym return mode default
 }
 
@@ -238,6 +246,7 @@ mode resize {
 
   # return to default mode
   bindsym return mode "default"
+  bindsym escape mode default
   bindsym ctrl+c mode default
 }
 
@@ -251,6 +260,7 @@ mode "$mode_gaps" {
   bindsym o      mode "$mode_gaps_outer"
   bindsym i      mode "$mode_gaps_inner"
   bindsym return mode default
+  bindsym escape mode default
   bindsym ctrl+c mode default
 }
 
@@ -264,6 +274,7 @@ mode "$mode_gaps_inner" {
   bindsym shift+0     gaps inner all set 0; mode default
 
   bindsym return mode default
+  bindsym escape mode default
   bindsym ctrl+c mode default
 }
 
@@ -277,5 +288,6 @@ mode "$mode_gaps_outer" {
   bindsym shift+0     gaps outer all set 0; mode default
 
   bindsym return mode default
+  bindsym escape mode default
   bindsym ctrl+c mode default
 }

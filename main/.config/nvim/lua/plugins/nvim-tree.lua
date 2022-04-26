@@ -63,18 +63,21 @@ vim.api.nvim_create_autocmd('FileType', {
 
 M.config = function()
   require('nvim-tree').setup {
+    disable_netrw = true,
+    hijack_netrw = true,
     hijack_cursor = true,
     update_cwd = true,
     update_focused_file = {
       enable = true,
       update_cwd = true,
-    }, -- https://github.com/ahmedkhalf/project.nvim
-    nvim_tree_gitignore = true,
-    nvim_tree_ignore = { '.git' },
-    tree_follow = true,
-    tree_disable_default_keybindings = true,
-    show_hidden = true,
-    view = { width = vim.g.u_pane_width },
+    },
+    git = {
+      ignore = true,
+    },
+    view = { width = vim.g.u_pane_width, mappings = { custom_only = true } },
+    filters = {
+      custom = { '.git' },
+    },
   }
   require('nvim-tree.events').on_file_created(function(ev)
     local fname = ev.fname

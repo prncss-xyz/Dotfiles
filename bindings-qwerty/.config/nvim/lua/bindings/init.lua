@@ -1,4 +1,6 @@
+-- 1247 LOC !!
 local M = {}
+
 local invert = require('utils').invert
 
 local utils = require 'utils'
@@ -398,35 +400,6 @@ local function map_basic()
           [a.macro] = plug '(Mac_SearchForNamedMacroAndPlay)',
         },
       },
-      s = {
-        name = '+LSP',
-        a = {
-          function()
-            vim.diagnostic.open_float(nil, { source = 'always' })
-          end,
-          'show line diagnostics',
-        },
-        pc = { vim.lsp.buf.incoming_call, 'incoming calls' },
-        c = { vim.lsp.buf.outgoing_calls, 'outgoing calls' },
-        d = { vim.lsp.buf.definition, 'definition' },
-        k = { vim.lsp.buf.hover, 'hover' },
-        r = { vim.lsp.buf.references, 'references' },
-        s = { vim.lsp.buf.signature_help, 'signature help' },
-        t = { vim.lsp.buf.type_definition, 'go to type definition' },
-        w = {
-          name = 'worspace folder',
-          a = { vim.lsp.buf.add_workspace_folder, 'add workspace folder' },
-          l = { vim.lsp.buf.list_workspace_folder, 'rm workspace folder' },
-          d = { vim.lsp.buf.remove_workspace_folder, 'rm workspace folder' },
-        },
-        x = {
-          function()
-            vim.lsp.stop_client(vim.lsp.get_active_clients())
-          end,
-          'stop active clients',
-        },
-      },
-      t = plug 'PlenaryTestFile',
       v = 'gv',
       pw = plug '(Marks-prev-bookmark1)',
       w = plug '(Marks-next-bookmark1)',
@@ -650,30 +623,6 @@ local function map_basic()
       -- [p 'v'] = { 'P', modes = 'nx' },
       -- v = { 'p', modes = 'nx' },
       -- specify register 1
-      [p 'v'] = {
-        n = function()
-          require('bindutils').keys 'P'
-        end,
-        x = {
-          function()
-            local rs = '"' .. vim.v.register
-            require('bindutils').keys('"_d' .. rs .. 'P')
-          end,
-        },
-      },
-      v = {
-        -- adsfsda
-        modes = {
-          n = 'p',
-          x = {
-            function()
-              local rs = '"' .. vim.v.register
-              print(rs)
-              require('bindutils').keys('"_d' .. rs .. 'P')
-            end,
-          },
-        },
-      },
       -- v = { 'g~', 'toggle case', modes = 'nx' },
       --
       w = {
@@ -843,8 +792,6 @@ local function map_basic()
       o = cmd 'Telescope oldfiles only_cwd=true',
       W = cmd 'TodoTelescope',
       q = 'Telescope quickfixlist',
-      r = cmd 'Telescope lsp_references',
-      s = cmd 'Telescope lsp_definitions', -- also, trouble
       pt = {
         function()
           require('trouble').previous { skip_groups = true, jump = true }
@@ -873,7 +820,6 @@ local function map_basic()
       [a.move] = { require('bindutils').project_files, 'project file' },
     },
     [a.help] = {
-      d = { require('bindutils').docu_current, 'filetype docu' },
       h = cmd {
         'e ~/Dotfiles/bindings-qwerty/.config/nvim/lua/bindings.lua',
         'bindings',
@@ -881,170 +827,6 @@ local function map_basic()
       m = cmd { 'Telescope man_pages', 'man pages' },
       p = cmd { 'Telescope md_help', 'md help' },
       v = cmd { 'Telescope help_tags', 'help tags' },
-    },
-    [a.editor] = {
-      -- require'dap'.list_breakpoints() -- Lists all breakpoints and log points in quickfix window.
-      -- pa = {
-      --   require('modules.toggler').cb(
-      --     'Trouble document_diagnostics',
-      --     'TroubleClose'
-      --   ),
-      --   'lsp document diagnostics',
-      -- },
-      -- a = {
-      --   require('modules.toggler').cb(
-      --     'Trouble workspace_diagnostics',
-      --     'TroubleClose'
-      --   ),
-      --   'lsp worspace diagnostics',
-      -- },
-      -- pb = { -- FIXME:
-      --   function()
-      --     require('bufjump').backward(require('bufjump').not_under_cwd)
-      --   end,
-      --   'previous workspace',
-      -- },
-      -- b = { -- FIXME:
-      --   function()
-      --     require('bufjump').forward(require('bufjump').not_under_cwd)
-      --   end,
-      --   'next workspace',
-      -- },
-      -- b = require('modules.toggler').cb(function()
-      --   require('marks').bookmark_state:all_to_list 'quickfixlist'
-      --   vim.cmd 'Trouble quickfix'
-      -- end, 'TroubleClose'),
-      [p 'c'] = {
-        modes = {
-          n = function()
-            require('split').close()
-          end,
-        },
-      },
-      c = {
-        s = {
-          function()
-            require('split').open_lsp()
-          end,
-        },
-        r = {
-          modes = {
-            n = function()
-              require('split').pop({ target = 'here' }, 'n')
-            end,
-            x = ":<c-u>lua require('split').open({target='here'}, 'x')<cr>",
-          },
-        },
-        o = {
-          modes = {
-            n = function()
-              require('split').open({}, 'n')
-            end,
-            x = ":<c-u>lua require('split').open({}, 'x')<cr>",
-          },
-        },
-      },
-      d = {
-        require('modules.toggler').cb(function()
-          require('dapui').open()
-        end, function()
-          require('dapui').close()
-        end),
-        'toggle dapui',
-      },
-      pe = { require('bindutils').reset_editor, 'reset editor' },
-      e = { require('bindutils').edit_current, 'current in new editor' },
-      f = {
-        require('modules.toggler').cb('NvimTreeOpen', 'NvimTreeClose'),
-        'nvim tree',
-      },
-      g = require('modules.toggler').cb('Neogit', ':q'),
-      h = require('modules.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
-      [p 'i'] = plug '(unimpaired-directory-previous)',
-      i = plug '(unimpaired-directory-next)',
-      j = {
-        name = '+peek',
-        l = plug {
-          '(Marks-preview)',
-          name = 'Previews mark (will wait for user input). press <cr> to just preview the next mark.',
-        },
-        d = {
-          function()
-            require('goto-preview').goto_preview_definition()
-          end,
-          'definition',
-        },
-        r = {
-          function()
-            require('goto-preview').goto_preview_references()
-          end,
-          'referenes',
-        },
-        t = cmd 'UltestOutput',
-        [d.git] = function()
-          require('gitsigns').blame_line { full = true }
-        end,
-      },
-      pk = { vim.lsp.buf.signature_help, 'signature help' },
-      k = { vim.lsp.buf.hover, 'hover' },
-      l = require('modules.toggler').cb(function()
-        require('marks').mark_state:all_to_list 'quickfixlist'
-        vim.cmd 'Trouble quickfix'
-      end, 'TroubleClose'),
-      m = cmd { 'Telescope installed_plugins', 'plugins' },
-      n = cmd { 'Telescope modules', 'node modules' },
-      o = { require('bindutils').open_current, 'open current external' },
-      pp = { require('modules.setup-session').develop, 'session develop' },
-      r = { '<cmd>update<cr><cmd>so %<cr>', 'reload' },
-      ps = {
-        require('modules.toggler').cb(
-          'TroubleToggle references',
-          'TroubleClose'
-        ),
-        'lsp references',
-      },
-      s = {
-        require('modules.toggler').cb(
-          'SymbolsOutlineOpen',
-          'SymbolsOutlineClose'
-        ),
-        'outliner',
-      },
-      t = { require('bindutils').term, 'new terminal' },
-      pv = cmd { 'Telescope project_directory', 'projects' },
-      v = cmd { 'Telescope my_projects', 'sessions' },
-      w = require('modules.toggler').cb('TodoTrouble', 'TroubleClose'),
-      x = { require('bindutils').xplr_launch, 'xplr' },
-      y = {
-        require('modules.toggler').cb('UndotreeToggle', 'UndotreeToggle'),
-        'undo tree',
-      },
-      z = require('modules.toggler').cb('ZenMode', 'ZenMode'),
-      ['.'] = { require('bindutils').dotfiles, 'dotfiles' },
-      ['"'] = {
-        function()
-          require('nononotes').prompt('edit', false, 'all')
-        end,
-        'pick note',
-      },
-      -- ['<space>'] = {
-      --   lazy_req('telescope', 'extensions.command_center.command_center', {}),
-      -- },
-      -- [' '] = require('modules.toggler').cb(
-      --   require('modules.blank_pane').open,
-      --   require('modules.blank_pane').close
-      -- ),
-      -- [' '] = cmd { 'Telescope commands', 'commands' },
-      ['p' .. d.git] = require('modules.toggler').cb(
-        'DiffviewOpen',
-        'DiffviewClose'
-      ),
-      [d.git] = {
-        require('modules.toggler').cb('Gitsigns setqflist', 'TroubleClose'),
-        'hunks',
-      },
-      [p(a.editor)] = { require('modules.toggler').back, 'toggle' },
-      [a.editor] = { require('modules.toggler').toggle, 'toggle' },
     },
   }
 end

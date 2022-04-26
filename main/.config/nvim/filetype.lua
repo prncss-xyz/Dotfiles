@@ -8,5 +8,6 @@ vim.filetype.add {
   pattern = {
     ['.*/%.config/waybar/config'] = 'json',
     ['.*/%.config/kitty/.*'] = 'kitty',
+    ['.*/%.config/sway/.*'] = 'sway',
   },
 }

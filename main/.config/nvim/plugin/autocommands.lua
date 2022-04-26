@@ -1,18 +1,23 @@
 -- Makes terminal aware of current directory
 -- if nut running from a GUI
+
+local group = vim.api.nvim_create_augroup('My', {})
+
 if vim.fn.has 'gui' == 0 then
   vim.api.nvim_create_autocmd('DirChanged', {
+    desc = 'update cwd in terminal',
     pattern = '*',
+    group = group,
     callback = function()
       local uri = 'file://localhost/' .. vim.fn.getcwd()
       vim.fn.chansend(vim.v.stderr, '\x1B]7;' .. uri .. '\x1B\\')
     end,
-    desc = 'update cwd in terminal',
   })
 end
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'gitcommit', 'gitrebase', 'gitconfig' },
+  group = group,
   callback = function()
     vim.bo.bufhidden = 'delete'
   end,
@@ -21,6 +26,7 @@ vim.api.nvim_create_autocmd('FileType', {
 for _, event in ipairs { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' } do
   vim.api.nvim_create_autocmd(event, {
     pattern = '*',
+    group = group,
     callback = function()
       if vim.bo.buftype == '' then
         vim.cmd 'update'
@@ -42,6 +48,7 @@ for _, event in ipairs {
 } do
   vim.api.nvim_create_autocmd(event, {
     pattern = '*',
+    group = group,
     callback = function()
       vim.cmd 'rshada'
       vim.cmd 'wshada'
@@ -74,6 +81,7 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     -- vim.opt_local.undofile = false
     -- vim.cmd 'setlocal noundofile'
   end,
+  group = group,
 })
 
 local function fetch_git_branch_plenary()
@@ -117,6 +125,7 @@ end
 local once = true
 vim.api.nvim_create_autocmd('VimEnter', {
   pattern = '*',
+  group = group,
   callback = function()
     vim.schedule(function()
       if once then

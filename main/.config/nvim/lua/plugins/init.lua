@@ -29,10 +29,6 @@ local function default_config(name, config)
   )
 end
 
-local function telescope_config(name)
-  return string.format([[require('telescope').load_extension '%s']], name)
-end
-
 local function config(name)
   return string.format("require('plugins.%s').config()", name)
 end
@@ -281,14 +277,6 @@ return require('packer').startup {
       disable = true,
     }
     use {
-      'echasnovski/mini.nvim',
-      event = 'InsertEnter',
-      -- config = default_config 'mini.pairs',
-      config = function()
-        require('mini.pairs').setup {}
-      end,
-    }
-    use {
       'L3MON4D3/LuaSnip',
       module = 'luasnip',
       event = 'InsertEnter',
@@ -499,11 +487,7 @@ return require('packer').startup {
     use {
       'phaazon/hop.nvim',
       module = 'hop',
-      config = function()
-        require('hop').setup {
-          jump_on_sole_occurrence = true,
-        }
-      end,
+      config = config 'hop',
     }
     use { 'indianboy42/hop-extensions', module = 'hop-extensions' }
     use {
@@ -551,16 +535,6 @@ return require('packer').startup {
       module = 'telescope._extensions.luasnip',
     }
     use {
-      'FeiyouG/command_center.nvim',
-      module = { 'telescope._extensions.command_center', 'command_center' },
-      disable = true,
-    }
-    use {
-      'mrjones2014/legendary.nvim',
-      event = 'VimEnter',
-      config = config 'legendary',
-    }
-    use {
       local_repo 'nononotes-nvim',
       config = function()
         require('plugins.nononotes').setup()
@@ -569,6 +543,18 @@ return require('packer').startup {
     }
 
     -- bindings
+    use {
+      'mrjones2014/legendary.nvim',
+      module = 'legendary',
+      config = config 'legendary',
+      cmd = {
+        'Legendary',
+        'LegendaryScratch',
+        'LegendaryEvalLine',
+        'LegendaryEvalLines',
+        'LegendaryEvalBuf'
+      },
+    }
     use {
       'folke/which-key.nvim',
       event = 'VimEnter',
@@ -587,6 +573,11 @@ return require('packer').startup {
           },
         }
       end,
+    }
+    use {
+      local_repo 'binder.nvim',
+      event = 'BufReadPost',
+      config = config 'binder',
     }
     -- Clipboard
     use {
@@ -722,7 +713,7 @@ return require('packer').startup {
     }
 
     -- Theming
-    use { 'mvllow/modes.nvim', config = default_config 'modes' }
+    use { 'mvllow/modes.nvim', config = default_config 'modes', disable = true }
 
     -- Themes
     use 'rafamadriz/neon'

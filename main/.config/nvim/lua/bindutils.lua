@@ -24,12 +24,10 @@ function M.plug(name)
   vim.api.nvim_feedkeys(t(keys), 'm', true)
 end
 
--- FIXME: not working at all
+
 function M.static_yank(keys)
   local cursor = vim.fn.getpos '.'
-  print('#')
   vim.defer_fn(function()
-    dump('!', cursor)
     M.keys(keys)
     vim.fn.setpos('.', cursor)
   end, 1)
@@ -239,72 +237,6 @@ function M.outliner()
     vim.cmd 'Toc'
   else
     require('modules.toggler').cb('SymbolsOutlineOpen', 'SymbolsOutlineClose')
-  end
-end
-
-function M.project_files()
-  if vim.fn.getcwd() == os.getenv 'HOME' .. '/Personal/neuron' then
-    require('nononotes').prompt('edit', false, 'all')
-    return
-  end
-  local ok = pcall(require('telescope.builtin').git_files)
-  if ok then
-    return
-  end
-  require('telescope.builtin').find_files()
-end
-
-function M.cmd_previous()
-  local cmp = require 'cmp'
-  if cmp.visible() then
-    cmp.select_prev_item()
-  else
-    vim.fn.feedkeys(t '<up>', 'n')
-  end
-end
-
-function M.cmd_next()
-  local cmp = require 'cmp'
-  if cmp.visible() then
-    cmp.select_next_item()
-  else
-    vim.fn.feedkeys(t '<down>', 'n')
-  end
-end
-
-M.s_tab = require('utils').first_cb(
-  lazy_req('plugins.cmp', 'utils.confirm'),
-  lazy_req('luasnip', 'jump', -1),
-  lazy_req('tabout', 'taboutBack')
-  -- lazy_req('tabout', 'taboutBackMulti')
-)
-
-M.tab = require('utils').first_cb(
-  lazy_req('plugins.cmp', 'utils.confirm'),
-  lazy_req('luasnip', 'jump', 1),
-  lazy_req('tabout', 'tabout')
-  -- lazy_req('tabout', 'taboutMulti')
-)
-
-local alt_patterns = {
-  { '(.+)%_spec(%.[%w%d]+)$', '%1%2' },
-  { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
-  { '(.+)%.lua$', '%1_spec.lua' },
-  { '(.+)(%.[%w%d]+)$', '%1.test%2' },
-}
-
-local function get_alt(file)
-  for _, pattern in ipairs(alt_patterns) do
-    if file:match(pattern[1]) then
-      return file:gsub(pattern[1], pattern[2])
-    end
-  end
-end
-
-function M.edit_alt()
-  local alt = get_alt(vim.fn.expand '%')
-  if alt then
-    vim.cmd('e ' .. alt)
   end
 end
 

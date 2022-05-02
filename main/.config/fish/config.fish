@@ -21,7 +21,7 @@ update_cwd_osc # this is needed beacause aur package sets TERM to 'foot-extra' a
 
 starship init fish | source
 zoxide init fish | source
-kitty + complete setup fish | source
+# kitty + complete setup fish | source
 
 # pnpm: tabtab source for packages
 # uninstall by removing these lines

@@ -1,7 +1,9 @@
 local M = {}
 
 function M.config()
-  require 'legendary'.setup ()
+  require('legendary').setup {
+    include_builtin = false,
+  }
 end
 
 return M

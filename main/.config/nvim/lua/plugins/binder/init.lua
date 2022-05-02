@@ -1,8 +1,59 @@
 local M = {}
 
-local util = require 'plugins.binder.util'
-local lazy = util.lazy
-local lazy_req = util.lazy_req
+local function map_ist()
+  local binder = require 'binder'
+  local keys = binder.keys
+  local b = binder.b
+  local modes = binder.modes
+  local util = require 'plugins.binder.util'
+  local lazy_req = util.lazy_req
+  binder.bind(modes {
+    t = keys {
+      ['<c-w>n'] = b {
+        '<C-\\><C-n>',
+      },
+    },
+    is = keys {
+      ['<c-space>'] = b { '<space><left>' },
+      ['<s-space>'] = b { '<space><left>' },
+      ['<s-tab>'] = b { require('plugins.binder.actions').s_tab },
+      ['<tab>'] = b { require('plugins.binder.actions').tab },
+      ['<c-e>'] = b { lazy_req('plugins.cmp', 'utils.toggle') },
+      ['<c-p>'] = b { require('plugins.binder.actions').cmd_previous },
+      ['<c-n>'] = b { require('plugins.binder.actions').cmd_next },
+      ['<c-v>'] = b { '<c-r>"' },
+      ['<c-r>r'] = b {
+        '<c-r>+',
+      },
+    },
+  })
+
+  -- prevent s-mode text to overwrite clipboard
+  -- Add a map for every printable character to copy to black hole register
+  local t = require('plugins.binder.util').t
+  for char_nr = 33, 126 do
+    local char = vim.fn.nr2char(char_nr)
+    vim.api.nvim_set_keymap(
+      's',
+      char,
+      '<c-o>"_c' .. t(char),
+      { noremap = true, silent = true }
+    )
+  end
+  vim.api.nvim_set_keymap(
+    's',
+    '<bs>',
+    '<c-o>"_c',
+    { noremap = true, silent = true }
+  )
+  vim.api.nvim_set_keymap(
+    's',
+    '<space>',
+    '<c-o>"_c<space>',
+    { noremap = true, silent = true }
+  )
+  return t
+end
 
 function M.config()
   local binder = require 'binder'
@@ -14,6 +65,9 @@ function M.config()
   local keys = binder.keys
   local b = binder.b
   local modes = binder.modes
+  local util = require 'plugins.binder.util'
+  local lazy = util.lazy
+  local lazy_req = util.lazy_req
 
   binder.bind(keys {
     register = 'basic',
@@ -37,9 +91,7 @@ function M.config()
     },
     z = keys {
       register = 'bigmove',
-      desc = 'bigmove',
     },
-    [':'] = keys { register = 'command' },
   })
   binder.bind(keys {
     q = keys {
@@ -50,53 +102,16 @@ function M.config()
   binder.extend(
     'basic',
     keys {
+      rr = b { '"+', modes = 'nx' },
+      r = b { '"', modes = 'nx' },
       ['<space>'] = b {
         desc = 'legendary find',
         lazy_req('legendary', 'find'),
       },
-    }
-  )
-  binder.extend(
-    'command',
-    keys {
-      ['imap '] = b {},
-      ['nmap '] = b {},
-      ['xmap '] = b {},
-      ['reg<cr>'] = b {},
-      ['omap '] = b {},
-      ['lua='] = b {},
-      ['update|so %<cr>'] = b {},
-      ['PackerCompile<cr>'] = b {},
-      ['PackerClean<cr>'] = b {},
-      ['PackerInstall<cr>'] = b {},
-      ['PackerUpdate<cr>'] = b {},
-      ['PackerSync<cr>'] = b {},
-      ['PackerLoad '] = b {},
-    }
-  )
-  binder.extend(
-    'edit',
-    keys {
-      v = modes {
-        n = keys {
-          prev = b { 'P' },
-          next = b { 'p' },
-        },
-        ox = keys {
-          prev = b {
-            function()
-              local rs = '"' .. vim.v.register
-              require('bindutils').keys('"_d' .. rs .. 'P')
-            end,
-          },
-          next = b {
-            function()
-              local rs = '"' .. vim.v.register
-              require('bindutils').keys('"_d' .. rs .. 'P')
-            end,
-          },
-        },
-      },
+      ['<c-n>'] = b { lazy_req('bufjump', 'forward') },
+      ['<c-o>'] = b { '<c-o>' },
+      ['<c-p>'] = b { lazy_req('bufjump', 'backward') },
+      ['<c-q>'] = b { '<cmd>qall!<cr>', 'quit' },
     }
   )
   binder.extend(
@@ -139,6 +154,33 @@ function M.config()
       },
     },
   })
+  binder.extend(
+    'basic',
+    keys {
+      m = keys {
+        b = keys {
+          prev = b { '<Plug>(Marks-next-bookmark)' },
+          next = b {
+            function()
+              require('marks').bookmark_state:all_to_list 'quickfixlist'
+              require('telescope.builtin').quickfix()
+            end,
+          },
+        },
+        l = keys {
+          prev = b {
+            '<Plug>(Marks-next)',
+          },
+          next = b {
+            function()
+              require('marks').mark_state:all_to_list 'quickfixlist'
+              require('telescope.builtin').quickfix()
+            end,
+          },
+        },
+      },
+    }
+  )
   binder.with_labels('marks', 'l', {
     peek = b {
       '<Plug>(Marks-preview)',
@@ -252,8 +294,44 @@ function M.config()
       },
     })
   end
+  binder.with_labels('harpoon', 'x', require('plugins.harpoon').bindings())
 
-  require 'plugins.binder.editor'.bind()
+  -- Commands
+  for _, v in ipairs {
+    'imap',
+    'vmap',
+    'cmap',
+    'nmap',
+    'xmap',
+    'omap',
+    'lua=',
+    'help',
+  } do
+    require('legendary').bind_keymap { string.format(':%s ', v) }
+  end
+  for _, v in ipairs {
+    'update|so %',
+    'messages',
+    'PackerCompile',
+    'PackerClean',
+    'PackerInstall',
+    'PackerUpdate',
+    'PackerSync',
+    'PackerLoad',
+    'PackerProfile',
+    'StartupTime',
+    'LspInfo',
+    'Neogit',
+    'reg',
+  } do
+    require('legendary').bind_keymap { string.format(':%s<cr>', v) }
+  end
+
+  map_ist()
+  binder.extend('editor', require('plugins.binder.editor').extend())
+  binder.extend('edit', require('plugins.binder.edit').extend())
+  binder.extend('move', require('plugins.binder.move').extend())
+  binder.extend('bigmove', require('plugins.binder.bigmove').extend())
 end
 
 return M

@@ -47,87 +47,6 @@ local function cmd(t)
   return t
 end
 
-local function map_command_lang()
-  -- TODO:
-  -- - dedent
-  -- - remap cmp c-e
-  -- - map('i', '<a-t>', '<esc>"zdh"zpa') -- transpose
-  local reg = require('modules.binder').reg
-  reg {
-    modes = {
-      nvoil = {
-        ['<c-c>'] = '<esc>',
-        ['<c-q>'] = { '<cmd>qall!<cr>', 'quit' },
-      },
-      l = {
-        ['<c-a>'] = '<home>',
-        ['<c-b>'] = '<left>',
-        ['<c-d>'] = '<c-h>',
-        ['<c-e>'] = '<end>',
-        ['<c-f>'] = '<right>',
-        ['<c-g>'] = '<c-right>',
-        ['<c-h>'] = '<c-left>',
-        ['<c-u>'] = '<c-u>',
-        ['<c-w>'] = '<c-w>',
-      },
-    },
-  }
-  reg {
-    modes = {
-      isc = {
-        ['<c-p>'] = { require('bindutils').cmd_previous },
-        ['<c-n>'] = { require('bindutils').cmd_next },
-        -- ['<c-p>'] = { lazy_req('cmp', 'select_prev_item') },
-        -- ['<c-n>'] = { lazy_req('cmp', 'select_next_item') },
-      },
-      is = {
-        ['<c-k>'] = '<c-o>d$',
-        ['<c-o>'] = '<c-o>',
-        ['<c-v>'] = { '<c-r>"' },
-        ['<c-r>r'] = { '<c-r>+' },
-        ['<c-space>'] = '<space><left>',
-        ['<s-space>'] = '<space><left>',
-        ['<s-tab>'] = { require('bindutils').s_tab },
-        ['<tab>'] = { require('bindutils').tab },
-        ['<c-e>'] = { require('plugins.cmp').utils.toggle },
-      },
-      c = {
-        ['<c-s>'] = { '<c-f>', 'edit command line' },
-        ['<c-v>'] = { '<c-r>"', 'paste to command line' },
-        ['<tab>'] = {
-          lazy_req('plugins.cmp', 'utils.confirm'),
-        },
-      },
-    },
-    ['<c-a>'] = { modes = { i = '<c-o>^', nv = '^' } },
-    ['<c-e>'] = { modes = { i = '<c-o>$', nv = '$' } },
-  }
-
-  -- prevent s-mode text to overwrite clipboard
-  local t = require('utils').t
-  -- Add a map for every printable character to copy to black hole register
-  for char_nr = 33, 126 do
-    local char = vim.fn.nr2char(char_nr)
-    vim.api.nvim_set_keymap(
-      's',
-      char,
-      '<c-o>"_c' .. t(char),
-      { noremap = true, silent = true }
-    )
-  end
-  vim.api.nvim_set_keymap(
-    's',
-    '<bs>',
-    '<c-o>"_c',
-    { noremap = true, silent = true }
-  )
-  vim.api.nvim_set_keymap(
-    's',
-    '<space>',
-    '<c-o>"_c<space>',
-    { noremap = true, silent = true }
-  )
-end
 
 local function map_search(url, help)
   return {
@@ -213,8 +132,6 @@ local function map_basic()
     n = lazy_req('flies.move_again', 'next'),
     O = { '<nop>', modes = 'nx' },
     o = { '<nop>', modes = 'nx' },
-    rp = { '"+', modes = 'nx' },
-    r = { '"', modes = 'nx' },
     s = {
       modes = {
         nx = function()
@@ -275,19 +192,6 @@ local function map_basic()
     },
     ['<c-g>'] = cmd { 'Telescope luasnip', modes = 'ni' },
     ['<c-i>'] = '<c-i>',
-    ['<c-n>'] = {
-      function()
-        require('bufjump').forward()
-      end,
-      'jump next buffer',
-    },
-    ['<c-o>'] = '<c-o>',
-    ['<c-p>'] = {
-      function()
-        require('bufjump').backward()
-      end,
-      'jump previous buffer',
-    },
     ['<c-r>'] = '<c-r>',
     ['<c-s>'] = {
       modes = {
@@ -758,66 +662,6 @@ local function map_basic()
     },
     [a.move] = {
       name = '+move',
-      a = { require('bindutils').edit_alt, 'edit alternate' },
-      b = {
-        a = function()
-          require('marks').next_bookmark0()
-        end,
-        s = function()
-          require('marks').next_bookmark1()
-        end,
-        d = function()
-          require('marks').next_bookmark2()
-        end,
-        f = function()
-          require('marks').next_bookmark3()
-        end,
-      },
-      g = cmd 'Telescope buffers',
-      pi = { vim.lsp.buf.declaration, 'go declaration' },
-      i = cmd 'Telescope lsp_implementations',
-      j = cmd 'Telescope lsp_type_definitions',
-      pf = function()
-        require('telescope.builtin').file_browser {
-          cwd = vim.fn.expand '%:p:h',
-          depth = 10,
-        }
-      end,
-      f = function()
-        require('telescope.builtin').file_browser {
-          cwd = vim.fn.expand '%:p:h',
-          -- hidden = false,
-        }
-      end,
-      o = cmd 'Telescope oldfiles only_cwd=true',
-      W = cmd 'TodoTelescope',
-      q = 'Telescope quickfixlist',
-      pt = {
-        function()
-          require('trouble').previous { skip_groups = true, jump = true }
-        end,
-        'trouble, previous',
-      },
-      t = {
-        function()
-          require('trouble').next { skip_groups = true, jump = true }
-        end,
-        'trouble, next',
-      },
-      [a.mark] = {
-        b = function()
-          require('marks').bookmark_state:all_to_list 'quickfixlist'
-          require('telescope.builtin').quickfix()
-        end,
-        pb = plug '(Marks-next-bookmark)',
-        l = function()
-          require('marks').mark_state:all_to_list 'quickfixlist'
-          require('telescope.builtin').quickfix()
-        end,
-        pl = plug { '(Marks-next)', name = 'Goes to next mark in buffer.' },
-      },
-      [d.search] = cmd { 'Telescope live_grep', 'live grep' },
-      [a.move] = { require('bindutils').project_files, 'project file' },
     },
     [a.help] = {
       h = cmd {
@@ -933,7 +777,6 @@ function M.setup()
   map('', '<c-u>', '<nop>')
   map('', '<c-d>', '<nop>')
   -- ordering of the matters for: i) overriding, ii) captures
-  map_command_lang()
   map_basic()
   require('bindings.textobjects').setup()
 end

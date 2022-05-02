@@ -7,6 +7,9 @@
 -- launch a task determined by the working directory (currently, only gatsby is supported)
 -- when tasks terminate, a notification is send and a shell session starts
 
+-- Job:pid()
+-- Job:shutdown()
+
 local M = {}
 
 local conf = {}

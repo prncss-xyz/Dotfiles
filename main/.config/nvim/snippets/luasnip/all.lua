@@ -162,4 +162,15 @@ table.insert(
   })
 )
 
+local sample = fmt([[
+bah
+  '{}'
+blop
+]], {i(1, 'toto')})
+
+table.insert(
+  M,
+  s('sample', sample)
+)
+
 return M

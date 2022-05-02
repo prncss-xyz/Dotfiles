@@ -1,11 +1,12 @@
 #!/bin/sh
 
 fifo=/tmp/fwin_switch
-if [ -z $fifo ]; then
-  mkfifo $fifo
+if [ -e $fifo ]; then
+	rm "$fifo"
 fi
+mkfifo $fifo
 echo list $fifo >/tmp/sway-mega-hotkeys
-id=$(fzf < $fifo|cut -f1)
+id=$(fzf <$fifo | cut -f1)
 if [ -n "$id" ]; then
-  swaymsg [con_id="$id"] focus
+	swaymsg [con_id="$id"] focus
 fi

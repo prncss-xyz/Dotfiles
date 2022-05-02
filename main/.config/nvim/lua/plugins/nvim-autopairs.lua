@@ -20,15 +20,11 @@ function M.config()
       map = '<m-e>',
       chars = { '{', '[', '(', '"', "'" },
       pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], '%s+', ''),
-      end_key = '$',
+      end_key = ';',
       keys = 'qwertyuiopzxcvbnmasdfghjkl',
       check_comma = true,
     },
   }
-  local Rule = require 'nvim-autopairs.rule'
-  local npairs = require 'nvim-autopairs'
-
-  npairs.add_rule(Rule('$$', '$$', 'lua'))
 end
 
 return M

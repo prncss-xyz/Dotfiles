@@ -1,6 +1,6 @@
 local M = {}
 
--- null_ls uses its own configuration file
+-- `null_ls` uses its own configuration file
 
 function M.setup()
   vim.fn.sign_define(
@@ -29,7 +29,7 @@ function M.config()
   -- Are also used by vim-illuminate.
   -- The defaults option (CursorLine) was quite unreadable.
   -- Actual settings cause issue when cursor it at the beginning or end.
-  -- vim.cmd 'highlight! link LspReferenceText String'
+  -- `vim.cmd 'highlight! link LspReferenceText String'`
   -- for Neon colorscheme:
   -- vim.cmd 'highlight! LspReferenceText guibg=#4db5bd guifg=#ecee7b'
   vim.cmd 'highlight! LspReferenceWrite guibg=#8ec07c guifg=#ecee7b'
@@ -171,7 +171,15 @@ function M.config()
     },
   }
 
-  -- I eats potatoes.
+  local language_id_mapping = {
+    bib = 'bibtex',
+    plaintex = 'tex',
+    rnoweb = 'sweave',
+    rst = 'restructuredtext',
+    tex = 'latex',
+    xhtml = 'xhtml',
+    sh = 'shellscript',
+  }
 
   require('lspconfig').ltex.setup {
     filetypes = {
@@ -184,6 +192,8 @@ function M.config()
       'rst',
       'rnoweb',
       'tex',
+      -- causes too many false positives
+      -- 'sh',
       'go',
       'javascript',
       'javascriptreact',
@@ -193,6 +203,38 @@ function M.config()
       'typescript',
       'typescriptreact',
       'NeogitCommitMessage',
+    },
+    get_langugage_id = function(_, filetype)
+      local language_id = language_id_mapping[filetype]
+      if language_id then
+        return language_id
+      else
+        return filetype
+      end
+    end,
+    settings = {
+      ltex = {
+        enabled = {
+          'shellscript',
+          'go',
+          'javascript',
+          'javascriptreact',
+          'lua',
+          'python',
+          'sql',
+          'typescript',
+          'typescriptreact',
+        },
+        language = 'en',
+        -- autodetection does not work well for source files and keyword heavy notes
+        -- language = 'auto',
+        additionalRules = {
+          motherTongue = {
+            'fr',
+          },
+        },
+        completionEnabled = true,
+      },
     },
   }
 

@@ -19,12 +19,42 @@ function M.lazy_req(module, fn_path, ...)
   end
 end
 
-local function t(str)
+function M.first_cb(...)
+  local args = { ... }
+  return function()
+    for _, cb in ipairs(args) do
+      local r = cb()
+      if r then
+        return r
+      end
+    end
+  end
+end
+
+function M.all_cb(...)
+  local args = { ... }
+  return function()
+    for _, cb in ipairs(args) do
+      cb()
+    end
+  end
+end
+
+function M.t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
 function M.keys(keys)
-  vim.api.nvim_feedkeys(t(keys), 'n', true)
+  vim.api.nvim_feedkeys(M.t(keys), 'n', true)
+end
+
+function M.normal(keys)
+  vim.cmd('normal! ' .. keys)
+end
+
+function M.plug(name)
+  local keys = '<Plug>' .. name
+  vim.api.nvim_feedkeys(M.t(keys), 'm', true)
 end
 
 return M

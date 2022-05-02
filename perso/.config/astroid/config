@@ -94,7 +94,7 @@
         "tagbar_move": "tag"
     },
     "editor": {
-        "cmd": "kitty -e nvim %1",
+        "cmd": "footclient -e nvim %1",
         "external_editor": "true",
         "charset": "utf-8",
         "save_draft_on_force_quit": "true",

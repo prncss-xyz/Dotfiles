@@ -1,7 +1,17 @@
 local M = {}
 
+local function tmp(_)
+  local function tmp1(_)
+    local function tmp2(_)
+      print('a')
+    end
+  end
+end
+
+
 function M.config()
   local ts = require('flies.objects.treesitter').new
+  local tsto = require('flies.objects.treesitter-to').new
   local buf = require('flies.objects.buffer').new()
   local queries = {
     A = ts 'parameter',
@@ -11,6 +21,7 @@ function M.config()
     -- d:
     e = buf,
     f = ts 'function',
+    F = tsto 'function',
     -- g:
     -- h: qualifier
     i = ts 'conditional',
@@ -28,15 +39,13 @@ function M.config()
     T = ts 'tag',
     -- Q = ts 'string',
     q = require('flies.objects.subline').string('"', "'", '`'),
-    -- u: node; see also: David-Kunz/treesitter-unit(
-    --
-    -- )
-    v = require('flies.objects.subline').variable_segment,
-    w = require('flies.objects.subline').word,
+    -- u: node; see also: David-Kunz/treesitter-unit
+    v = require('flies.objects.subline').variable_segment(),
+    w = require('flies.objects.subline').word(),
     x = ts 'class',
     y = ts 'loop',
     -- z:
-    [' '] = require('flies.objects.subline').bigword,
+    [' '] = require('flies.objects.subline').bigword(),
     ['<tab>'] = require('flies.objects.indent').new(),
     ['<cr>'] = require('flies.objects.line').new(),
     ['é'] = require('flies.objects.search').new(),
@@ -51,8 +60,7 @@ function M.config()
   }
   -- targets: separator is multiline
   for c in string.gmatch('.;:+-=~_*#/|\\&$', '.') do
-    -- for c in string.gmatch(',.;:+-=~_*#/|\\&$', '.') do
-    queries[c] = require('flies.objects.subline').separator.new(c)
+    queries[c] = require('flies.objects.subline').separator(c)
   end
 
   require('flies').setup {

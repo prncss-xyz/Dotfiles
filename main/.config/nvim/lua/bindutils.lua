@@ -173,7 +173,10 @@ function M.lsp_format()
   end
 end
 
-local recompose = require('flies.move_again').recompose
+-- local recompose = require('flies.move_again').recompose
+local recompose = function(a, b)
+	return a,b
+end
 
 M.scroll_up, M.scroll_down = recompose(function()
   require('neoscroll').scroll(-0.9, true, 250)

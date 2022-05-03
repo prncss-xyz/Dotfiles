@@ -1,6 +1,6 @@
 require 'modules.edit_snippets'
 
-require('modules.templates').setup {}
+-- require('modules.templates').setup {}
 require('modules.setup-session').setup {
   browser = require('modules.browser').open,
 }

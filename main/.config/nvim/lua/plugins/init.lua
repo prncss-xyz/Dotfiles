@@ -71,6 +71,14 @@ return require('packer').startup {
       'nvim-treesitter/nvim-treesitter-textobjects',
       module = 'nvim-treesitter.textobjects',
     }
+    use {
+      local_repo 'flies.nvim',
+      config = config 'flies',
+      wants = 'nvim-treesitter-textobjects',
+      module = 'flies',
+      module_pattern = 'flies.*',
+      event = 'BufReadPost',
+    }
     use { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' }
     use { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } }
     -- Use tressitter to autoclose and autorename html tag
@@ -124,9 +132,6 @@ return require('packer').startup {
 
     -- DAP
     use {
-      'nvim-telescope/telescope-dap.nvim',
-    }
-    use {
       'mfussenegger/nvim-dap',
       module = 'dap',
       config = function()
@@ -141,7 +146,7 @@ return require('packer').startup {
         require('dapui').setup()
       end,
     }
-    use 'jbyuki/one-small-step-for-vimkind'
+    use { 'jbyuki/one-small-step-for-vimkind', module = 'osv' }
     use {
       'vim-test/vim-test',
       cmd = {
@@ -274,7 +279,6 @@ return require('packer').startup {
       -- after = 'nvim-cmp',
       config = config 'nvim-autopairs',
       event = 'InsertEnter',
-      disable = true,
     }
     use {
       'L3MON4D3/LuaSnip',
@@ -354,6 +358,8 @@ return require('packer').startup {
     use {
       'stevearc/dressing.nvim',
       config = default_config 'dressing',
+      event = 'BufReadPost',
+      -- module = vim.ui,
     }
     use {
       'folke/trouble.nvim',
@@ -452,6 +458,7 @@ return require('packer').startup {
           calm_down = true,
         }
       end,
+      module = 'hlslens',
     }
     use {
       'haya14busa/vim-asterisk',
@@ -535,6 +542,10 @@ return require('packer').startup {
       module = 'telescope._extensions.luasnip',
     }
     use {
+      'nvim-telescope/telescope-dap.nvim',
+      module = 'telescope._extensions.dap',
+    }
+    use {
       local_repo 'nononotes-nvim',
       config = function()
         require('plugins.nononotes').setup()
@@ -552,7 +563,7 @@ return require('packer').startup {
         'LegendaryScratch',
         'LegendaryEvalLine',
         'LegendaryEvalLines',
-        'LegendaryEvalBuf'
+        'LegendaryEvalBuf',
       },
     }
     use {
@@ -580,14 +591,6 @@ return require('packer').startup {
       config = config 'binder',
     }
     -- Clipboard
-    use {
-      'kevinhwang91/nvim-hclipboard',
-      event = 'InsertEnter',
-      config = function()
-        require('plugins.hclipboard').config()
-      end,
-      disable = true,
-    }
     use {
       'bfredl/nvim-miniyank',
       disable = true,
@@ -663,14 +666,6 @@ return require('packer').startup {
       setup = setup 'targets',
     }
     use {
-      local_repo 'flies.nvim',
-      config = config 'flies',
-      opt = true,
-      module = 'flies',
-      module_pattern = 'flies.*',
-      event = 'BufReadPost',
-    }
-    use {
       local_repo 'buffet.nvim',
       opt = true,
       module = 'buffer',
@@ -685,13 +680,15 @@ return require('packer').startup {
         require('nvim-projectconfig').load_project_config {
           project_dir = local_repo 'projects-config/',
         }
-        -- require('utils').augroup('NvimProjectConfig', {
-        --   {
-        --     events = { 'DirChanged' },
-        --     targets = { '*' },
-        --     cmd = require('nvim-projectconfig').load_project_config,
-        --   },
-        -- })
+        if false then
+          require('utils').augroup('NvimProjectConfig', {
+            {
+              events = { 'DirChanged' },
+              targets = { '*' },
+              cmd = require('nvim-projectconfig').load_project_config,
+            },
+          })
+        end
       end,
     }
     use {
@@ -710,7 +707,15 @@ return require('packer').startup {
     use {
       'ahmedkhalf/project.nvim',
       config = default_config 'project_nvim',
+      event = 'BufReadPost',
     }
+    use {
+      'ThePrimeagen/harpoon',
+      module = { 'harpoon', '._extensions.marks' },
+      module_pattern = 'harpoon.*',
+      config = config 'harpoon',
+    }
+    use { 'ton/vim-bufsurf' } -- uses autocommands in a way that is incompatible to lazy loading
 
     -- Theming
     use { 'mvllow/modes.nvim', config = default_config 'modes', disable = true }

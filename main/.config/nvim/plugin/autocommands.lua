@@ -50,8 +50,7 @@ for _, event in ipairs {
     pattern = '*',
     group = group,
     callback = function()
-      vim.cmd 'rshada'
-      vim.cmd 'wshada'
+      vim.cmd 'rshada|wshada'
     end,
   })
 end
@@ -133,13 +132,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
       else
         return
       end
-      if false then
-        pcall(
-          require('modules.toggler').open,
-          require('modules.blank_pane').open,
-          require('modules.blank_pane').close
-        )
-      end
+      fetch_git_branch_plenary()
       local filename = vim.fn.expand '%'
       if string.find(filename, 'tmp%..+%.fish') then
         fish_pet()
@@ -149,9 +142,11 @@ vim.api.nvim_create_autocmd('VimEnter', {
           require('telescope').extensions.my_projects.my_projects {}
         end)
       else
-        require('bindutils').project_files()
+        require('bufjump').backward()
+        -- vim.cmd 'BufSurfBack'
+        -- require('harpoon.ui').nav_file(1)
+        -- require('plugins.binder.actions').project_files()
       end
-      fetch_git_branch_plenary()
       -- TODO: force statusline refresh
     end)
   end,

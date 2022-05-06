@@ -1,5 +1,13 @@
 local M = {}
 
+local function f1()
+  print 'A'
+end
+
+local function f2()
+  print 'b'
+end
+
 local function map_ist()
   local binder = require 'binder'
   local keys = binder.keys
@@ -102,6 +110,21 @@ function M.config()
   binder.extend(
     'basic',
     keys {
+      C = b { '<nop>', modes = 'nx' },
+      -- c = b { '"_c', modes = 'nx' },
+      c = modes {
+        n = b { lazy_req('flies.actions', 'op_insert', '"_c', 'inner', true) },
+        x = b { '"_c' },
+      },
+      -- cc = b { '"_cc', modes = 'n' },
+      cc = b { '<nop>', modes = 'n' },
+      D = b { '<nop>', modes = 'nx' },
+      d = modes {
+        n = b { lazy_req('flies.actions', 'op', '"_d', 'outer', true) },
+        x = b { '"_d' },
+      },
+      dd = b { '<nop>', modes = 'n' },
+      -- dd = b { '"_dd', modes = 'n' },
       rr = b { '"+', modes = 'nx' },
       r = b { '"', modes = 'nx' },
       ['<space>'] = b {
@@ -305,7 +328,6 @@ function M.config()
     'xmap',
     'omap',
     'lua=',
-    'help',
   } do
     require('legendary').bind_keymap { string.format(':%s ', v) }
   end
@@ -323,6 +345,14 @@ function M.config()
     'LspInfo',
     'Neogit',
     'reg',
+    'lua require"telescope.builtin".help_tags()',
+    'lua require"telescope.builtin".search_history()',
+    'lua require"telescope.builtin".jumplist()',
+    'lua require"telescope.builtin".marks()',
+    'lua require"telescope.builtin".man_pages()',
+    'lua require"telescope.builtin".highlights()',
+    'lua require"telescope.builtin".symbols{"emoji", "gitmoji", "math", "nerd"}',
+    'lua require"telescope.builtin".register()',
   } do
     require('legendary').bind_keymap { string.format(':%s<cr>', v) }
   end

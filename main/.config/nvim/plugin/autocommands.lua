@@ -1,8 +1,7 @@
--- Makes terminal aware of current directory
--- if nut running from a GUI
-
 local group = vim.api.nvim_create_augroup('My', {})
 
+-- Makes terminal aware of current directory
+-- if not running from a GUI
 if vim.fn.has 'gui' == 0 then
   vim.api.nvim_create_autocmd('DirChanged', {
     desc = 'update cwd in terminal',
@@ -16,7 +15,7 @@ if vim.fn.has 'gui' == 0 then
 end
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'gitcommit', 'gitrebase', 'gitconfig' },
+  pattern = { 'gitcommit', 'gitrebase', 'gitconfig', 'NeogitCommitMessage' },
   group = group,
   callback = function()
     vim.bo.bufhidden = 'delete'
@@ -29,7 +28,7 @@ for _, event in ipairs { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' } do
     group = group,
     callback = function()
       if vim.bo.buftype == '' then
-        vim.cmd 'update'
+        vim.cmd 'silent update'
       end
     end,
   })
@@ -138,9 +137,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         fish_pet()
       elseif #vim.fn.argv() > 0 then
       elseif vim.fn.getcwd() == os.getenv 'HOME' then
-        vim.schedule(function()
-          require('telescope').extensions.my_projects.my_projects {}
-        end)
+        require('telescope').extensions.my_projects.my_projects {}
       else
         require('bufjump').backward()
         -- vim.cmd 'BufSurfBack'

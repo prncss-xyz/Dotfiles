@@ -95,12 +95,6 @@ local function map_basic()
     A = 'A',
     a = 'a',
     b = plug { '%', 'matchparen', modes = 'nxo' },
-    C = { '<nop>', modes = 'nx' },
-    c = { '"_c', modes = 'nx' },
-    cc = { '"_cc', modes = 'n' },
-    D = { '<nop>', modes = 'nx' },
-    d = { '"_d', modes = 'nx' },
-    dd = { '"_dd', modes = 'n' },
     E = {
       modes = {
         n = 'W',
@@ -119,9 +113,9 @@ local function map_basic()
     -- f = { require('flies').meta_move, mode = true, modes = 'nx' },
     f = {
       modes = {
-        n = lazy_req('flies.moves', 'meta_move', 'n'),
-        o = lazy_req('flies.moves', 'meta_move', 'o'),
-        x = lazy_req('flies.moves', 'meta_move', 'x'),
+        n = lazy_req('flies.actions', 'meta_move', 'n'),
+        o = lazy_req('flies.actions', 'meta_move', 'o'),
+        x = lazy_req('flies.actions', 'meta_move', 'x'),
       },
     },
     I = 'I',
@@ -144,7 +138,7 @@ local function map_basic()
         end,
       },
     },
-    t = lazy_req('flies.moves', 'append_insert'),
+    t = lazy_req('flies.actions', 'append_insert'),
     ou = 'U',
     u = 'u',
     V = { '<c-v>', modes = 'nxo' },
@@ -466,20 +460,6 @@ local function map_basic()
         },
       },
       b = { 'gi', 'last insert point' },
-      d = plug '(u-flies-operator-swap)', -- FIXME:
-      he = cmd 'ISwapWith',
-      [p 'e'] = {
-        function()
-          require('nvim-treesitter.textobjects.swap').swap_previous '@swappable'
-        end,
-        'swap',
-      },
-      e = {
-        function()
-          require('nvim-treesitter.textobjects.swap').swap_next '@swappable'
-        end,
-        'swap',
-      },
       [p 'g'] = cmd 'SplitjoinJoin',
       g = cmd 'SplitjoinSplit',
       m = { 'J', 'join', modes = 'nx' },
@@ -538,19 +518,6 @@ local function map_basic()
         'symbols',
         modes = 'n',
       },
-      [p 'x'] = plug {
-        '(ExchangeClear)',
-        modes = 'nx',
-      },
-      x = {
-        name = 'exchange',
-        modes = {
-          x = plug '(Exchange)',
-          n = plug '(Exchange)',
-        },
-      },
-      [p 'y'] = plug { '(buffet-operator-delete)', modes = 'nx' },
-      y = plug { '(buffet-operator-add)', modes = 'nx' },
       [p '<tab>'] = { '<<', 'dedent', modes = 'nx' },
       ['<tab>'] = { '>>', 'indent', modes = 'nx' },
       -- https://vi.stackexchange.com/questions/3875/how-to-insert-a-newline-without-leaving-normal-mode
@@ -589,34 +556,6 @@ local function map_basic()
             n = plug '(comment_toggle_linewise)',
             x = plug '(comment_toggle_linewise_visual)',
           },
-        },
-      },
-      [d.left] = {
-        name = 'move left',
-        modes = {
-          n = replug 'MoveCharLeft',
-          x = replug 'MoveBlockLeft',
-        },
-      },
-      [d.right] = {
-        name = 'move right',
-        modes = {
-          n = replug 'MoveCharRight',
-          x = replug 'MoveBlockRight',
-        },
-      },
-      [d.up] = {
-        name = 'move up',
-        modes = {
-          n = replug 'MoveLineUp',
-          x = replug 'MoveBlockUp',
-        },
-      },
-      [d.down] = {
-        name = 'move down',
-        modes = {
-          n = replug 'MoveLineDown',
-          x = replug 'MoveBlockDown',
         },
       },
       [d.prev_search] = plug { '(dial-increment-additional)', modes = 'x' },

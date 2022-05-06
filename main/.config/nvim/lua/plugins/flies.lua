@@ -1,22 +1,18 @@
 local M = {}
 
-local function tmp(_)
-  local function tmp1(_)
-    local function tmp2(_)
-      print('a')
-    end
-  end
-end
-
-
 function M.config()
   local ts = require('flies.objects.treesitter').new
   local buf = require('flies.objects.buffer').new()
   local queries = {
-    A = ts 'parameter',
-    a = ts 'swappable',
-    -- b: brackets (targets)
-    c = ts 'komment',
+    A = ts { 'parameter', blank_text_object = true },
+    a = ts { 'swappable', blank_text_object = true },
+    b = require('flies.objects.pair').new {
+      { '(', ')' },
+      { '[', ']' },
+      { '{', '}' },
+    },
+    c = ts '@comment.outer',
+    -- c = ts 'comment',
     -- d:
     e = buf,
     f = ts 'function',
@@ -28,7 +24,7 @@ function M.config()
     l = ts 'token',
     -- m:
     -- n: qualifier
-    -- o: xmode ...
+    -- o:
     -- p: qualifier
     -- q: quotes (targets)
     -- r:
@@ -45,16 +41,11 @@ function M.config()
     -- z:
     [' '] = require('flies.objects.subline').bigword(),
     ['<tab>'] = require('flies.objects.indent').new(),
-    ['<cr>'] = require('flies.objects.line').new(),
+    ['<cr>'] = require('flies.objects.subline').line(),
     ['é'] = require('flies.objects.search').new(),
     ['"'] = require('flies.objects.subline').string '"',
     ["'"] = require('flies.objects.subline').string "'",
     ['`'] = require('flies.objects.subline').string '`',
-    b = require('flies.objects.pair').new {
-      { '(', ')' },
-      { '[', ']' },
-      { '{', '}' },
-    },
   }
   -- targets: separator is multiline
   for c in string.gmatch('.;:+-=~_*#/|\\&$', '.') do
@@ -69,5 +60,3 @@ function M.config()
 end
 
 return M
-
--- TODO: what is treesitter-unit outer/inner

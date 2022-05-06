@@ -40,8 +40,6 @@ function M.config()
       { name = 'nvim_lsp' },
       { name = 'path' },
       { name = 'buffer' },
-      { name = 'emoji' },
-      { name = 'greek' },
     },
   }
 

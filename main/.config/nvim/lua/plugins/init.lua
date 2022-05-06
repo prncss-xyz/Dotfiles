@@ -105,11 +105,6 @@ return require('packer').startup {
       config = config 'nvim-gps',
       module = 'nvim-gps',
     }
-    use {
-      'mizlan/iswap.nvim',
-      cmd = { 'ISwap', 'ISwapWith' },
-      config = default_config 'iswap',
-    }
     use { 'mfussenegger/nvim-treehopper', module = 'tsht' }
 
     -- syntax
@@ -248,17 +243,12 @@ return require('packer').startup {
         require('plugins.cmp').config()
       end,
     }
-    use { 'tzachar/fuzzy.nvim', module = 'fuzzy', disable = true }
-    use { 'tzachar/cmp-fuzzy-buffer', after = 'nvim-cmp', disable = true }
-    use { 'tzachar/cmp-fuzzy-path', after = 'nvim-cmp', disable = true }
     use { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' }
     use {
       'hrsh7th/cmp-path',
       module = 'cmp-path',
       after = 'nvim-cmp',
     }
-    use { 'lukas-reineke/cmp-rg', after = 'nvim-cmp' }
-    use { 'f3fora/cmp-spell', after = 'nvim-cmp' }
     use { 'hrsh7th/cmp-nvim-lua', after = 'nvim-cmp' }
     use { 'saadparwaiz1/cmp_luasnip', after = 'nvim-cmp' }
     use {
@@ -268,11 +258,10 @@ return require('packer').startup {
         'nvim-lua/plenary.nvim',
       },
     }
-    use { 'max397574/cmp-greek', after = 'nvim-cmp' }
-    use { 'hrsh7th/cmp-emoji', after = 'nvim-cmp' }
     use { 'mtoohey31/cmp-fish', ft = 'fish' }
     use { 'hrsh7th/cmp-cmdline', after = 'nvim-cmp' }
     use { 'dmitmel/cmp-cmdline-history', after = 'nvim-cmp' }
+    use { 'davidsierradz/cmp-conventionalcommits', after = 'nvim-cmp' }
     -- insert or delete brackets, parentheses, quotes in pair
     use {
       'windwp/nvim-autopairs',
@@ -514,10 +503,6 @@ return require('packer').startup {
       cmd = 'Telescope',
     }
     use {
-      'nvim-telescope/telescope-symbols.nvim',
-      module = 'telescope._extensions.symbols',
-    }
-    use {
       'nvim-telescope/telescope-node-modules.nvim',
       module = 'telescope._extensions.node_modules',
       -- config = function()
@@ -552,6 +537,8 @@ return require('packer').startup {
       end,
       -- ft = 'markdown',
     }
+    -- data files, no need for lazy loading
+    use { 'nvim-telescope/telescope-symbols.nvim' }
 
     -- bindings
     use {
@@ -616,13 +603,6 @@ return require('packer').startup {
       event = 'BufReadPost',
       setup = function()
         vim.g.casechange_nomap = 1
-      end,
-    }
-    use {
-      'matze/vim-move',
-      event = 'BufReadPost',
-      setup = function()
-        vim.g.move_map_keys = 0
       end,
     }
     use {

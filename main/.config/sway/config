@@ -73,7 +73,7 @@ input type:keyboard {
 input "1133:45890:Keyboard_K380_Keyboard" {
   xkb_layout "ca"
   xkb_variant multi 
-  xkb_options caps:scape
+  xkb_options caps:escape 
 }
 
 # } # bluetooth

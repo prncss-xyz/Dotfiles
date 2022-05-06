@@ -11,7 +11,6 @@ end
 
 function M.config()
   local ts = require('flies.objects.treesitter').new
-  local tsto = require('flies.objects.treesitter-to').new
   local buf = require('flies.objects.buffer').new()
   local queries = {
     A = ts 'parameter',
@@ -21,7 +20,6 @@ function M.config()
     -- d:
     e = buf,
     f = ts 'function',
-    F = tsto 'function',
     -- g:
     -- h: qualifier
     i = ts 'conditional',

@@ -1,13 +1,5 @@
 local M = {}
 
-local function f1()
-  print 'A'
-end
-
-local function f2()
-  print 'b'
-end
-
 local function map_ist()
   local binder = require 'binder'
   local keys = binder.keys
@@ -96,15 +88,13 @@ function M.config()
         desc = 'peek',
         register = 'peek',
       },
+      t = keys {
+        desc = 'quickfix',
+        register = 'quickfix',
+      },
     },
     z = keys {
       register = 'bigmove',
-    },
-  })
-  binder.bind(keys {
-    q = keys {
-      desc = 'quickfix',
-      register = 'quickfix',
     },
   })
   binder.extend(
@@ -222,29 +212,24 @@ function M.config()
         vim.cmd 'Trouble quickfix'
       end, 'TroubleClose'),
     },
-    binder.with_labels('symbol', 's', {
-      editor = b {
-        desc = 'outliner',
-        require('modules.toggler').cb(
-          'SymbolsOutlineOpen',
-          'SymbolsOutlineClose'
-        ),
-      },
-      quickfix = keys {
-        prev = b {
-          desc = 'lsp references',
-          require('modules.toggler').cb(
-            'TroubleToggle references',
-            'TroubleClose'
-          ),
-        },
-      },
-      bigmove = b { lazy_req('telescope.builtin', 'lsp_definitions') },
-      extra = b {
-        desc = 'show line',
-        lazy('vim.diagnostic.open_float', nil, { source = 'always' }),
-      },
-    }),
+  })
+  binder.with_labels('symbol', 's', {
+    editor = b {
+      desc = 'outliner',
+      require('modules.toggler').cb(
+        'SymbolsOutlineOpen',
+        'SymbolsOutlineClose'
+      ),
+    },
+    quickfix = b {
+      desc = 'lsp references',
+      require('modules.toggler').cb('Trouble lps_references', 'TroubleClose'),
+    },
+    bigmove = b { lazy_req('telescope.builtin', 'lsp_definitions') },
+    extra = b {
+      desc = 'show line',
+      lazy('vim.diagnostic.open_float', nil, { source = 'always' }),
+    },
   })
   binder.with_labels('diagnostic', 'd', {
     editor = keys {

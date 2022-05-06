@@ -67,7 +67,7 @@ function M.extend()
       require('modules.setup-session').develop,
     },
     r = b { 'reload', '<cmd>update<cr><cmd>so %<cr>' },
-    t = b { desc = 'new terminal', require('bindutils').term },
+    -- t = b { desc = 'new terminal', require('bindutils').term },
     v = keys {
       prev = b {
         desc = 'projects',

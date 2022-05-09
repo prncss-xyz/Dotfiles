@@ -49,24 +49,28 @@ function M.extend()
     f = keys {
       prev = b {
         desc = 'file (recursive)',
-        lazy_req('telescope.builtin', 'file_browser'),
-        {
-          cwd = vim.fn.expand '%:p:h',
-          depth = 10,
-        },
+        function()
+          require('telescope').extensions.file_browser.file_browser {
+            cwd = vim.fn.expand '%:p:h',
+            depth = 10,
+          }
+        end,
       },
       next = b {
         desc = 'file (current)',
-        lazy_req('telescope.builtin', 'file_browser'),
-        {
-          cwd = vim.fn.expand '%:p:h',
-        },
+        function()
+          dump(require('telescope').extensions.file_browser)
+          require('telescope').extensions.file_browser.file_browser {
+            cwd = vim.fn.expand '%:p:h',
+            depth = 1,
+          }
+        end,
       },
     },
     n = keys {
       desc = 'bufsurf',
-      prev = b {desc = 'next', 'BufSurfForward', cmd = true},
-      next = b {desc = 'previous', 'BufSurfBack', cmd = true},
+      prev = b { desc = 'next', 'BufSurfForward', cmd = true },
+      next = b { desc = 'previous', 'BufSurfBack', cmd = true },
     },
     o = b {
       desc = 'oldfiles',

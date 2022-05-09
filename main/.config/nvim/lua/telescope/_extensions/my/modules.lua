@@ -1,4 +1,3 @@
-local telescope = require 'telescope'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
@@ -16,7 +15,7 @@ local conf = require('telescope.config').values
 --   }
 -- end,
 
-local function modules(opts)
+return function (opts)
   opts = opts or {}
   local prompt_title
   local finder
@@ -65,7 +64,3 @@ local function modules(opts)
     end,
   }):find()
 end
-
-return telescope.register_extension {
-  exports = { modules = modules },
-}

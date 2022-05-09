@@ -22,6 +22,7 @@ function M.config()
     j = ts 'block',
     k = ts 'call',
     l = ts 'token',
+    m = require('flies.objects.moeity').new(),
     -- m:
     -- n: qualifier
     -- o:
@@ -39,7 +40,7 @@ function M.config()
     x = ts 'class',
     y = ts 'loop',
     -- z:
-    [' '] = require('flies.objects.subline').bigword(),
+    ['<space>'] = require('flies.objects.subline').bigword(),
     ['<tab>'] = require('flies.objects.indent').new(),
     ['<cr>'] = require('flies.objects.subline').line(),
     ['é'] = require('flies.objects.search').new(),

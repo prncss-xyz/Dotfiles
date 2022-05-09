@@ -2,7 +2,7 @@ local M = {}
 
 -- https://github.com/neovim/neovim/blob/af82eab946cf9f36e544b0591b8c8c02e8ddf316/runtime/lua/vim/filetype.lua
 
-local templates
+local templates = {}
 
 local function load_templates()
   local snips = require 'plugins.luasnip.templates'

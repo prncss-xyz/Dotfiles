@@ -4,11 +4,6 @@ local M = {}
 local invert = require('utils').invert
 
 local utils = require 'utils'
-local feed_plug_cb = utils.feed_plug_cb
-local feed_vim_cb = utils.feed_vim_cb
-local first_cb = utils.first_cb
-local all_cb = utils.all_cb
-local lazy = utils.lazy
 local lazy_req = utils.lazy_req
 
 local function alt(key)
@@ -92,82 +87,6 @@ local function map_basic()
     },
   }
   reg {
-    A = 'A',
-    a = 'a',
-    b = plug { '%', 'matchparen', modes = 'nxo' },
-    E = {
-      modes = {
-        n = 'W',
-        xo = 'E',
-      },
-    },
-    -- e = { 'w', 'next word ', modes = 'nxo' },
-    e = {
-      modes = {
-        n = 'w',
-        xo = 'e',
-        -- n = plug { 'CamelCaseMotion_w', 'next subword ' },
-        -- xo = plug { 'CamelCaseMotion_e', 'next subword ' },
-      },
-    },
-    -- f = { require('flies').meta_move, mode = true, modes = 'nx' },
-    f = {
-      modes = {
-        n = lazy_req('flies.actions', 'meta_move', 'n'),
-        o = lazy_req('flies.actions', 'meta_move', 'o'),
-        x = lazy_req('flies.actions', 'meta_move', 'x'),
-      },
-    },
-    I = 'I',
-    i = 'i',
-    p = {
-      lazy_req('flies.move_again', 'previous'),
-    },
-    n = lazy_req('flies.move_again', 'next'),
-    O = { '<nop>', modes = 'nx' },
-    o = { '<nop>', modes = 'nx' },
-    s = {
-      modes = {
-        nx = function()
-          require('bindutils').hop12()
-        end,
-        o = function()
-          require('hop').hint_char2 {
-            char2_fallback_key = '<cr>',
-          }
-        end,
-      },
-    },
-    t = lazy_req('flies.actions', 'append_insert'),
-    ou = 'U',
-    u = 'u',
-    V = { '<c-v>', modes = 'nxo' },
-    v = { modes = {
-      x = 'V',
-      n = 'v',
-    } },
-    W = '<nop>',
-    -- W = { 'B', 'previous word', modes = 'nxo' },
-    -- w = { 'b', 'next word', modes = 'nxo' },
-    -- w = plug { 'CamelCaseMotion_b', 'previous subword ', modes = 'nxo' },
-    w = { 'b', 'previous word ', modes = 'nxo' },
-    X = { 'd$', modes = 'nx' },
-    x = { 'd', modes = 'nx' },
-    xx = 'dd',
-    yy = { 'yy', modes = 'n' },
-    -- y = { function ()
-    --   require 'bindutils'.static_yank('y')
-    -- end  , modes = 'nx' },
-    y = { 'y', modes = 'nx' },
-    -- ['É'] = { '?', modes = 'nxo' },
-    -- ['é'] = { '/', modes = 'nxo' },
-    ['.'] = '.',
-    ['!'] = { '!', modes = 'nx' },
-    ['!!'] = { '!!', modes = 'nx' },
-    ['='] = { '=', modes = 'nx' },
-    ['=='] = { '==', modes = 'nx' },
-    ['"'] = '"',
-    ['<space>'] = { ':', modes = 'nx' },
     [','] = {
       name = 'hint',
       modes = {

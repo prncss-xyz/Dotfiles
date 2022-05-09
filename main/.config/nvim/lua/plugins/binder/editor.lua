@@ -56,8 +56,14 @@ function M.extend()
       prev = b { desc = 'signature help', vim.lsp.buf.signature_help },
       next = b { desc = 'hover', vim.lsp.buf.hover },
     },
-    m = b { desc = 'plugins', 'Telescope installed_plugins', cmd = true },
-    n = b { desc = 'node modules', 'Telescope modules', cmd = true },
+    m = b {
+      desc = 'plugins',
+      lazy_req('telescope', 'extensions.my.installed_plugins'),
+    },
+    n = b {
+      desc = 'node modules',
+      lazy_req('telescope', 'extensions.my.node_modules'),
+    },
     o = b {
       desc = 'open current external',
       require('bindutils').open_current,
@@ -70,11 +76,13 @@ function M.extend()
     -- t = b { desc = 'new terminal', require('bindutils').term },
     v = keys {
       prev = b {
-        desc = 'projects',
-        'Telescope project_directory',
-        cmd = true,
+        desc = 'projects (directory)',
+        lazy_req('telescope', 'extensions.my.project_directory'),
       },
-      next = b { desc = 'sessions', 'Telescope my_projects', cmd = true },
+      next = b {
+        desc = 'projects',
+        lazy_req('telescope', 'extensions.my.projects'),
+      },
     },
     x = b { desc = 'xplr', require('bindutils').xplr_launch },
     y = b {
@@ -85,7 +93,10 @@ function M.extend()
       desc = 'zen mode',
       require('modules.toggler').cb('ZenMode', 'ZenMode'),
     },
-    ['<space>'] = b { desc = 'commands', 'Telescope commands', cmd = true },
+    ['<space>'] = b {
+      desc = 'commands',
+      lazy_req('telescope.builtin', 'commands'),
+    },
   }
 end
 

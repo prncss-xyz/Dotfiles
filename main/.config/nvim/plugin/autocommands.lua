@@ -27,7 +27,8 @@ for _, event in ipairs { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' } do
     pattern = '*',
     group = group,
     callback = function()
-      if vim.bo.buftype == '' then
+      -- if vim.bo.buftype == '' then
+      if vim.fn.expand('%:p') ~= '' then
         vim.cmd 'silent update'
       end
     end,
@@ -139,7 +140,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
       elseif vim.fn.getcwd() == os.getenv 'HOME' then
         require('telescope').extensions.my_projects.my_projects {}
       else
-        require('bufjump').backward()
+        -- require('bufjump').backward()
         -- vim.cmd 'BufSurfBack'
         -- require('harpoon.ui').nav_file(1)
         -- require('plugins.binder.actions').project_files()

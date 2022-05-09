@@ -1,25 +1,14 @@
-local telescope = require 'telescope'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
 local state = require 'telescope.actions.state'
-local Job = require 'plenary'.job
 local conf = require('telescope.config').values
-
-local function open(path)
-  Job
-    :new({
-      command = 'xdg-open',
-      args = { path },
-    })
-    :start()
-end
 
 local function edit(path)
   vim.cmd('edit ' .. path)
 end
 
-local function md_help(opts)
+return function (opts)
   opts = opts or {}
   local dir
   local cwd = vim.fn.getcwd()
@@ -54,4 +43,3 @@ local function md_help(opts)
   }):find()
 end
 
-return telescope.register_extension { exports = { md_help = md_help } }

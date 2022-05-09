@@ -531,6 +531,10 @@ return require('packer').startup {
       module = 'telescope._extensions.dap',
     }
     use {
+      'nvim-telescope/telescope-file-browser.nvim',
+      module = 'telescope._extensions.file_browser',
+    }
+    use {
       local_repo 'nononotes-nvim',
       config = function()
         require('plugins.nononotes').setup()
@@ -574,7 +578,7 @@ return require('packer').startup {
     }
     use {
       local_repo 'binder.nvim',
-      event = 'BufReadPost',
+      event = 'VimEnter',
       config = config 'binder',
     }
     -- Clipboard

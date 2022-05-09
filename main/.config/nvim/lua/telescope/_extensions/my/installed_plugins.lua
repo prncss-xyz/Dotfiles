@@ -8,7 +8,7 @@ local actions_set = require 'telescope.actions.set'
 local actions_state = require 'telescope.actions.state'
 local conf = require('telescope.config').values
 
-local function installed_plugins(opts)
+return function (opts)
   opts = opts or {}
   local cwd = os.getenv 'HOME' .. '/.local/share/nvim/site/pack/' -- TODO: query that dir
   pickers.new({
@@ -32,7 +32,3 @@ local function installed_plugins(opts)
     end,
   }):find()
 end
-
-return telescope.register_extension {
-  exports = { installed_plugins = installed_plugins },
-}

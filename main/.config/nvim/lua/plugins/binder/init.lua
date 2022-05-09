@@ -60,7 +60,7 @@ function M.config()
   binder.setup {
     dual_key = require('binder/util').prepend 'p',
     bind_keymap = require('binder/util').bind_keymap_legendary,
-    prefix = 'plugins.',
+    prefix = 'plugins.binder.',
   }
   local keys = binder.keys
   local b = binder.b
@@ -97,36 +97,7 @@ function M.config()
       register = 'bigmove',
     },
   })
-  binder.extend(
-    'basic',
-    keys {
-      C = b { '<nop>', modes = 'nx' },
-      -- c = b { '"_c', modes = 'nx' },
-      c = modes {
-        n = b { lazy_req('flies.actions', 'op_insert', '"_c', 'inner', true) },
-        x = b { '"_c' },
-      },
-      -- cc = b { '"_cc', modes = 'n' },
-      cc = b { '<nop>', modes = 'n' },
-      D = b { '<nop>', modes = 'nx' },
-      d = modes {
-        n = b { lazy_req('flies.actions', 'op', '"_d', 'outer', true) },
-        x = b { '"_d' },
-      },
-      dd = b { '<nop>', modes = 'n' },
-      -- dd = b { '"_dd', modes = 'n' },
-      rr = b { '"+', modes = 'nx' },
-      r = b { '"', modes = 'nx' },
-      ['<space>'] = b {
-        desc = 'legendary find',
-        lazy_req('legendary', 'find'),
-      },
-      ['<c-n>'] = b { lazy_req('bufjump', 'forward') },
-      ['<c-o>'] = b { '<c-o>' },
-      ['<c-p>'] = b { lazy_req('bufjump', 'backward') },
-      ['<c-q>'] = b { '<cmd>qall!<cr>', 'quit' },
-    }
-  )
+
   binder.extend(
     'peek',
     keys {
@@ -283,10 +254,6 @@ function M.config()
     },
   })
   if false then
-    print(
-      b { lazy_req('telescope.builtin', 'lsp_references') },
-      b { lazy_req('telescope.builtin', 'lsp_workspace_symbols') }
-    )
     binder.with_labels('dap', 'b', {
       editor = b {
         desc = 'ui',
@@ -294,11 +261,6 @@ function M.config()
           lazy_req('dapui', 'open'),
           lazy_req('dapui', 'close')
         ),
-      },
-    })
-    binder.with_labels('todo', 'w', {
-      quickfix = b {
-        require('modules.toggler').cb('TodoTrouble', 'TroubleClose'),
       },
     })
   end
@@ -319,34 +281,46 @@ function M.config()
   for _, v in ipairs {
     'update|so %',
     'messages',
-    'PackerCompile',
-    'PackerClean',
-    'PackerInstall',
-    'PackerUpdate',
-    'PackerSync',
-    'PackerLoad',
-    'PackerProfile',
-    'StartupTime',
-    'LspInfo',
-    'Neogit',
     'reg',
-    'lua require"telescope.builtin".help_tags()',
-    'lua require"telescope.builtin".search_history()',
-    'lua require"telescope.builtin".jumplist()',
-    'lua require"telescope.builtin".marks()',
-    'lua require"telescope.builtin".man_pages()',
-    'lua require"telescope.builtin".highlights()',
-    'lua require"telescope.builtin".symbols{"emoji", "gitmoji", "math", "nerd"}',
-    'lua require"telescope.builtin".register()',
   } do
     require('legendary').bind_keymap { string.format(':%s<cr>', v) }
   end
+  for _, v in ipairs {
+    'help_tags',
+    'search_history',
+    'jumplist',
+    'marks',
+    'man_pages',
+    'highlights',
+    'register',
+    'lsp_references',
+    'lsp_workspace_symbols',
+  } do
+    local lhs = string.format(':Telescope' .. v:sub(1, 1):upper() .. v:sub(2))
+    require('legendary').bind_keymap {
+      lhs,
+      function()
+        require('telescope.builtin')[v]()
+      end,
+      description = 'telescope ' .. v,
+    }
+  end
+  local v = 'symbols'
+  local lhs = string.format(':Telescope' .. v:sub(1, 1):upper() .. v:sub(2))
+  require('legendary').bind_keymap {
+    lhs,
+    function()
+      require('telescope.builtin')[v] { 'emoji', 'gitmoji', 'math', 'nerd' }
+    end,
+    description = 'telescope ' .. v,
+  }
 
   map_ist()
-  binder.extend('editor', require('plugins.binder.editor').extend())
-  binder.extend('edit', require('plugins.binder.edit').extend())
-  binder.extend('move', require('plugins.binder.move').extend())
-  binder.extend('bigmove', require('plugins.binder.bigmove').extend())
+  binder.extend_with 'basic'
+  binder.extend_with 'editor'
+  binder.extend_with 'edit'
+  binder.extend_with 'move'
+  binder.extend_with 'bigmove'
 end
 
 return M

@@ -1,4 +1,3 @@
-local telescope = require 'telescope'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
@@ -13,7 +12,7 @@ local function project_files(opts)
   end
 end
 
-local function project_directory(opts)
+return function (opts)
   opts = opts or {}
   local cwd = os.getenv 'PROJECTS'
   pickers.new({
@@ -37,7 +36,3 @@ local function project_directory(opts)
     end,
   }):find()
 end
-
-return telescope.register_extension {
-  exports = { project_directory = project_directory },
-}

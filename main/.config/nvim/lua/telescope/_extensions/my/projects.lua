@@ -1,7 +1,6 @@
 -- Customization of
 -- https://github.com/ahmedkhalf/project.nvim/blob/main/lua/telescope/_extensions/projects.lua
 
-local telescope = require 'telescope'
 local finders = require 'telescope.finders'
 local pickers = require 'telescope.pickers'
 local telescope_config = require('telescope.config').values
@@ -78,7 +77,7 @@ end
 
 ---Main entrypoint for Telescope.
 ---@param opts table
-local function my_projects(opts)
+return function (opts)
   opts = opts or {}
 
   local displayer = entry_display.create {
@@ -142,7 +141,3 @@ local function my_projects(opts)
     end,
   }):find()
 end
-
-return telescope.register_extension {
-  exports = { my_projects = my_projects },
-}

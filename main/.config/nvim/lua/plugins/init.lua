@@ -380,7 +380,7 @@ return require('packer').startup {
       cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
     }
     use {
-      'mbbill/undotree',
+      -- 'simnalamburt/vim-mundo'
       setup = function()
         require('plugins.undotree').setup()
       end,

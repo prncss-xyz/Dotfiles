@@ -78,6 +78,7 @@ return require('packer').startup {
       module = 'flies',
       module_pattern = 'flies.*',
       event = 'BufReadPost',
+      rocks = 'https://raw.githubusercontent.com/luafun/luafun/master/fun-scm-1.rockspec',
     }
     use { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' }
     use { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } }
@@ -381,6 +382,7 @@ return require('packer').startup {
     }
     use {
       -- 'simnalamburt/vim-mundo'
+      'mbbill/undotree',
       setup = function()
         require('plugins.undotree').setup()
       end,
@@ -543,6 +545,11 @@ return require('packer').startup {
     }
     -- data files, no need for lazy loading
     use { 'nvim-telescope/telescope-symbols.nvim' }
+    use {
+      'nvim-telescope/telescope-cheat.nvim',
+      module = 'telescope._extensions.cheat',
+      module_pattern = 'telescope._extensions.cheat.*',
+    }
 
     -- bindings
     use {
@@ -648,12 +655,14 @@ return require('packer').startup {
       'wellle/targets.vim',
       after = 'flies.nvim',
       setup = setup 'targets',
+      disable = true,
     }
     use {
       local_repo 'buffet.nvim',
       opt = true,
       module = 'buffer',
       config = default_config 'buffet',
+      disable = true,
     }
 
     -- Session
@@ -743,6 +752,14 @@ return require('packer').startup {
       module = 'luapad',
       module_pattern = 'luapad.*',
       config = default_config 'luapad',
+    }
+    use {
+      'dbeniamine/cheat.sh-vim',
+      setup = function()
+        vim.g.CheatSheetDoNotMap = 1
+        vim.g.CheatSheetBaseUrl='http://localhost:8002'
+      end,
+      cmd = { 'Cheat', 'CheatReplace', 'CheatPaste', 'HowIn' },
     }
 
     -- Various

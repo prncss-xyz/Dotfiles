@@ -2,10 +2,25 @@ local M = {}
 
 function M.config()
   local telescope = require 'telescope'
-  local mappings = require('bindings').plugins.telescope()
+  local actions = require 'telescope.actions'
   telescope.setup {
     defaults = {
-      mappings = mappings,
+      mappings = {
+        i = {
+          ['<c-q>'] = actions.send_to_qflist,
+          ['<c-t>'] = function(...)
+            require('trouble.providers.telescope').open_with_trouble(...)
+          end,
+        },
+        n = {
+          ['<c-q>'] = actions.send_to_qflist,
+          ['<c-t>'] = function(...)
+            require('trouble.providers.telescope').open_with_trouble(...)
+          end,
+          ['<c-h>'] = actions.file_split,
+          ['<c-v>'] = actions.file_vsplit,
+        },
+      },
       vimgrep_arguments = {
         'rg',
         '--color=never',
@@ -23,7 +38,10 @@ function M.config()
       },
     },
     extensions = {
-      -- currently not in use
+      cheat = {
+        mappings = {},
+      },
+      -- curently not in use
       frecency = {
         default_workspace = 'CWD',
         ignore_patterns = { '*.git/*', '*/tmp/*', 'node_modules/*' },

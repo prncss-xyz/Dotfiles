@@ -66,6 +66,7 @@ function M.config()
   local b = binder.b
   local modes = binder.modes
   local util = require 'plugins.binder.util'
+  local repeatable = util.repeatable
   local lazy = util.lazy
   local lazy_req = util.lazy_req
 
@@ -74,16 +75,20 @@ function M.config()
     g = keys {
       desc = 'move',
       register = 'move',
+      next = b { 'nop' },
     },
     h = keys {
       desc = 'edit',
       register = 'edit',
+      next = b { 'nop' },
     },
     o = keys {
       register = 'extra',
+      next = b { 'nop' },
     },
     q = keys {
       register = 'editor',
+      next = b { 'nop' },
       j = keys {
         desc = 'peek',
         register = 'peek',
@@ -95,6 +100,7 @@ function M.config()
     },
     z = keys {
       register = 'bigmove',
+      next = b { 'nop' },
     },
   })
 
@@ -226,7 +232,7 @@ function M.config()
         next = b { desc = 'outgoing calls', vim.lsp.buf.outgoing_calls },
       },
       d = b { desc = 'definition', vim.lsp.buf.definition },
-      k = b { desc = 'hover', vim.lsp.buf.hover, 'hover' },
+      k = b { desc = 'hover', vim.lsp.buf.hover },
       r = b { desc = 'references', vim.lsp.buf.references },
       s = b { desc = 'signature help', vim.lsp.buf.signature_help },
       t = b { desc = 'go to type definition', vim.lsp.buf.type_definition },
@@ -245,12 +251,6 @@ function M.config()
           vim.lsp.buf.remove_workspace_folder,
         },
       },
-      x = b {
-        desc = 'stop active clients',
-        function()
-          vim.lsp.stop_client(vim.lsp.get_active_clients())
-        end,
-      },
     },
   })
   if false then
@@ -261,6 +261,70 @@ function M.config()
           lazy_req('dapui', 'open'),
           lazy_req('dapui', 'close')
         ),
+      },
+      extra = keys {
+        a = keys {
+          previous = b { lazy_req('dap', 'attachToRemote') },
+          next = b { lazy_req('dap', 'attach') },
+        },
+        b = keys {
+          previous = b { lazy_req('dap', 'clear_breakpoints') },
+          next = b { lazy_req('dap', 'toggle_breakpoints') },
+        },
+        c = repeatable { lazy_req('dap', 'continue') },
+        i = repeatable { lazy_req('dap', 'step_into') },
+        o = keys {
+          previous = repeatable { lazy_req('dap', 'step_out') },
+          next = repeatable { lazy_req('dap', 'step_over') },
+        },
+        x = keys {
+          previous = b { lazy_req('dap', 'disconnect') },
+          next = b { lazy_req('dap', 'terminate') },
+        },
+        ['.'] = b { lazy_req('dap', 'run_last') },
+        k = b { lazy_req('dap', 'up') },
+        j = b { lazy_req('dap', 'down') },
+        l = b { lazy_req('dap', 'launch') },
+        r = b { lazy_req('dap', 'repl.open') },
+        h = keys {
+          previous = b {
+            "<cmd>lua require'dap.ui.variables'.hover()<cr>",
+            'hover',
+          },
+          next = b {
+            "<cmd>lua require'dap.ui.widgets'.hover()<cr>",
+            'widgets',
+          },
+        },
+        v = b {
+          "<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
+          'visual hover',
+        },
+        ['?'] = b {
+          "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
+          'variables scopes',
+        },
+        tc = b {
+          "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
+          'commands',
+        },
+        ['t,'] = b {
+          "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
+          'configurations',
+        },
+        tb = b {
+          "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
+          'list breakpoints',
+        },
+        tv = b {
+          "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
+          'dap variables',
+        },
+        tf = b {
+          "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
+          'dap frames',
+        },
+        ['<cr>'] = repeatable { lazy_req('dap', 'run_to_cursor') },
       },
     })
   end
@@ -305,6 +369,13 @@ function M.config()
       description = 'telescope ' .. v,
     }
   end
+  require('legendary').bind_keymap {
+    ':TelescopeCheat',
+    function()
+      require('telescope').extensions.cheat.fd {}
+    end,
+    description = 'telescope cheat',
+  }
   local v = 'symbols'
   local lhs = string.format(':Telescope' .. v:sub(1, 1):upper() .. v:sub(2))
   require('legendary').bind_keymap {
@@ -321,6 +392,7 @@ function M.config()
   binder.extend_with 'edit'
   binder.extend_with 'move'
   binder.extend_with 'bigmove'
+  require 'plugins.binder.textobjects'
 end
 
 return M

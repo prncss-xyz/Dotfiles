@@ -1,14 +1,8 @@
 -- 1247 LOC !!
 local M = {}
 
-local invert = require('utils').invert
-
 local utils = require 'utils'
 local lazy_req = utils.lazy_req
-
-local function alt(key)
-  return string.format('<a-%s>', key)
-end
 
 local a = require('bindings.parameters').a
 local d = require('bindings.parameters').d
@@ -41,7 +35,6 @@ local function cmd(t)
   t[1] = '<cmd>' .. t[1] .. '<cr>'
   return t
 end
-
 
 local function map_search(url, help)
   return {
@@ -82,11 +75,6 @@ local function map_basic()
   -- - map reselect "gv"
   local reg = require('modules.binder').reg
   reg {
-    fn = {
-      [d.search] = cmd 'Telescope current_buffer_fuzzy_find',
-    },
-  }
-  reg {
     [','] = {
       name = 'hint',
       modes = {
@@ -97,108 +85,10 @@ local function map_basic()
         end,
       },
     },
-    ['<c-f>'] = {
-      function()
-        require('luasnip.extras.otf').on_the_fly 'f'
-      end,
-      modes = 'vi',
-    },
-    ['<c-g>'] = cmd { 'Telescope luasnip', modes = 'ni' },
-    ['<c-i>'] = '<c-i>',
-    ['<c-r>'] = '<c-r>',
-    ['<c-s>'] = {
-      modes = {
-        n = function()
-          require('bindutils').lsp_format()
-        end,
-        i = function()
-          vim.cmd 'stopinsert'
-          require('bindutils').lsp_format()
-        end,
-      },
-    },
-    ['<c-v>'] = { 'P', modes = 'nv' },
-    ['<a-a>'] = cmd { 'e#', 'previous buffer' },
-    ['<a-b>'] = cmd { 'wincmd p', 'window back' },
-    ['<a-w>'] = cmd { 'q', 'close window' },
-    [d.right] = { 'l', 'right', modes = 'nxo' },
-    [d.left] = { 'h', 'left', modes = 'nxo' },
-    [d.up] = { 'k', 'up', modes = 'nxo' },
-    [d.down] = { 'j', 'down', modes = 'nxo' },
-    -- also: require("luasnip.extras.select_choice")
-    -- TODO: require luasnip
-    [d.prev_search] = {
-      modes = {
-        n = plug '(dial-decrement)',
-        x = require('plugins.dial').utils.decrement_x,
-        i = lazy_req('luasnip', 'change_choice', -1),
-      },
-    },
-    [d.next_search] = {
-      modes = {
-        n = plug '(dial-increment)',
-        x = require('plugins.dial').utils.increment_x,
-        i = lazy_req('luasnip', 'change_choice', 1),
-      },
-    },
-    [alt(d.left)] = { lazy_req('modules.wrap_win', 'left'), 'window left' },
-    [alt(d.down)] = { lazy_req('modules.wrap_win', 'down'), 'window down' },
-    [alt(d.up)] = { lazy_req('modules.wrap_win', 'up'), 'up' },
-    [alt(d.right)] = { lazy_req('modules.wrap_win', 'right'), 'window right' },
-    -- normal mode only, because mapped to o
     [a.various] = {
       pb = lazy_req('neoscroll', 'zt', 250),
       b = lazy_req('neoscroll', 'zb', 250),
       c = lazy_req('neoscroll', 'zz', 250),
-      d = {
-        name = '+DAP',
-        pb = lazy_req('dap', 'clear_breakpoints'),
-        b = lazy_req('dap', 'toggle_breakpoints'),
-        c = repeatable_cmd "lua require'dap'.continue()",
-        i = repeatable_cmd "lua require'dap'.step_into()",
-        po = repeatable_cmd "lua require'dap'.step_out()",
-        o = repeatable_cmd "lua require'dap'.step_over()",
-        px = lazy_req('dap', 'disconnect'),
-        x = lazy_req('dap', 'terminate'),
-        ['.'] = lazy_req('dap', 'run_last'),
-        k = lazy_req('dap', 'up'),
-        j = lazy_req('dap', 'down'),
-        l = lazy_req('dap', 'launch'),
-        r = lazy_req('dap', 'repl.open'),
-        [p 'a'] = lazy_req('dap', 'attachToRemote'),
-        a = lazy_req('dap', 'attach'),
-        h = { "<cmd>lua require'dap.ui.widgets'.hover()<cr>", 'widgets' },
-        ph = { "<cmd>lua require'dap.ui.variables'.hover()<cr>", 'hover' },
-        v = {
-          "<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
-          'visual hover',
-        },
-        ['?'] = {
-          "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
-          'variables scopes',
-        },
-        tc = {
-          "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
-          'commands',
-        },
-        ['t,'] = {
-          "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
-          'configurations',
-        },
-        tb = {
-          "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
-          'list breakpoints',
-        },
-        tv = {
-          "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
-          'dap variables',
-        },
-        tf = {
-          "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
-          'dap frames',
-        },
-        ['<cr>'] = repeatable_cmd "lua require'dap'.run_to_cursor()",
-      },
       q = {
         r = plug '(Mac_RecordNew)',
         n = plug '(Mac_RotateBack)',
@@ -299,47 +189,6 @@ local function map_basic()
       },
     },
     [a.jump] = {
-      a = cmd {
-        'Telescope current_buffer_fuzzy_find',
-      },
-      b = { '%', modes = 'nxo' },
-      [p 'd'] = {
-        vim.diagnostic.goto_prev,
-        'go previous diagnostic',
-      },
-      [p 'c'] = require('bindutils').asterisk_gz,
-      c = require('bindutils').asterisk_z,
-      d = {
-        vim.diagnostic.goto_next,
-        'go next diagnostic',
-      },
-      [p 'f'] = plug {
-        '(buffet-operator-extract)',
-        'buffet extract',
-        modes = 'nx',
-      },
-      f = plug {
-        '(buffet-operator-replace)',
-        'buffet replace',
-        modes = 'nx',
-      },
-      g = { '``', 'before last jump' },
-      o = { '`.', 'last change' },
-      l = '`', -- jump
-      [p 'm'] = { '`[', 'start of last mod', modes = 'nxo' },
-      m = { '`]', 'begin of last mod', modes = 'nxo' },
-      pr = { require('bindutils').previous_reference },
-      hr = { lazy_req('hop-extensions', 'hint_references', '<cWORD>') }, -- FIXME: not working
-      r = { require('bindutils').next_reference },
-      -- s = cmd 'Telescope treesitter',
-      -- s = cmd 'Telescope lsp_document_symbols',
-      s = require('bindutils').telescope_symbols_md_lsp,
-      pt = plug '(ultest-prev-fail)',
-      t = plug '(ultest-next-fail)',
-      pu = require('bindutils').scroll_up,
-      u = require('bindutils').scroll_down,
-      pv = { '`<', modes = 'nxo' },
-      v = { '`>', modes = 'nxo' },
       ['p;'] = { 'g,', 'newer change' },
       [';'] = { 'g;', 'older changer' },
       [d.up] = { 'gk', 'visual up', modes = 'nxo' },
@@ -481,12 +330,6 @@ local function map_basic()
       [d.next_search] = plug { '(dial-decrement-additional)', modes = 'x' },
       [a.edit] = {
         name = '+line',
-        py = { '<Plug>(buffet-operator-delete)il', noremap = false },
-        y = { '<Plug>(buffet-operator-add)il', noremap = false },
-        pr = { '<Plug>(buffet-operator-extract)il', noremap = false },
-        r = { '<Plug>(buffet-operator-replace)il', noremap = false },
-        x = plug '(ExchangeLine)',
-        j = plug '(u-revj-line)',
         [p(d.comment)] = plug '(comment_toggle_current_blockwise)',
         [d.comment] = plug '(comment_toggle_current_linewise)',
       },
@@ -530,42 +373,6 @@ local function map_basic()
       p = cmd { 'Telescope md_help', 'md help' },
       v = cmd { 'Telescope help_tags', 'help tags' },
     },
-  }
-end
-
-local function map_markdown()
-  local reg = require('modules.binder').reg_local
-  reg {
-    ['<c-a>'] = { modes = { nvo = 'g^', i = '<c-o>g^' } },
-    ['<c-e>'] = { modes = { nvo = 'g$', i = '<c-o>g$' } },
-    [d.up] = { 'gk', 'visual line up', modes = 'nxo' },
-    [d.down] = { 'gj', 'visual line down', modes = 'nxo' },
-    [a.move] = {
-      y = plug { 'Markdown_OpenUrlUnderCursor', 'follow url' },
-    },
-    [a.jump] = {
-      s = { '<cmd>Telescope heading<cr>', 'headings' },
-      t = plug { 'Markdown_MoveToNextHeader', 'next header', modes = 'nxo' },
-      pt = plug {
-        'Markdown_MoveToPreviousHeader',
-        'previous header',
-        modes = 'nxo',
-      },
-      h = plug { 'Markdown_MoveToCurHeader', 'current header', modes = 'nxo' },
-      ph = plug {
-        'Markdown_MoveToParentHeader',
-        'parent header',
-        modes = 'nxo',
-      },
-      [d.up] = { 'k', 'physical line up', modes = 'nxo' },
-      [d.down] = { 'j', 'physical line down', modes = 'nxo' },
-    },
-  }
-  -- vim.fn.call('textobj#sentence#init', {})
-  reg {
-    -- both are identical
-    ad = { '<Plug>(textobj-datetime-auto)', noremap = false, modes = 'ox' },
-    id = { '<Plug>(textobj-datetime-auto)', noremap = false, modes = 'ox' },
   }
 end
 
@@ -616,113 +423,8 @@ end
 
 function M.setup()
   local map = require('utils').map
-  map('nxo', 'q', '<nop>')
-  map('nxo', a.edit, '<nop>')
-  map('nxo', a.jump, '<nop>')
-  map('nxo', a.move, '<nop>')
-  map('nxo', a.mark, '<nop>')
-  map('nxo', a.macro, '<nop>')
-  map('nxo', a.editor, '<nop>')
-  map('nxo', a.help, '<nop>')
-  -- map('nxo', 'n', '<nop>')
-  -- map('nxo', 'N', '<nop>')
-  map('nxo', 'gg', '<nop>')
-  map('nxo', "g'", '<nop>')
-  map('nxo', 'g`', '<nop>')
-  map('nxo', 'g~', '<nop>')
-  map('nxo', 'gg', '<nop>')
-  map('nxo', 'gg', '<nop>')
-  map('', '<c-u>', '<nop>')
-  map('', '<c-d>', '<nop>')
   -- ordering of the matters for: i) overriding, ii) captures
   map_basic()
-  require('bindings.textobjects').setup()
 end
-
-local vim = vim
-
-M.plugins = {
-  trouble = {
-    close = {},
-    refresh = 'r',
-    jump = '<cr>',
-    cancel = '<c-c>',
-    open_split = '<c-x>',
-    open_vsplit = '<c-v>',
-    jump_close = 'o',
-    toggle_fold = 'z',
-    close_folds = {},
-    hover = 'h',
-    open_folds = {},
-    next = d.down,
-    previous = d.up,
-    toggle_mode = 'm', -- toggle between "workspace" and "document" diagnostics mode
-    toggle_preview = 'l', -- toggle auto_preview
-    preview = 'p', -- preview the diagnostic location
-  },
-  textobj = {
-    g = {
-      ['textobj#sentence#select'] = 's',
-      ['textobj#sentence#move_p'] = 'S',
-      ['textobj#sentence#move_n'] = 's',
-    },
-  },
-  nononotes = invert {
-    ['<c-k>'] = 'print_hover_title',
-  },
-  telescope = function()
-    local actions = require 'telescope.actions'
-    return {
-      i = {
-        ['<c-q>'] = actions.send_to_qflist,
-        ['<c-l>'] = actions.send_to_loclist,
-        ['<c-t>'] = function(...)
-          require('trouble.providers.telescope').open_with_trouble(...)
-        end,
-        ['<c-c>'] = function()
-          vim.cmd 'stopinsert'
-        end,
-      },
-      n = {
-        ['<c-j>'] = actions.file_split,
-        ['<c-l>'] = actions.file_vsplit,
-        ['<c-t>'] = function(...)
-          require('trouble.providers.telescope').open_with_trouble(...)
-        end,
-        ['<c-c>'] = actions.close,
-      },
-    }
-  end,
-  nvim_tree = {
-    a = 'create',
-    d = 'remove',
-    l = 'parent_node',
-    L = 'dir_up',
-    K = 'last_sibling',
-    J = 'first_sibling',
-    o = 'system_open',
-    p = 'paste',
-    r = 'rename',
-    R = 'refresh',
-    t = 'next_sibling',
-    T = 'prev_sibling',
-    v = 'next_git_item',
-    V = 'prev_git_item',
-    x = 'cut',
-    yl = 'copy_name',
-    yp = 'copy_path',
-    ya = 'copy_absolute_path',
-    yy = 'copy',
-    [';'] = 'edit',
-    ['.'] = 'toggle_ignored',
-    ['h'] = 'toggle_help',
-    ['<bs>'] = 'close_node',
-    ['<tab>'] = 'preview',
-    ['<s-c>'] = 'close_node',
-    ['<c-r>'] = 'full_rename',
-    ['<c-t>'] = 'tabnew',
-    ['<c-x>'] = 'split',
-  },
-}
 
 return M

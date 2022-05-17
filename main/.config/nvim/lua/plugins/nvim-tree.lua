@@ -1,5 +1,36 @@
 local M = {}
 
+local bindings = {
+  a = 'create',
+  d = 'remove',
+  l = 'parent_node',
+  L = 'dir_up',
+  K = 'last_sibling',
+  J = 'first_sibling',
+  o = 'system_open',
+  p = 'paste',
+  r = 'rename',
+  R = 'refresh',
+  t = 'next_sibling',
+  T = 'prev_sibling',
+  v = 'next_git_item',
+  V = 'prev_git_item',
+  x = 'cut',
+  yl = 'copy_name',
+  yp = 'copy_path',
+  ya = 'copy_absolute_path',
+  yy = 'copy',
+  [';'] = 'edit',
+  ['.'] = 'toggle_ignored',
+  ['h'] = 'toggle_help',
+  ['<bs>'] = 'close_node',
+  ['<tab>'] = 'preview',
+  ['<s-c>'] = 'close_node',
+  ['<c-r>'] = 'full_rename',
+  ['<c-t>'] = 'tabnew',
+  ['<c-x>'] = 'split',
+}
+
 M.setup = function()
   require('utils').deep_merge(vim.g, {
     nvim_tree_ignore_ft = {},
@@ -28,7 +59,7 @@ local function setup_bindings(buf_id)
     'lua require("modules.toggler").toggle()',
     { noremap = true, silent = true, nowait = true }
   )
-  for key, value in pairs(require('bindings').plugins.nvim_tree) do
+  for key, value in pairs(bindings) do
     vim.api.nvim_buf_set_keymap(
       buf_id,
       'n',

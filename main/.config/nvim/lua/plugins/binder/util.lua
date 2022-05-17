@@ -1,5 +1,13 @@
 local M = {}
 
+function M.repeatable(t)
+  return require('binder').b(t)
+end
+
+function M.alt(str)
+  return string.format('<a-%s>', str)
+end
+
 function M.lazy(fn, ...)
   local args = { ... }
   return function()

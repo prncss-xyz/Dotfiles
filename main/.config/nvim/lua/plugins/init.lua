@@ -478,7 +478,6 @@ return require('packer').startup {
       config = function()
         require('marks').setup {
           default_mappings = false,
-          mappings = require('modules.binder').captures.marks,
         }
       end,
     }
@@ -608,13 +607,6 @@ return require('packer').startup {
         vim.g.splitjoin_split_mapping = ''
       end,
       cmd = { 'SplitjoinJoin', 'SplitjoinSplit' },
-    }
-    use {
-      'JoseConseco/vim-case-change',
-      event = 'BufReadPost',
-      setup = function()
-        vim.g.casechange_nomap = 1
-      end,
     }
     use {
       'monaqa/dial.nvim',

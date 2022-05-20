@@ -35,21 +35,26 @@ function M.config()
     -- Q = ts 'string',
     q = require('flies.objects.subline').string('"', "'", '`'),
     -- u: node; see also: David-Kunz/treesitter-unit
-    v = require('flies.objects.subline.variable_segment'),
+    v = require 'flies.objects.subline.variable_segment',
     w = require('flies.objects.subline').word(),
     x = ts 'class',
     y = ts 'loop',
     -- z:
     ['<space>'] = require('flies.objects.subline').bigword(),
     ['<tab>'] = require('flies.objects.indent').new(),
-    ['<cr>'] = require('flies.objects.subline.line'),
+    ['<cr>'] = require 'flies.objects.subline.line',
     ['é'] = require('flies.objects.search').new(),
     ['"'] = require('flies.objects.subline').string '"',
     ["'"] = require('flies.objects.subline').string "'",
     ['`'] = require('flies.objects.subline').string '`',
   }
   -- targets: separator is multiline
-  for c in string.gmatch('.;:+-=~_*#/|\\&$', '.') do
+  for c in string.gmatch(';:-=~*#&', '.') do
+    queries[c] = require('flies.objects.pair').new {
+      { c, c },
+    }
+  end
+  for c in string.gmatch('._/|\\$', '.') do
     queries[c] = require('flies.objects.subline').separator(c)
   end
 

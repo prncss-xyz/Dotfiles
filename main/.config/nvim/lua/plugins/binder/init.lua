@@ -82,6 +82,10 @@ function M.config()
       register = 'edit',
       next = b { 'nop' },
     },
+    m = keys {
+      register = 'mark',
+      next = b { 'nop' },
+    },
     o = keys {
       register = 'extra',
       next = b { 'nop' },
@@ -145,33 +149,37 @@ function M.config()
     },
   })
   binder.extend(
-    'basic',
+    'mark',
     keys {
-      m = keys {
-        b = keys {
-          prev = b { '<Plug>(Marks-next-bookmark)' },
-          next = b {
-            function()
-              require('marks').bookmark_state:all_to_list 'quickfixlist'
-              require('telescope.builtin').quickfix()
-            end,
-          },
-        },
-        l = keys {
-          prev = b {
-            '<Plug>(Marks-next)',
-          },
-          next = b {
-            function()
-              require('marks').mark_state:all_to_list 'quickfixlist'
-              require('telescope.builtin').quickfix()
-            end,
-          },
-        },
+      redup = b {
+        '<cmd>rshada<cr><Plug>(Marks-toggle)<cmd>wshada!<cr>',
+        desc = 'toggle next available mark at cursor',
       },
     }
   )
+  --[[
+        '<Plug>(Marks-next)',
+      pl = plug {
+        '(Marks-delete)',
+        desc = 'Delete a letter mark (will wait for input).',
+      },
+      l = plug {
+        '(Marks-set)',
+        desc = 'Sets a letter mark (will wait for input).',
+      },
+      prev = b {
+        '<Plug>(Marks-set)',
+      },
+      next = b {
+        function()
+          require('marks').mark_state:all_to_list 'quickfixlist'
+          require('telescope.builtin').quickfix()
+        end,
+      },
+        l = plug { '(Marks-prev)', name = 'Goes to previous mark in buffer.' },
+  --]]
   binder.with_labels('marks', 'l', {
+    mark = keys {},
     peek = b {
       '<Plug>(Marks-preview)',
     },
@@ -183,6 +191,37 @@ function M.config()
     },
   })
   binder.with_labels('bookmarks', 'b', {
+    mark = keys {
+      -- prev = b { '<Plug>(Marks-next-bookmark)' },
+      -- next = b {
+      --   function()
+      --     require('marks').bookmark_state:all_to_list 'quickfixlist'
+      --     require('telescope.builtin').quickfix()
+      --   end,
+      -- },
+      -- [a.mark] = {
+      --   ['pp' .. a.mark] = plug {
+      --     '(Marks-deletebuf)',
+      --     name = 'Deletes all marks in current buffer.',
+      --   },
+      --   ['p' .. a.mark] = plug {
+      --     '(Marks-deleteline)',
+      --     name = 'Deletes all marks on current line.',
+      --   },
+      -- },
+      -- a = require('bindutils').bookmark_next(0),
+      -- s = require('bindutils').bookmark_next(1),
+      -- d = require('bindutils').bookmark_next(2),
+      -- f = require('bindutils').bookmark_next(3),
+      -- b = plug '(Marks-prev-bookmark)',
+      next = b {
+        b = { '<cmd>rshada<cr><Plug>(Marks-delete-bookmark)<cmd>wshada!<cr>' },
+      },
+      a = b { '<Plug>(Marks-set-bookmark0)' },
+      s = b { '<Plug>(Marks-set-bookmark1)' },
+      d = b { '<Plug>(Marks-set-bookmark2)' },
+      f = b { '<Plug>(Marks-set-bookmark3)' },
+    },
     quickfix = b {
       require('modules.toggler').cb(function()
         require('marks').bookmark_state:all_to_list 'quickfixlist'
@@ -264,21 +303,21 @@ function M.config()
       },
       extra = keys {
         a = keys {
-          previous = b { lazy_req('dap', 'attachToRemote') },
+          prev = b { lazy_req('dap', 'attachToRemote') },
           next = b { lazy_req('dap', 'attach') },
         },
         b = keys {
-          previous = b { lazy_req('dap', 'clear_breakpoints') },
+          prev = b { lazy_req('dap', 'clear_breakpoints') },
           next = b { lazy_req('dap', 'toggle_breakpoints') },
         },
         c = repeatable { lazy_req('dap', 'continue') },
         i = repeatable { lazy_req('dap', 'step_into') },
         o = keys {
-          previous = repeatable { lazy_req('dap', 'step_out') },
+          prev = repeatable { lazy_req('dap', 'step_out') },
           next = repeatable { lazy_req('dap', 'step_over') },
         },
         x = keys {
-          previous = b { lazy_req('dap', 'disconnect') },
+          prev = b { lazy_req('dap', 'disconnect') },
           next = b { lazy_req('dap', 'terminate') },
         },
         ['.'] = b { lazy_req('dap', 'run_last') },
@@ -287,7 +326,7 @@ function M.config()
         l = b { lazy_req('dap', 'launch') },
         r = b { lazy_req('dap', 'repl.open') },
         h = keys {
-          previous = b {
+          prev = b {
             "<cmd>lua require'dap.ui.variables'.hover()<cr>",
             'hover',
           },
@@ -394,5 +433,47 @@ function M.config()
   binder.extend_with 'bigmove'
   require 'plugins.binder.textobjects'
 end
+
+--[[
+
+local function map_basic()
+  -- TODO:
+  local reg = require('modules.binder').reg
+  reg {
+    [','] = {
+      name = 'hint',
+      modes = {
+        n = '`',
+        x = ':lua require("tsht").nodes()<CR>',
+        o = function()
+          require('tsht').nodes()
+        end,
+      },
+    },
+    [a.edit] = {
+      w = {
+        function()
+          require('telescope.builtin').symbols {
+            sources = { 'math', 'emoji' },
+          }
+        end,
+        'symbols',
+        modes = 'n',
+      },
+      [d.spell] = {
+        function()
+          require('telescope.builtin').spell_suggest(
+            require('telescope.themes').get_cursor {}
+          )
+        end,
+        'spell suggest',
+        modes = 'nx',
+      },
+    },
+  }
+end
+
+00 1247 LOC
+--]]
 
 return M

@@ -15,7 +15,7 @@ function M.extend()
     C = b { '<nop>', modes = 'nx' },
     -- c = b { '"_c', modes = 'nx' },
     c = modes {
-      n = b { lazy_req('flies.actions', 'op_insert', '"_c', 'inner', true) },
+      n = b { lazy_req('flies.actions', 'op', '"_c', 'inner', true) },
       x = b { '"_c' },
     },
     -- cc = b { '"_cc', modes = 'n' },
@@ -121,13 +121,9 @@ function M.extend()
     ['<c-v>'] = b { 'P', modes = 'nv' },
     -- also: require("luasnip.extras.select_choice")
     [d.prev_search] = modes {
-      n = b { '<Plug>(dial-decrement)' },
-      x = b { require('plugins.dial').utils.decrement_x },
       i = b { lazy_req('luasnip', 'change_choice', -1) },
     },
     [d.next_search] = modes {
-      n = b { '<Plug>(dial-increment)' },
-      x = b { require('plugins.dial').utils.increment_x },
       i = b { lazy_req('luasnip', 'change_choice', 1) },
     },
     ['<a-a>'] = b { 'e#', 'previous buffer' },

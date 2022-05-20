@@ -2,10 +2,6 @@
 local M = {}
 
 local utils = require 'utils'
-local first_cb = utils.first_cb
-local all_cb = utils.all_cb
-local lazy = utils.lazy
-local lazy_req = utils.lazy_req
 
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
@@ -31,19 +27,6 @@ function M.static_yank(keys)
     M.keys(keys)
     vim.fn.setpos('.', cursor)
   end, 1)
-end
-
-function M.asterisk_z()
-  M.plug '(asterisk-z*)'
-  -- vim.fn.feedkeys(t '<plug>(asterisk-z*)')
-  require('flies.objects.search').set_search(true)
-  require('hlslens').start()
-end
-
-function M.asterisk_gz()
-  M.plug '(asterisk_gz*)'
-  require('flies.objects.search').set_search(true)
-  require('hlslens').start()
 end
 
 vim.api.nvim_set_keymap(
@@ -173,16 +156,10 @@ function M.lsp_format()
   end
 end
 
--- local recompose = require('flies.move_again').recompose
-local recompose = function(a, b)
-	return a,b
-end
-
-M.scroll_up, M.scroll_down = recompose(function()
-  require('neoscroll').scroll(-0.9, true, 250)
-end, function()
-  require('neoscroll').scroll(0.9, true, 250)
-end)
+local recompose = require('flies.move_again').recompose
+-- local recompose = function(a, b)
+-- 	return a,b
+-- end
 
 M.previous_reference, M.next_reference = recompose(function()
   require('illuminate').next_reference { wrap = true, reverse = true }

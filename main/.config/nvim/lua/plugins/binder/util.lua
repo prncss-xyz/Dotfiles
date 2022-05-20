@@ -65,4 +65,48 @@ function M.plug(name)
   vim.api.nvim_feedkeys(M.t(keys), 'm', true)
 end
 
+function M.np(t)
+  local fp, fn = require('flies.move_again').recompose(t.prev, t.next)
+  t.prev = require('binder').b { fp }
+  t.next = require('binder').b { fn }
+  return require('binder').keys(t)
+end
+
+
+function M.asterisk_z()
+  M.plug '(asterisk-z*)'
+  -- vim.fn.feedkeys(t '<plug>(asterisk-z*)')
+  require('flies.objects.search').set_search(true)
+  require('hlslens').start()
+end
+
+function M.asterisk_gz()
+  M.plug '(asterisk_gz*)'
+  require('flies.objects.search').set_search(true)
+  require('hlslens').start()
+end
+
+
+local function plug(t)
+  if type(t) == 'string' then
+    t = { t }
+  end
+  t.noremap = false
+  t[1] = '<plug>' .. t[1]
+  return t
+end
+local count = 0
+
+local function repeatable_cmd(rhs, opts)
+  count = count + 1
+  local map = string.format('(u-%i)', count)
+  vim.api.nvim_set_keymap(
+    'n',
+    '<Plug>' .. map,
+    '<cmd>' .. rhs .. '<cr>',
+    opts or {}
+  )
+  return replug(map)
+end
+
 return M

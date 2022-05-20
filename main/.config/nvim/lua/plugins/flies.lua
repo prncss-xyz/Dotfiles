@@ -60,8 +60,8 @@ function M.config()
 
   require('flies').setup {
     queries = queries,
-    qualifiers = require('bindings.parameters').qualifiers,
-    domains = require('bindings.parameters').domains,
+    qualifiers = require('plugins.binder.parameters').qualifiers,
+    domains = require('plugins.binder.parameters').domains,
   }
 end
 

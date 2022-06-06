@@ -1,25 +1,28 @@
-# file:///usr/share/doc/fish/interactive.html
-# file:///usr/share/doc/fish/cmds/bind.html
+# help interactive
+# help bind
+
 # https://github.com/fish-shell/fish-shell/tree/master/share/functions
 # fish_key_reader -- to get binding code
 
 function fish_user_key_bindings
     fzf_key_bindings
-    bind \cg prevd-or-backward-word
-    bind \ch nextd-or-forward-word
-    bind \cj history-token-search-backward
-    bind \cx history-token-search-forward
-    # \ec fzf-cd-widget
-    bind \ed fzf-file-widget
-    bind \eh fish_man_page_html
+    bind \eb prevd-or-backward-word
+    bind \ed kill-word
+    # \ee edit_command_bufffer
+    bind \ef nextd-or-forward-word
     bind \el fish_list_current_token
     # \eo open in pager
     # \es prepend sudo
-    # bind \cs edit command line
-    # \cr fzf-history-widget
-    # bind \cs pet-select
-    bind \cs edit_command_buffer
-    bind \ct transpose-chars
+
+    bind \cg fzf-file-widget
+    bind \ch fish_man_page_html
+    # TODO: token search when line not empty
+    # bind \cm history-token-search-backward
+    # bind \cn history-token-search-forward
+    bind \co popd
+    bind \cq 'pushd .'
+    bind \cn fzf-cd-widget
+    bind \cr fzf-history-widget
     # \cu kill to bol
     # \cv paste
     # \cw kill to bow

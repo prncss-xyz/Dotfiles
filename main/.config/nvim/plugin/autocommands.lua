@@ -28,7 +28,7 @@ for _, event in ipairs { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' } do
     group = group,
     callback = function()
       -- if vim.bo.buftype == '' then
-      if vim.fn.expand('%:p') ~= '' then
+      if vim.fn.expand('%:p', nil, nil) ~= '' then
         vim.cmd 'silent update'
       end
     end,
@@ -37,33 +37,63 @@ end
 
 -- without this, deleted marks do not get removed on exit
 -- https://github.com/neovim/neovim/issues/4288
-for _, event in ipairs {
-  'TabLeave',
-  'FocusLost',
-  'BufLeave',
-  'VimLeavePre',
-  'FocusGained',
-  'TextYankPost',
-  'CursorHold',
-} do
-  vim.api.nvim_create_autocmd(event, {
-    pattern = '*',
-    group = group,
-    callback = function()
-      vim.cmd 'rshada|wshada'
-    end,
-  })
+if true then
+  for _, event in ipairs {
+    'TabLeave',
+    'FocusLost',
+    'BufLeave',
+    'VimLeavePre',
+    'TextYankPost',
+  } do
+    vim.api.nvim_create_autocmd(event, {
+      pattern = '*',
+      group = group,
+      callback = function()
+        vim.cmd 'wshada'
+      end,
+    })
+  end
+  for _, event in ipairs {
+    'FocusGained',
+  } do
+    vim.api.nvim_create_autocmd(event, {
+      pattern = '*',
+      group = group,
+      callback = function()
+        vim.cmd 'rshada'
+      end,
+    })
+  end
+  for _, event in ipairs {
+    'CursorHold',
+  } do
+    vim.api.nvim_create_autocmd(event, {
+      pattern = '*',
+      group = group,
+      callback = function()
+        vim.cmd 'rshada|wshada'
+      end,
+    })
+  end
+else
+  for _, event in ipairs {
+    'TabLeave',
+    'FocusLost',
+    'BufLeave',
+    'VimLeavePre',
+    'TextYankPost',
+    'FocusGained',
+    'CursorHold',
+  } do
+    vim.api.nvim_create_autocmd(event, {
+      pattern = '*',
+      group = group,
+      callback = function()
+        vim.cmd 'rshada|wshada'
+      end,
+    })
+  end
 end
-
---
--- local dotfiles = os.getenv 'DOTFILES'
--- require('utils').augroup('PackerCompile', {
---     {
---     events = { 'BufWritePost' },
---       targets = { dotfiles .. '/main/.config/nvim/lua/plugins.lua' },
---     command = 'update luafile % | PackerCompile',
---   },
--- })
 
 -- FIXME: is it working
 -- avoid keeping undo for temporary or confidential files
@@ -97,9 +127,8 @@ local function fetch_git_branch_plenary()
     :start()
 end
 
--- FIXME:
 local function fish_pet()
-  local filename = vim.fn.expand '%'
+  local filename = vim.fn.expand ('%', nil, nil)
   if not string.find(filename, 'tmp%..+%.fish') then
     return
   end
@@ -133,14 +162,14 @@ vim.api.nvim_create_autocmd('VimEnter', {
         return
       end
       fetch_git_branch_plenary()
-      local filename = vim.fn.expand '%'
+      local filename = vim.fn.expand ('%', nil, nil)
       if string.find(filename, 'tmp%..+%.fish') then
         fish_pet()
       elseif #vim.fn.argv() > 0 then
       elseif vim.fn.getcwd() == os.getenv 'HOME' then
-        require('telescope').extensions.my_projects.my_projects {}
+        require('telescope').extensions.my.projects {}
       else
-        -- require('bufjump').backward()
+        require('bufjump').backward()
         -- vim.cmd 'BufSurfBack'
         -- require('harpoon.ui').nav_file(1)
         -- require('plugins.binder.actions').project_files()

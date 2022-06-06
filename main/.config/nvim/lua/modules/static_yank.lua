@@ -6,20 +6,20 @@ local cursor
 
 function M.setup()
   vim.api.nvim_create_autocmd('VimEnter', {
-    pattern = 'VimEnter',
+    pattern = '*',
     callback = function()
       cursor = vim.fn.getpos '.'
     end,
   })
   vim.api.nvim_create_autocmd('CursorMoved', {
-    pattern = 'VimEnter',
+    pattern = '*',
     callback = function()
       cursor = vim.fn.getpos '.'
     end,
   })
 
   vim.api.nvim_create_autocmd('TextYankPost', {
-    pattern = 'VimEnter',
+    pattern = '*',
     callback = function()
       if vim.fn.eval('v:event').operator == 'y' then
         vim.fn.setpos('.', cursor)

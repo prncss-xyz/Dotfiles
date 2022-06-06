@@ -7,6 +7,9 @@
 # hence you will lose env variables set in that shell
 
 function x --wraps xplr --description 'support xplr quit and change directory'
+    echo -ne "\e]0;"
+    echo -n "XPLR"
+    echo -ne "\a"
     if test -n "$XPLR_PIPE_MSG_IN"
         # FIXME: get printf %q to work properly
         echo "ChangeDirectory: \"$PWD\"" >>$XPLR_PIPE_MSG_IN

@@ -21,7 +21,7 @@ function M.config()
       enable = true,
     },
     ensure_installed = {
-      -- 'norg',
+      'norg',
       'markdown',
       'bash',
       'c',

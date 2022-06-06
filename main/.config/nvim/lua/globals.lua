@@ -21,6 +21,8 @@ function _G.vim_g_setup(o)
   end
 end
 
+local branches = {}
+
 function _G.my_title()
   local dir = vim.env.PWD
   local home = vim.env.HOME
@@ -33,9 +35,15 @@ function _G.my_title()
   if i then
     dir = dir:sub(i + 1)
   end
+  -- Some buffers are aasociated with a dir but not a branch: telescope, nvim-tree...
+  -- We use the latest branch result for these
+  if dir and not branch then
+    branch = branches[dir]
+  end
   if branch then
     titlestring = titlestring .. dir
     titlestring = titlestring .. ' — ' .. branch
+    branches[dir] = branch
   end
   titlestring = titlestring .. ' — NVIM'
   return titlestring

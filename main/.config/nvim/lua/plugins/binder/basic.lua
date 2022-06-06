@@ -42,7 +42,6 @@ function M.extend()
     p = b {
       lazy_req('flies.move_again', 'previous'),
     },
-    rr = b { '"+', modes = 'nx' },
     r = b { '"', modes = 'nx' },
     s = modes {
       nx = b {
@@ -88,37 +87,10 @@ function M.extend()
     [d.up] = b { 'k', 'up', modes = 'nxo' },
     [d.down] = b { 'j', 'down', modes = 'nxo' },
     [d.search] = b { '/', modes = 'nxo' },
-    ['<c-f>'] = b {
-      function()
-        require('luasnip.extras.otf').on_the_fly 'f'
-      end,
-      modes = 'vi',
-    },
-    ['<c-g>'] = b {
-      lazy_req('telescope', 'extensions.luasnip.luasnip', {}),
-      modes = 'ni',
-    },
     ['<c-n>'] = b { lazy_req('bufjump', 'forward') },
-    ['<c-o>'] = b { '<c-o>' },
-    ['<c-i>'] = b { '<c-i>' },
-    ['<c-r>'] = b { '<c-r>' },
-    ['<c-s>'] = modes {
-      n = b {
-        function()
-          require('bindutils').lsp_format()
-        end,
-      },
-      i = b {
-        function()
-          vim.cmd 'stopinsert'
-          require('bindutils').lsp_format()
-        end,
-      },
-      desc = 'format',
-    },
     ['<c-p>'] = b { lazy_req('bufjump', 'backward') },
     ['<c-q>'] = b { 'qall!', cmd = true, desc = 'quit' },
-    ['<c-v>'] = b { 'P', modes = 'nv' },
+    ['<c-v>'] = b { '"+P', modes = 'nv' },
     -- also: require("luasnip.extras.select_choice")
     [d.prev_search] = modes {
       i = b { lazy_req('luasnip', 'change_choice', -1) },

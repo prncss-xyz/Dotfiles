@@ -1,12 +1,12 @@
 #!/usr/bin/sh
 
 if pgrep -x firefox; then
-	firefox "$@"
+	firefox --new-window "$@"
 	exit 0
 fi
 
 if pgrep -x chromium; then
-	chromium "$@"
+	chromium --new-window "$@"
 	exit 0
 fi
 

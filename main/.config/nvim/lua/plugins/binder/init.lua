@@ -1,6 +1,6 @@
 local M = {}
 
-local function map_ist()
+local function map_lang()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
@@ -13,17 +13,61 @@ local function map_ist()
         '<C-\\><C-n>',
       },
     },
+    c = keys {
+      ['<m-e>'] = b { '<c-f>' },
+    },
     is = keys {
       ['<c-space>'] = b { '<space><left>' },
-      ['<s-space>'] = b { '<space><left>' },
-      ['<s-tab>'] = b { require('plugins.binder.actions').s_tab },
-      ['<tab>'] = b { require('plugins.binder.actions').tab },
-      ['<c-e>'] = b { lazy_req('plugins.cmp', 'utils.toggle') },
-      ['<c-p>'] = b { require('plugins.binder.actions').cmd_previous },
-      ['<c-n>'] = b { require('plugins.binder.actions').cmd_next },
-      ['<c-v>'] = b { '<c-r>"' },
+      ['<e-space>'] = b { '<space><left>' },
+      ['<c-f>'] = b { util.lazy_req('plugins.cmp', 'utils.confirm') },
+      ['<c-z>'] = b { lazy_req('plugins.cmp', 'utils.toggle') },
+      ['<c-p>'] = b { require('plugins.binder.actions').menu_previous },
+      ['<c-n>'] = b { require('plugins.binder.actions').menu_next },
+      ['<s-tab>'] = b {
+        require('plugins.binder.actions').jump_previous,
+        desc = 'prev insert point',
+      },
+      ['<tab>'] = b {
+        require('plugins.binder.actions').jump_next,
+        desc = 'next insert point',
+      },
+      ['<c-v>'] = b { '<c-r>+' },
       ['<c-r>r'] = b {
-        '<c-r>+',
+        '<c-r>"',
+      },
+      -- TODO: <c-u> noreamp j
+      -- prev next insert point
+      ['<c-u>'] = b { lazy_req('readline', 'backward_kill_line') },
+    },
+    -- c-f to format
+    isc = keys {
+      ['<c-a>'] = b { lazy_req('readline', 'beginning_of_line') },
+      ['<c-e>'] = b { lazy_req('readline', 'end_of_line') },
+      ['<c-k>'] = b { lazy_req('readline', 'kill_line') },
+      ['<c-w>'] = b { lazy_req('readline', 'backward_kill_word') },
+      ['<m-f>'] = b { lazy_req('readline', 'forward_word') },
+      ['<m-b>'] = b { lazy_req('readline', 'backward_word') },
+      ['<m-d>'] = b { lazy_req('readline', 'kill_word') }, --
+    },
+    ni = keys {
+      ['<c-s>'] = b {
+        function()
+          vim.cmd 'stopinsert'
+          require('bindutils').lsp_format()
+        end,
+      },
+      desc = 'format',
+      ['<c-g>'] = b {
+        lazy_req('telescope', 'extensions.luasnip.luasnip', {}),
+        modes = 'ni',
+      },
+    },
+    iv = keys {
+      ['<c-f>'] = b {
+        function()
+          require('luasnip.extras.otf').on_the_fly 'f'
+        end,
+        modes = 'vi',
       },
     },
   })
@@ -73,26 +117,26 @@ function M.config()
   binder.bind(keys {
     register = 'basic',
     g = keys {
-      desc = 'move',
+      desc = 'go',
       register = 'move',
-      next = b { 'nop' },
+      next = b { '<nop>' },
     },
     h = keys {
       desc = 'edit',
       register = 'edit',
-      next = b { 'nop' },
+      next = b { '<nop>' },
     },
     m = keys {
       register = 'mark',
-      next = b { 'nop' },
+      next = b { '<nop>' },
     },
     o = keys {
       register = 'extra',
-      next = b { 'nop' },
+      next = b { '<nop>' },
     },
     q = keys {
       register = 'editor',
-      next = b { 'nop' },
+      next = b { '<nop>' },
       j = keys {
         desc = 'peek',
         register = 'peek',
@@ -104,7 +148,7 @@ function M.config()
     },
     z = keys {
       register = 'bigmove',
-      next = b { 'nop' },
+      next = b { '<nop>' },
     },
   })
 
@@ -179,7 +223,6 @@ function M.config()
         l = plug { '(Marks-prev)', name = 'Goes to previous mark in buffer.' },
   --]]
   binder.with_labels('marks', 'l', {
-    mark = keys {},
     peek = b {
       '<Plug>(Marks-preview)',
     },
@@ -393,8 +436,6 @@ function M.config()
     'search_history',
     'jumplist',
     'marks',
-    'man_pages',
-    'highlights',
     'register',
     'lsp_references',
     'lsp_workspace_symbols',
@@ -425,13 +466,13 @@ function M.config()
     description = 'telescope ' .. v,
   }
 
-  map_ist()
+  map_lang()
   binder.extend_with 'basic'
   binder.extend_with 'editor'
   binder.extend_with 'edit'
   binder.extend_with 'move'
   binder.extend_with 'bigmove'
-  require 'plugins.binder.textobjects'
+  require 'plugins.binder.textobjects'.setup()
 end
 
 --[[

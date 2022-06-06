@@ -31,14 +31,6 @@ local bindings = {
   ['<c-x>'] = 'split',
 }
 
-M.setup = function()
-  require('utils').deep_merge(vim.g, {
-    nvim_tree_ignore_ft = {},
-    -- nvim_tree_quit_on_open = 1,
-    nvim_tree_highlight_opened_files = 1,
-  })
-end
-
 local function file_exists(name)
   local f = io.open(name, 'r')
   if f ~= nil then
@@ -104,6 +96,9 @@ M.config = function()
     },
     git = {
       ignore = true,
+    },
+    renderer = {
+      highlight_opened_files = 'name',
     },
     view = { width = vim.g.u_pane_width, mappings = { custom_only = true } },
     filters = {

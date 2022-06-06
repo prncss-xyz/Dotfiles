@@ -1,8 +1,14 @@
 #!/usr/bin/env sh
 
-cd "$WEBDIR"|| exit 1
+cd "$UNIDUCK_DIR"|| exit 1
 
-res="$(fd -e csv -x cat|fzf --delimiter='\t' --nth=1,2 --with-nth=1|cut  -f2)"
+aggregate() {
+  for i in "$@"; do
+    cat "$i.csv"
+  done
+}
+
+res="$(aggregate "$@"|fzf --delimiter='\t' --nth=1,2 --with-nth=1|cut  -f2)"
 if [ -n "$res" ]; then
   browser "$res" 2> /dev/null
 fi

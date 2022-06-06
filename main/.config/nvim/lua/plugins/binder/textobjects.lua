@@ -9,32 +9,25 @@ function M.setup()
   local keys = binder.keys
   local modes = binder.modes
   local b = binder.b
-  return binder.bind(modes, {
+  binder.bind(modes {
     ox = keys {
-      [','] = b {
+      hu = b {
+        desc = 'ts hint',
         'lua require("tsht").nodes()',
         cmd = true,
       },
       au = b {
+        desc = 'ts unit outer',
         'lua require("treesitter-unit").select(true)',
         cmd = true,
       },
-    },
-    o = {
-      keys = {
-        iu = b {
-          'lua require("nvim-treesitter.textobjects.select").select_textobject("@node", "o")',
-          cmd = true,
-        },
-      },
-    },
-    x = {
-      keys = {
-        iu = b {
-          'lua require("nvim-treesitter.textobjects.select").select_textobject("@node", "x")',
-          cmd = true,
-        },
+      iu = b {
+        desc = 'ts unit inner',
+        'lua require("treesitter-unit").select(false)',
+        cmd = true,
       },
     },
   })
 end
+
+return M

@@ -3,11 +3,12 @@ local telescope = require 'telescope'
 local exports = {}
 
 for _, name in ipairs {
-  'installed_plugins',
   'md_help',
+  'installed_plugins',
   'modules',
   'project_directory',
   'projects',
+  'uniduck'
 } do
   exports[name] = require('telescope._extensions.my.' .. name)
 end

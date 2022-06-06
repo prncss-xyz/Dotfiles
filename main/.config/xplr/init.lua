@@ -1,26 +1,163 @@
-version = '0.17.0'
-package.path = os.getenv 'HOME' .. '/.config/xplr/plugins/?.xplr/src/init.lua'
-require('comex').setup { compress_key = 'c', extract_key = 'x' }
-require('type-to-nav').setup()
-require('preview-tabbed').setup {
-  mode = 'action',
-  key = 'p',
-  fifo_path = '/tmp/xplr.fifo',
-  previewer = 'preview-tui',
-}
-require('xargs').setup()
-require('trash-cli').setup()
--- require('type-to-nav').setup()
-require('icons').setup()
-require('context-switch').setup()
+version = '0.18.0'
 
--- TODO merge arrays
+-- override builtin modes to get rid of deep_merge
+-- fzm: project root or current dir, unless in downloads (by mimetype then)
+-- operation to restrict selection with current dir
+-- tags: multiple selection
+-- cat "${XPLR_PIPE_RESULT_OUT:?}" | commannd # selection or focused
+-- nvim remote stuff
+-- adapt alacritty.xplr
+
+local xplr = xplr
+local home = os.getenv 'HOME'
+local xpm_path = home .. '/.local/share/xplr/dtomvan/xpm.xplr'
+local xpm_url = 'https://github.com/dtomvan/xpm.xplr'
+
+package.path = home .. '/.config/xplr/plugins/?.xplr/src/init.lua'
+package.path = package.path
+  .. ';'
+  .. xpm_path
+  .. '/?.lua;'
+  .. xpm_path
+  .. '/?/init.lua'
+
+os.execute(
+  string.format(
+    "[ -e '%s' ] || git clone '%s' '%s'",
+    xpm_path,
+    xpm_url,
+    xpm_path
+  )
+)
+
+local d = {
+  up = 'j',
+  down = 'k',
+  left = 'l',
+  right = ';',
+}
+
+require('xpm').setup {
+  'dtomvan/xpm.xplr',
+  'sayanarijit/trash-cli.xplr',
+  {
+    'sayanarijit/dual-pane.xplr',
+    setup = function()
+      require('dual-pane').setup {
+        active_pane_width = { Percentage = 70 },
+        inactive_pane_width = { Percentage = 30 },
+      }
+    end,
+  },
+  {
+    'sayanarijit/map.xplr',
+    setup = function()
+      require('map').setup {
+        mode = 'selection_ops',
+        key = 'f',
+        placeholder = '{}',
+        prefer_multi_map = false,
+      }
+    end,
+  },
+  {
+    'sayanarijit/find.xplr',
+    setup = function()
+      require('find').setup {
+        mode = 'selection_ops',
+        key = 'é',
+        templates = {
+          ['all'] = {
+            key = 'a',
+            find_command = 'fd',
+            find_args = '',
+            cursor_position = 1,
+          },
+          ['directory'] = {
+            key = 'd',
+            find_command = 'fd',
+            find_args = '-t d ',
+            cursor_position = 5,
+          },
+          ['empty'] = {
+            key = 'e',
+            find_command = 'fd',
+            find_args = '-t e ',
+            cursor_position = 5,
+          },
+          ['file'] = {
+            key = 'f',
+            find_command = 'fd',
+            find_args = '-t f ',
+            cursor_position = 5,
+          },
+          ['git (diff)'] = {
+            key = 'g',
+            find_command = 'git diff HEAD~1 --name-only',
+            find_args = ' ',
+            cursor_position = 1,
+          },
+          ['link'] = {
+            key = 'l',
+            find_command = 'fd',
+            find_args = '-t l ',
+            cursor_position = 5,
+          },
+          ['socket'] = {
+            key = 's',
+            find_command = 'fd',
+            find_args = '-t s ',
+            cursor_position = 5,
+          },
+          ['pipe'] = {
+            key = 'p',
+            find_command = 'fd',
+            find_args = '-t p ',
+            cursor_position = 5,
+          },
+          ['executable'] = {
+            key = 'x',
+            find_command = 'fd',
+            find_args = '-t x ',
+            cursor_position = 5,
+          },
+          ['extension'] = {
+            key = '.',
+            find_command = 'fd',
+            find_args = '-e ',
+            cursor_position = 3,
+          },
+        },
+        refresh_screen_key = 'ctrl-r',
+      }
+    end,
+  },
+  {
+    'sayanarijit/dua-cli.xplr',
+    setup = function()
+      require('dua-cli').setup { mode = 'action', key = 'd' }
+    end,
+  },
+  {
+    'sayanarijit/zoxide.xplr',
+    setup = function()
+      require('zoxide').setup {
+        mode = 'go_to',
+        key = 'z',
+      }
+    end,
+  },
+}
+
+-- local plugins
+require('icons').setup()
+require('type-to-nav').setup()
+-- local modules.utils = require 'utils'
+
 local function deep_merge(t1, t2)
   for k, v in pairs(t2) do
     if (type(v) == 'table') and (type(t1[k] or false) == 'table') then
       deep_merge(t1[k], t2[k])
-    elseif type(v) == 'function' then
-      t1[k] = v(k, t1[k])
     else
       t1[k] = v
     end
@@ -28,74 +165,54 @@ local function deep_merge(t1, t2)
   return t1
 end
 
-local function nop() end
-local reg = {}
-local function register(message)
-  return function(key)
-    reg[message] = key
-  end
+for _, key in ipairs {
+  'v',
+  'h',
+  'j',
+  'k',
+  'l',
+  ':',
+  '~',
+  '/',
+  '?',
+  'n',
+  'N',
+  'V',
+  'G',
+  'right',
+  'enter',
+  'space',
+  'tab',
+} do
+  xplr.config.modes.builtin.default.key_bindings.on_key[key] = nil
+end
+for _, key in ipairs {
+  'a',
+  'i',
+  'o',
+  'u',
+  'w',
+  'f',
+  'd',
+} do
+  xplr.config.modes.builtin.default.key_bindings.on_key['ctrl-' .. key] = nil
+end
+for _, key in ipairs { 'c', 'e', 's', '!' } do
+  xplr.config.modes.builtin.action.key_bindings.on_key[key] = nil
 end
 
-local xplr = xplr
+for _, key in ipairs { 'c', 'e', 's', '!' } do
+  xplr.config.modes.builtin.action.key_bindings.on_key[key] = nil
+end
 
-xplr.config.general.initial_layout = 'no_help_no_selection'
-
-local copy_here = {
-  unpack(
-    xplr.config.modes.builtin.selection_ops.key_bindings.on_key.c.messages
-  ),
-}
-
-for _, key in ipairs { 'space', 'v', 'h', 'j', 'k', 'l' } do
-  xplr.config.modes.builtin.default.key_bindings.on_key[key] = nil
+for _, key in ipairs { 'g' } do
+  xplr.config.modes.builtin.go_to.key_bindings.on_key[key] = nil
+end
+for _, key in ipairs { 'c', 'e', 's', '!' } do
+  xplr.config.modes.builtin.action.key_bindings.on_key[key] = nil
 end
 
 -- TODO: bash to lua
-
-xplr.config.modes.builtin.default.key_bindings.on_key['j'] =
-  xplr.config.modes.builtin.default.key_bindings.on_key.up
-
-xplr.config.modes.builtin.default.key_bindings.on_key['k'] =
-  xplr.config.modes.builtin.default.key_bindings.on_key.down
-
-xplr.config.modes.builtin.default.key_bindings.on_key['l'] =
-  xplr.config.modes.builtin.default.key_bindings.on_key.left
-
-xplr.config.modes.builtin.default.key_bindings.on_key[';'] =
-  xplr.config.modes.builtin.default.key_bindings.on_key.right
-
-local common = {
-  ['ctrl-c'] = {
-    help = 'cancel',
-    messages = { 'PopMode' },
-  },
-  ['ctrl-q'] = {
-    help = 'terminate',
-    messages = { 'Terminate' },
-  },
-  ['alt-h'] = {
-    help = 'help',
-    messages = {
-      { BashExec = 'nvim ~/Dotfiles/main/.config/xplr/init.lua' },
-    },
-  },
-  ['ctrl-h'] = {
-    help = 'help',
-    -- TODO: position to active mode
-    messages = {
-      {
-        BashExec = 'less "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"',
-      },
-    },
-  },
-  esc = nop,
-}
-
-for _, mode in pairs(xplr.config.modes.builtin) do
-  deep_merge(mode.key_bindings.on_key, common)
-end
-
--- xplr.config.modes.builtin.default.key_bindings.on_key['ctrl-c'] = nil
 deep_merge(xplr, {
   config = {
     modes = {
@@ -126,7 +243,7 @@ deep_merge(xplr, {
                 help = 'create file',
                 messages = {
                   {
-                    BashExecSilently = [===[
+                    BashExecSilently = [[
                     PTH="$XPLR_INPUT_BUFFER"
                     if [ "${PTH}" ]; then
                       nvr -- "${PTH:?}" \
@@ -137,7 +254,7 @@ deep_merge(xplr, {
                     else
                       echo PopMode >> "${XPLR_PIPE_MSG_IN:?}"
                     fi
-                    ]===],
+                    ]],
                   },
                 },
               },
@@ -196,19 +313,40 @@ deep_merge(xplr, {
             },
           },
         },
-        context_switch = {
+        wl_copy = {
+          -- adapted from https://github.com/sayanarijit/wl-clipboard.xplr
+          name = 'copy',
           key_bindings = {
             on_key = {
-              j = {
-                help = 'up',
+              p = {
+                help = 'paste from clipboard',
                 messages = {
-                  { CallLuaSilently = 'custom.context_switch.prev' },
+                  {
+                    BashExec = [[
+                      wl-paste | while read -r path; do
+                        [ -e "$path" ] && cp -var "${path:?}" ./
+                      done
+                      read -p "[press ENTER to continue]"
+                    ]],
+                  },
+                  'ExplorePwd',
+                  'PopMode',
                 },
               },
-              k = {
-                help = 'down',
+              y = {
+                help = 'copy files',
                 messages = {
-                  { CallLuaSilently = 'custom.context_switch.next' },
+                  {
+                    BashExecSilently = [[
+                     if cat "${XPLR_PIPE_RESULT_OUT:?}" | wl-copy; then
+                       echo LogSuccess: Copied paths to clipboard >> ${XPLR_PIPE_MSG_IN:?}
+                     else
+                       echo LogSuccess: Failed to copy paths >> ${XPLR_PIPE_MSG_IN:?}
+                     fi
+                  ]],
+                  },
+                  'ClearSelection',
+                  'PopMode',
                 },
               },
             },
@@ -219,10 +357,7 @@ deep_merge(xplr, {
         action = {
           key_bindings = {
             on_key = {
-              c = nop,
-              e = nop,
-              s = nop,
-              d = {
+              b = {
                 help = 'debug',
                 messages = {
                   {
@@ -230,16 +365,126 @@ deep_merge(xplr, {
                   },
                 },
               },
-              ['!'] = nop,
+              i = {
+                help = 'preview images',
+                messages = {
+                  'PopMode',
+                  {
+                    BashExec = [[
+                      FIFO_PATH="/tmp/xplr.fifo"
+                      if [ -e "$FIFO_PATH" ]; then
+                        echo StopFifo >> "$XPLR_PIPE_MSG_IN"
+                        rm "$FIFO_PATH"
+                      else
+                        mkfifo "$FIFO_PATH"
+                        "$HOME/.local/bin/imv-open" "$FIFO_PATH" "$XPLR_FOCUS_PATH" &
+                        echo "StartFifo: '$FIFO_PATH'" >> "$XPLR_PIPE_MSG_IN"
+                      fi
+                    ]],
+                  },
+                },
+              },
+              M = {
+                help = 'delete bookmark',
+                messages = {
+                  {
+                    BashExec = [[
+                      PTH=$(cat "${XPLR_BOOKMARK_FILE:?}" | fzf --no-sort)
+                      sd "$PTH\n" "" "${XPLR_BOOKMARK_FILE:?}"
+                    ]],
+                  },
+                },
+              },
+              m = {
+                help = 'add bookmarks',
+                messages = {
+                  {
+                    BashExec = [[
+                      PTH="${XPLR_FOCUS_PATH:?}"
+                      PTH="$(dirname "${PTH}")"
+                      if echo "${PTH:?}" >> "${XPLR_BOOKMARK_FILE:?}"; then
+                        echo "LogSuccess: ${PTH:?} added to bookmarks" >> "${XPLR_PIPE_MSG_IN:?}"
+                      else
+                        echo "LogError: Failed to bookmark ${PTH:?}" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                  'PopMode',
+                },
+              },
+              p = {
+                help = 'mtp mount',
+                messages = {
+                  'PopMode',
+                  {
+                    BashExec = [[mtpmount]],
+                  },
+                },
+              },
+              t = {
+                help = 'terminal',
+                messages = {
+                  'PopMode',
+                  {
+                    BashExecSilently = [[ exec $TERMINAL & ]],
+                  },
+                },
+              },
+              x = {
+                help = 'xplr',
+                messages = {
+                  'PopMode',
+                  {
+                    BashExecSilently = [[ exec $TERMINAL -e xplr & ]],
+                  },
+                },
+              },
+              h = {
+                help = 'help',
+                messages = {
+                  'PopMode',
+                  {
+                    BashExec = 'less "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"',
+                  },
+                },
+              },
+              q = {
+                help = 'quit mode',
+                messages = {
+                  'PopMode',
+                  { SwitchModeBuiltin = 'quit' },
+                },
+              },
+              space = {
+                help = 'shell',
+                messages = {
+                  'PopMode',
+                  { Call = { command = 'fish', args = { '-i' } } },
+                  'ExplorePwdAsync',
+                },
+              },
             },
           },
         },
         create = {
           key_bindings = {
             on_key = {
+              c = {
+                help = 'duplicate as',
+                messages = {
+                  'PopMode',
+                  { SwitchModeBuiltin = 'duplicate_as' },
+                  {
+                    BashExecSilently = [[
+                      echo SetInputBuffer: "'"$(basename "${XPLR_FOCUS_PATH}")"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                    ]],
+                  },
+                },
+              },
               e = {
                 help = 'create in external editor',
                 messages = {
+                  'PopMode',
                   { SwitchModeCustom = 'create_in_external_editor' },
                 },
               },
@@ -249,8 +494,26 @@ deep_merge(xplr, {
         default = {
           key_bindings = {
             on_key = {
+              [d.up] = {
+                help = 'up',
+                messages = {
+                  'FocusPrevious',
+                },
+              },
+              [d.down] = {
+                help = 'down',
+                messages = {
+                  'FocusNext',
+                },
+              },
+              [d.left] = {
+                help = 'back',
+                messages = {
+                  'Back',
+                },
+              },
               a = {
-                help = 'action mode',
+                help = 'create',
                 messages = {
                   { SwitchModeBuiltin = 'create' },
                 },
@@ -261,44 +524,33 @@ deep_merge(xplr, {
                   { SwitchModeCustom = 'last' },
                 },
               },
-              e = {
-                help = 'bottom',
-                messages = { 'FocusLast', 'PopMode' },
+              space = {
+                help = 'action',
+                messages = {
+                  { SwitchModeBuiltin = 'action' },
+                },
               },
-              E = {
-                help = 'top',
-                messages = { 'FocusFirst', 'PopMode' },
+              n = {
+                help = 'next visited path',
+                messages = { 'NextVisitedPath' },
               },
-              h = {
-                help = 'history',
+              p = {
+                help = 'last visited path',
+                messages = { 'LastVisitedPath' },
+              },
+              z = {
+                help = 'tag put current',
                 messages = {
                   {
-                    BashExec = [[
-                      PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}" | head -n -1 | tac | fzf --no-sort)
-                      if [ "$PTH" ]; then
-                        PTH="${PTH%/}" # remove trailing slash
-                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                    ]],
+                    BashExec = [[ tag-put "$XPLR_FOCUS_PATH" ]],
                   },
                 },
               },
-              i = {
-                help = 'view images',
+              Z = {
+                help = 'tag del current',
                 messages = {
                   {
-                    BashExec = [[
-                      if [ -n "$XPLR_PIPE_SELECTION_OUT" ]; then
-                        imv <"$XPLR_PIPE_SELECTION_OUT" &
-                      elif [ -d "$XPLR_FOCUS_PATH" ]; then
-                        # TODO: respect filters ??
-                        PTH="$XPLR_FOCUS_PATH"
-                        fd -tl . "$PTH"|imv&
-                      else
-                        PTH=$(basedir "$XPLR_FOCUS_PATH")
-                        fd -tl . "$PTH"|imv&
-                      fi
-                    ]],
+                    BashExec = [[ tag-del "$XPLR_FOCUS_PATH" ]],
                   },
                 },
               },
@@ -328,7 +580,7 @@ deep_merge(xplr, {
                   },
                 },
               },
-              O = {
+              e = {
                 help = 'open editor',
                 messages = {
                   {
@@ -338,49 +590,41 @@ deep_merge(xplr, {
               },
               q = {
                 help = 'print pwd and quit',
-                messages = { 'PrintPwdAndQuit' },
+                messages = {
+                  'PrintPwdAndQuit',
+                },
               },
-              Q = {
-                help = 'quit',
-                messages = { 'Quit' },
+              u = {
+                help = 'select/unselect all',
+                messages = {
+                  'ToggleSelectAll',
+                },
               },
               t = {
-                help = 'terminal',
+                help = 'type-to-nav',
                 messages = {
-                  {
-                    BashExecSilently = [[ exec $TERMINAL & ]],
-                  },
+                  { CallLuaSilently = 'custom.type_to_nav_start' },
                 },
               },
               v = {
-                help = 'toggle selection',
-                messages = { 'ToggleSelection', 'FocusNext' },
-              },
-              V = {
                 help = 'selection mode',
                 messages = {
                   { SwitchModeBuiltin = 'selection_ops' },
                 },
               },
               w = {
-                help = 'tag put current',
+                help = 'switch layout',
                 messages = {
-                  {
-                    BashExec = [[ tag-put "$XPLR_FOCUS_PATH" ]],
-                  },
+                  { SwitchModeBuiltin = 'switch_layout' },
                 },
               },
-              W = {
-                help = 'tag del current',
+              y = {
+                help = 'copy',
                 messages = {
-                  {
-                    BashExec = [[ tag-del "$XPLR_FOCUS_PATH" ]],
-                  },
+                  { SwitchModeCustom = 'wl_copy' },
                 },
               },
-              u = register 'dua_cli',
-              z = register 'zoxide',
-              [';'] = { -- right
+              [d.right] = { -- right
                 help = 'open',
                 messages = {
                   {
@@ -394,7 +638,34 @@ deep_merge(xplr, {
                   },
                 },
               },
-              [':'] = { -- shift right
+              ['é'] = {
+                help = 'search',
+                messages = {
+                  'PopMode',
+                  { SwitchModeBuiltin = 'search' },
+                  { SetInputPrompt = '/' },
+                  { SetInputBuffer = '(?i)' },
+                  'ExplorePwdAsync',
+                },
+              },
+            },
+          },
+        },
+        go_to = {
+          key_bindings = {
+            on_key = {
+              a = {
+                help = 'home',
+                messages = {
+                  {
+                    BashExecSilently = [[
+                    echo ChangeDirectory: "'"${HOME:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                    ]],
+                  },
+                  'PopMode',
+                },
+              },
+              d = { -- shift right
                 help = 'fzf open dir',
                 messages = {
                   {
@@ -405,82 +676,12 @@ deep_merge(xplr, {
                       fi
                     ]],
                   },
-                },
-              },
-              ['~'] = nop,
-              ['/'] = nop,
-              ['é'] = {
-                help = 'search',
-                messages = {
-                  'PopMode',
-                  { SwitchModeBuiltin = 'search' },
-                  { SetInputBuffer = '' },
-                  'ExplorePwdAsync',
-                },
-              },
-              ['?'] = nop,
-              ['!'] = {
-                help = 'shell',
-                messages = {
-                  {
-                    Call = {
-                      command = 'fish',
-                      args = { '-i' },
-                    },
-                  },
-                  'ExplorePwdAsync',
                   'PopMode',
                 },
               },
-              space = {
-                help = 'action mode',
-                messages = {
-                  { SwitchModeBuiltin = 'action' },
-                },
-              },
-              enter = nop,
-              ['ctrl-a'] = nop,
-              ['ctrl-f'] = {
-                help = 'fzf focus/cd',
-                messages = {
-                  {
-                    BashExec = [[
-                      SELECTED=$(cat "${XPLR_PIPE_DIRECTORY_NODES_OUT:?}" | awk -F / '{print $NF}' | fzf --no-sort)
-                      if [ "$SELECTED" ]; then
-                      echo FocusPath: '"'$PWD/$SELECTED'"' >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                      if [ -d "$SELECTED" ]; then
-                      echo Enter >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                    ]],
-                  },
-                  'PopMode',
-                },
-              },
-              -- ['ctrl-i'] = {
-              --   help = "next visited path",
-              --   messages = { "NextVisitedPath" },
-              -- },
-            },
-          },
-        },
-        go_to = {
-          key_bindings = {
-            on_key = {
-              b = {
-                help = 'bookmarks',
-                messages = {
-                  {
-                    BashExec = [[
-                      PTH="$(cat "$HOME/.config/xplr/bookmarks" | fzf)" 
-                      if [ "$PTH" ]; then
-                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                    ]],
-                  },
-                  'PopMode',
-                  { SwitchModeBuiltin = 'default' },
-                },
+              e = {
+                help = 'bottom',
+                messages = { 'FocusLast', 'PopMode' },
               },
               f = {
                 help = 'fzf focus',
@@ -493,46 +694,53 @@ deep_merge(xplr, {
                       fi
                     ]],
                   },
-                },
-              },
-              g = nop,
-              h = {
-                help = 'home',
-                messages = {
-                  {
-                    BashExecSilently = [===[
-                    echo ChangeDirectory: "'"${HOME:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                    ]===],
-                  },
-                },
-              },
-              M = {
-                help = 'pane-set',
-                messages = {
-                  {
-                    BashExecSilently = [[ echo "$PWD" > "$XPLR_SESSION_PATH/pane" ]],
-                  },
                   'PopMode',
-                  { SwitchModeBuiltin = 'default' },
                 },
               },
               m = {
-                help = 'pane-swap',
+                help = 'bookmarks',
                 messages = {
                   {
-                    BashExec = [[ 
-                      LOC="$(cat "$XPLR_SESSION_PATH/pane")"
-                      if [ -n "$LOC" ]; then
-                        echo "$PWD" > "$XPLR_SESSION_PATH/pane" 
-                        echo ChangeDirectory: "'"${LOC:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                    BashExec = [[
+                      PTH="$(cat "${XPLR_BOOKMARK_FILE:?}" | fzf)" 
+                      if [ "$PTH" ]; then
+                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
                       fi
                     ]],
                   },
                   'PopMode',
-                  { SwitchModeBuiltin = 'default' },
                 },
               },
               p = {
+                help = 'gvfs',
+                messages = {
+                  {
+                    BashExec = [[
+                      res="$(ls -d /run/user/"$(id -u)"/gvfs/* | fzf)"
+                      if [ -n "$res" ]; then
+                        echo ChangeDirectory: "'"${res:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                  'PopMode',
+                },
+              },
+              q = {
+                help = 'history',
+                messages = {
+                  {
+                    BashExec = [[
+                      PTH="$(cat "${XPLR_PIPE_HISTORY_OUT:?}" | head -n -1 | tac | fzf --no-sort)"
+                      if [ -d "$PTH" ]; then
+                        PTH="${PTH%/}" # remove trailing slash
+                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                    ]],
+                  },
+                  'PopMode',
+                },
+              },
+              r = {
                 help = 'project root',
                 messages = {
                   {
@@ -544,23 +752,6 @@ deep_merge(xplr, {
                     ]],
                   },
                   'PopMode',
-                  { SwitchModeBuiltin = 'default' },
-                },
-              },
-              r = {
-                help = 'random',
-                messages = {
-                  {
-                    BashExecSilently = [[
-                      PTH=$(fd --type file .|shuf -n1) 
-                      if [ "$PTH" ]; then
-                        echo FocusPath: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                      echo "$PTH"
-                    ]],
-                  },
-                  'PopMode',
-                  { SwitchModeBuiltin = 'default' },
                 },
               },
               s = {
@@ -579,15 +770,58 @@ deep_merge(xplr, {
                     ]],
                   },
                   'PopMode',
-                  { SwitchModeBuiltin = 'default' },
+                },
+              },
+              u = {
+                help = 'top',
+                messages = { 'FocusFirst', 'PopMode' },
+              },
+              x = {
+                help = 'random',
+                messages = {
+                  {
+                    BashExecSilently = [[
+                      PTH=$(fd --type file .|shuf -n1) 
+                      if [ "$PTH" ]; then
+                        echo FocusPath: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+                      fi
+                      echo "$PTH"
+                    ]],
+                  },
+                  'PopMode',
                 },
               },
             },
           },
         },
         selection_ops = {
+          name = 'selection',
           key_bindings = {
             on_key = {
+              [d.up] = {
+                help = 'up',
+                messages = {
+                  'FocusPrevious',
+                },
+              },
+              [d.down] = {
+                help = 'down',
+                messages = {
+                  'FocusNext',
+                },
+              },
+              x = {
+                help = 'clear selection',
+                messages = {
+                  'ClearSelection',
+                },
+              },
+              t = {
+                help = 'type-to-nav',
+                messages = {
+                  { CallLuaSilently = 'custom.type_to_nav_start' },
+                },
+              },
               u = {
                 help = 'add tag to selection',
                 messages = {
@@ -643,20 +877,6 @@ deep_merge(xplr, {
                   },
                 },
               },
-              -- TODO: cycle selected
-              m = {
-                -- TODO: revert to builtin when there is not .tags
-                help = 'move with tags here',
-                messages = {
-                  {
-                    BashExec = [[
-                      cat "$XPLR_PIPE_SELECTION_OUT" | while read -r line ; do
-                        tag-mv "$line" "$PWD"
-                      done
-                    ]],
-                  },
-                },
-              },
               a = {
                 help = 'select untagged from current dir',
                 messages = {
@@ -667,6 +887,19 @@ deep_merge(xplr, {
                           ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
                           echo "SelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
                         fi
+                      done
+                    ]],
+                  },
+                },
+              },
+              m = {
+                -- TODO: revert to builtin when there is not .tags
+                help = 'move with tags here',
+                messages = {
+                  {
+                    BashExec = [[
+                      cat "$XPLR_PIPE_SELECTION_OUT" | while read -r line ; do
+                        tag-mv "$line" "$PWD"
                       done
                     ]],
                   },
@@ -684,10 +917,6 @@ deep_merge(xplr, {
                     ]],
                   },
                 },
-              },
-              p = {
-                help = 'copy here',
-                messages = copy_here.messages,
               },
               w = {
                 help = 'assign tag to selection',
@@ -712,13 +941,13 @@ deep_merge(xplr, {
         switch_layout = {
           key_bindings = {
             on_key = {
-              h = {
-                help = 'help',
-                messages = {
-                  { SwitchLayoutBuiltin = 'no_selection' },
-                  'PopMode',
-                },
-              },
+              -- h = {
+              --   help = 'help',
+              --   messages = {
+              --     { SwitchLayoutBuiltin = 'no_selection' },
+              --     'PopMode',
+              --   },
+              -- },
               v = {
                 help = 'selection',
                 messages = {
@@ -726,7 +955,7 @@ deep_merge(xplr, {
                   'PopMode',
                 },
               },
-              w = {
+              x = {
                 help = 'default',
                 messages = {
                   { SwitchLayoutBuiltin = 'no_help_no_selection' },
@@ -741,17 +970,38 @@ deep_merge(xplr, {
   },
 })
 
-for _, mode in pairs(xplr.config.modes.custom) do
-  deep_merge(mode.key_bindings.on_key, common)
+-- let arrow keys do the same as letter equivalent
+for _, mode in ipairs { 'default', 'selection_ops' } do
+  for k, v in pairs(d) do
+    xplr.config.modes.builtin[mode].key_bindings.on_key[k] =
+      xplr.config.modes.builtin[mode].key_bindings.on_key[v]
+  end
 end
 
-xplr.config.modes.custom.type_to_nav.key_bindings.on_key['esc'] = {
-  help = 'quit mode',
-  messages = { { CallLuaSilently = 'custom.type_to_nav_quit' } },
-}
+-- use tab to select focus everywhere
+for _, mode in ipairs { 'default', 'selection_ops' } do
+  xplr.config.modes.builtin[mode].key_bindings.on_key.tab = {
+    help = 'toggle selection',
+    messages = { 'ToggleSelection', 'FocusNext' },
+  }
+  xplr.config.modes.builtin[mode].key_bindings.on_key['back-tab'] = {
+    help = 'toggle selection backward',
+    messages = { 'ToggleSelection', 'FocusPrevious' },
+  }
+end
+for _, mode in ipairs { 'type_to_nav' } do
+  xplr.config.modes.custom[mode].key_bindings.on_key.tab = {
+    help = 'toggle selection',
+    messages = { 'ToggleSelection', 'FocusNext' },
+  }
+  xplr.config.modes.custom[mode].key_bindings.on_key['back-tab'] = {
+    help = 'toggle selection backward',
+    messages = { 'ToggleSelection', 'FocusPrevious' },
+  }
+end
 
-require('zoxide').setup { key = reg.zoxide }
-require('dua-cli').setup { key = reg.dua_cli }
+-- xplr.config.general.initial_layout = 'no_help_no_selection'
+xplr.config.general.initial_layout = 'no_selection'
 
 -------- Col widths
 xplr.config.general.table.col_widths = {
@@ -785,4 +1035,8 @@ xplr.config.general.table.row.style.fg = nil
 xplr.config.general.table.row.style.sub_modifiers = nil
 
 -------- Tree
-xplr.config.general.table.tree = nil
+xplr.config.general.table.tree = {
+  { format = '', style = {} },
+  { format = '', style = {} },
+  { format = '', style = {} },
+}

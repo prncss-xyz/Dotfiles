@@ -170,6 +170,19 @@ function M.extend()
         },
       },
     },
+    y = b {
+      desc = 'sandwich add',
+      n = b {
+        function()
+          require('flies.actions').op(
+            '<Plug>(operator-sandwich-add)',
+            'outer',
+            false
+          )
+        end,
+        x = b { '<Plug>(operator-sandwich-add)' },
+      },
+    },
     ['<cr>'] = keys {
       prev = b { '<Plug>(unimpaired-blank-up)' },
       next = b { '<Plug>(unimpaired-blank-down)' },

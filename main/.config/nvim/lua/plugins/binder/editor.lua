@@ -14,20 +14,41 @@ function M.extend()
       prev = b { desc = 'back', require('modules.toggler').back },
       next = b { require('modules.toggler').toggle },
     },
+    a = b {
+      desc = 'Diffview',
+      require('modules.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
+    },
     c = keys {
       desc = 'split',
+      -- TODO: zoom
       prev = b { lazy_req('split', 'close'), desc = 'close' },
-      s = b { desc = 'lsp', lazy_req('split', 'open_lsp') },
-      q = b { desc = 'caca', lazy_req('split', 'open_lsp'), modes = 'nx' },
-      r = modes {
-        desc = 'pop',
-        n = b { lazy_req('split', 'pop', { target = 'here' }, 'n') },
-        x = b { lazy_req('split', 'pop', { target = 'here' }, 'x') },
-      },
+      -- q = b { desc = 'lsp', lazy_req('split', 'open_lsp'), modes = 'nx' },
+      -- r = modes {
+      --   desc = 'pop',
+      --   n = b { lazy_req('split', 'pop', { target = 'here' }, 'n') },
+      --   x = b { lazy_req('split', 'pop', { target = 'here' }, 'x') },
+      -- },
       o = modes {
         desc = 'open',
         n = b { lazy_req('split', 'open', {}, 'n') },
         x = b { lazy_req('split', 'open', {}, 'x') },
+      },
+      z = keys {
+        prev = b {
+          desc = 'zen',
+          require('modules.toggler').cb('ZenMode', 'ZenMode'),
+        },
+        next = b { require('plugins.binder.actions').zoom },
+      },
+      [';'] = b {
+        function()
+          vim.cmd [[
+            vsp
+            wincmd h
+            vertical resize 85
+        ]]
+        end,
+        desc = 'vertical 85',
       },
     },
     d = b { desc = 'filetype docu', require('bindutils').docu_current },
@@ -43,9 +64,36 @@ function M.extend()
       require('modules.toggler').cb('NvimTreeOpen', 'NvimTreeClose'),
     },
     g = b { desc = 'Neogit', require('modules.toggler').cb('Neogit', ':q') },
-    h = b {
-      desc = 'Diffview',
-      require('modules.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
+    h = keys {
+      redup = b {
+        desc = 'help tags',
+        lazy_req('telescope.builtin', 'help_tags'),
+      },
+      c = b {
+        desc = 'highlights',
+        lazy_req('telescope.builtin', 'highlights'),
+      },
+      d = b {
+        desc = 'md_help',
+        lazy_req('telescope', 'extensions.my.md_help'),
+      },
+      m = b {
+        desc = 'man pages',
+        lazy_req('telescope.builtin', 'man_pages'),
+      },
+      o = b {
+        -- FIXME:
+        desc = 'modules',
+        lazy_req('telescope', 'extensions.my.modules'),
+      },
+      p = b {
+        desc = 'installed plugins',
+        lazy_req('telescope', 'extensions.my.installed_plugins'),
+      },
+      u = b {
+        desc = 'uniduck',
+        lazy_req('telescope', 'extensions.my.uniduck'),
+      },
     },
     i = keys {
       desc = 'unimpaired directory',
@@ -88,10 +136,6 @@ function M.extend()
     y = b {
       desc = 'undo tree',
       require('modules.toggler').cb('UndotreeToggle', 'UndotreeToggle'),
-    },
-    z = b {
-      desc = 'zen mode',
-      require('modules.toggler').cb('ZenMode', 'ZenMode'),
     },
     ['<space>'] = b {
       desc = 'commands',

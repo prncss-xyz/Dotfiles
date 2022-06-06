@@ -38,7 +38,8 @@ local function find_project_files(prompt_bufnr)
   )
   local opt = { cwd = project_path, hidden = config.options.show_hidden }
   if cd_successful then
-    require('bindutils').project_files()
+    -- FIXME: bad dependancy architecture
+    require('plugins.binder.actions').project_files()
   end
 end
 

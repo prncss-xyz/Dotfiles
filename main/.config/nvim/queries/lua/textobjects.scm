@@ -1,6 +1,10 @@
 (string) @string.outer
+(string _ _ @string.inner _)
 
-(_) @node
+;; (comment) @komment.outer
+;; (comment (comment_content @komment.inner))
+
+(_) @node.outer
 
 (arguments (_) @swappable)
 (parameters (_) @swappable)
@@ -19,21 +23,6 @@ _ @token.outer
 
 ; Generalized argument
 ; TODO: 
-
-; Comments
-(comment) @komment.inner
-
-; from nvim-treesitter-textsujects smart
-((comment) @_start @_end
-     (#make-range! "komment.inner" @_start @_end))
-
-; TODO: This query doesn't work for comment groups at the start and end of a file
-;       See: https://github.com/tree-sitter/tree-sitter/issues/1138
-(((_) @head . (comment) @_start . (comment)+ @_end (_) @tail)
-    (#not-has-type? @tail "comment")
-    (#not-has-type? @head "comment")
-    (#make-range! "komment.outer" @_start @_end))
-
 
 ; swappable
 ; TODO: (for_numeric_cause > start)

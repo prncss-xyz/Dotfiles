@@ -2,7 +2,7 @@ local M = {}
 
 function M.config()
   local ls = require 'luasnip'
-  ls.config.set_config { history = true, enable_autosnippets = false }
+  ls.config.set_config { history = false, enable_autosnippets = false }
 
   if false then
     require('luasnip.loaders.from_vscode').lazy_load '' -- to load snippets in plugin path

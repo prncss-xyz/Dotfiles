@@ -1,7 +1,0 @@
-# my library for papers and stuff
-[papers]
-dir = ~/Media/papers
-
-# my library for books and related documents
-[books]
-dir = ~/Media/books

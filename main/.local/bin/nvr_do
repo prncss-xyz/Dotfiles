@@ -1,7 +1,17 @@
 #!/usr/bin/env sh
 
-if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
-  nvr "$@" --nostart -s || "$TERMINAL" -e nvim "$@" &
-else
-  "$TERMINAL" -e nvim "$@" &
+echo "$NVIM_LISTEN_ADDRESS"
+
+if [ -z "$NVIM_LISTEN_ADDRESS" ]; then
+  echo 0
+  export NVIM_LISTEN_ADDRESS="/tmp/nvim-$$.sock"
 fi
+if [ -S "$NVIM_LISTEN_ADDRESS" ]; then
+  echo nvim --server "$NVIM_LISTEN_ADDRESS" --remote imv-do.log
+  nvim --server "$NVIM_LISTEN_ADDRESS" --remote imv-do.log
+else
+  echo exec "$TERMINAL" -e nvim --listen "$NVIM_LISTEN_ADDRESS" "$@"  &
+  exec "$TERMINAL" -e nvim --listen "$NVIM_LISTEN_ADDRESS" "$@"  &
+  # exec "$TERMINAL" -e nvr_start
+fi
+

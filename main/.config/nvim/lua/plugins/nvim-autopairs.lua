@@ -1,5 +1,10 @@
 local M = {}
 
+local function cr()
+  require 'plugins.binder.actions'.cr()
+  return _G.MPairs.completion_confirm()
+end
+
 function M.config()
   if false then
     local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
@@ -25,6 +30,11 @@ function M.config()
       check_comma = true,
     },
   }
+  vim.api.nvim_set_keymap('i', '<cr>', '', {
+    noremap = true,
+    expr = true,
+    callback = cr,
+  })
 end
 
 return M

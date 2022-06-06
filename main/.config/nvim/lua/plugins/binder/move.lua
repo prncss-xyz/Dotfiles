@@ -12,31 +12,28 @@ function M.extend()
   local d = require('plugins.binder.parameters').d
   return keys {
     a = b {
+      desc = 'current buffer fuzzy find',
       lazy_req('telescope.builtin', 'current_buffer_fuzzy_find', {}),
     },
-    b = b { '%', modes = 'nxo' },
+    b = b { '%', modes = 'nxo', desc = 'matching char' },
     c = keys {
-      prev = b { util.asterisk_gz },
-      next = b { util.asterisk_z },
+      prev = b { util.asterisk_gz, desc = 'current word start' },
+      next = b { util.asterisk_z, desc = 'current word' },
     },
-    d = keys {
-      prev = b {
-        vim.diagnostic.goto_prev,
-        desc = 'go previous diagnostic',
-      },
-      next = b {
-        vim.diagnostic.goto_next,
-        desc = 'go next diagnostic',
-      },
+    d = np {
+      desc = 'diagnostic',
+      prev = vim.diagnostic.goto_prev,
+      next = vim.diagnostic.goto_next,
     },
     g = b { '``', desc = 'before last jump' },
-    l = b { '`' }, -- jump
+    l = b { '`', desc = 'mark <char>' },
     m = keys {
-      prev = b { '`[', 'start of last mod', modes = 'nxo' },
-      next = b { '`]', 'begin of last mod', modes = 'nxo' },
+      prev = b { '`[', desc = 'start of last mod', modes = 'nxo' },
+      next = b { '`]', desc = 'begin of last mod', modes = 'nxo' },
     },
     o = b { '`.', desc = 'last change' },
-    r = keys {
+    r = np {
+      desc = 'reference',
       prev = function()
         require('illuminate').next_reference { wrap = true, reverse = true }
       end,
@@ -44,12 +41,14 @@ function M.extend()
         require('illuminate').next_reference { wrap = true }
       end,
     },
-    s = b { require('bindutils').telescope_symbols_md_lsp },
-    t = keys {
+    s = b { require('bindutils').telescope_symbols_md_lsp, desc = 'lsp symbol' },
+    t = np {
+      desc = 'failed test',
       prev = b { '<Plug>(ultest-prev-fail)' },
       next = b { '<Plug>(ultest-next-fail)' },
     },
     u = np {
+      desc = 'page',
       prev = function()
         require('neoscroll').scroll(-0.9, true, 250)
       end,
@@ -58,18 +57,18 @@ function M.extend()
       end,
     },
     v = keys {
-      prev = b { '`<', modes = 'nxo' },
-      next = b { '`>', modes = 'nxo' },
+      prev = b { '`<', modes = 'nxo', desc = 'selection start' },
+      next = b { '`>', modes = 'nxo', desc = 'selection end' },
     },
     [';'] = np {
       prev = 'g,',
       next = 'g;',
       desc = 'change',
     },
-    [d.up] = b { 'gk' },
-    [d.down] = b { 'gj' },
-    -- TODO: deel with accents
+    [d.up] = b { 'gk', desc = 'prev visual line' },
+    [d.down] = b { 'gj', desc = 'next visual line' },
     [d.search] = keys {
+      desc = 'search',
       prev = b {
         function()
           require('flies.objects.search').search('?', true, false)
@@ -80,7 +79,6 @@ function M.extend()
           require('flies.objects.search').search('/', true, true)
         end,
       },
-      desc = 'search'
     },
   }
 end

@@ -62,5 +62,5 @@ return function (opts)
       end)
       return true
     end,
-  }):find()
+  }, nil):find()
 end

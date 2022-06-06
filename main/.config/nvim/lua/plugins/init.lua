@@ -78,7 +78,6 @@ return require('packer').startup {
       module = 'flies',
       module_pattern = 'flies.*',
       event = 'BufReadPost',
-      rocks = 'https://raw.githubusercontent.com/luafun/luafun/master/fun-scm-1.rockspec',
     }
     use { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' }
     use { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } }
@@ -106,7 +105,6 @@ return require('packer').startup {
       config = config 'nvim-gps',
       module = 'nvim-gps',
     }
-    use { 'mfussenegger/nvim-treehopper', module = 'tsht' }
 
     -- syntax
     use { 'ajouellette/sway-vim-syntax', ft = 'sway' }
@@ -278,16 +276,6 @@ return require('packer').startup {
         require('plugins.luasnip').config()
       end,
     }
-    -- Tracking
-    -- use { 'git-time-metric/gtm-vim-plugin'}
-    use {
-      'chrisbra/BufTimer',
-      setup = function()
-        vim.g.buf_report_autosave_dir = os.getenv 'HOME'
-          .. '-'
-          .. (os.getenv 'hostname' or 'unknown') -- FIXME:
-      end,
-    }
     -- Git
     use {
       'lewis6991/gitsigns.nvim',
@@ -323,13 +311,6 @@ return require('packer').startup {
             diffview = true,
           },
         }
-      end,
-    }
-    -- Resolve git conflicts with ConflictMarker* commands
-    use {
-      'rhysd/conflict-marker.vim',
-      setup = function()
-        vim.g.conflict_marker_enable_mappings = 0
       end,
     }
 
@@ -399,9 +380,6 @@ return require('packer').startup {
     use {
       'kyazdani42/nvim-tree.lua',
       requires = 'kyazdani42/nvim-web-devicons',
-      setup = function()
-        require('plugins.nvim-tree').setup()
-      end,
       config = function()
         require('plugins.nvim-tree').config()
       end,
@@ -486,7 +464,6 @@ return require('packer').startup {
       module = 'hop',
       config = config 'hop',
     }
-    use { 'indianboy42/hop-extensions', module = 'hop-extensions' }
     use {
       'abecodes/tabout.nvim',
       event = 'InsertEnter',
@@ -532,10 +509,6 @@ return require('packer').startup {
       module = 'telescope._extensions.dap',
     }
     use {
-      'nvim-telescope/telescope-file-browser.nvim',
-      module = 'telescope._extensions.file_browser',
-    }
-    use {
       local_repo 'nononotes-nvim',
       config = function()
         require('plugins.nononotes').setup()
@@ -562,25 +535,6 @@ return require('packer').startup {
         'LegendaryEvalLines',
         'LegendaryEvalBuf',
       },
-    }
-    use {
-      'folke/which-key.nvim',
-      event = 'VimEnter',
-      config = function()
-        require('which-key').setup {
-          plugins = {
-            presets = {
-              operators = false,
-              motions = false,
-              text_objects = false,
-              windows = false,
-              nav = false,
-              z = false,
-              g = false,
-            },
-          },
-        }
-      end,
     }
     use {
       local_repo 'binder.nvim',
@@ -647,13 +601,6 @@ return require('packer').startup {
       'wellle/targets.vim',
       after = 'flies.nvim',
       setup = setup 'targets',
-      disable = true,
-    }
-    use {
-      local_repo 'buffet.nvim',
-      opt = true,
-      module = 'buffer',
-      config = default_config 'buffet',
       disable = true,
     }
 
@@ -749,10 +696,12 @@ return require('packer').startup {
       'dbeniamine/cheat.sh-vim',
       setup = function()
         vim.g.CheatSheetDoNotMap = 1
-        vim.g.CheatSheetBaseUrl='http://localhost:8002'
+        vim.g.CheatSheetBaseUrl = 'http://localhost:8002'
       end,
       cmd = { 'Cheat', 'CheatReplace', 'CheatPaste', 'HowIn' },
     }
+    use { 'nvim-neorg/neorg', config = config 'neorg' }
+    use { 'linty-org/readline.nvim', module = 'readline' }
 
     -- Various
     use {

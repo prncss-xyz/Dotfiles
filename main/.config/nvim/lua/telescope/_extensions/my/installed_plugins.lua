@@ -1,6 +1,3 @@
--- opens an installed plugin repo
-
-local telescope = require 'telescope'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
@@ -8,7 +5,7 @@ local actions_set = require 'telescope.actions.set'
 local actions_state = require 'telescope.actions.state'
 local conf = require('telescope.config').values
 
-return function (opts)
+return function(opts)
   opts = opts or {}
   local cwd = os.getenv 'HOME' .. '/.local/share/nvim/site/pack/' -- TODO: query that dir
   pickers.new({
@@ -24,11 +21,12 @@ return function (opts)
         local entry = actions_state.get_selected_entry()
         local dir = cwd .. entry[1]
         if type == 'default' then
-          actions._close(prompt_bufnr, true)
-          require('telescope.builtin').git_files { cwd = dir }
+          actions.close(prompt_bufnr)
+          vim.cmd('lcd ' .. dir) -- TODO: escape
+          require('telescope.builtin').git_files {}
         end
       end)
       return true
     end,
-  }):find()
+  }, nil):find()
 end

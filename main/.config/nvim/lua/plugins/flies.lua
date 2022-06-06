@@ -1,18 +1,20 @@
 local M = {}
 
 function M.config()
+  local pairs = {
+    { '(', ')' },
+    { '[', ']' },
+    { '{', '}' },
+    { '<', '>' },
+  }
   local ts = require('flies.objects.treesitter').new
   local buf = require('flies.objects.buffer').new()
   local queries = {
     A = ts { 'parameter', blank_text_object = true },
     a = ts { 'swappable', blank_text_object = true },
-    b = require('flies.objects.pair').new {
-      { '(', ')' },
-      { '[', ']' },
-      { '{', '}' },
-    },
-    c = ts '@comment.outer',
-    -- c = ts 'comment',
+    b = require('flies.objects.pair').new(pairs),
+    -- c = ts '@komment.outer',
+    c = ts 'comment',
     -- d:
     e = buf,
     f = ts 'function',
@@ -23,6 +25,7 @@ function M.config()
     k = ts 'call',
     l = ts 'token',
     m = require('flies.objects.moeity').new(),
+    -- n = ts 'node',
     -- m:
     -- n: qualifier
     -- o:
@@ -32,9 +35,9 @@ function M.config()
     -- s:
     -- t: tag (targets)
     T = ts 'tag',
-    -- Q = ts 'string',
+    Q = ts 'string',
     q = require('flies.objects.subline').string('"', "'", '`'),
-    -- u: node; see also: David-Kunz/treesitter-unit
+    -- u: treesitter-unit: David-Kunz/treesitter-unit / tsht
     v = require 'flies.objects.subline.variable_segment',
     w = require('flies.objects.subline').word(),
     x = ts 'class',
@@ -53,6 +56,11 @@ function M.config()
     queries[c] = require('flies.objects.pair').new {
       { c, c },
     }
+  end
+  for _, pair in ipairs(pairs) do
+    local l, r = unpack(pair)
+    queries[l] = require('flies.objects.pair').new { pair }
+    queries[r] = require('flies.objects.pair').new { pair }
   end
   for c in string.gmatch('._/|\\$', '.') do
     queries[c] = require('flies.objects.subline').separator(c)

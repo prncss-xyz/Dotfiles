@@ -1,0 +1,8 @@
+[papers]
+dir = ~/Media/papers
+
+[readlist]
+dir = ~/Media/readlist
+
+[settings]
+default-library = readlist

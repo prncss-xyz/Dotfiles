@@ -15,7 +15,7 @@ end
 return function (opts)
   opts = opts or {}
   local cwd = os.getenv 'PROJECTS'
-  pickers.new({
+  pickers.new(opts, {
     prompt_title = 'projects',
     finder = finders.new_oneshot_job(
       { 'fd', '--type', 'd', '--max-depth', '1' },
@@ -28,11 +28,11 @@ return function (opts)
         local entry = actions_state.get_selected_entry()
         local dir = cwd .. '/' .. entry[1]
         if type == 'default' then
-          actions._close(prompt_bufnr, true)
+          actions.close(prompt_bufnr)
           project_files { cwd = dir }
         end
       end)
       return true
     end,
-  }):find()
+  }, nil):find()
 end

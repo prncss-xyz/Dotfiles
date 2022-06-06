@@ -6,13 +6,14 @@ function M.extend()
   local b = binder.b
   local lazy_req = require('plugins.binder.util').lazy_req
   return keys {
-    redup = b {
-      desc = 'project files',
-      require('plugins.binder.actions').project_files,
+    redup = keys {
+      desc = 'bufsurf',
+      prev = b { desc = 'next', 'BufSurfForward', cmd = true },
+      next = b { desc = 'previous', 'BufSurfBack', cmd = true },
     },
     a = b { desc = 'edit alt', require('plugins.binder.actions').edit_alt },
     b = keys {
-      desc = '0',
+      desc = 'bookmark',
       a = keys {
         desc = '0',
         prev = b { lazy_req('marks', 'prev_bookmark0') },
@@ -50,27 +51,24 @@ function M.extend()
       prev = b {
         desc = 'file (recursive)',
         function()
-          require('telescope').extensions.file_browser.file_browser {
-            cwd = vim.fn.expand '%:p:h',
-            depth = 10,
+          require('telescope.builtin').find_files {
+            cwd = vim.fn.expand('%:p:h', nil, nil),
           }
         end,
       },
       next = b {
         desc = 'file (current)',
         function()
-          dump(require('telescope').extensions.file_browser)
-          require('telescope').extensions.file_browser.file_browser {
-            cwd = vim.fn.expand '%:p:h',
-            depth = 1,
+          require('telescope.builtin').find_files {
+            cwd = vim.fn.expand('%:p:h', nil, nil),
+            find_command = { 'fd', '--type', 'f', '-d', '1' },
           }
         end,
       },
     },
-    n = keys {
-      desc = 'bufsurf',
-      prev = b { desc = 'next', 'BufSurfForward', cmd = true },
-      next = b { desc = 'previous', 'BufSurfBack', cmd = true },
+    n = b {
+      desc = 'project files',
+      require('plugins.binder.actions').project_files,
     },
     o = b {
       desc = 'oldfiles',

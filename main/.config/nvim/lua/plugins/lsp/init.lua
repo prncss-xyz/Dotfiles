@@ -214,7 +214,7 @@ function M.config()
     end,
     settings = {
       ltex = {
-        enabled = {
+        enabled = false and {
           'shellscript',
           'go',
           'javascript',
@@ -224,7 +224,7 @@ function M.config()
           'sql',
           'typescript',
           'typescriptreact',
-        },
+        } or {},
         language = 'en',
         -- autodetection does not work well for source files and keyword heavy notes
         -- language = 'auto',

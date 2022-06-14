@@ -16,32 +16,38 @@ function M.extend()
       c = b { desc = 'scroll middle', lazy_req('neoscroll', 'zz', 250) },
     },
     q = keys {
-      r = b { '<Plug>(Mac_RecordNew)' },
-      n = keys {
-        prev = b { '<Plug>(Mac_RotateForward)' },
-        next = b { '<Plug>(Mac_RotateBack)' },
-      },
-      a = keys {
-        prev = b { '<Plug>(Mac_Prepend)' },
-        next = b { '<Plug>(Mac_Append)' },
-      },
-      w = b { '<Plug>(Mac_NameCurrentMacro)' },
-      fw = b { '<Plug>(Mac_NameCurrentMacroForFileType)' },
-      sw = b { '<Plug>(Mac_NameCurrentMacroForCurrentSession)' },
-      l = b { '<cmd>DisplayMacroHistory<cr>' },
-      redup = b { '<plug>(Mac_Play)', noremap = false },
-      [d.search] = keys {
-        w = b { '<Plug>(Mac_SearchForNamedMacroAndOverwrite)' },
-        r = b { '<Plug>(Mac_SearchForNamedMacroAndRename)' },
-        d = b { '<Plug>(Mac_SearchForNamedMacroAndDelete)' },
-        q = b { '<Plug>(Mac_SearchForNamedMacroAndPlay)' },
-      },
+      desc = 'marco',
+      prev = b { desc = 'record q', 'qq' },
+      next = b { desc = 'play q', '@q' }, -- @@ play again
+      -- ['.'] = b { desc = 'play last', '@@' },
     },
+    -- q = keys {
+    --   r = b { '<Plug>(Mac_RecordNew)' },
+    --   n = keys {
+    --     prev = b { '<Plug>(Mac_RotateForward)' },
+    --     next = b { '<Plug>(Mac_RotateBack)' },
+    --   },
+    --   a = keys {
+    --     prev = b { '<Plug>(Mac_Prepend)' },
+    --     next = b { '<Plug>(Mac_Append)' },
+    --   },
+    --   w = b { '<Plug>(Mac_NameCurrentMacro)' },
+    --   fw = b { '<Plug>(Mac_NameCurrentMacroForFileType)' },
+    --   sw = b { '<Plug>(Mac_NameCurrentMacroForCurrentSession)' },
+    --   l = b { '<cmd>DisplayMacroHistory<cr>' },
+    --   redup = b { '<plug>(Mac_Play)', noremap = false },
+    --   [d.search] = keys {
+    --     w = b { '<Plug>(Mac_SearchForNamedMacroAndOverwrite)' },
+    --     r = b { '<Plug>(Mac_SearchForNamedMacroAndRename)' },
+    --     d = b { '<Plug>(Mac_SearchForNamedMacroAndDelete)' },
+    --     q = b { '<Plug>(Mac_SearchForNamedMacroAndPlay)' },
+    --   },
+    -- },
     v = b { desc = 'reselect', 'gv' },
     y = keys {
       desc = 'search',
     },
-    z = {
+    z = keys {
       desc = 'spell',
       b = b { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
       e = b { '<cmd>setlocal spell spelllang=en_us,cjk<cr>', 'en' },
@@ -77,7 +83,6 @@ if false then
     gh = map_search('https://github.com/search?q=', 'github'),
     go = map_search('https://google.ca/search?q=', 'google'),
     lh = map_search('https://www.libhunt.com/search?query=', 'libhunt'),
-    man = { require('modules.browser').man, 'man page' },
     mdn = map_search('https://developer.mozilla.org/en-US/search?q=', 'mdn'),
     nell = map_search(
       'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
@@ -88,7 +93,6 @@ if false then
       '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
       'open current file',
     },
-    pp = { require('modules.setup-session').launch, 'session lauch' },
     pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
     sea = map_search('https://www.seriouseats.com/search?q=', 'seriouseats'),
     sep = map_search(

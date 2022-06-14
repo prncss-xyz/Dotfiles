@@ -31,8 +31,7 @@ function M.extend()
           function()
             require('flies.actions').op(
               '<Plug>(comment_toggle_blockwise)',
-              'outer',
-              false
+              { domain = 'outer' }
             )
           end,
           x = b { '<Plug>(comment_toggle_blockwise_visual)' },
@@ -43,8 +42,7 @@ function M.extend()
           function()
             require('flies.actions').op(
               '<Plug>(comment_toggle_linewise)',
-              'outer',
-              false
+              { domain = 'outer' }
             )
           end,
         },
@@ -148,8 +146,8 @@ function M.extend()
       },
     },
     x = b {
-      desc = 'swipe',
-      '<Plug>(flies-swipe)',
+      desc = 'explode',
+      '<Plug>(flies-explode)',
       modes = 'nx',
     },
     ['<tab>'] = keys {
@@ -170,19 +168,9 @@ function M.extend()
         },
       },
     },
-    y = b {
-      desc = 'sandwich add',
-      n = b {
-        function()
-          require('flies.actions').op(
-            '<Plug>(operator-sandwich-add)',
-            'outer',
-            false
-          )
-        end,
-        x = b { '<Plug>(operator-sandwich-add)' },
-      },
-    },
+    -- 'asdf'
+    y = b { desc = 'wrap', '<Plug>(flies-wrap)', modes = 'nx' },
+    z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },
     ['<cr>'] = keys {
       prev = b { '<Plug>(unimpaired-blank-up)' },
       next = b { '<Plug>(unimpaired-blank-down)' },

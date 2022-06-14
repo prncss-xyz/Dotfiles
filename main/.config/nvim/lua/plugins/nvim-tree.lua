@@ -131,7 +131,7 @@ M.config = function()
       end
     end
     vim.cmd(string.format('e %s', fname))
-    require('modules.templates').template_match()
+    require('templum').template_match()
   end)
 end
 

@@ -39,3 +39,4 @@ set -gx MAMBA_ROOT_PREFIX "/home/prncss/micromamba"
 eval "/usr/bin/micromamba" shell hook --shell fish --prefix "/home/prncss/micromamba" | source
 # <<< mamba initialize <<<
 complete -c cht -xa '(cht :list)'
+set time date

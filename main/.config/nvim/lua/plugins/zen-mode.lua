@@ -1,5 +1,7 @@
 local M = {}
 
+local current_line_blame
+
 function M.config()
   require('zen-mode').setup {
     window = {
@@ -11,18 +13,21 @@ function M.config()
         ruler = true,
         showcmd = false,
       },
-      gitsigns = { enabled = false },
+      gitsigns = { enabled = true },
       twilight = { enabled = true },
     },
     on_open = function()
-      local Job = require 'plenary'.job
+      -- FIXME: not working
+      current_line_blame = require('gitsigns').toggle_current_line_blame(false)
+      local Job = require('plenary').job
       Job
         :new({ command = 'wtype', args = { '-M', 'ctrl', '--', '+++++' } })
         :sync()
       Job:new({ command = 'swaymsg', args = { 'fullscreen', 'enable' } }):sync()
     end,
     on_close = function()
-      local Job = require 'plenary'.job
+      require('gitsigns').toggle_current_line_blame(current_line_blame)
+      local Job = require('plenary').job
       Job
         :new({ command = 'wtype', args = { '-M', 'ctrl', '--', '-----' } })
         :sync()

@@ -28,9 +28,54 @@ function M.menu_next()
   end
 end
 
+local function starts_with(full, prefix)
+  if full:sub(1, prefix:len()) == prefix then
+    return true
+  end
+end
+
+local function get_playground_dir()
+  local project_dir = vim.fn.getenv 'PROJECTS'
+  if project_dir:sub(project_dir:len(), project_dir:len()) ~= '/' then
+    project_dir = project_dir .. '/'
+  end
+  local cwd = vim.fn.getcwd()
+  if not starts_with(cwd, project_dir) then
+    return
+  end
+  local rel = cwd:sub(project_dir:len() + 1)
+  local path = project_dir .. 'extra/' .. rel
+  return path
+end
+
+function M.edit_playground_file()
+  local ft = vim.bo.filetype
+  if ft == '' then
+    return
+  end
+  if ft == 'javascript' then
+    ft = 'js'
+  end
+  if ft == 'typescript' then
+    ft = 'ts'
+  end
+  if ft == 'javascriptreact' then
+    ft = 'jsx'
+  end
+  if ft == 'typescriptreact' then
+    ft = 'tsx'
+  end
+  local path = get_playground_dir()
+  if vim.fn.isdirectory(path) == 0 then
+    vim.fn.mkdir(path, 'p')
+  end
+  local filename = path .. '/playground.' .. ft
+  vim.cmd('e ' .. filename)
+end
+
 M.jump_previous = util.first_cb(
-  function ()
-    print('previous')
+  function()
+    print 'previous'
   end,
   util.lazy_req('luasnip', 'jump', -1),
   util.lazy_req('tabout', 'taboutBack')
@@ -38,8 +83,8 @@ M.jump_previous = util.first_cb(
 )
 
 M.jump_next = util.first_cb(
-  function ()
-    print('next')
+  function()
+    print 'next'
   end,
   util.lazy_req('luasnip', 'jump', 1),
   util.lazy_req('tabout', 'tabout')

@@ -1,4 +1,4 @@
-version = '0.18.0'
+version = '0.19.0'
 
 -- override builtin modes to get rid of deep_merge
 -- fzm: project root or current dir, unless in downloads (by mimetype then)
@@ -999,6 +999,17 @@ for _, mode in ipairs { 'type_to_nav' } do
     messages = { 'ToggleSelection', 'FocusPrevious' },
   }
 end
+
+xplr.config.general.focus_ui.prefix = '▸ '
+                                       
+xplr.config.general.focus_selection_ui.suffix = "]"
+xplr.config.general.focus_selection_ui.suffix = "]"
+xplr.config.general.focus_ui.suffix = ' ◂'
+xplr.config.general.default_ui.prefix = '  '
+xplr.config.general.selection_ui.prefix = ' {'
+xplr.config.general.selection_ui.suffix = '}'
+xplr.config.general.focus_selection_ui.prefix = '▸{'
+xplr.config.general.focus_selection_ui.suffix = '}◂'
 
 -- xplr.config.general.initial_layout = 'no_help_no_selection'
 xplr.config.general.initial_layout = 'no_selection'

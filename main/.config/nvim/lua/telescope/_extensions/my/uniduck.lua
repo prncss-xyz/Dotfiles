@@ -19,7 +19,6 @@ end
 
 local function on_choice(choice)
   local url = 'file://' .. uniduck_dir .. '/' .. choice
-  dump(url)
   browse_url(url)
 end
 

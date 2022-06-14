@@ -10,19 +10,21 @@ function M.extend()
   local b = binder.b
   local lazy_req = require('plugins.binder.util').lazy_req
   return keys {
-    a = b { 'a' },
-    b = b { desc = 'matchparen', '%', modes = 'nxo' },
+    a = b { desc = 'append', 'a' },
+    b = b { desc = 'move extremity', lazy_req('flies.actions', 'extremity') },
     C = b { '<nop>', modes = 'nx' },
     -- c = b { '"_c', modes = 'nx' },
     c = modes {
-      n = b { lazy_req('flies.actions', 'op', '"_c', 'inner', true) },
+      n = b {
+        lazy_req('flies.actions', 'op', '"_c', { domain = 'inner' }),
+      },
       x = b { '"_c' },
     },
     -- cc = b { '"_cc', modes = 'n' },
     cc = b { '<nop>', modes = 'n' },
     D = b { '<nop>', modes = 'nx' },
     d = modes {
-      n = b { lazy_req('flies.actions', 'op', '"_d', 'outer', true) },
+      n = b { lazy_req('flies.actions', 'op', '"_d', { domain = 'outer' }) },
       x = b { '"_d' },
     },
     dd = b { '<nop>', modes = 'n' },
@@ -31,9 +33,9 @@ function M.extend()
       xo = b { 'e' },
     },
     f = modes {
-      n = b { lazy_req('flies.actions', 'meta_move', 'n') },
-      o = b { lazy_req('flies.actions', 'meta_move', 'o') },
-      x = b { lazy_req('flies.actions', 'meta_move', 'x') },
+      n = b { lazy_req('flies.actions', 'move', 'n') },
+      o = b { lazy_req('flies.actions', 'move', 'o') },
+      x = b { lazy_req('flies.actions', 'move', 'x') },
     },
     i = b { 'i' },
     n = b { lazy_req('flies.move_again', 'next') },
@@ -42,6 +44,7 @@ function M.extend()
     p = b {
       lazy_req('flies.move_again', 'previous'),
     },
+    rr = b { '"+', modes = 'nx' },
     r = b { '"', modes = 'nx' },
     s = modes {
       nx = b {
@@ -58,8 +61,7 @@ function M.extend()
       },
     },
     ou = b { 'U' },
-    t = b { lazy_req('flies.actions', 'move_current', 'inner') },
-    -- t = b { lazy_req('flies.actions', 'append_insert') },
+    t = b { lazy_req('flies.actions', 'append_insert') },
     u = b { 'u' },
     V = b { '<c-v>', modes = 'nxo' },
     v = modes {
@@ -77,30 +79,38 @@ function M.extend()
     --   modes = 'nx',
     -- },
     y = b { 'y', modes = 'nx' },
-    -- ['<space>'] = { ':', modes = 'nx' },
     ['<space>'] = b {
       desc = 'legendary find',
       lazy_req('legendary', 'find'),
     },
+    -- ['<space>'] = b {
+    --   desc = 'commands',
+    --   lazy_req('telescope.builtin', 'commands'),
+    -- },
     [d.right] = b { 'l', 'right', modes = 'nxo' },
     [d.left] = b { 'h', 'left', modes = 'nxo' },
     [d.up] = b { 'k', 'up', modes = 'nxo' },
     [d.down] = b { 'j', 'down', modes = 'nxo' },
     [d.search] = b { '/', modes = 'nxo' },
-    ['<c-n>'] = b { lazy_req('bufjump', 'forward') },
-    ['<c-p>'] = b { lazy_req('bufjump', 'backward') },
-    ['<c-q>'] = b { 'qall!', cmd = true, desc = 'quit' },
+    -- ['<c-p>'] = modes {
+    --   i = b { lazy_req('luasnip', 'change_choice', -1) },
+    -- },
+    -- ['<c-n>'] = modes {
+    --   i = b { lazy_req('luasnip', 'change_choice', 1) },
+    -- },
+    ['<c-q>'] = b { 'ZZ', desc = 'quit' },
     ['<c-v>'] = b { '"+P', modes = 'nv' },
     -- also: require("luasnip.extras.select_choice")
-    [d.prev_search] = modes {
-      i = b { lazy_req('luasnip', 'change_choice', -1) },
+    ['<m-a>'] = b { desc = 'buf 1', lazy_req('buffstory', 'open', 1) },
+    ['<m-s>'] = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
+    ['<m-d>'] = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
+    ['<m-f>'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
+    ['<m-b>'] = b { desc = 'window back', 'wincmd p', cmd = true },
+    ['<m-w>'] = b { desc = 'close window', 'q', cmd = true },
+    ['<m-h>'] = b {
+      desc = 'pick window',
+      require('util.actions').winpick_focus,
     },
-    [d.next_search] = modes {
-      i = b { lazy_req('luasnip', 'change_choice', 1) },
-    },
-    ['<a-a>'] = b { 'e#', 'previous buffer' },
-    ['<a-b>'] = b { desc = 'window back', 'wincmd p', cmd = true },
-    ['<a-w>'] = b { 'q', desc = 'close window', cmd = true },
     [alt(d.left)] = b {
       lazy_req('modules.wrap_win', 'left'),
       desc = 'window left',

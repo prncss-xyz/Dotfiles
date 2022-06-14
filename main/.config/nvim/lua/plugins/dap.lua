@@ -9,6 +9,9 @@ dap.run({
 })
 --]]
 
+local host = '127.0.0.1'
+local port = 20000
+
 local function pick_process()
   local dap = require 'dap'
   local output = vim.fn.system { 'ps', 'a' }
@@ -78,14 +81,14 @@ function M.config()
         return '127.0.0.1'
       end,
       port = function()
-        local val = 54231
+        local val = tonumber(vim.fn.input 'Port: ')
+        assert(val, 'Please provide a port number')
         return val
       end,
     },
   }
   dap.adapters.nlua = function(callback, config)
     callback { type = 'server', host = config.host, port = config.port }
-    -- callback { type = 'server', host = '127.0.0.1', port = 30001 }
   end
 
   -- git clone https://github.com/microsoft/vscode-node-debug2.git
@@ -169,14 +172,6 @@ function M.launch()
   end
   print('no launcher for filetype ' .. filetype)
 end
-
-vim.api.nvim_create_user_command('LaunchOSV', function()
-  local filetype = vim.bo.filetype
-  if filetype == 'lua' then
-    -- require('osv').run_this()
-    require('osv').launch { type = 'server', host = '127.0.0.1', port = 30000 }
-  end
-end, { narg = 0 })
 
 --   local dap_install = require 'dap-install'
 --   dap_install.setup {}

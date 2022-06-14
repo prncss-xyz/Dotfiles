@@ -6,7 +6,7 @@ vim.filetype.add {
     ['.busted'] = 'lua',
   },
   pattern = {
-    ['.*/%.config/waybar/config'] = 'json',
-    ['.*/%.config/sway/.*'] = 'sway',
+    ['/%.config/waybar/config'] = 'json',
+    ['/%.config/sway/'] = 'sway',
   },
 }

@@ -1,102 +1,7 @@
 local M = {}
 
-local function map_lang()
-  local binder = require 'binder'
-  local keys = binder.keys
-  local b = binder.b
-  local modes = binder.modes
-  local util = require 'plugins.binder.util'
-  local lazy_req = util.lazy_req
-  binder.bind(modes {
-    t = keys {
-      ['<c-w>n'] = b {
-        '<C-\\><C-n>',
-      },
-    },
-    c = keys {
-      ['<m-e>'] = b { '<c-f>' },
-    },
-    is = keys {
-      ['<c-space>'] = b { '<space><left>' },
-      ['<e-space>'] = b { '<space><left>' },
-      ['<c-f>'] = b { util.lazy_req('plugins.cmp', 'utils.confirm') },
-      ['<c-z>'] = b { lazy_req('plugins.cmp', 'utils.toggle') },
-      ['<c-p>'] = b { require('plugins.binder.actions').menu_previous },
-      ['<c-n>'] = b { require('plugins.binder.actions').menu_next },
-      ['<s-tab>'] = b {
-        require('plugins.binder.actions').jump_previous,
-        desc = 'prev insert point',
-      },
-      ['<tab>'] = b {
-        require('plugins.binder.actions').jump_next,
-        desc = 'next insert point',
-      },
-      ['<c-v>'] = b { '<c-r>+' },
-      ['<c-r>r'] = b {
-        '<c-r>"',
-      },
-      -- TODO: <c-u> noreamp j
-      -- prev next insert point
-      ['<c-u>'] = b { lazy_req('readline', 'backward_kill_line') },
-    },
-    -- c-f to format
-    isc = keys {
-      ['<c-a>'] = b { lazy_req('readline', 'beginning_of_line') },
-      ['<c-e>'] = b { lazy_req('readline', 'end_of_line') },
-      ['<c-k>'] = b { lazy_req('readline', 'kill_line') },
-      ['<c-w>'] = b { lazy_req('readline', 'backward_kill_word') },
-      ['<m-f>'] = b { lazy_req('readline', 'forward_word') },
-      ['<m-b>'] = b { lazy_req('readline', 'backward_word') },
-      ['<m-d>'] = b { lazy_req('readline', 'kill_word') }, --
-    },
-    ni = keys {
-      ['<c-s>'] = b {
-        function()
-          vim.cmd 'stopinsert'
-          require('bindutils').lsp_format()
-        end,
-      },
-      desc = 'format',
-      ['<c-g>'] = b {
-        lazy_req('telescope', 'extensions.luasnip.luasnip', {}),
-        modes = 'ni',
-      },
-    },
-    iv = keys {
-      ['<c-f>'] = b {
-        function()
-          require('luasnip.extras.otf').on_the_fly 'f'
-        end,
-        modes = 'vi',
-      },
-    },
-  })
-
-  -- prevent s-mode text to overwrite clipboard
-  -- Add a map for every printable character to copy to black hole register
-  local t = require('plugins.binder.util').t
-  for char_nr = 33, 126 do
-    local char = vim.fn.nr2char(char_nr)
-    vim.api.nvim_set_keymap(
-      's',
-      char,
-      '<c-o>"_c' .. t(char),
-      { noremap = true, silent = true }
-    )
-  end
-  vim.api.nvim_set_keymap(
-    's',
-    '<bs>',
-    '<c-o>"_c',
-    { noremap = true, silent = true }
-  )
-  vim.api.nvim_set_keymap(
-    's',
-    '<space>',
-    '<c-o>"_c<space>',
-    { noremap = true, silent = true }
-  )
-  return t
+local function t(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
 function M.config()
@@ -151,16 +56,28 @@ function M.config()
       next = b { '<nop>' },
     },
   })
+  require('key-menu').set('n', 'g')
+  require('key-menu').set('n', 'h')
+  require('key-menu').set('n', 'm')
+  require('key-menu').set('n', 'o')
+  require('key-menu').set('n', 'q')
+  require('key-menu').set('n', 'qj')
+  require('key-menu').set('n', 'qt')
+  require('key-menu').set('n', 'z')
 
   binder.extend(
     'peek',
     keys {
+      redup = b {
+        desc = 'focus',
+        '<c-w>w',
+      },
       d = b {
         desc = 'definition',
         lazy_req('goto-preview', 'goto_preview_definition'),
       },
       r = b {
-        desc = 'definition',
+        desc = 'reference',
         lazy_req('goto-preview', 'goto_preview_references'),
       },
       t = b { 'UltestOutput', cmd = true },
@@ -177,18 +94,68 @@ function M.config()
       require('modules.toggler').cb('TodoTrouble', 'TroubleClose'),
     },
   })
-  binder.with_labels('git', 'u', {
+  binder.with_labels('git', 'g', {
     peek = b {
+      desc = 'peek',
       lazy_req('gitsigns', 'blame_line', { full = true }),
     },
+    quickfix = b {
+      desc = 'hunks',
+      require('modules.toggler').cb('Gitsigns setqflist', 'TroubleClose'),
+    },
     editor = keys {
-      prev = b {
-        desc = 'diffview',
-        require('modules.toggler').cb('DiffviewOpen', 'DiffviewClose'),
+      redup = b {
+        desc = 'neogit',
+        require('modules.toggler').cb('Neogit', ':q'),
       },
-      next = b {
-        desc = 'hunks',
-        require('modules.toggler').cb('Gitsigns setqflist', 'TroubleClose'),
+      b = b {
+        desc = 'branch',
+        lazy_req('neogit', 'open', { 'branch', kind = 'split' }), -- split, vsplit
+      },
+      c = b {
+        desc = 'commit',
+        lazy_req('neogit', 'open', { 'commit', kind = 'split' }), -- split, vsplit
+      },
+      d = keys {
+        desc = 'diffview',
+        prev = b {
+          desc = 'diffview',
+          require('modules.toggler').cb('DiffviewOpen', 'DiffviewClose'),
+        },
+        next = b {
+          desc = 'diffview',
+          require('modules.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
+        },
+      },
+      H = b {
+        desc = 'help',
+        lazy_req('neogit', 'open', { 'help', kind = 'split' }), -- split, vsplit
+      },
+      l = b {
+        desc = 'log',
+        lazy_req('neogit', 'open', { 'log', kind = 'split' }), -- split, vsplit
+      },
+      p = keys {
+        prev = b {
+          desc = 'push',
+          lazy_req('neogit', 'open', { 'push', kind = 'split' }), -- split, vsplit
+        },
+        next = b {
+          desc = 'pull',
+          lazy_req('neogit', 'open', { 'pull', kind = 'split' }), -- split, vsplit
+        },
+      },
+      r = b {
+        desc = 'rebase',
+        lazy_req('neogit', 'open', { 'rebase', kind = 'split' }), -- split, vsplit
+      },
+      z = b {
+        desc = 'stash',
+        lazy_req('neogit', 'open', { 'stash', kind = 'split' }), -- split, vsplit
+      },
+      ['<cr>'] = b {
+        desc = 'blame toggle',
+        lazy_req('gitsigns', 'toggle_current_line_blame', { full = true }),
       },
     },
   })
@@ -196,7 +163,14 @@ function M.config()
     'mark',
     keys {
       redup = b {
-        '<cmd>rshada<cr><Plug>(Marks-toggle)<cmd>wshada!<cr>',
+        function()
+          if not vim.g.secret then
+            vim.fn.feedkeys(
+              t '<cmd>rshada<cr><Plug>(Marks-toggle)<cmd>wshada!<cr>',
+              'm'
+            )
+          end
+        end,
         desc = 'toggle next available mark at cursor',
       },
     }
@@ -258,7 +232,9 @@ function M.config()
       -- f = require('bindutils').bookmark_next(3),
       -- b = plug '(Marks-prev-bookmark)',
       next = b {
-        b = { '<cmd>rshada<cr><Plug>(Marks-delete-bookmark)<cmd>wshada!<cr>' },
+        b = {
+          '<cmd>rshada<cr><Plug>(Marks-delete-bookmark)<cmd>wshada!<cr>',
+        },
       },
       a = b { '<Plug>(Marks-set-bookmark0)' },
       s = b { '<Plug>(Marks-set-bookmark1)' },
@@ -335,8 +311,8 @@ function M.config()
       },
     },
   })
-  if false then
-    binder.with_labels('dap', 'b', {
+  if true then
+    binder.with_labels('dap', 'a', {
       editor = b {
         desc = 'ui',
         require('modules.toggler').cb(
@@ -345,134 +321,88 @@ function M.config()
         ),
       },
       extra = keys {
-        a = keys {
-          prev = b { lazy_req('dap', 'attachToRemote') },
-          next = b { lazy_req('dap', 'attach') },
-        },
         b = keys {
-          prev = b { lazy_req('dap', 'clear_breakpoints') },
-          next = b { lazy_req('dap', 'toggle_breakpoints') },
+          prev = b {
+            desc = 'clear breakpoints',
+            lazy_req('dap', 'clear_breakpoints'),
+          },
+          next = b {
+            desc = 'toggle breakpoints',
+            lazy_req('dap', 'toggle_breakpoint'),
+          },
         },
-        c = repeatable { lazy_req('dap', 'continue') },
-        i = repeatable { lazy_req('dap', 'step_into') },
+        c = repeatable { desc = 'continue', lazy_req('dap', 'continue') },
+        i = repeatable { desc = 'step into', lazy_req('dap', 'step_into') },
         o = keys {
-          prev = repeatable { lazy_req('dap', 'step_out') },
-          next = repeatable { lazy_req('dap', 'step_over') },
+          prev = repeatable { desc = 'step out', lazy_req('dap', 'step_out') },
+          next = repeatable {
+            desc = 'step over',
+            lazy_req('dap', 'step_over'),
+          },
         },
         x = keys {
-          prev = b { lazy_req('dap', 'disconnect') },
-          next = b { lazy_req('dap', 'terminate') },
+          prev = b { desc = 'disconnect', lazy_req('dap', 'disconnect') },
+          next = b { desc = 'terminate', lazy_req('dap', 'terminate') },
         },
-        ['.'] = b { lazy_req('dap', 'run_last') },
-        k = b { lazy_req('dap', 'up') },
-        j = b { lazy_req('dap', 'down') },
-        l = b { lazy_req('dap', 'launch') },
-        r = b { lazy_req('dap', 'repl.open') },
+        ['.'] = b { desc = 'run last', lazy_req('dap', 'run_last') },
+        k = b { desc = 'up', lazy_req('dap', 'up') },
+        j = b { desc = 'down', lazy_req('dap', 'down') },
+        l = b { desc = 'launch', lazy_req('dap', 'launch') },
+        r = b { desc = 'repl open', lazy_req('dap', 'repl.open') },
         h = keys {
           prev = b {
             "<cmd>lua require'dap.ui.variables'.hover()<cr>",
-            'hover',
+            desc = 'hover',
           },
           next = b {
             "<cmd>lua require'dap.ui.widgets'.hover()<cr>",
-            'widgets',
+            desc = 'widgets',
           },
         },
         v = b {
           "<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
-          'visual hover',
+          desc = 'visual hover',
         },
         ['?'] = b {
           "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
-          'variables scopes',
+          desc = 'variables scopes',
         },
         tc = b {
           "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
-          'commands',
+          desc = 'commands',
         },
         ['t,'] = b {
           "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
-          'configurations',
+          desc = 'configurations',
         },
         tb = b {
           "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
-          'list breakpoints',
+          desc = 'list breakpoints',
         },
         tv = b {
           "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
-          'dap variables',
+          desc = 'dap variables',
         },
         tf = b {
           "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
-          'dap frames',
+          desc = 'dap frames',
         },
-        ['<cr>'] = repeatable { lazy_req('dap', 'run_to_cursor') },
+        ['<cr>'] = repeatable {
+          desc = 'run to cursor',
+          lazy_req('dap', 'run_to_cursor'),
+        },
       },
     })
   end
-  binder.with_labels('harpoon', 'x', require('plugins.harpoon').bindings())
-
-  -- Commands
-  for _, v in ipairs {
-    'imap',
-    'vmap',
-    'cmap',
-    'nmap',
-    'xmap',
-    'omap',
-    'lua=',
-  } do
-    require('legendary').bind_keymap { string.format(':%s ', v) }
-  end
-  for _, v in ipairs {
-    'update|so %',
-    'messages',
-    'reg',
-  } do
-    require('legendary').bind_keymap { string.format(':%s<cr>', v) }
-  end
-  for _, v in ipairs {
-    'help_tags',
-    'search_history',
-    'jumplist',
-    'marks',
-    'register',
-    'lsp_references',
-    'lsp_workspace_symbols',
-  } do
-    local lhs = string.format(':Telescope' .. v:sub(1, 1):upper() .. v:sub(2))
-    require('legendary').bind_keymap {
-      lhs,
-      function()
-        require('telescope.builtin')[v]()
-      end,
-      description = 'telescope ' .. v,
-    }
-  end
-  require('legendary').bind_keymap {
-    ':TelescopeCheat',
-    function()
-      require('telescope').extensions.cheat.fd {}
-    end,
-    description = 'telescope cheat',
-  }
-  local v = 'symbols'
-  local lhs = string.format(':Telescope' .. v:sub(1, 1):upper() .. v:sub(2))
-  require('legendary').bind_keymap {
-    lhs,
-    function()
-      require('telescope.builtin')[v] { 'emoji', 'gitmoji', 'math', 'nerd' }
-    end,
-    description = 'telescope ' .. v,
-  }
-
-  map_lang()
+  require('plugins.binder.commands').setup()
+  require('plugins.binder.lang').setup()
   binder.extend_with 'basic'
   binder.extend_with 'editor'
   binder.extend_with 'edit'
   binder.extend_with 'move'
   binder.extend_with 'bigmove'
-  require 'plugins.binder.textobjects'.setup()
+  binder.extend_with 'extra'
+  require('plugins.binder.textobjects').setup()
 end
 
 --[[

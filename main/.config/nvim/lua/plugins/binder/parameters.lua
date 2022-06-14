@@ -24,4 +24,6 @@ M.d = invert {
   ['<c-x>'] = 'prev_search',
 }
 
+M.selection_chars = 'asdfjkl;ghqweruiopzxcvm,étybn'
+
 return M

@@ -10,12 +10,13 @@ function M.extend()
   local lazy_req = util.lazy_req
 
   local d = require('plugins.binder.parameters').d
+  
   return keys {
+    redup = b { '``', desc = 'before last jump' },
     a = b {
       desc = 'current buffer fuzzy find',
       lazy_req('telescope.builtin', 'current_buffer_fuzzy_find', {}),
     },
-    b = b { '%', modes = 'nxo', desc = 'matching char' },
     c = keys {
       prev = b { util.asterisk_gz, desc = 'current word start' },
       next = b { util.asterisk_z, desc = 'current word' },
@@ -25,7 +26,12 @@ function M.extend()
       prev = vim.diagnostic.goto_prev,
       next = vim.diagnostic.goto_next,
     },
-    g = b { '``', desc = 'before last jump' },
+    e = b { '<nop>' },
+    h = np {
+      desc = 'hunk',
+      prev = lazy_req('gitsigns', 'prev_hunk'),
+      next = lazy_req('gitsigns', 'next_hunk'),
+    },
     l = b { '`', desc = 'mark <char>' },
     m = keys {
       prev = b { '`[', desc = 'start of last mod', modes = 'nxo' },
@@ -80,6 +86,7 @@ function M.extend()
         end,
       },
     },
+    ['<cr>'] = b { 'G', desc = 'line' },
   }
 end
 

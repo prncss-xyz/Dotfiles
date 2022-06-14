@@ -162,15 +162,51 @@ table.insert(
   })
 )
 
-local sample = fmt([[
-bah
-  '{}'
-blop
-]], {i(1, 'toto')})
+local env = {
+  javascript = 'node',
+}
+
+local function chmod_x()
+  local filename = vim.fn.expand('%', nil, nil)
+  local perm = vim.fn.getfperm(filename)
+  local res = ''
+  local r
+  for j = 1, perm:len() do
+    local char = perm:sub(j, j)
+    if j % 3 == 1 then
+      r = char == 'r'
+    end
+    if j % 3 == 0 and r then
+      char = 'x'
+    end
+    res = res .. char
+  end
+  vim.fn.setfperm(filename, res)
+end
 
 table.insert(
   M,
-  s('sample', sample)
+  s({
+    trig = 'shebang',
+  }, {
+    d(1, function()
+      chmod_x()
+      return sn(1, { t '#!/usr/bin/env ', i(1, env[vim.bo.filetype] or 'env') })
+    end, {}),
+    t { '', '' },
+    i(0, ''),
+  })
 )
+
+local sample = fmt(
+  [[
+bah
+  '{}'
+blop
+]],
+  { i(1, 'toto') }
+)
+
+table.insert(M, s('sample', sample))
 
 return M

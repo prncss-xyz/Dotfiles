@@ -11,7 +11,7 @@ local function on_choice(choice)
   vim.cmd('edit ' .. choice.path)
 end
 
-command('C', function()
+command('EditSnippets', function()
   if false then
     require('luasnip.loaders.from_lua').edit_snippet_files()
     return

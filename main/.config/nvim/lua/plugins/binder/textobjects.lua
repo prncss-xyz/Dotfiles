@@ -9,6 +9,10 @@ function M.setup()
   local keys = binder.keys
   local modes = binder.modes
   local b = binder.b
+  require('key-menu').set('x', 'i')
+  require('key-menu').set('x', 'o')
+  require('key-menu').set('o', 'i')
+  require('key-menu').set('o', 'o')
   binder.bind(modes {
     ox = keys {
       hu = b {
@@ -16,12 +20,12 @@ function M.setup()
         'lua require("tsht").nodes()',
         cmd = true,
       },
-      au = b {
+      aU = b {
         desc = 'ts unit outer',
         'lua require("treesitter-unit").select(true)',
         cmd = true,
       },
-      iu = b {
+      iU = b {
         desc = 'ts unit inner',
         'lua require("treesitter-unit").select(false)',
         cmd = true,

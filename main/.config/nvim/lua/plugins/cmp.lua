@@ -43,25 +43,32 @@ function M.config()
     },
   }
 
+
   for _, f in ipairs { 'gitcommit', 'NeogitCommitMessage' } do
     cmp.setup.filetype(f, {
-      { name = 'cmp_git' },
-      { name = 'cmp-conventionalcommits' },
-      { name = 'path' },
-      { name = 'buffer' },
+      sources = {
+        { name = 'cmp_git' },
+        { name = 'cmp-conventionalcommits' },
+        { name = 'path' },
+        { name = 'buffer' },
+      },
     })
   end
 
   for _, c in ipairs { '/', '?' } do
     cmp.setup.cmdline(c, {
-      { name = 'cmp-cmdline-history' },
-      { name = 'buffer' },
+      sources = {
+        { name = 'cmp-cmdline-history' },
+        { name = 'buffer' },
+      },
     })
   end
   -- input commandline
   cmp.setup.cmdline('@', {
-    { name = 'cmp-cmdline-history' },
-    { name = 'buffer' },
+    sources = {
+      { name = 'cmp-cmdline-history' },
+      { name = 'buffer' },
+    },
   })
   cmp.setup.cmdline(':', {
     sources = {

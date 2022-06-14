@@ -27,7 +27,7 @@ default_floating_border none
 
 # https://github.com/francma/wob/blob/master/wob.1.scd
 exec wl-paste -t text --watch clipman store
-exec flashfocus
+exec_always flashfocus
 exec wlsunset -l 45.5 -L -73.6
 # exec wluma
 exec swayidle -w \

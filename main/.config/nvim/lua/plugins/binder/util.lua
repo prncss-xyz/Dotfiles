@@ -86,7 +86,6 @@ function M.asterisk_gz()
   require('hlslens').start()
 end
 
-
 local function plug(t)
   if type(t) == 'string' then
     t = { t }

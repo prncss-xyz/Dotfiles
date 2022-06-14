@@ -4,12 +4,29 @@ function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
-  local lazy_req = require('plugins.binder.util').lazy_req
+  local util = require 'plugins.binder.util'
+  local np = util.np
+  local lazy_req = util.lazy_req
+  require('key-menu').set('n', 'zb')
+  require('key-menu').set('n', 'zp')
   return keys {
     redup = keys {
-      desc = 'bufsurf',
-      prev = b { desc = 'next', 'BufSurfForward', cmd = true },
-      next = b { desc = 'previous', 'BufSurfBack', cmd = true },
+      redup = b {
+        desc = 'harpoon ui',
+        lazy_req('harpoon.ui', 'toggle_quick_menu'),
+      },
+      y = b { desc = 'harpoon add', lazy_req('harpoon.mark', 'add_file') },
+      j = b { desc = 'harpoon file 1', lazy_req('harpoon.ui', 'nav_file', 1) },
+      k = b { desc = 'harpoon file 2', lazy_req('harpoon.ui', 'nav_file', 2) },
+      l = b { desc = 'harpoon file 3', lazy_req('harpoon.ui', 'nav_file', 3) },
+      [';'] = b {
+        desc = 'harpoon file 4',
+        lazy_req('harpoon.ui', 'nav_file', 4),
+      },
+      [' '] = b {
+        desc = 'harpoon command menu',
+        lazy_req('harpoon.cmd-ui', 'toggle_quick_menu'),
+      },
     },
     a = b { desc = 'edit alt', require('plugins.binder.actions').edit_alt },
     b = keys {
@@ -35,7 +52,40 @@ function M.extend()
         next = b { lazy_req('marks', 'next_bookmark3') },
       },
     },
+    d = keys {
+      desc = 'unimpaired directory',
+      prev = b { '<Plug>(unimpaired-directory-previous)' },
+      next = b { '<Plug>(unimpaired-directory-next)' },
+    },
+    -- FIXME:
+    e = b {
+      desc = 'node modules',
+      lazy_req('telescope', 'extensions.my.node_modules'),
+    },
+    f = keys {
+      next = b {
+        desc = 'file (recursive)',
+        function()
+          require('telescope.builtin').find_files {
+            cwd = vim.fn.expand('%:p:h', nil, nil),
+          }
+        end,
+      },
+      prev = b {
+        desc = 'file (current)',
+        function()
+          require('telescope.builtin').find_files {
+            cwd = vim.fn.expand('%:p:h', nil, nil),
+            find_command = { 'fd', '--type', 'f', '-d', '1' },
+          }
+        end,
+      },
+    },
     g = b { desc = 'buffers', lazy_req('telescope.builtin', 'buffers') },
+    h = b {
+      desc = 'recent buffer',
+      lazy_req('buffstory', 'select'),
+    },
     i = keys {
       prev = b { desc = 'declaration', vim.lsp.buf.declaration },
       next = b {
@@ -47,40 +97,36 @@ function M.extend()
       desc = 'type definition',
       lazy_req('telescope.builtin', 'lsp_type_definitions'),
     },
-    f = keys {
-      prev = b {
-        desc = 'file (recursive)',
-        function()
-          require('telescope.builtin').find_files {
-            cwd = vim.fn.expand('%:p:h', nil, nil),
-          }
-        end,
-      },
-      next = b {
-        desc = 'file (current)',
-        function()
-          require('telescope.builtin').find_files {
-            cwd = vim.fn.expand('%:p:h', nil, nil),
-            find_command = { 'fd', '--type', 'f', '-d', '1' },
-          }
-        end,
-      },
-    },
     n = b {
       desc = 'project files',
       require('plugins.binder.actions').project_files,
+    },
+    m = b {
+      desc = 'plugins',
+      lazy_req('telescope', 'extensions.my.installed_plugins'),
     },
     o = b {
       desc = 'oldfiles',
       lazy_req('telescope.builtin', 'oldfiles', { only_cwd = true }),
     },
-    w = b {
-      desc = 'todo',
-      lazy_req('telescope', 'extensions.todo-comments.todo'),
+    p = b {
+      desc = 'edit playground file',
+      require('plugins.binder.actions').edit_playground_file,
     },
-    b { desc = 'quickfixlist', lazy_req('telescope.builtin', 'quickfixlist') },
-    t = keys {
-      desc = 'trouble',
+    r = keys {
+      prev = b {
+        desc = 'trouble references',
+        ':Trouble lsp_references<cr>',
+      },
+      next = b {
+        desc = 'telescope references',
+        function()
+          require('telescope.builtin').lsp_references {}
+        end,
+      },
+    },
+    t = np {
+      desc = 'quickfix',
       prev = lazy_req(
         'trouble',
         'previous',
@@ -88,9 +134,23 @@ function M.extend()
       ),
       next = lazy_req('trouble', 'next', { skip_groups = true, jump = true }),
     },
-    ['é'] = b {
-      desc = 'live grep',
-      lazy_req('telescope.builtin', 'live_grep'),
+    w = b {
+      desc = 'todo',
+      lazy_req('telescope', 'extensions.todo-comments.todo'),
+    },
+    ['é'] = keys {
+      prev = b {
+        desc = 'live grep local',
+        function()
+          require('telescope.builtin').live_grep {
+            search_dirs = { vim.fn.expand('%:h', nil, nil) },
+          }
+        end,
+      },
+      next = b {
+        desc = 'live grep',
+        lazy_req('telescope.builtin', 'live_grep'),
+      },
     },
   }
 end

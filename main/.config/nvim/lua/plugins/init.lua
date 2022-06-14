@@ -51,9 +51,7 @@ return require('packer').startup {
     use {
       'kyazdani42/nvim-web-devicons',
       module = 'nvim-web-devicons',
-      config = function()
-        require('nvim-web-devicons').setup { default = true }
-      end,
+      config = default_config('nvim-web-devicons', { default = true }),
     }
 
     -- Treesitter
@@ -62,25 +60,21 @@ return require('packer').startup {
       run = ':TSUpdate',
       module = { 'nvim-treesitter', 'nvim-treesitter.parsers' }, -- HACK: why do I need this?
       module_pattern = 'nvim-treesitter.*',
-      config = function()
-        require('plugins.treesitter').config()
-      end,
+      config = config 'nvim-treesitter',
     }
     use { 'p00f/nvim-ts-rainbow', after = 'nvim-treesitter' }
     use {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-      module = 'nvim-treesitter.textobjects',
-    }
-    use {
       local_repo 'flies.nvim',
       config = config 'flies',
-      wants = 'nvim-treesitter-textobjects',
       module = 'flies',
       module_pattern = 'flies.*',
       event = 'BufReadPost',
     }
     use { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' }
-    use { 'nvim-treesitter/playground', cmd = { 'TSPlaygroundToggle' } }
+    use {
+      'nvim-treesitter/playground',
+      cmd = { 'TSPlaygroundToggle', 'TSHighlightCapturesUnderCursor' },
+    }
     -- Use tressitter to autoclose and autorename html tag
     use { 'windwp/nvim-ts-autotag', event = 'InsertEnter' }
     use { 'David-Kunz/treesitter-unit', module = 'treesitter-unit' }
@@ -99,6 +93,11 @@ return require('packer').startup {
         }
       end,
       requires = 'nvim-treesitter/nvim-treesitter',
+    }
+    use {
+      'nvim-treesitter/nvim-treesitter-context',
+      config = config 'nvim-treesitter-context',
+      after = 'nvim-treesitter',
     }
     use {
       'SmiteshP/nvim-gps',
@@ -272,9 +271,7 @@ return require('packer').startup {
       'L3MON4D3/LuaSnip',
       module = 'luasnip',
       event = 'InsertEnter',
-      config = function()
-        require('plugins.luasnip').config()
-      end,
+      config = config 'luasnip',
     }
     -- Git
     use {
@@ -315,6 +312,26 @@ return require('packer').startup {
     }
 
     -- UI
+    use {
+      local_repo 'buffstory.nvim',
+      config = default_config 'buffstory',
+      event = 'BufReadPre',
+    }
+    use {
+      'rafcamlet/tabline-framework.nvim',
+      config = config 'tabline-framework',
+      -- event = 'BufEnter',
+    }
+    use {
+      's1n7ax/nvim-window-picker',
+      tag = 'v1.*',
+      config = function()
+        require('window-picker').setup {
+          selection_chars = require('plugins.binder.parameters').selection_chars:upper(),
+        }
+      end,
+      module = 'window-picker',
+    }
     use {
       'lukas-reineke/indent-blankline.nvim',
       event = 'BufReadPre',
@@ -372,10 +389,8 @@ return require('packer').startup {
     use {
       'nvim-neo-tree/neo-tree.nvim',
       branch = 'v2.x',
-      config = default_config 'neo-tree',
+      config = config 'neo-tree',
       cmd = { 'Neotree' },
-      disable = true,
-      -- promising but not ready
     }
     use {
       'kyazdani42/nvim-tree.lua',
@@ -450,8 +465,8 @@ return require('packer').startup {
       end,
     }
     use {
-      local_repo 'marks.nvim',
-      -- 'chentau/marks.nvim',
+      -- local_repo 'marks.nvim',
+      'chentoast/marks.nvim',
       event = 'BufReadPost',
       config = function()
         require('marks').setup {
@@ -501,10 +516,6 @@ return require('packer').startup {
       module = 'telescope._extensions.project',
     }
     use {
-      'benfowler/telescope-luasnip.nvim',
-      module = 'telescope._extensions.luasnip',
-    }
-    use {
       'nvim-telescope/telescope-dap.nvim',
       module = 'telescope._extensions.dap',
     }
@@ -523,7 +534,7 @@ return require('packer').startup {
       module_pattern = 'telescope._extensions.cheat.*',
     }
 
-    -- bindings
+    -- Bindings
     use {
       'mrjones2014/legendary.nvim',
       module = 'legendary',
@@ -534,26 +545,29 @@ return require('packer').startup {
         'LegendaryEvalLine',
         'LegendaryEvalLines',
         'LegendaryEvalBuf',
+        'LegendaryApi',
       },
+    }
+    use {
+      'linty-org/key-menu.nvim',
+      module = 'key-menu',
     }
     use {
       local_repo 'binder.nvim',
       event = 'VimEnter',
       config = config 'binder',
     }
-    -- Clipboard
-    use {
-      'bfredl/nvim-miniyank',
-      disable = true,
-      setup = function()
-        vim.g.miniyank_filename = '/home/prncss/.miniyank.mpack'
-      end,
-    }
-    use {
-      'svermeulen/vim-yoink',
-      disable = true,
-    }
     -- Edition
+    use {
+      local_repo 'templum.nvim',
+      config = config 'templum',
+      event = 'VimEnter',
+    }
+    use { 'linty-org/readline.nvim', module = 'readline' }
+    use {
+      'AckslD/nvim-neoclip.lua',
+      config = config 'nvim-neoclip',
+    }
     use {
       'AndrewRadev/splitjoin.vim',
       setup = function()
@@ -575,6 +589,7 @@ return require('packer').startup {
       setup = function()
         vim.g.exchange_no_mappings = 1
       end,
+      disable = true,
     }
     local mac_repo = local_repo 'macrobatics'
     use {
@@ -583,6 +598,7 @@ return require('packer').startup {
       setup = function()
         vim.g.Mac_NamedMacrosDirectory = mac_repo
       end,
+      disable = true,
     }
     use {
       'tpope/vim-repeat',
@@ -597,32 +613,8 @@ return require('packer').startup {
       -- TODO: replace after with key = {...}
       config = config 'comment',
     }
-    use {
-      'wellle/targets.vim',
-      after = 'flies.nvim',
-      setup = setup 'targets',
-      disable = true,
-    }
 
     -- Session
-    use {
-      'windwp/nvim-projectconfig',
-      disable = true,
-      config = function()
-        require('nvim-projectconfig').load_project_config {
-          project_dir = local_repo 'projects-config/',
-        }
-        if false then
-          require('utils').augroup('NvimProjectConfig', {
-            {
-              events = { 'DirChanged' },
-              targets = { '*' },
-              cmd = require('nvim-projectconfig').load_project_config,
-            },
-          })
-        end
-      end,
-    }
     use {
       'ethanholz/nvim-lastplace',
       event = 'BufReadPre',
@@ -647,10 +639,9 @@ return require('packer').startup {
       module_pattern = 'harpoon.*',
       config = config 'harpoon',
     }
-    use { 'ton/vim-bufsurf' } -- uses autocommands in a way that is incompatible to lazy loading
 
     -- Theming
-    use { 'mvllow/modes.nvim', config = default_config 'modes', disable = true }
+    use { 'mvllow/modes.nvim', config = default_config 'modes', disable = false }
 
     -- Themes
     use 'rafamadriz/neon'
@@ -680,10 +671,12 @@ return require('packer').startup {
           },
         },
       }),
+      disable = true,
     }
     use {
       'metakirby5/codi.vim',
       cmd = { 'Codi', 'Codi!', 'Codi!!' },
+      disable = true,
     }
     use {
       'rafcamlet/nvim-luapad',
@@ -693,35 +686,18 @@ return require('packer').startup {
       config = default_config 'luapad',
     }
     use {
-      'dbeniamine/cheat.sh-vim',
-      setup = function()
-        vim.g.CheatSheetDoNotMap = 1
-        vim.g.CheatSheetBaseUrl = 'http://localhost:8002'
-      end,
-      cmd = { 'Cheat', 'CheatReplace', 'CheatPaste', 'HowIn' },
+      'jbyuki/dash.nvim',
+      module = 'dash',
+      cmd = { 'DashRun', 'DashConnect', 'DashDebug' },
     }
+    use {
+      'jbyuki/carrot.nvim',
+      cmd = { 'CarrotEval', 'CarrotNewBlock' },
+    }
+
     use { 'nvim-neorg/neorg', config = config 'neorg' }
-    use { 'linty-org/readline.nvim', module = 'readline' }
 
     -- Various
-    use {
-      'tpope/vim-eunuch',
-      cmd = {
-        'Cfind',
-        'Chmod',
-        'Clocate',
-        'Delete',
-        'Lfind',
-        'Llocate',
-        'Mkdir',
-        'Move',
-        'Rename',
-        'SudoEdit',
-        'SudoWrite',
-        'Unlink',
-        'Wall',
-      },
-    }
     use { 'lewis6991/impatient.nvim' }
     use { 'dstein64/vim-startuptime' }
   end,

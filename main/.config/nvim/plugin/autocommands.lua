@@ -35,9 +35,12 @@ for _, event in ipairs { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' } do
   })
 end
 
--- without this, deleted marks do not get removed on exit
--- https://github.com/neovim/neovim/issues/4288
-if true then
+local prefix = '/dev/shm/pass.'
+if vim.fn.expand('%:h', nil, nil):sub(1, prefix:len()) == prefix then
+  vim.g.secret = true
+else
+  -- without this, deleted marks do not get removed on exit
+  -- https://github.com/neovim/neovim/issues/4288
   for _, event in ipairs {
     'TabLeave',
     'FocusLost',
@@ -75,27 +78,9 @@ if true then
       end,
     })
   end
-else
-  for _, event in ipairs {
-    'TabLeave',
-    'FocusLost',
-    'BufLeave',
-    'VimLeavePre',
-    'TextYankPost',
-    'FocusGained',
-    'CursorHold',
-  } do
-    vim.api.nvim_create_autocmd(event, {
-      pattern = '*',
-      group = group,
-      callback = function()
-        vim.cmd 'rshada|wshada'
-      end,
-    })
-  end
 end
 
--- FIXME: is it working
+-- FIXME: is it working?
 -- avoid keeping undo for temporary or confidential files
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = {
@@ -107,8 +92,7 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     '*~',
   },
   callback = function()
-    -- vim.opt_local.undofile = false
-    -- vim.cmd 'setlocal noundofile'
+    vim.opt_local.undofile = false
   end,
   group = group,
 })
@@ -127,8 +111,9 @@ local function fetch_git_branch_plenary()
     :start()
 end
 
+-- TODO: command to open in right directory
 local function fish_pet()
-  local filename = vim.fn.expand ('%', nil, nil)
+  local filename = vim.fn.expand('%', nil, nil)
   if not string.find(filename, 'tmp%..+%.fish') then
     return
   end
@@ -140,11 +125,9 @@ local function fish_pet()
   if buf[1] == '' then
     vim.bo.filetype = 'fish'
     require 'luasnip'
-    vim.defer_fn(function()
-      dump(vim.bo.filetype)
-      print(package.loaded['luasnip'])
-      require('telescope').extensions.luasnip.luasnip {}
-    end, 10)
+    -- vim.defer_fn(function()
+    --   require('telescope').extensions.luasnip.luasnip {}
+    -- end, 10)
   end
 end
 
@@ -162,7 +145,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         return
       end
       fetch_git_branch_plenary()
-      local filename = vim.fn.expand ('%', nil, nil)
+      local filename = vim.fn.expand('%', nil, nil)
       if string.find(filename, 'tmp%..+%.fish') then
         fish_pet()
       elseif #vim.fn.argv() > 0 then

@@ -7,6 +7,7 @@ function M.extend()
   local modes = binder.modes
   local util = require 'plugins.binder.util'
   local lazy_req = util.lazy_req
+  local repeatable = util.repeatable
 
   return keys {
     redup = keys {
@@ -14,12 +15,44 @@ function M.extend()
       prev = b { desc = 'back', require('modules.toggler').back },
       next = b { require('modules.toggler').toggle },
     },
-    a = b {
-      desc = 'Diffview',
-      require('modules.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
+    b = keys {
+      desc = 'runner',
+      redup = b {
+        desc = 'dash run',
+        ':DashRun<cr>',
+      },
+      y = b {
+        desc = 'dash connect<cr>',
+        ':DashConnect<cr>',
+      },
+      m = b {
+        desc = 'carrot eval',
+        ':CarrotEval<cr>',
+      },
+      n = b {
+        desc = 'carrot new block',
+        ':CarrotNewBlock<cr>',
+      },
+      s = b {
+        desc = 'dash step',
+        repeatable { lazy_req('dash', 'step') },
+      },
+      v = modes {
+        desc = 'dash inspect',
+        n = b { lazy_req('dash', 'inspect') },
+        v = b { lazy_req('dash', 'vinspect') },
+      },
+      c = b {
+        desc = 'dash continue',
+        repeatable { lazy_req('dash', 'continue') },
+      },
+      p = b {
+        desc = 'dash toggle breakpoit',
+        lazy_req('dash', 'toggle_breakpoint'),
+      },
     },
     c = keys {
-      desc = 'split',
+      desc = 'windows',
       -- TODO: zoom
       prev = b { lazy_req('split', 'close'), desc = 'close' },
       -- q = b { desc = 'lsp', lazy_req('split', 'open_lsp'), modes = 'nx' },
@@ -28,10 +61,32 @@ function M.extend()
       --   n = b { lazy_req('split', 'pop', { target = 'here' }, 'n') },
       --   x = b { lazy_req('split', 'pop', { target = 'here' }, 'x') },
       -- },
-      o = modes {
+      e = b {
+        desc = 'swap',
+        require('util.actions').winpick_swap,
+      },
+      h = b {
+        desc = 'horizontal split equal',
+        ':sp<cr>',
+      },
+      j = modes {
         desc = 'open',
         n = b { lazy_req('split', 'open', {}, 'n') },
         x = b { lazy_req('split', 'open', {}, 'x') },
+      },
+      n = keys {
+        prev = b {
+          desc = 'clone to',
+          require('util.actions').winpick_clone_to,
+        },
+        next = b {
+          desc = 'clone from',
+          require('util.actions').winpick_clone_from,
+        },
+      },
+      x = b {
+        desc = 'close',
+        require('util.actions').winpick_close,
       },
       z = keys {
         prev = b {
@@ -41,13 +96,7 @@ function M.extend()
         next = b { require('plugins.binder.actions').zoom },
       },
       [';'] = b {
-        function()
-          vim.cmd [[
-            vsp
-            wincmd h
-            vertical resize 85
-        ]]
-        end,
+        util.lazy(require('util.actions').split_right, 85),
         desc = 'vertical 85',
       },
     },
@@ -59,14 +108,25 @@ function M.extend()
         require('bindutils').edit_current,
       },
     },
-    f = b {
-      desc = 'nvim tree',
-      require('modules.toggler').cb('NvimTreeOpen', 'NvimTreeClose'),
+    f = keys {
+      desc = 'neo tree',
+      prev = b {
+        'Neotree git_status',
+        cmd = true,
+      },
+      next = b {
+        'Neotree',
+        cmd = true,
+      },
     },
-    g = b { desc = 'Neogit', require('modules.toggler').cb('Neogit', ':q') },
+    -- f = b {
+    --   desc = 'nvim tree',
+    --   require('modules.toggler').cb('NvimTreeOpen', 'NvimTreeClose'),
+    -- },
     h = keys {
+      desc = 'help',
       redup = b {
-        desc = 'help tags',
+        desc = 'tags',
         lazy_req('telescope.builtin', 'help_tags'),
       },
       c = b {
@@ -74,7 +134,7 @@ function M.extend()
         lazy_req('telescope.builtin', 'highlights'),
       },
       d = b {
-        desc = 'md_help',
+        desc = 'markdown files',
         lazy_req('telescope', 'extensions.my.md_help'),
       },
       m = b {
@@ -86,42 +146,28 @@ function M.extend()
         desc = 'modules',
         lazy_req('telescope', 'extensions.my.modules'),
       },
-      p = b {
-        desc = 'installed plugins',
-        lazy_req('telescope', 'extensions.my.installed_plugins'),
-      },
-      u = b {
+      y = b {
         desc = 'uniduck',
         lazy_req('telescope', 'extensions.my.uniduck'),
       },
-    },
-    i = keys {
-      desc = 'unimpaired directory',
-      prev = b { '<Plug>(unimpaired-directory-previous)' },
-      next = b { '<Plug>(unimpaired-directory-next)' },
     },
     k = keys {
       prev = b { desc = 'signature help', vim.lsp.buf.signature_help },
       next = b { desc = 'hover', vim.lsp.buf.hover },
     },
-    m = b {
-      desc = 'plugins',
-      lazy_req('telescope', 'extensions.my.installed_plugins'),
-    },
-    n = b {
-      desc = 'node modules',
-      lazy_req('telescope', 'extensions.my.node_modules'),
-    },
     o = b {
       desc = 'open current external',
       require('bindutils').open_current,
     },
-    pp = b {
+    p = b {
       desc = 'session develop',
       require('modules.setup-session').develop,
     },
-    r = b { 'reload', '<cmd>update<cr><cmd>so %<cr>' },
     -- t = b { desc = 'new terminal', require('bindutils').term },
+    u = b {
+      desc = 'undo tree',
+      require('modules.toggler').cb('UndotreeToggle', 'UndotreeToggle'),
+    },
     v = keys {
       prev = b {
         desc = 'projects (directory)',
@@ -133,14 +179,20 @@ function M.extend()
       },
     },
     x = b { desc = 'xplr', require('bindutils').xplr_launch },
-    y = b {
-      desc = 'undo tree',
-      require('modules.toggler').cb('UndotreeToggle', 'UndotreeToggle'),
+    y = keys {
+      desc = 'neoclip',
+      q = b {
+        desc = 'marco',
+        lazy_req('telescope', 'extensions.macroscope.default'),
+      },
+      r = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.+') },
+      f = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.f') },
+      y = b {
+        desc = 'yank',
+        lazy_req('telescope', 'extensions.neoclip.default'),
+      },
     },
-    ['<space>'] = b {
-      desc = 'commands',
-      lazy_req('telescope.builtin', 'commands'),
-    },
+    ['<space>'] = b { ':', modes = 'nx' },
   }
 end
 

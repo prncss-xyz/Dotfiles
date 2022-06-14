@@ -56,8 +56,8 @@ deep_merge(vim, {
   g = {
     -- autosave = 1,
     dotfiles = dotfiles,
-    -- do_filetype_lua = 1,
-    -- did_load_filetypes = 0,
+    do_filetype_lua = 1,
+    did_load_filetypes = 0,
     -- FIXME: not respected by new treesitter grammar
     markdown_fenced_languages = {
       'js=javascript',

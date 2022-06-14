@@ -20,8 +20,9 @@ function fish_user_key_bindings
     # bind \cm history-token-search-backward
     # bind \cn history-token-search-forward
     bind \co popd
+    # bind \cp history-token-search-backward
     bind \cq 'pushd .'
-    bind \cn fzf-cd-widget
+    # bind fzf-cd-widget
     bind \cr fzf-history-widget
     # \cu kill to bol
     # \cv paste

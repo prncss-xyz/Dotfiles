@@ -72,15 +72,5 @@ return {
 			sn(1, { t({ "} else {", "\t" }), i(1, "// block") }),
 		}),
 	}),
-	s({
-		trig = "shebang",
-	}, {
-		t("#!/usr/bin/env node"),
-		f(function()
-			vim.cmd("Chmod +x")
-			return ""
-		end, {}),
-		t({ "", "" }),
-	}),
 	s({ trig = "test" }, test({ t("test") })),
 }

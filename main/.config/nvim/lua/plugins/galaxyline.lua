@@ -32,6 +32,40 @@ function debugger()
   return require('dap').status()
 end
 
+-- https://github.com/stevearc/aerial.nvim/issues/105
+local function format_status(symbols, depth, separator, icons_enabled)
+  local parts = {}
+  depth = depth or #symbols
+
+  if depth > 0 then
+    symbols = { unpack(symbols, 1, depth) }
+  else
+    symbols = { unpack(symbols, #symbols + 1 + depth) }
+  end
+
+  for _, symbol in ipairs(symbols) do
+    if icons_enabled then
+      table.insert(parts, string.format('%s%s', symbol.icon, symbol.name))
+    else
+      table.insert(parts, symbol.name)
+    end
+  end
+
+  return table.concat(parts, separator)
+end
+
+-- The API to output the symbols structure
+local function output_symbols_structure(depth, separator, icons_enabled)
+  local symbols = require('aerial').get_location(true)
+  local symbols_structure = format_status(
+    symbols,
+    depth,
+    separator,
+    icons_enabled
+  )
+  return symbols_structure
+end
+
 -- local skipLock = { 'Outline', 'Trouble', 'LuaTree', 'dbui', 'help' }
 local skip_lock = {}
 
@@ -245,10 +279,7 @@ function M.config()
       NvimGPS = {
         highlight = { text, background_inactive },
         provider = function()
-          local gps = require 'nvim-gps'
-          if gps.is_available() then
-            return gps.get_location()
-          end
+          return output_symbols_structure(nil, ' > ', true)
         end,
       },
     },

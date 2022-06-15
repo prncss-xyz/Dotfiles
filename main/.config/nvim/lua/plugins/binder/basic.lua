@@ -105,6 +105,10 @@ function M.extend()
     ['<m-s>'] = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
     ['<m-d>'] = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
     ['<m-f>'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
+    ['<m-z>'] = b { desc = 'buf 5', lazy_req('buffstory', 'open', 5) },
+    ['<m-x>'] = b { desc = 'buf 6', lazy_req('buffstory', 'open', 6) },
+    ['<m-c>'] = b { desc = 'buf 7', lazy_req('buffstory', 'open', 7) },
+    ['<m-v>'] = b { desc = 'buf 8', lazy_req('buffstory', 'open', 8) },
     ['<m-b>'] = b { desc = 'window back', 'wincmd p', cmd = true },
     ['<m-w>'] = b { desc = 'close window', 'q', cmd = true },
     ['<m-h>'] = b {

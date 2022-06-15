@@ -53,6 +53,10 @@ launch() {
 		ebook-reader "${FPATH}" &
 		return
 		;;
+  docx)
+		libreoffice "${FPATH}" &
+		return
+		;;
 	esac
 
 	MIMETYPE="$(file -bL --mime-type -- "${FPATH}")"

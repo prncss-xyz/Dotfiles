@@ -155,6 +155,10 @@ function M.extend()
       prev = b { desc = 'signature help', vim.lsp.buf.signature_help },
       next = b { desc = 'hover', vim.lsp.buf.hover },
     },
+    n = b {
+      desc = 'telescope notify',
+      lazy_req('telescope', 'extensions.notify.notify'),
+    },
     o = b {
       desc = 'open current external',
       require('bindutils').open_current,

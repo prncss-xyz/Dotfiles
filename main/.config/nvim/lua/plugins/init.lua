@@ -1,10 +1,6 @@
 local install_path = vim.fn.stdpath 'data'
   .. '/site/pack/packer/start/packer.nvim'
 
-local function ghost()
-  return os.getenv 'GHOST_NVIM' or false
-end
-
 local function local_repo(name)
   return os.getenv 'PROJECTS' .. '/' .. name
 end
@@ -54,7 +50,7 @@ return require('packer').startup {
       config = default_config('nvim-web-devicons', { default = true }),
     }
 
-    -- Treesitter
+    -- treesitter
     use {
       'nvim-treesitter/nvim-treesitter',
       run = ':TSUpdate',
@@ -99,11 +95,6 @@ return require('packer').startup {
       config = config 'nvim-treesitter-context',
       after = 'nvim-treesitter',
     }
-    use {
-      'SmiteshP/nvim-gps',
-      config = config 'nvim-gps',
-      module = 'nvim-gps',
-    }
 
     -- syntax
     use { 'ajouellette/sway-vim-syntax', ft = 'sway' }
@@ -113,15 +104,6 @@ return require('packer').startup {
     use { 'nanotee/luv-vimdocs' }
     -- lua docs in :help
     use { 'milisims/nvim-luaref' }
-
-    -- edit browser's textinput in nvim instance
-    use {
-      'subnut/nvim-ghost.nvim',
-      run = function()
-        vim.fn['nvim_ghost#installer#install']()
-      end,
-      cond = ghost,
-    }
 
     -- DAP
     use {
@@ -199,6 +181,17 @@ return require('packer').startup {
       after = 'nvim-lspconfig',
       cmd = { 'SymbolsOutline', 'SymbolsOutlineOpen' },
       setup = setup 'symbols-outline',
+      disable = true,
+    }
+    use {
+      'stevearc/aerial.nvim',
+      config = config 'aerial',
+      module = 'aerial',
+      cmd = {
+        'AerialOpen',
+        'AerialClose',
+        'AerialInfo',
+      },
     }
     use {
       'ThePrimeagen/refactoring.nvim',
@@ -304,6 +297,8 @@ return require('packer').startup {
       module = 'neogit',
       config = function()
         require('neogit').setup {
+          disable_builtin_notifications = true,
+          kind = 'split',
           integrations = {
             diffview = true,
           },
@@ -320,7 +315,24 @@ return require('packer').startup {
     use {
       'rafcamlet/tabline-framework.nvim',
       config = config 'tabline-framework',
-      -- event = 'BufEnter',
+      event = 'BufEnter',
+    }
+    use {
+      -- TODO: replace by maintained plugin
+      'glepnir/galaxyline.nvim',
+      event = 'BufEnter',
+      config = config 'galaxyline',
+    }
+    use {
+      'stevearc/dressing.nvim',
+      config = default_config 'dressing',
+      event = 'BufReadPost',
+      -- module = vim.ui,
+    }
+    use {
+      'rcarriga/nvim-notify',
+      config = config 'nvim-notify',
+      disable = true,
     }
     use {
       's1n7ax/nvim-window-picker',
@@ -336,18 +348,6 @@ return require('packer').startup {
       'lukas-reineke/indent-blankline.nvim',
       event = 'BufReadPre',
       config = config 'indent-blankline',
-    }
-    use {
-      -- TODO: replace by maintained plugin
-      'glepnir/galaxyline.nvim',
-      event = 'BufEnter',
-      config = config 'galaxyline',
-    }
-    use {
-      'stevearc/dressing.nvim',
-      config = default_config 'dressing',
-      event = 'BufReadPost',
-      -- module = vim.ui,
     }
     use {
       'folke/trouble.nvim',
@@ -408,6 +408,7 @@ return require('packer').startup {
         'NvimTreeResize',
         'NvimTreeToggle',
       },
+      disable = true,
     }
     use {
       'fhill2/xplr.nvim',
@@ -419,6 +420,7 @@ return require('packer').startup {
         require('plugins.xplr').config()
       end,
       requires = { { 'nvim-lua/plenary.nvim' }, { 'MunifTanjim/nui.nvim' } },
+      disable = true,
     }
     use {
       local_repo 'split.nvim',
@@ -451,9 +453,7 @@ return require('packer').startup {
     use {
       'edluffy/specs.nvim',
       after = 'neoscroll.nvim',
-      config = function()
-        require('specs').setup {}
-      end,
+      config = function() end,
     }
     use {
       local_repo 'bufjump.nvim',
@@ -471,7 +471,13 @@ return require('packer').startup {
       config = function()
         require('marks').setup {
           default_mappings = false,
+          refresh_interval = 9,
         }
+        -- https://github.com/chentoast/marks.nvim/issues/40
+        vim.api.nvim_create_autocmd('cursorhold', {
+          pattern = '*',
+          callback = require('marks').refresh,
+        })
       end,
     }
     use {

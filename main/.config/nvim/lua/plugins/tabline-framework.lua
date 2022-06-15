@@ -1,9 +1,31 @@
 local M = {}
 
+local extract_nvim_hl = require('util').extract_nvim_hl
+
 function M.config()
+  vim.o.showtabline = 2 -- always show tabline
+  local diff_add = extract_nvim_hl 'DiffAdd'
+  local diff_change = extract_nvim_hl 'DiffChange'
+  local normal = extract_nvim_hl 'Normal'
   local render = function(f)
-    f.add { ' ', fg = '#bb0000' }
-    f.add ' '
+    local function format_buf(info)
+      if info.index == 5 then
+        f.add { '|', fg = diff_add.fg, bg = normal.bg }
+      end
+      if info.current then
+        f.set_fg(normal.bg)
+        f.set_bg(diff_add.fg)
+      else
+        f.set_fg(diff_change.fg)
+        f.set_bg(normal.bg)
+      end
+      f.add ' '
+      f.add(f.icon(info.filename))
+      f.add ' '
+      f.add(info.filename)
+      f.add ' '
+    end
+    f.make_bufs(format_buf, require('buffstory').buflist)
   end
 
   require('tabline_framework').setup { render = render }

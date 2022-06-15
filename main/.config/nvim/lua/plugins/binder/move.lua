@@ -10,7 +10,7 @@ function M.extend()
   local lazy_req = util.lazy_req
 
   local d = require('plugins.binder.parameters').d
-  
+
   return keys {
     redup = b { '``', desc = 'before last jump' },
     a = b {
@@ -47,20 +47,42 @@ function M.extend()
         require('illuminate').next_reference { wrap = true }
       end,
     },
-    s = b { require('bindutils').telescope_symbols_md_lsp, desc = 'lsp symbol' },
+    s = b {
+      desc = 'aerial symbols',
+      lazy_req(
+        'telescope',
+        'extensions.aerial.aerial',
+        { show_nesting = true } -- does it change something
+      ),
+    },
+    -- s = b { require('bindutils').telescope_symbols_md_lsp, desc = 'lsp symbol' },
     t = np {
       desc = 'failed test',
       prev = b { '<Plug>(ultest-prev-fail)' },
       next = b { '<Plug>(ultest-next-fail)' },
     },
-    u = np {
-      desc = 'page',
-      prev = function()
-        require('neoscroll').scroll(-0.9, true, 250)
-      end,
-      next = function()
-        require('neoscroll').scroll(0.9, true, 250)
-      end,
+    u = modes {
+      n = np {
+        desc = 'page',
+        prev = function()
+          require('neoscroll').scroll(-0.9, true, 250)
+        end,
+        next = function()
+          require('neoscroll').scroll(0.9, true, 250)
+        end,
+      },
+      x = keys {
+        prev = b {
+          function()
+            require('neoscroll').scroll(-0.9, true, 250)
+          end,
+        },
+        next = b {
+          function()
+            require('neoscroll').scroll(0.9, true, 250)
+          end,
+        },
+      },
     },
     v = keys {
       prev = b { '`<', modes = 'nxo', desc = 'selection start' },

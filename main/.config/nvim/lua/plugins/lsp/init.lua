@@ -32,20 +32,41 @@ function M.config()
   -- `vim.cmd 'highlight! link LspReferenceText String'`
   -- for Neon colorscheme:
   -- vim.cmd 'highlight! LspReferenceText guibg=#4db5bd guifg=#ecee7b'
-  vim.cmd 'highlight! LspReferenceWrite guibg=#8ec07c guifg=#ecee7b'
-  vim.cmd 'highlight! LspReferenceRead guibg=#458588 guifg=#ecee7b'
-  vim.cmd 'highlight! LspReferenceText guibg=#458588 guifg=#ecee7b'
+  local diff_add = require('util').extract_nvim_hl 'DiffAdd'
+  local diff_change = require('util').extract_nvim_hl 'DiffChange'
+  local diagnostic_warn = require('util').extract_nvim_hl 'DiagnosticWarn'
+  vim.api.nvim_set_hl(
+    0,
+    'LspReferenceWrite',
+    { bg = diff_add.fg, fg = diagnostic_warn.fg }
+  )
+  vim.api.nvim_set_hl(
+    0,
+    'LspReferenceRead',
+    { bg = diff_change.fg, fg = diagnostic_warn.fg }
+  )
+  vim.api.nvim_set_hl(
+    0,
+    'LspReferenceText',
+    { bg = diff_change.fg, fg = diagnostic_warn.fg }
+    --  '#ecee7b'
+  )
 
-  -- FIXME: not working
-  -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
-  vim.cmd [[autocmd! CursorHold * lua vim.diagnostic.open_float(nil, {focus=false})]]
-
-  local function noformat_on_attach(client, _)
+  local function noformat_on_attach(client, bufnr)
     -- TODO: bindings
     client.resolved_capabilities.document_formatting = false
     client.resolved_capabilities.document_range_formatting = false
     client.config.flags.debounce_text_changes = 150
     require('illuminate').on_attach(client)
+    require('aerial').on_attach(client, bufnr)
+    -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
+    -- FIXME:
+    vim.api.nvim_create_autocmd('CursorHold', {
+      buffer = bufnr,
+      callback = function()
+        vim.diagnostic.open_float()
+      end,
+    })
   end
 
   -- will be called before noformat_on_attach
@@ -224,7 +245,7 @@ function M.config()
           'sql',
           'typescript',
           'typescriptreact',
-          'markdown'
+          'markdown',
         } or {},
         language = 'en',
         -- autodetection does not work well for source files and keyword heavy notes

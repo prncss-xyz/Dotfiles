@@ -140,16 +140,16 @@ function M.extend()
     },
     ['é'] = keys {
       prev = b {
+        desc = 'live grep',
+        lazy_req('telescope.builtin', 'live_grep'),
+      },
+      next = b {
         desc = 'live grep local',
         function()
           require('telescope.builtin').live_grep {
             search_dirs = { vim.fn.expand('%:h', nil, nil) },
           }
         end,
-      },
-      next = b {
-        desc = 'live grep',
-        lazy_req('telescope.builtin', 'live_grep'),
       },
     },
   }

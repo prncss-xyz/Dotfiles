@@ -13,6 +13,15 @@ return {
     { t 'pacman -Ql ', i(1, 'package') }
   ),
   s('pacman: remove <package>', { t 'sudo pacman -R ', i(1, 'package') }),
+  s(
+    'pacman: downgrade <package>',
+    {
+      t 'sudo pacman -U file:///var/cache/pkg/',
+      i(1, 'package'),
+      t '.pkg.tar.zst',
+    }
+  ),
+  s('neovim: minimal config', { t 'nvim -u ~/.config/nvim/minimal.lua ' }),
   s("khal: list week's events", { t 'khal list now week' }),
   s(
     'khal: create event',

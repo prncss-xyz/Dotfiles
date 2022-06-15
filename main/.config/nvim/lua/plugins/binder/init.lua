@@ -110,11 +110,11 @@ function M.config()
       },
       b = b {
         desc = 'branch',
-        lazy_req('neogit', 'open', { 'branch', kind = 'split' }), -- split, vsplit
+        lazy_req('neogit', 'open'), -- split, vsplit
       },
       c = b {
         desc = 'commit',
-        lazy_req('neogit', 'open', { 'commit', kind = 'split' }), -- split, vsplit
+        lazy_req('neogit', 'open'), -- split, vsplit
       },
       d = keys {
         desc = 'diffview',
@@ -129,29 +129,29 @@ function M.config()
       },
       H = b {
         desc = 'help',
-        lazy_req('neogit', 'open', { 'help', kind = 'split' }), -- split, vsplit
+        lazy_req('neogit', 'open'), -- split, vsplit
       },
       l = b {
         desc = 'log',
-        lazy_req('neogit', 'open', { 'log', kind = 'split' }), -- split, vsplit
+        lazy_req('neogit', 'open'), -- split, vsplit
       },
       p = keys {
         prev = b {
           desc = 'push',
-          lazy_req('neogit', 'open', { 'push', kind = 'split' }), -- split, vsplit
+          lazy_req('neogit', 'open'), -- split, vsplit
         },
         next = b {
           desc = 'pull',
-          lazy_req('neogit', 'open', { 'pull', kind = 'split' }), -- split, vsplit
+          lazy_req('neogit', 'open'), -- split, vsplit
         },
       },
       r = b {
         desc = 'rebase',
-        lazy_req('neogit', 'open', { 'rebase', kind = 'split' }), -- split, vsplit
+        lazy_req('neogit', 'open'), -- split, vsplit
       },
       z = b {
         desc = 'stash',
-        lazy_req('neogit', 'open', { 'stash', kind = 'split' }), -- split, vsplit
+        lazy_req('neogit', 'open'), -- split, vsplit
       },
       ['<cr>'] = b {
         desc = 'blame toggle',
@@ -250,11 +250,16 @@ function M.config()
   })
   binder.with_labels('symbol', 's', {
     editor = b {
-      desc = 'outliner',
+      desc = 'aerial',
       require('modules.toggler').cb(
-        'SymbolsOutlineOpen',
-        'SymbolsOutlineClose'
+        'AerialOpen',
+        'AerialClose'
       ),
+      -- desc = 'outliner',
+      -- require('modules.toggler').cb(
+      --   'SymbolsOutlineOpen',
+      --   'SymbolsOutlineClose'
+      -- ),
     },
     quickfix = b {
       desc = 'lsp references',

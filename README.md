@@ -1,7 +1,3 @@
----
-lang: en
----
-
 # My personnal dotfiles
 
 I've learned a lot about software architechture and system administration here.

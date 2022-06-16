@@ -7,7 +7,6 @@ function M.setup()
     'Reload',
     'NodeInfo',
     'WinInfo',
-    'messages',
     'registers',
     'TSPlaygroundToggle',
     'TSHighlightCapturesUnderCursor',
@@ -47,6 +46,10 @@ function M.setup()
       end,
     }
   end
+  require('binder.util').light_command_legendary {
+    desc = 'messages',
+    ':messages<cr>',
+  }
   require('binder.util').light_command_legendary {
     desc = 'telescope symbols',
     function()

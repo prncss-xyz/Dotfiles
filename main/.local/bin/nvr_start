@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-nvim --listen "$NVIM_LISTEN_ADDRESS" "$@" &

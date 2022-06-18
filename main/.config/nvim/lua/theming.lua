@@ -3,7 +3,7 @@
 --
 
 
-local dm = require('utils').deep_merge
+local deep_merge = require('utils').deep_merge
 local theme = require 'theme'
 
 -- local theme = require 'theme'
@@ -54,7 +54,7 @@ return {
     vim.o.background = theme.dark or 'dark' -- Color name (:help cterm-colors) or ANSI code
     vim.cmd('colorscheme ' .. (theme.cholorscheme or theme.name))
     if theme.g then
-      dm(vim.g, theme.g)
+      deep_merge(vim.g, theme.g)
     end
   end,
 }

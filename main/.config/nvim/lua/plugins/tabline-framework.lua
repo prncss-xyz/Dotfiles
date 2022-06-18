@@ -1,6 +1,6 @@
 local M = {}
 
-local extract_nvim_hl = require('util').extract_nvim_hl
+local extract_nvim_hl = require('utils').extract_nvim_hl
 
 function M.config()
   vim.o.showtabline = 2 -- always show tabline

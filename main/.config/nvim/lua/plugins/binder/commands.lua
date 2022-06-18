@@ -1,9 +1,10 @@
 M = {}
 
--- TODO: define commands here
-
 function M.setup()
+  local bind_command = require('legendary').bind_command
   for _, v in ipairs {
+    'LaunchOSV',
+    'EditSnippets',
     'Reload',
     'NodeInfo',
     'WinInfo',
@@ -22,13 +23,7 @@ function M.setup()
     'Gitsigns stage_buffer',
     'Gitsigns reset_buffer',
   } do
-    require('legendary').bind_command { ':' .. v }
-  end
-  for _, v in ipairs {
-    'Dump',
-    'PutText',
-  } do
-    require('legendary').bind_command { ':' .. v .. ' ', unfinished = true }
+    bind_command { ':' .. v }
   end
   for _, v in ipairs {
     'help_tags',
@@ -39,18 +34,18 @@ function M.setup()
     'lsp_references',
     'lsp_workspace_symbols',
   } do
-    require('binder.util').light_command_legendary {
+    require('binder.utils').light_command_legendary {
       desc = 'telescope ' .. v,
       function()
         require('telescope.builtin')[v]()
       end,
     }
   end
-  require('binder.util').light_command_legendary {
+  require('binder.utils').light_command_legendary {
     desc = 'messages',
     ':messages<cr>',
   }
-  require('binder.util').light_command_legendary {
+  require('binder.utils').light_command_legendary {
     desc = 'telescope symbols',
     function()
       require('telescope.builtin').symbols {
@@ -61,20 +56,13 @@ function M.setup()
       }
     end,
   }
-  require('legendary').bind_command {
-    ':LaunchOSV',
-    function()
-      local filetype = vim.bo.filetype
-      if filetype == 'lua' then
-        -- require('osv').run_this()
-        require('osv').launch {
-          type = 'server',
-          host = '127.0.0.1',
-          port = 30000,
-        }
-      end
-    end,
-  }
+
+  for _, v in ipairs {
+    'Dump',
+    'PutText',
+  } do
+    bind_command { ':' .. v .. ' ', unfinished = true }
+  end
 end
 
 return M

@@ -5,7 +5,7 @@ function M.setup()
   local keys = binder.keys
   local b = binder.b
   local modes = binder.modes
-  local util = require 'plugins.binder.util'
+  local util = require 'plugins.binder.utils'
   local lazy_req = util.lazy_req
   binder.bind(modes {
     t = keys {
@@ -72,7 +72,7 @@ function M.setup()
 
   -- prevent s-mode text to overwrite clipboard
   -- Add a map for every printable character to copy to black hole register
-  local t = require('plugins.binder.util').t
+  local t = require('plugins.binder.utils').t
   for char_nr = 33, 126 do
     local char = vim.fn.nr2char(char_nr)
     vim.api.nvim_set_keymap(

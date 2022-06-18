@@ -1,4 +1,4 @@
-local command = vim.api.nvim_create_user_command
+local M = {}
 
 local function format_item(choice)
   return choice.name
@@ -11,7 +11,7 @@ local function on_choice(choice)
   vim.cmd('edit ' .. choice.path)
 end
 
-command('EditSnippets', function()
+function M.edit_snippets()
   if false then
     require('luasnip.loaders.from_lua').edit_snippet_files()
     return
@@ -62,4 +62,6 @@ command('EditSnippets', function()
     { name = 'plugins -- Conf', path = vim_dir .. '/lua/plugins/init.lua' }
   )
   vim.ui.select(items, { format_item = format_item }, on_choice)
-end, {})
+end
+
+return M

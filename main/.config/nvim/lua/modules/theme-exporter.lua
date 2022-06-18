@@ -27,14 +27,21 @@ local function getColors()
   return res
 end
 
-local dir = vim.fn.expand '~/Dotfiles/main/.config/theming/theme-vars'
+local dir = vim.fn.expand(
+  '~/Dotfiles/main/.config/theming/theme-vars',
+  nil,
+  nil
+)
 
 local function export_theme(name)
-  dir = vim.fn.expand(dir)
+  dir = vim.fn.expand(dir, nil, nil)
   local colorscheme = vim.api.nvim_exec('colorscheme', true)
   local colors = getColors()
   os.execute('mkdir -p ' .. dir)
   local dest = io.open(dir .. '/' .. name .. '-generated', 'w')
+  if not dest then
+    return
+  end
   dest:write(string.format('export name=%q\n', name))
   dest:write(string.format('export colorscheme=%q\n', colorscheme))
   dest:write(string.format('export o_background=%q\n', vim.o.background))

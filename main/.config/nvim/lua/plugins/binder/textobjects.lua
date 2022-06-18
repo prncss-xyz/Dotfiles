@@ -2,9 +2,9 @@ local M = {}
 
 function M.setup()
   local d = require('plugins.binder.parameters').d
-  local util = require 'plugins.binder.util'
-  local alt = util.alt
-  local cmd = util.cmd
+  local utils = require 'plugins.binder.utils'
+  local alt = utils.alt
+  local cmd = utils.cmd
   local binder = require 'binder'
   local keys = binder.keys
   local modes = binder.modes

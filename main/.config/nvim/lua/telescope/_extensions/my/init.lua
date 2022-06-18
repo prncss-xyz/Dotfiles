@@ -3,6 +3,7 @@ local telescope = require 'telescope'
 local exports = {}
 
 for _, name in ipairs {
+  'gitignore',
   'md_help',
   'installed_plugins',
   'modules',

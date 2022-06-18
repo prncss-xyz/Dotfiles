@@ -5,15 +5,15 @@ function M.extend()
   local keys = binder.keys
   local b = binder.b
   local modes = binder.modes
-  local util = require 'plugins.binder.util'
+  local util = require 'plugins.binder.utils'
   local lazy_req = util.lazy_req
   local repeatable = util.repeatable
 
   return keys {
     redup = keys {
       desc = 'toggle',
-      prev = b { desc = 'back', require('modules.toggler').back },
-      next = b { require('modules.toggler').toggle },
+      prev = b { desc = 'back', require('utils.toggler').back },
+      next = b { require('utils.toggler').toggle },
     },
     b = keys {
       desc = 'runner',
@@ -63,7 +63,7 @@ function M.extend()
       -- },
       e = b {
         desc = 'swap',
-        require('util.actions').winpick_swap,
+        require('utils.windows').winpick_swap,
       },
       h = b {
         desc = 'horizontal split equal',
@@ -77,26 +77,26 @@ function M.extend()
       n = keys {
         prev = b {
           desc = 'clone to',
-          require('util.actions').winpick_clone_to,
+          require('utils.windows').winpick_clone_to,
         },
         next = b {
           desc = 'clone from',
-          require('util.actions').winpick_clone_from,
+          require('utils.windows').winpick_clone_from,
         },
       },
       x = b {
         desc = 'close',
-        require('util.actions').winpick_close,
+        require('utils.windows').winpick_close,
       },
       z = keys {
         prev = b {
           desc = 'zen',
-          require('modules.toggler').cb('ZenMode', 'ZenMode'),
+          require('utils.toggler').cb('ZenMode', 'ZenMode'),
         },
-        next = b { require('plugins.binder.actions').zoom },
+        next = b { require('utils.windows').zoom },
       },
       [';'] = b {
-        util.lazy(require('util.actions').split_right, 85),
+        util.lazy(require('utils.windows').split_right, 85),
         desc = 'vertical 85',
       },
     },
@@ -121,7 +121,7 @@ function M.extend()
     },
     -- f = b {
     --   desc = 'nvim tree',
-    --   require('modules.toggler').cb('NvimTreeOpen', 'NvimTreeClose'),
+    --   require('utils.toggler').cb('NvimTreeOpen', 'NvimTreeClose'),
     -- },
     h = keys {
       desc = 'help',
@@ -165,12 +165,12 @@ function M.extend()
     },
     p = b {
       desc = 'session develop',
-      require('modules.setup-session').develop,
+      require('setup-session').develop,
     },
     -- t = b { desc = 'new terminal', require('bindutils').term },
     u = b {
       desc = 'undo tree',
-      require('modules.toggler').cb('UndotreeToggle', 'UndotreeToggle'),
+      require('utils.toggler').cb('UndotreeToggle', 'UndotreeToggle'),
     },
     v = keys {
       prev = b {

@@ -4,7 +4,7 @@ function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
-  local util = require 'plugins.binder.util'
+  local util = require 'plugins.binder.utils'
   local np = util.np
   local lazy_req = util.lazy_req
   require('key-menu').set('n', 'zb')
@@ -28,7 +28,7 @@ function M.extend()
         lazy_req('harpoon.cmd-ui', 'toggle_quick_menu'),
       },
     },
-    a = b { desc = 'edit alt', require('plugins.binder.actions').edit_alt },
+    a = b { desc = 'edit alt', require('utils.buffers').edit_alt },
     b = keys {
       desc = 'bookmark',
       a = keys {
@@ -99,7 +99,7 @@ function M.extend()
     },
     n = b {
       desc = 'project files',
-      require('plugins.binder.actions').project_files,
+      require('utils.buffers').project_files,
     },
     m = b {
       desc = 'plugins',
@@ -126,7 +126,7 @@ function M.extend()
       },
     },
     t = np {
-      desc = 'quickfix',
+      desc = 'trouble',
       prev = lazy_req(
         'trouble',
         'previous',

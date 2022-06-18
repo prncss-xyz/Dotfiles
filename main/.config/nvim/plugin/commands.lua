@@ -32,7 +32,7 @@ command('NodeInfo', function()
     -- 0,0 based
     dump(named:type(), node:type(), ts_utils.get_vim_range { node:range() })
   else
-    print('not supported for this filetype')
+    print 'not supported for this filetype'
   end
 end, { nargs = 0 })
 
@@ -40,4 +40,16 @@ command('WinInfo', function()
   local context = require('hop.window').get_window_context()
   context = context[1].contexts[1]
   dump(context)
+end, { nargs = 0 })
+
+command('LaunchOSV', function()
+  local filetype = vim.bo.filetype
+  if filetype == 'lua' then
+    -- require('osv').run_this()
+    require('osv').launch {
+      type = 'server',
+      host = '127.0.0.1',
+      port = 30000,
+    }
+  end
 end, { nargs = 0 })

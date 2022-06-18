@@ -1,60 +1,27 @@
 local M = {}
 
-local function file_exists(name)
-  local f = io.open(name, 'r')
-  if f ~= nil then
-    io.close(f)
-    return true
-  else
-    return false
+local function new_file(fname)
+  if
+    (fname:match '/%.local/bin/' or fname:match '^%.local/bin/')
+    and not fname:match '%.local/bin/.+%.'
+  then
+    os.execute(string.format('chmod +x %q', fname))
   end
-end
-
-local function add_open(state, callback)
-  require('neo-tree.sources.common.commands').add(state, function(path)
-    dump(path)
-    -- require 'neo-tree.sources.common.commands'.open(state, nil)
-    callback(path)
-  end)
-end
-
-local function open(path)
-  local config = require('neo-tree').config
-  local window_position = 'left' -- we don't have access to state with this event
-  local width = config.width
-  local open_cmd = 'edit'
-  local suitable_window_found = false
-  local nt = require 'neo-tree'
-  if nt.config.open_files_in_last_window then
-    local prior_window = nt.get_prior_window()
-    if prior_window > 0 then
-      local success = pcall(vim.api.nvim_set_current_win, prior_window)
-      if success then
-        suitable_window_found = true
-      end
+  -- when new file belongs to an active stow package, stow it
+  local dots = os.getenv 'DOTFILES'
+  if vim.fn.getcwd() == dots then
+    local stow_package = fname:match('^(.-)/', #dots + 2)
+    if
+      require('utils').file_exists(
+        string.format(
+          '%s/.config/stow/active/%s',
+          os.getenv 'HOME',
+          stow_package
+        )
+      )
+    then
+      os.execute(string.format('stow %q', stow_package))
     end
-  end
-
-  -- find a suitable window to open the file in
-  if not suitable_window_found then
-    if window_position == 'right' then
-      vim.cmd 'wincmd t'
-    else
-      vim.cmd 'wincmd w'
-    end
-  end
-  local attempts = 0
-  while attempts < 4 and vim.bo.filetype == 'neo-tree' do
-    attempts = attempts + 1
-    vim.cmd 'wincmd w'
-  end
-  if vim.bo.filetype == 'neo-tree' then
-    -- Neo-tree must be the only window, restore it's status as a sidebar
-    local winid = vim.api.nvim_get_current_win()
-    vim.cmd('vsplit ' .. path)
-    vim.api.nvim_win_set_width(winid, width)
-  else
-    vim.cmd(open_cmd .. ' ' .. path)
   end
 end
 
@@ -110,7 +77,6 @@ function M.config()
         },
       },
       commands = {
-        add_open = add_open,
         system_open = function(state)
           local node = state.tree:get_node()
           local path = node:get_id()
@@ -132,39 +98,17 @@ function M.config()
         end,
       },
     },
-    -- 'file_moved', 'file_renamed'
     event_handlers = {
-      --   {
-      --     event = 'file_added',
-      --     handler = function(filename)
-      --       print(filename, 'created')
-      --       if
-      --         (filename:match '/%.local/bin/' or filename:match '^%.local/bin/')
-      --         and not filename:match '%.local/bin/.+%.'
-      --       then
-      --         os.execute(string.format('chmod +x %q', filename))
-      --       end
-      --       -- when new file belongs to an active stow package, stow it
-      --       local dots = os.getenv 'DOTFILES'
-      --       if vim.fn.getcwd() == dots then
-      --         local stow_package = filename:match('^(.-)/', #dots + 2)
-      --         if
-      --           file_exists(
-      --             string.format(
-      --               '%s/.config/stow/active/%s',
-      --               os.getenv 'HOME',
-      --               stow_package
-      --             )
-      --           )
-      --         then
-      --           os.execute(string.format('stow %q', stow_package))
-      --         end
-      --       end
-      --       open(filename)
-      --       require('templum').template_match()
-      --     end,
-      --   },
-      -- },
+      {
+        event = 'file_added',
+        handler = function(filename)
+          new_file(filename)
+          vim.cmd('e ' .. filename)
+          vim.defer_fn(function()
+            require('templum').template_match(filename)
+          end, 0)
+        end,
+      },
     },
   }
 end

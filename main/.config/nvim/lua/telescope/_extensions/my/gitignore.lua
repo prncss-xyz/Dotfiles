@@ -1,12 +1,11 @@
 -- if `.gitignore` exists, just opens it; if not pick a gitignore files and copy it before opening
 --
- -- TODO: https://github.com/github/choosealicense.com/blob/gh-pages/_licenses/gpl-3.0.txt
+-- TODO: https://github.com/github/choosealicense.com/blob/gh-pages/_licenses/gpl-3.0.txt
 
-local telescope = require 'telescope'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
-local Job = require 'plenary/job'
+local Job = require 'plenary.job'
 local conf = require('telescope.config').values
 local actions_set = require 'telescope.actions.set'
 local actions_state = require 'telescope.actions.state'
@@ -22,7 +21,7 @@ local function create(path)
   vim.cmd 'e .gitignore'
 end
 
-local function gitignore(opts)
+return function(opts)
   if vim.fn.filereadable '.gitignore' == 1 then
     vim.cmd 'e .gitignore'
     return
@@ -44,7 +43,5 @@ local function gitignore(opts)
       end)
       return true
     end,
-  }):find()
+  }, nil):find()
 end
-
-return telescope.register_extension { exports = { gitignore = gitignore } }

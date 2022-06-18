@@ -5,9 +5,10 @@ function M.extend()
   local keys = binder.keys
   local modes = binder.modes
   local b = binder.b
-  local util = require 'plugins.binder.util'
-  local np = util.np
-  local lazy_req = util.lazy_req
+  local utils = require 'plugins.binder.utils'
+  local actions = require 'plugins.binder.actions'
+  local np = utils.np
+  local lazy_req = utils.lazy_req
 
   local d = require('plugins.binder.parameters').d
 
@@ -18,8 +19,8 @@ function M.extend()
       lazy_req('telescope.builtin', 'current_buffer_fuzzy_find', {}),
     },
     c = keys {
-      prev = b { util.asterisk_gz, desc = 'current word start' },
-      next = b { util.asterisk_z, desc = 'current word' },
+      prev = b { actions.asterisk_gz, desc = 'current word start' },
+      next = b { actions.asterisk_z, desc = 'current word' },
     },
     d = np {
       desc = 'diagnostic',

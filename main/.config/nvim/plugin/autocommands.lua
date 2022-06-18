@@ -155,7 +155,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         require('bufjump').backward()
         -- vim.cmd 'BufSurfBack'
         -- require('harpoon.ui').nav_file(1)
-        -- require('plugins.binder.actions').project_files()
+        -- require('utils.buffers').project_files()
       end
       -- TODO: force statusline refresh
     end)

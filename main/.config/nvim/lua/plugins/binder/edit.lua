@@ -5,7 +5,7 @@ function M.extend()
   local keys = binder.keys
   local modes = binder.modes
   local b = binder.b
-  local lazy_req = require('plugins.binder.util').lazy_req
+  local lazy_req = require('plugins.binder.utils').lazy_req
 
   return keys {
     a = modes {

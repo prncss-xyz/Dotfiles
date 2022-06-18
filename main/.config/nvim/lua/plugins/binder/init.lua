@@ -7,14 +7,14 @@ end
 function M.config()
   local binder = require 'binder'
   binder.setup {
-    dual_key = require('binder/util').prepend 'p',
-    bind_keymap = require('binder/util').bind_keymap_legendary,
+    dual_key = require('binder.utils').prepend 'p',
+    bind_keymap = require('binder.utils').bind_keymap_legendary,
     prefix = 'plugins.binder.',
   }
   local keys = binder.keys
   local b = binder.b
   local modes = binder.modes
-  local util = require 'plugins.binder.util'
+  local util = require 'plugins.binder.utils'
   local repeatable = util.repeatable
   local lazy = util.lazy
   local lazy_req = util.lazy_req
@@ -91,7 +91,7 @@ function M.config()
   )
   binder.with_labels('todo', 'w', {
     quickfix = b {
-      require('modules.toggler').cb('TodoTrouble', 'TroubleClose'),
+      require('utils.toggler').cb('TodoTrouble', 'TroubleClose'),
     },
   })
   binder.with_labels('git', 'g', {
@@ -101,12 +101,12 @@ function M.config()
     },
     quickfix = b {
       desc = 'hunks',
-      require('modules.toggler').cb('Gitsigns setqflist', 'TroubleClose'),
+      require('utils.toggler').cb('Gitsigns setqflist', 'TroubleClose'),
     },
     editor = keys {
       redup = b {
         desc = 'neogit',
-        require('modules.toggler').cb('Neogit', ':q'),
+        require('utils.toggler').cb('Neogit', ':q'),
       },
       b = b {
         desc = 'branch',
@@ -120,11 +120,11 @@ function M.config()
         desc = 'diffview',
         prev = b {
           desc = 'diffview',
-          require('modules.toggler').cb('DiffviewOpen', 'DiffviewClose'),
+          require('utils.toggler').cb('DiffviewOpen', 'DiffviewClose'),
         },
         next = b {
           desc = 'diffview',
-          require('modules.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
+          require('utils.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
         },
       },
       H = b {
@@ -201,7 +201,7 @@ function M.config()
       '<Plug>(Marks-preview)',
     },
     quickfix = b {
-      require('modules.toggler').cb(function()
+      require('utils.toggler').cb(function()
         require('marks').mark_state:all_to_list 'quickfixlist'
         vim.cmd 'Trouble quickfix'
       end, 'TroubleClose'),
@@ -242,7 +242,7 @@ function M.config()
       f = b { '<Plug>(Marks-set-bookmark3)' },
     },
     quickfix = b {
-      require('modules.toggler').cb(function()
+      require('utils.toggler').cb(function()
         require('marks').bookmark_state:all_to_list 'quickfixlist'
         vim.cmd 'Trouble quickfix'
       end, 'TroubleClose'),
@@ -251,19 +251,19 @@ function M.config()
   binder.with_labels('symbol', 's', {
     editor = b {
       desc = 'aerial',
-      require('modules.toggler').cb(
+      require('utils.toggler').cb(
         'AerialOpen',
         'AerialClose'
       ),
       -- desc = 'outliner',
-      -- require('modules.toggler').cb(
+      -- require('utils.toggler').cb(
       --   'SymbolsOutlineOpen',
       --   'SymbolsOutlineClose'
       -- ),
     },
     quickfix = b {
       desc = 'lsp references',
-      require('modules.toggler').cb('Trouble lps_references', 'TroubleClose'),
+      require('utils.toggler').cb('Trouble lps_references', 'TroubleClose'),
     },
     bigmove = b { lazy_req('telescope.builtin', 'lsp_definitions') },
     extra = b {
@@ -275,14 +275,14 @@ function M.config()
     editor = keys {
       desc = 'trouble',
       prev = b {
-        require('modules.toggler').cb(
+        require('utils.toggler').cb(
           'Trouble document_diagnostics',
           'TroubleClose'
         ),
         desc = 'document',
       },
       next = b {
-        require('modules.toggler').cb(
+        require('utils.toggler').cb(
           'Trouble workspace_diagnostics',
           'TroubleClose'
         ),
@@ -320,7 +320,7 @@ function M.config()
     binder.with_labels('dap', 'a', {
       editor = b {
         desc = 'ui',
-        require('modules.toggler').cb(
+        require('utils.toggler').cb(
           lazy_req('dapui', 'open'),
           lazy_req('dapui', 'close')
         ),

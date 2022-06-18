@@ -48,7 +48,7 @@ local function setup_bindings(buf_id)
     buf_id,
     'n',
     'q',
-    'lua require("modules.toggler").toggle()',
+    'lua require("utils.toggler").toggle()',
     { noremap = true, silent = true, nowait = true }
   )
   for key, value in pairs(bindings) do

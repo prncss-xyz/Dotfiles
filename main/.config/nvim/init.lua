@@ -15,6 +15,3 @@ R 'globals'
 R 'options'
 R 'modules'
 R 'plugins'
-if vim.env.NVIM_EXPERIMENTS then
-  R 'experiments'
-end

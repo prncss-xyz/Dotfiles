@@ -5,7 +5,7 @@ local function local_repo(name)
   return os.getenv 'PROJECTS' .. '/' .. name
 end
 
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+if vim.fn.empty(vim.fn.glob(install_path, nil, nil)) > 0 then
   vim.fn.system {
     'git',
     'clone',
@@ -621,6 +621,10 @@ return require('packer').startup {
     }
 
     -- Session
+    use {
+      local_repo 'setup-session.nvim',
+      config = default_config('setup-session')
+    }
     use {
       'ethanholz/nvim-lastplace',
       event = 'BufReadPre',

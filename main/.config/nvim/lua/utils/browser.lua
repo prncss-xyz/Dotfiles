@@ -1,6 +1,7 @@
 local M = {}
 
-local get_visual_selection = require('utils').get_visual_selection
+local function get_visual_selection() end
+
 local browser = os.getenv 'BROWSER'
 
 function M.open(url)
@@ -13,7 +14,7 @@ function M.open(url)
 end
 
 function M.search_cword(base)
-  local word = vim.fn.expand '<cword>'
+  local word = vim.fn.expand ('<cword>', nil, nil)
   local qs = require('utils').encode_uri(word)
   M.open(base .. qs)
 end

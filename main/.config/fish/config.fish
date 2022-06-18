@@ -2,9 +2,8 @@ set fish_greeting # suppress greetings
 
 alias c 'bat --style=changes,header,rule,snip'
 alias d zi
-alias e nvim_session
-alias e 'nvim --startuptime /tmp/nvim-startuptime'
-# alias e nvr_do
+# alias e 'exec $VISUAL'
+alias e nvr_do
 alias f fsearch-ext
 alias gh 'GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1) /usr/bin/gh '
 abbr -g gncc 'commit -a --allow-empty-message -m ""'

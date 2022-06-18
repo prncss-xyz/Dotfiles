@@ -2,28 +2,17 @@
 
 local timer = 200
 
-local M = {}
-
 local highlight = {}
 
-function M.setup()
-    highlight.hl_put = vim.api.nvim_create_namespace("yanky.put")
-    highlight.timer = vim.loop.new_timer()
-    vim.highlight.link("YankyPut", "Search", false)
-    vim.highlight.link("YankyYanked", "Search", false)
-    vim.cmd(
-      string.format(
-        "autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup='YankyYanked', timeout=%s}",
-        timer
-      )
-    )
-end
-
 local function get_regions(regtype)
-  local start = vim.api.nvim_buf_get_mark(0, "[")
-  local finish = vim.api.nvim_buf_get_mark(0, "]")
+  local start = vim.api.nvim_buf_get_mark(0, '[')
+  local finish = vim.api.nvim_buf_get_mark(0, ']')
 
-  if regtype:match("^" .. vim.api.nvim_replace_termcodes("<c-v>", true, false, true)) then
+  if
+    regtype:match(
+      '^' .. vim.api.nvim_replace_termcodes('<c-v>', true, false, true)
+    )
+  then
     local regions = {}
 
     for row = start[1], finish[1], 1 do
@@ -74,7 +63,7 @@ function highlight.highlight_put(state)
 
   local regions = get_regions(vim.fn.getregtype(state.register))
 
-  highlight_regions(regions, "YankyPut", highlight.hl_put)
+  highlight_regions(regions, 'YankyPut', highlight.hl_put)
   highlight.timer:start(
     timer,
     0,
@@ -84,4 +73,13 @@ function highlight.highlight_put(state)
   )
 end
 
-return M
+highlight.hl_put = vim.api.nvim_create_namespace 'yanky.put'
+highlight.timer = vim.loop.new_timer()
+vim.highlight.link('YankyPut', 'Search', false)
+vim.highlight.link('YankyYanked', 'Search', false)
+vim.cmd(
+  string.format(
+    "autocmd TextYankPost * silent! lua vim.highlight.on_yank{higroup='YankyYanked', timeout=%s}",
+    timer
+  )
+)

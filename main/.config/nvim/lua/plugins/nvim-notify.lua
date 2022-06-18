@@ -1,7 +1,5 @@
 local M = {}
 
-local extract_nvim_hl = require('util').extract_nvim_hl
-
 function M.config()
   vim.notify = require 'notify'
   require('notify').setup {

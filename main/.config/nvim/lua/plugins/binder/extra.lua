@@ -2,13 +2,13 @@ local M = {}
 
 function M.extend()
   local d = require('plugins.binder.parameters').d
-  local util = require 'plugins.binder.util'
-  local alt = util.alt
+  local utils = require 'plugins.binder.utils'
+  local alt = utils.alt
   local binder = require 'binder'
   local keys = binder.keys
   local modes = binder.modes
   local b = binder.b
-  local lazy_req = require('plugins.binder.util').lazy_req
+  local lazy_req = require('plugins.binder.utils').lazy_req
   return keys {
     b = keys {
       prev = b { desc = 'scroll top', lazy_req('neoscroll', 'zt', 250) },

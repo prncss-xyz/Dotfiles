@@ -1,8 +1,6 @@
 -- small commands directly meant for bindings
 local M = {}
 
-local utils = require 'utils'
-
 local function t(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
@@ -18,15 +16,6 @@ end
 function M.plug(name)
   local keys = '<Plug>' .. name
   vim.api.nvim_feedkeys(t(keys), 'm', true)
-end
-
-
-function M.static_yank(keys)
-  local cursor = vim.fn.getpos '.'
-  vim.defer_fn(function()
-    M.keys(keys)
-    vim.fn.setpos('.', cursor)
-  end, 1)
 end
 
 vim.api.nvim_set_keymap(
@@ -86,55 +75,12 @@ function M.hop12()
   end
 end
 
--- https://github.com/ibhagwan/fzf-lua/blob/f7f54dd685cfdf5469a763d3a00392b9291e75f2/lua/fzf-lua/utils.lua#L372-L404
-function M.get_visual_selection()
-  -- this will exit visual mode
-  -- use 'gv' to reselect the text
-  local _, csrow, cscol, cerow, cecol
-  local mode = vim.fn.mode()
-  if mode == 'v' or mode == 'V' or mode == '' then
-    -- if we are in visual mode use the live position
-    _, csrow, cscol, _ = unpack(vim.fn.getpos '.')
-    _, cerow, cecol, _ = unpack(vim.fn.getpos 'v')
-    if mode == 'V' then
-      -- visual line doesn't provide columns
-      cscol, cecol = 0, 999
-    end
-    -- exit visual mode
-    vim.api.nvim_feedkeys(
-      vim.api.nvim_replace_termcodes('<Esc>', true, false, true),
-      'n',
-      true
-    )
-  else
-    -- otherwise, use the last known visual position
-    _, csrow, cscol, _ = unpack(vim.fn.getpos "'<")
-    _, cerow, cecol, _ = unpack(vim.fn.getpos "'>")
-  end
-  -- swap vars if needed
-  if cerow < csrow then
-    csrow, cerow = cerow, csrow
-  end
-  if cecol < cscol then
-    cscol, cecol = cecol, cscol
-  end
-  local lines = vim.fn.getline(csrow, cerow)
-  -- local n = cerow-csrow+1
-  local n = M.tbl_length(lines)
-  if n <= 0 then
-    return ''
-  end
-  lines[n] = string.sub(lines[n], 1, cecol)
-  lines[1] = string.sub(lines[1], cscol)
-  return table.concat(lines, '\n')
-end
-
 -- https://vim.fandom.com/wiki/Unconditional_linewise_or_characterwise_paste
 function M.paste(regname, paste_type, paste_cmd)
   local reg_type = vim.fn.getregtype(regname)
-  vim.fn.setreg(regname, vim.fn.getreg(regname), paste_type)
+  vim.fn.setreg(regname, vim.fn.getreg(regname, nil, nil), paste_type)
   vim.cmd('normal! ' .. '"' .. regname .. paste_cmd)
-  vim.fn.setreg(regname, vim.fn.getreg(regname), reg_type)
+  vim.fn.setreg(regname, vim.fn.getreg(regname, nil, nil), reg_type)
 end
 
 function M.telescope_symbols_md_lsp()
@@ -152,71 +98,7 @@ function M.lsp_format()
       format()
     end
   else
-    vim.lsp.buf.formatting_sync()
-  end
-end
-
-local recompose = require('flies.move_again').recompose
--- local recompose = function(a, b)
--- 	return a,b
--- end
-
-M.previous_reference, M.next_reference = recompose(function()
-  require('illuminate').next_reference { wrap = true, reverse = true }
-end, function()
-  require('illuminate').next_reference { wrap = true }
-end)
-
-M.mark_previous, M.mark_next = recompose(function()
-  require('marks').bookmark_state:previous()
-end, function()
-  require('marks').bookmark_state:next()
-end)
-
-local function mv_bookmark(i)
-  return recompose(function()
-    require('marks').bookmark_state:previous(i)
-  end, function()
-    require('marks').bookmark_state:next(i)
-  end)
-end
-
-function M.bookmark_previous(i)
-  local cb, _ = mv_bookmark(i)
-  return cb
-end
-
-function M.bookmark_next(i)
-  local _, cb = mv_bookmark(i)
-  return cb
-end
-
-M.all_bookmarks_previous, M.all_bookmarks_next = recompose(function()
-  require('marks').prev_bookmark()
-end, function()
-  require('marks').next_bookmark()
-end)
-
-function M.ro_quit_else(lhs, mode)
-  if vim.bo.readonly then
-    vim.cmd ':q'
-  else
-    vim.fn.feedkeys(lhs, mode)
-  end
-end
-
-function M.repeatable(rhs)
-  return string.format('%s<cmd>call repeat#set(%q, v:count)<cr>', rhs, t(rhs))
-end
-
-function M.repeatable_cmd(rhs) end
-
-function M.outliner()
-  if vim.bo.filetype == 'markdown' then
-    require('modules.toggler').open('Toc', nil)
-    vim.cmd 'Toc'
-  else
-    require('modules.toggler').cb('SymbolsOutlineOpen', 'SymbolsOutlineClose')
+    vim.lsp.buf.formatting_sync(nil, nil)
   end
 end
 
@@ -233,7 +115,7 @@ function M.open_current()
   require('plenary').job
     :new({
       command = 'xdg-open',
-      args = { vim.fn.expand '%' },
+      args = { vim.fn.expand('%', nil, nil) },
     })
     :start()
 end
@@ -242,7 +124,7 @@ function M.xplr_launch()
   require('plenary').job
     :new({
       command = vim.env.TERMINAL,
-      args = { 'xplr', vim.fn.expand '%' },
+      args = { 'xplr', vim.fn.expand('%', nil, nil) },
     })
     :start()
 end
@@ -263,7 +145,7 @@ function M.docu_current()
 end
 
 function M.edit_current()
-  local current = vim.fn.expand '%'
+  local current = vim.fn.expand('%', nil, nil)
   require('plenary').job
     :new({
       command = vim.env.TERMINAL,
@@ -275,7 +157,6 @@ function M.edit_current()
 end
 
 function M.reset_editor()
-  local current = vim.fn.expand '%'
   require('plenary').job
     :new({
       command = 'swaymsg',
@@ -288,7 +169,7 @@ function M.reset_editor()
 end
 
 function M.searchCword(base)
-  local word = vim.fn.expand '<cword>'
+  local word = vim.fn.expand('<cword>', nil, nil)
   local qs = require('utils').encode_uri(word)
   M.open(base .. qs)
 end

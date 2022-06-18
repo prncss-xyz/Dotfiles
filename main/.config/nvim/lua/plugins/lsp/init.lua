@@ -32,9 +32,9 @@ function M.config()
   -- `vim.cmd 'highlight! link LspReferenceText String'`
   -- for Neon colorscheme:
   -- vim.cmd 'highlight! LspReferenceText guibg=#4db5bd guifg=#ecee7b'
-  local diff_add = require('util').extract_nvim_hl 'DiffAdd'
-  local diff_change = require('util').extract_nvim_hl 'DiffChange'
-  local diagnostic_warn = require('util').extract_nvim_hl 'DiagnosticWarn'
+  local diff_add = require('utils').extract_nvim_hl 'DiffAdd'
+  local diff_change = require('utils').extract_nvim_hl 'DiffChange'
+  local diagnostic_warn = require('utils').extract_nvim_hl 'DiagnosticWarn'
   vim.api.nvim_set_hl(
     0,
     'LspReferenceWrite',

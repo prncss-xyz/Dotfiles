@@ -25,7 +25,7 @@ local no_num_list = {
 }
 
 -- TODO:
-function debugger()
+local function debugger()
   if not package.loaded['dap'] then
     return ''
   end

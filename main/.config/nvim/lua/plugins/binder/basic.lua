@@ -2,13 +2,13 @@ local M = {}
 
 function M.extend()
   local d = require('plugins.binder.parameters').d
-  local util = require 'plugins.binder.util'
+  local util = require 'plugins.binder.utils'
   local alt = util.alt
   local binder = require 'binder'
   local keys = binder.keys
   local modes = binder.modes
   local b = binder.b
-  local lazy_req = require('plugins.binder.util').lazy_req
+  local lazy_req = require('plugins.binder.utils').lazy_req
   return keys {
     a = b { desc = 'append', 'a' },
     b = b { desc = 'move extremity', lazy_req('flies.actions', 'extremity') },
@@ -72,12 +72,6 @@ function M.extend()
     x = b { 'd', modes = 'nx' },
     xx = b { 'dd' },
     yy = b { 'yy', modes = 'n' },
-    -- y = {
-    --   function()
-    --     require('bindutils').static_yank 'y'
-    --   end,
-    --   modes = 'nx',
-    -- },
     y = b { 'y', modes = 'nx' },
     ['<space>'] = b {
       desc = 'legendary find',
@@ -113,19 +107,19 @@ function M.extend()
     ['<m-w>'] = b { desc = 'close window', 'q', cmd = true },
     ['<m-h>'] = b {
       desc = 'pick window',
-      require('util.actions').winpick_focus,
+      require('utils.windows').winpick_focus,
     },
     [alt(d.left)] = b {
-      lazy_req('modules.wrap_win', 'left'),
+      lazy_req('utils.wrap_win', 'left'),
       desc = 'window left',
     },
     [alt(d.down)] = b {
-      lazy_req('modules.wrap_win', 'down'),
+      lazy_req('utils.wrap_win', 'down'),
       desc = 'window down',
     },
-    [alt(d.up)] = b { lazy_req('modules.wrap_win', 'up'), desc = 'up' },
+    [alt(d.up)] = b { lazy_req('utils.wrap_win', 'up'), desc = 'up' },
     [alt(d.right)] = b {
-      lazy_req('modules.wrap_win', 'right'),
+      lazy_req('utils.wrap_win', 'right'),
       desc = 'window right',
     },
   }

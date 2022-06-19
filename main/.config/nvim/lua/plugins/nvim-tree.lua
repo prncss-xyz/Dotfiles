@@ -31,26 +31,8 @@ local bindings = {
   ['<c-x>'] = 'split',
 }
 
-local function file_exists(name)
-  local f = io.open(name, 'r')
-  if f ~= nil then
-    io.close(f)
-    return true
-  else
-    return false
-  end
-end
-
 local function setup_bindings(buf_id)
   local cb = require('nvim-tree.config').nvim_tree_callback
-  -- FIXME:
-  vim.api.nvim_buf_set_keymap(
-    buf_id,
-    'n',
-    'q',
-    'lua require("utils.toggler").toggle()',
-    { noremap = true, silent = true, nowait = true }
-  )
   for key, value in pairs(bindings) do
     vim.api.nvim_buf_set_keymap(
       buf_id,
@@ -100,7 +82,10 @@ M.config = function()
     renderer = {
       highlight_opened_files = 'name',
     },
-    view = { width = vim.g.u_pane_width, mappings = { custom_only = true } },
+    view = {
+      width = require('parameters').pane_width,
+      mappings = { custom_only = true },
+    },
     filters = {
       custom = { '.git' },
     },
@@ -119,7 +104,7 @@ M.config = function()
     if vim.fn.getcwd() == dots then
       local stow_package = fname:match('^(.-)/', #dots + 2)
       if
-        file_exists(
+        require('utils.std').file_exists(
           string.format(
             '%s/.config/stow/active/%s',
             os.getenv 'HOME',

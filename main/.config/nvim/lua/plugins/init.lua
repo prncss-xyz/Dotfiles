@@ -71,7 +71,7 @@ return require('packer').startup {
       'nvim-treesitter/playground',
       cmd = { 'TSPlaygroundToggle', 'TSHighlightCapturesUnderCursor' },
     }
-    -- Use tressitter to autoclose and autorename html tag
+    -- Use tressitter to autoclose and autorename HTML tag
     use { 'windwp/nvim-ts-autotag', event = 'InsertEnter' }
     use { 'David-Kunz/treesitter-unit', module = 'treesitter-unit' }
     use {
@@ -100,7 +100,7 @@ return require('packer').startup {
     use { 'ajouellette/sway-vim-syntax', ft = 'sway' }
     -- use 'fladson/vim-kitty'
 
-    -- luv docs in :help
+    -- LUV docs in :help
     use { 'nanotee/luv-vimdocs' }
     -- lua docs in :help
     use { 'milisims/nvim-luaref' }

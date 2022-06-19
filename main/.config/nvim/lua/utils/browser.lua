@@ -15,7 +15,7 @@ end
 
 function M.search_cword(base)
   local word = vim.fn.expand ('<cword>', nil, nil)
-  local qs = require('utils').encode_uri(word)
+  local qs = require('utils.std').encode_uri(word)
   M.open(base .. qs)
 end
 
@@ -29,7 +29,7 @@ end
 
 function M.search_visual(base)
   get_visual_selection(function(word)
-    local qs = require('utils').encode_uri(word)
+    local qs = require('utils.std').encode_uri(word)
     M.open(base .. qs)
   end)
 end

@@ -67,6 +67,7 @@ function M.config()
           ['<c-q>'] = actions.send_to_qflist,
           ['<c-t>'] = function(...)
             require('trouble.providers.telescope').open_with_trouble(...)
+            require('utils.windows').show_ui('Trouble', 'Trouble')
           end,
           ['<c-u>'] = false,
         },
@@ -74,6 +75,7 @@ function M.config()
           ['qq'] = actions.send_to_qflist,
           ['qt'] = function(...)
             require('trouble.providers.telescope').open_with_trouble(...)
+            require('utils.windows').show_ui('Trouble', 'Trouble')
           end,
           ['qh'] = actions.file_split,
           ['qv'] = actions.file_vsplit,
@@ -113,8 +115,8 @@ function M.config()
         ignore_patterns = { '*.git/*', '*/tmp/*', 'node_modules/*' },
         show_unindexed = false,
         workspaces = {
-          dot = vim.g.dotfiles,
-          vim = vim.g.vim_dir,
+          dot = require('parameters').dotfiles,
+          vim = require('parameters').vim_conf,
           notes = vim.env.HOME .. 'Personal/neuron',
           data = vim.env.HOME .. '.local/share',
         },

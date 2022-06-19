@@ -69,10 +69,6 @@ local function export_theme(name)
   dest:close()
 end
 
-function M.setup()
-  vim.api.nvim_create_user_command('ExportTheme', function(a)
-    export_theme(a.fargs[1])
-  end, { nargs = 1 })
-end
-
-return M
+vim.api.nvim_create_user_command('ExportTheme', function(a)
+  export_theme(a.fargs[1])
+end, { nargs = 1 })

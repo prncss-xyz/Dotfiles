@@ -12,7 +12,7 @@ function M.extract_nvim_hl(name)
   return hl
 end
 
-function M.stop_by_name(name)
+function M.lsp_stop_by_name(name)
   local client = require('plugins.lsp.utils').get_client(name)
   if not client then
     return
@@ -56,27 +56,64 @@ function M.put_text(...)
   return ...
 end
 
-function M.starts_with(full, prefix)
-  if full:sub(1, prefix:len()) == prefix then
-    return true
-  end
+function M.term()
+  require('plenary').job
+    :new({
+      command = vim.env.TERMINAL,
+      args = {},
+    })
+    :start()
 end
 
-function M.split_string(str, delimiter)
-  local result = {}
-  local from = 1
-  local delim_from, delim_to = string.find(str, delimiter, from)
-  while delim_from do
-    table.insert(result, string.sub(str, from, delim_from - 1))
-    from = delim_to + 1
-    delim_from, delim_to = string.find(str, delimiter, from)
-  end
-  table.insert(result, string.sub(str, from))
-  return result
+function M.open_current()
+  require('plenary').job
+    :new({
+      command = 'xdg-open',
+      args = { vim.fn.expand('%', nil, nil) },
+    })
+    :start()
 end
 
--- ?? vim.tbl_deep_extend instead ??
--- TODO merge arrays
+function M.xplr_launch()
+  require('plenary').job
+    :new({
+      command = vim.env.TERMINAL,
+      args = { 'xplr', vim.fn.expand('%', nil, nil) },
+    })
+    :start()
+end
+
+function M.edit_current()
+  local current = vim.fn.expand('%', nil, nil)
+  require('plenary').job
+    :new({
+      command = vim.env.TERMINAL,
+      -- args = {'-e', 'nvim', current},
+      -- without sh, nvim occupies only small portion of terminal
+      args = { '-e', 'sh', '-c', 'nvim ' .. current },
+    })
+    :start()
+end
+
+function M.reset_editor()
+  require('plenary').job
+    :new({
+      command = 'swaymsg',
+      -- args = {'-e', 'nvim', current},
+      -- without sh, nvim occupies only small portion of terminal
+      args = { 'exec', vim.env.TERMINAL, ' -e', 'sh -c nvim' },
+    })
+    :sync()
+  vim.cmd 'quitall'
+end
+
+function M.searchCword(base)
+  local word = vim.fn.expand('<cword>', nil, nil)
+  local qs = require('utils.std').encode_uri(word)
+  M.open(base .. qs)
+end
+
+-- TODO: remove after updating theme exporter
 function M.deep_merge(t1, t2)
   for k, v in pairs(t2) do
     if (type(v) == 'table') and (type(t1[k] or false) == 'table') then
@@ -86,36 +123,6 @@ function M.deep_merge(t1, t2)
     end
   end
   return t1
-end
-
-function M.invert(tbl)
-  local res = {}
-  for key, value in pairs(tbl) do
-    res[value] = key
-  end
-  return res
-end
-
--- http://lua-users.org/wiki/StringRecipes
-function M.encode_uri(str)
-  if str then
-    str = str:gsub('\n', '\r\n')
-    str = str:gsub('([^%w %-%_%.%~])', function(c)
-      return ('%%%02X'):format(string.byte(c))
-    end)
-    str = str:gsub(' ', '+')
-  end
-  return str
-end
-
-function M.file_exists(name)
-  local f = io.open(name, 'r')
-  if f ~= nil then
-    io.close(f)
-    return true
-  else
-    return false
-  end
 end
 
 return M

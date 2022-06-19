@@ -16,8 +16,8 @@ function M.edit_snippets()
     require('luasnip.loaders.from_lua').edit_snippet_files()
     return
   end
-  local vim_dir = vim.g.vim_dir
-  local snip_dir = vim_dir .. '/snippets'
+  local vim_conf = require('parameters').vim_conf
+  local snip_dir = vim_conf .. '/snippets'
   local languages = {}
   local ft = vim.bo.filetype
   if ft ~= '' then
@@ -51,15 +51,15 @@ function M.edit_snippets()
   end
   table.insert(
     items,
-    { name = 'bindings -- Conf', path = vim_dir .. '/lua/bindings/init.lua' }
+    { name = 'bindings -- Conf', path = vim_conf .. '/lua/bindings/init.lua' }
   )
   table.insert(items, {
     name = 'textobjects -- Conf',
-    path = vim_dir .. '/lua/bindings/textobjects.lua',
+    path = vim_conf .. '/lua/bindings/textobjects.lua',
   })
   table.insert(
     items,
-    { name = 'plugins -- Conf', path = vim_dir .. '/lua/plugins/init.lua' }
+    { name = 'plugins -- Conf', path = vim_conf .. '/lua/plugins/init.lua' }
   )
   vim.ui.select(items, { format_item = format_item }, on_choice)
 end

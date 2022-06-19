@@ -11,9 +11,8 @@ function M.extend()
 
   return keys {
     redup = keys {
-      desc = 'toggle',
-      prev = b { desc = 'back', require('utils.toggler').back },
-      next = b { require('utils.toggler').toggle },
+      prev = b { require('utils.windows').show_ui_last, desc = 'last ui' },
+      next = b { require('utils.windows').show_ui, desc = 'close ui' },
     },
     b = keys {
       desc = 'runner',
@@ -91,7 +90,8 @@ function M.extend()
       z = keys {
         prev = b {
           desc = 'zen',
-          require('utils.toggler').cb('ZenMode', 'ZenMode'),
+          'ZenMode',
+          cmd = true,
         },
         next = b { require('utils.windows').zoom },
       },
@@ -109,20 +109,15 @@ function M.extend()
       },
     },
     f = keys {
-      desc = 'neo tree',
       prev = b {
-        'Neotree git_status',
-        cmd = true,
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree git_status'),
+        desc = 'neo-tree git',
       },
       next = b {
-        'Neotree',
-        cmd = true,
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree'),
+        desc = 'neo-tree',
       },
     },
-    -- f = b {
-    --   desc = 'nvim tree',
-    --   require('utils.toggler').cb('NvimTreeOpen', 'NvimTreeClose'),
-    -- },
     h = keys {
       desc = 'help',
       redup = b {
@@ -167,10 +162,15 @@ function M.extend()
       desc = 'session develop',
       require('setup-session').develop,
     },
-    -- t = b { desc = 'new terminal', require('bindutils').term },
+    t = b { desc = 'new terminal', require('bindutils').term },
     u = b {
       desc = 'undo tree',
-      require('utils.toggler').cb('UndotreeToggle', 'UndotreeToggle'),
+      lazy_req(
+        'utils.windows',
+        'show_ui',
+        { 'undotree', 'diff' },
+        'UndotreeToggle'
+      ),
     },
     v = keys {
       prev = b {

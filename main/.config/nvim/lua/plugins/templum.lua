@@ -14,7 +14,7 @@ local l = require('luasnip.extras').lambda
 
 -- TODO: explore selection
 
-local split_string = require('utils').split_string
+local split_string = require('utils.std').split_string
 
 local templates_dir = vim.env.HOME .. '/.config/nvim/snippets/templum'
 

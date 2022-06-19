@@ -51,7 +51,7 @@ function M.setup()
       ['<c-s>'] = b {
         function()
           vim.cmd 'stopinsert'
-          require('bindutils').lsp_format()
+          require('plugins.binder.actions').lsp_format()
         end,
       },
       desc = 'format',

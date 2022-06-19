@@ -91,7 +91,7 @@ function M.config()
   )
   binder.with_labels('todo', 'w', {
     quickfix = b {
-      require('utils.toggler').cb('TodoTrouble', 'TroubleClose'),
+      lazy_req('utils.windows', 'show_ui', 'Trouble', 'TodoTrouble'),
     },
   })
   binder.with_labels('git', 'g', {
@@ -101,16 +101,21 @@ function M.config()
     },
     quickfix = b {
       desc = 'hunks',
-      require('utils.toggler').cb('Gitsigns setqflist', 'TroubleClose'),
+      lazy_req('utils.windows', 'show_ui', 'Trouble', 'Gitsigns setqflist'),
     },
     editor = keys {
       redup = b {
         desc = 'neogit',
-        require('utils.toggler').cb('Neogit', ':q'),
+        lazy_req('utils.windows', 'show_ui', 'Neogit', 'Neogit'),
       },
       b = b {
         desc = 'branch',
-        lazy_req('neogit', 'open'), -- split, vsplit
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Neogit',
+          lazy_req('neogit', 'open')
+        ),
       },
       c = b {
         desc = 'commit',
@@ -120,11 +125,16 @@ function M.config()
         desc = 'diffview',
         prev = b {
           desc = 'diffview',
-          require('utils.toggler').cb('DiffviewOpen', 'DiffviewClose'),
+          lazy_req('utils.windows', 'show_ui', 'Diffview', 'DiffviewOpen'),
         },
         next = b {
-          desc = 'diffview',
-          require('utils.toggler').cb('DiffviewFileHistory', 'DiffviewClose'),
+          desc = 'diffview file history',
+          lazy_req(
+            'utils.windows',
+            'show_ui',
+            'Diffview',
+            'DiffviewFileHistory'
+          ),
         },
       },
       H = b {
@@ -201,10 +211,10 @@ function M.config()
       '<Plug>(Marks-preview)',
     },
     quickfix = b {
-      require('utils.toggler').cb(function()
+      function()
         require('marks').mark_state:all_to_list 'quickfixlist'
-        vim.cmd 'Trouble quickfix'
-      end, 'TroubleClose'),
+        require('utils.windows').show_ui('Trouble', 'Trouble quickfix')
+      end,
     },
   })
   binder.with_labels('bookmarks', 'b', {
@@ -242,28 +252,20 @@ function M.config()
       f = b { '<Plug>(Marks-set-bookmark3)' },
     },
     quickfix = b {
-      require('utils.toggler').cb(function()
+      function()
         require('marks').bookmark_state:all_to_list 'quickfixlist'
-        vim.cmd 'Trouble quickfix'
-      end, 'TroubleClose'),
+        require('utils.windows').show_ui('Trouble', 'Trouble quickfix')
+      end,
     },
   })
   binder.with_labels('symbol', 's', {
     editor = b {
       desc = 'aerial',
-      require('utils.toggler').cb(
-        'AerialOpen',
-        'AerialClose'
-      ),
-      -- desc = 'outliner',
-      -- require('utils.toggler').cb(
-      --   'SymbolsOutlineOpen',
-      --   'SymbolsOutlineClose'
-      -- ),
+      lazy_req('utils.windows', 'show_ui', 'aerial', 'AerialOpen'),
     },
     quickfix = b {
       desc = 'lsp references',
-      require('utils.toggler').cb('Trouble lps_references', 'TroubleClose'),
+      lazy_req('utils.windows', 'show_ui', 'Trouble', 'Trouble lps_references'),
     },
     bigmove = b { lazy_req('telescope.builtin', 'lsp_definitions') },
     extra = b {
@@ -275,16 +277,20 @@ function M.config()
     editor = keys {
       desc = 'trouble',
       prev = b {
-        require('utils.toggler').cb(
-          'Trouble document_diagnostics',
-          'TroubleClose'
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Trouble',
+          'Trouble document_diagnostics'
         ),
         desc = 'document',
       },
       next = b {
-        require('utils.toggler').cb(
-          'Trouble workspace_diagnostics',
-          'TroubleClose'
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Trouble',
+          'Trouble workspace_diagnostics'
         ),
         desc = 'workspace',
       },
@@ -320,10 +326,7 @@ function M.config()
     binder.with_labels('dap', 'a', {
       editor = b {
         desc = 'ui',
-        require('utils.toggler').cb(
-          lazy_req('dapui', 'open'),
-          lazy_req('dapui', 'close')
-        ),
+        lazy_req('utils.windows', 'show_ui', 'dap', lazy_req('dapui', 'open')),
       },
       extra = keys {
         b = keys {

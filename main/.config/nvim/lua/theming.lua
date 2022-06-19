@@ -3,7 +3,7 @@
 --
 
 
-local deep_merge = require('utils').deep_merge
+local deep_merge = require('utils.std').deep_merge
 local theme = require 'theme'
 
 -- local theme = require 'theme'

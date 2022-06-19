@@ -52,6 +52,10 @@ function M.extend()
         next = b { lazy_req('marks', 'next_bookmark3') },
       },
     },
+    c = b {
+      desc = 'refresh buffer list',
+      lazy_req('buffstory', 'refresh_list'),
+    },
     d = keys {
       desc = 'unimpaired directory',
       prev = b { '<Plug>(unimpaired-directory-previous)' },

@@ -49,7 +49,7 @@ function M.extend()
     s = modes {
       nx = b {
         function()
-          require('bindutils').hop12()
+          require('plugins.binder.actions').hop12 ',=;+-*/_'
         end,
       },
       o = b {

@@ -1,15 +1,48 @@
 local M = {}
 
+local last_ui
+
 function M.show_ui(keep, cb)
-  for _, win in ipairs(vim.api.nvim_list_wins()) do
-    local buf = vim.api.nvim_win_get_buf(win)
-    local bt = vim.api.nvim_buf_get_option(buf, 'buftype')
-    if bt ~= '' then
-      vim.api.nvim_win_close(win, false)
-    end
+  if type(keep) == 'string' then
+    keep = { keep }
+  elseif keep == nil then
+    keep = {}
   end
-  if cb then
-    cb()
+  last_ui = {
+    keep,
+    cb,
+  }
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    pcall(function()
+      local buf = vim.api.nvim_win_get_buf(win)
+      local bt = vim.api.nvim_buf_get_option(buf, 'buftype')
+      local ft = vim.api.nvim_buf_get_option(buf, 'filetype')
+      if bt ~= '' then
+        local del = true
+        for _, k in ipairs(keep) do
+          if vim.endswith(ft, k) then
+            del = false
+            break
+          end
+        end
+        if del then
+          vim.api.nvim_win_close(win, false)
+        end
+      end
+    end)
+  end
+  vim.defer_fn(function()
+    if type(cb) == 'function' then
+      cb()
+    elseif type(cb) == 'string' then
+      vim.api.nvim_command(cb)
+    end
+  end, 0)
+end
+
+function M.show_ui_last()
+  if last_ui then
+    M.show_ui(unpack(last_ui))
   end
 end
 

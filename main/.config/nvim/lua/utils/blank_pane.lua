@@ -8,7 +8,7 @@ function M.open()
     split = Split {
       relative = 'editor',
       position = 'left',
-      size = vim.g.u_pane_width,
+      size = require 'parameters'.pane_width,
     }
     split:mount()
   else

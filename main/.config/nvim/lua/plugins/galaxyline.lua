@@ -253,7 +253,7 @@ function M.config()
 
   local theme = require 'theme'
   if theme.galaxyline then
-    require('utils').deep_merge(colors, theme.galaxyline)
+    require('utils.std').deep_merge(colors, theme.galaxyline)
   end
 
   local text = colors.text

@@ -9,10 +9,10 @@ function M.config()
   end
 
   require('luasnip.loaders.from_vscode').lazy_load {
-    paths = vim.g.vim_dir .. '/snippets/textmate',
+    paths = require 'parameters'.vim_conf .. '/snippets/textmate',
   }
   require('luasnip.loaders.from_lua').lazy_load {
-    paths = vim.g.vim_dir .. '/snippets/luasnip',
+    paths = require 'parameters'.vim_conf .. '/snippets/luasnip',
   }
 end
 

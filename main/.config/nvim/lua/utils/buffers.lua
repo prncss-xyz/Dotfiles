@@ -6,7 +6,7 @@ local function get_playground_dir()
     project_dir = project_dir .. '/'
   end
   local cwd = vim.fn.getcwd()
-  if not require('utils').starts_with(cwd, project_dir) then
+  if not vim.startswith(cwd, project_dir) then
     return
   end
   local rel = cwd:sub(project_dir:len() + 1)

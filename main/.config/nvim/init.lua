@@ -13,5 +13,4 @@ end
 
 R 'globals'
 R 'options'
-R 'modules'
 R 'plugins'

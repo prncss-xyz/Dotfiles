@@ -1,7 +1,7 @@
 local indent = 2
 local dotfiles = vim.env.DOTFILES or vim.fn.expand '~/.dotfiles'
 
-local deep_merge = require('utils').deep_merge
+local deep_merge = require('utils.std').deep_merge
 deep_merge(vim, {
   bo = {
     expandtab = true,
@@ -55,7 +55,6 @@ deep_merge(vim, {
   },
   g = {
     -- autosave = 1,
-    dotfiles = dotfiles,
     do_filetype_lua = 1,
     did_load_filetypes = 0,
     -- FIXME: not respected by new treesitter grammar
@@ -66,9 +65,6 @@ deep_merge(vim, {
       'bash=sh',
       'console=sh',
     },
-    targets_nl = 'np', -- FIXME: setting it from packer does not seem to work
-    u_pane_width = 55,
-    vim_dir = vim.env.HOME .. '/.config/nvim',
   },
   wo = {
     number = false,

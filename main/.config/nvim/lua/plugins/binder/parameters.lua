@@ -1,6 +1,6 @@
 local M = {}
 
-local invert = require('utils').invert
+local invert = require('utils.std').invert
 
 M.qualifiers = {
   p = 'previous',

@@ -23,7 +23,7 @@ end
 -- exact string matches filename only (no dir)
 -- regex matches against whole path
 
-local split_string = require('utils').split_string
+local split_string = require('utils.std').split_string
 
 local M = {}
 

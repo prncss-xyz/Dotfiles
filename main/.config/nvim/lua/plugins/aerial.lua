@@ -3,7 +3,7 @@ local M = {}
 function M.config()
   require('aerial').setup {
     default_direction = 'left',
-    min_width = vim.g.u_pane_width,
+    min_width = require 'parameters'.pane_width,
     backends = {
       'treesitter',
       'lsp',

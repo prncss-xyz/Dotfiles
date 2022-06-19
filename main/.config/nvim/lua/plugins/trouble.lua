@@ -1,6 +1,6 @@
 local M = {}
 
-local d = require 'plugins.binder.parameters'.d
+local d = require('plugins.binder.parameters').d
 
 local action_keys = {
   close = {},
@@ -14,7 +14,7 @@ local action_keys = {
   close_folds = {},
   hover = 'h',
   open_folds = {},
-  next = d.down,  -- next = d.down,
+  next = d.down, -- next = d.down,
   previous = d.up,
   toggle_mode = 'm', -- toggle between "workspace" and "document" diagnostics mode
   toggle_preview = 'l', -- toggle auto_preview
@@ -24,7 +24,7 @@ local action_keys = {
 function M.config()
   require('trouble').setup {
     position = 'left',
-    width = vim.g.u_pane_width,
+    width = require('parameters').pane_width,
     -- position = 'bottom',
     use_diagnostic_signs = true,
     action_keys = action_keys,

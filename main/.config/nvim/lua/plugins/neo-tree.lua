@@ -12,7 +12,7 @@ local function new_file(fname)
   if vim.fn.getcwd() == dots then
     local stow_package = fname:match('^(.-)/', #dots + 2)
     if
-      require('utils').file_exists(
+      require('utils.std').file_exists(
         string.format(
           '%s/.config/stow/active/%s',
           os.getenv 'HOME',
@@ -26,6 +26,7 @@ local function new_file(fname)
 end
 
 function M.config()
+  -- highlights: NeoTreeFileNameOpened     File name when the file is open. Not used yet.
   require('neo-tree').setup {
     enable_git_status = true,
     enable_diagnostics = true,
@@ -52,7 +53,7 @@ function M.config()
     },
     close_if_last_window = true,
     window = {
-      width = vim.g.u_pane_width,
+      width = require('parameters').pane_width,
     },
     filesystem = {
       follow_current_file = true,
@@ -74,6 +75,7 @@ function M.config()
           ['gp'] = 'prev_git_modified',
           ['gn'] = 'next_git_modified',
           ['h'] = 'show_help',
+          ['q'] = false,
         },
       },
       commands = {

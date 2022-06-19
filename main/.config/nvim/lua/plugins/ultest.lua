@@ -1,7 +1,7 @@
 local M = {}
 
 function M.setup()
-  require('utils').deep_merge(vim.g, {
+  require('utils.std').deep_merge(vim.g, {
     -- ['test#strategy'] = 'neovim', -- 'shtuff' , 'harpoon', 'neovim'
     shtuff_receiver = 'devrunner',
     -- nvim --headless -c "PlenaryBustedDirectory tests/plenary/ {minimal=true}"

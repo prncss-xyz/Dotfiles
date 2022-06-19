@@ -56,7 +56,7 @@ function M.extend()
         { show_nesting = true } -- does it change something
       ),
     },
-    -- s = b { require('bindutils').telescope_symbols_md_lsp, desc = 'lsp symbol' },
+    -- s = b { require('utils').telescope_symbols_md_lsp, desc = 'lsp symbol' },
     t = np {
       desc = 'failed test',
       prev = b { '<Plug>(ultest-prev-fail)' },

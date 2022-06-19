@@ -236,10 +236,10 @@ function M.config()
       --     name = 'Deletes all marks on current line.',
       --   },
       -- },
-      -- a = require('bindutils').bookmark_next(0),
-      -- s = require('bindutils').bookmark_next(1),
-      -- d = require('bindutils').bookmark_next(2),
-      -- f = require('bindutils').bookmark_next(3),
+      -- a = require('utils').bookmark_next(0),
+      -- s = require('utils').bookmark_next(1),
+      -- d = require('utils').bookmark_next(2),
+      -- f = require('utils').bookmark_next(3),
       -- b = plug '(Marks-prev-bookmark)',
       next = b {
         b = {

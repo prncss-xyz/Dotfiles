@@ -134,13 +134,13 @@ function M.extend()
         prev = b {
           function()
             local rs = '"' .. vim.v.register
-            require('bindutils').keys('"_d' .. rs .. 'P')
+            require('plugins.binder.utils').keys('"_d' .. rs .. 'P')
           end,
         },
         next = b {
           function()
             local rs = '"' .. vim.v.register
-            require('bindutils').keys('"_d' .. rs .. 'P')
+            require('plugins.binder.utils').keys('"_d' .. rs .. 'P')
           end,
         },
       },

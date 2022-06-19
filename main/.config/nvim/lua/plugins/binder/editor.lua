@@ -100,12 +100,12 @@ function M.extend()
         desc = 'vertical 85',
       },
     },
-    d = b { desc = 'filetype docu', require('bindutils').docu_current },
+    d = b { desc = 'filetype docu', require('utils').docu_current },
     e = keys {
-      prev = b { desc = 'reset editor', require('bindutils').reset_editor },
+      prev = b { desc = 'reset editor', require('utils').reset_editor },
       next = b {
         desc = 'current in new editor',
-        require('bindutils').edit_current,
+        require('utils').edit_current,
       },
     },
     f = keys {
@@ -156,13 +156,13 @@ function M.extend()
     },
     o = b {
       desc = 'open current external',
-      require('bindutils').open_current,
+      require('utils').open_current,
     },
     p = b {
       desc = 'session develop',
       require('setup-session').develop,
     },
-    t = b { desc = 'new terminal', require('bindutils').term },
+    t = b { desc = 'new terminal', require('utils').term },
     u = b {
       desc = 'undo tree',
       lazy_req(
@@ -182,7 +182,7 @@ function M.extend()
         lazy_req('telescope', 'extensions.my.projects'),
       },
     },
-    x = b { desc = 'xplr', require('bindutils').xplr_launch },
+    x = b { desc = 'xplr', require('utils').xplr_launch },
     y = keys {
       desc = 'neoclip',
       q = b {

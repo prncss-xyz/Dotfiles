@@ -56,6 +56,8 @@ end
 function M.config()
   local telescope = require 'telescope'
   local actions = require 'telescope.actions'
+  local util = require 'plugins.binder.utils'
+  local lazy_req = util.lazy_req
   telescope.setup {
     defaults = {
       -- buffer_previewer_maker = buffer_preview_maker,
@@ -64,15 +66,21 @@ function M.config()
       },
       mappings = {
         i = {
-          ['<c-q>'] = actions.send_to_qflist,
+          ['<c-a>'] = lazy_req('readline', 'beginning_of_line'),
+          -- ['<c-f>'] = lazy_req('plugins.cmp', 'utils.confirm'),
+          ['<c-e>'] = lazy_req('readline', 'end_of_line'),
+          ['<m-f>'] = lazy_req('readline', 'forward_word'),
+          ['<c-k>'] = lazy_req('readline', 'kill_line'),
+          ['<c-u>'] = lazy_req('readline', 'backward_kill_line'),
+          ['<c-w>'] = lazy_req('readline', 'backward_kill_word'),
+          ['<m-b>'] = lazy_req('readline', 'backward_word'),
+          ['<m-d>'] = lazy_req('readline', 'kill_word'),
           ['<c-t>'] = function(...)
             require('trouble.providers.telescope').open_with_trouble(...)
             require('utils.windows').show_ui('Trouble', 'Trouble')
           end,
-          ['<c-u>'] = false,
         },
         n = {
-          ['qq'] = actions.send_to_qflist,
           ['qt'] = function(...)
             require('trouble.providers.telescope').open_with_trouble(...)
             require('utils.windows').show_ui('Trouble', 'Trouble')

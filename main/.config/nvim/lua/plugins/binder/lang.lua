@@ -38,7 +38,7 @@ function M.setup()
     },
     isc = keys {
       ['<c-a>'] = b { lazy_req('readline', 'beginning_of_line') },
-      ['<c-f>'] = b { util.lazy_req('plugins.cmp', 'utils.confirm') },
+      ['<c-f>'] = b { lazy_req('plugins.cmp', 'utils.confirm') },
       ['<c-e>'] = b { lazy_req('readline', 'end_of_line') },
       ['<m-f>'] = b { lazy_req('readline', 'forward_word') },
       ['<c-k>'] = b { lazy_req('readline', 'kill_line') },
@@ -55,10 +55,6 @@ function M.setup()
         end,
       },
       desc = 'format',
-      ['<c-g>'] = b {
-        lazy_req('telescope', 'extensions.luasnip.luasnip', {}),
-        modes = 'ni',
-      },
     },
     -- iv = keys {
     --   ['<c-f>'] = b {

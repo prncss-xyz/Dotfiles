@@ -325,6 +325,7 @@ return require('packer').startup {
       local_repo 'buffstory.nvim',
       config = default_config 'buffstory',
       event = 'BufReadPre',
+      module = 'buffstory',
     }
     use {
       'rafcamlet/tabline-framework.nvim',

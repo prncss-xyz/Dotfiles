@@ -211,8 +211,8 @@ return require('packer').startup {
     }
     -- LSP, language-specific
     use {
-      'jose-elias-alvarez/nvim-lsp-ts-utils',
-      module = 'nvim-lsp-ts-utils',
+      'jose-elias-alvarez/typescript.nvim',
+      module = 'typescript',
     }
     use { 'folke/lua-dev.nvim', module = 'lua-dev' }
     use { 'b0o/schemastore.nvim', module = 'schemastore' }
@@ -307,6 +307,20 @@ return require('packer').startup {
     }
 
     -- UI
+    use {
+      'kevinhwang91/promise-async',
+      module = { 'async', 'promise' },
+      module_pattern = 'promise-async',
+    }
+    use {
+      'kevinhwang91/nvim-ufo',
+      requires = 'kevinhwang91/promise-async',
+      config = config 'nvim-ufo',
+      event = 'BufReadPost',
+    }
+    use {
+      'masukomi/vim-markdown-folding',
+    }
     use {
       local_repo 'buffstory.nvim',
       config = default_config 'buffstory',
@@ -526,11 +540,22 @@ return require('packer').startup {
       module = 'telescope._extensions.dap',
     }
     use {
-      local_repo 'nononotes-nvim',
-      config = function()
-        require('plugins.nononotes').setup()
-      end,
-      -- ft = 'markdown',
+      'mickael-menu/zk-nvim',
+      config = config 'zk',
+      module = { 'zk', 'telescope._extensions.dap' },
+      module_pattern = 'zk.*',
+      cmd = {
+        'ZkIndex',
+        'ZkNew',
+        'ZkNewFromTitleSelection',
+        'ZkNewFromContentSelection',
+        'ZkCd',
+        'ZkNotes',
+        'ZkBacklinks',
+        'ZkLinks',
+        'ZkMatch',
+        'ZkTags',
+      },
     }
     -- data files, no need for lazy loading
     use { 'nvim-telescope/telescope-symbols.nvim' }
@@ -623,7 +648,9 @@ return require('packer').startup {
     -- Session
     use {
       local_repo 'setup-session.nvim',
-      config = default_config('setup-session')
+      config = default_config 'setup-session',
+      module = 'setup-session',
+      cmd = 'SetupSessionInfo',
     }
     use {
       'ethanholz/nvim-lastplace',
@@ -704,8 +731,6 @@ return require('packer').startup {
       'jbyuki/carrot.nvim',
       cmd = { 'CarrotEval', 'CarrotNewBlock' },
     }
-
-    use { 'nvim-neorg/neorg', config = config 'neorg' }
 
     -- Various
     use { 'lewis6991/impatient.nvim' }

@@ -4,6 +4,7 @@ function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
+  local modes = binder.modes
   local util = require 'plugins.binder.utils'
   local np = util.np
   local lazy_req = util.lazy_req
@@ -68,19 +69,15 @@ function M.extend()
     },
     f = keys {
       next = b {
-        desc = 'file (recursive)',
-        function()
-          require('telescope.builtin').find_files {
-            cwd = vim.fn.expand('%:p:h', nil, nil),
-          }
-        end,
+        desc = 'project files',
+        require('utils.buffers').project_files,
       },
       prev = b {
-        desc = 'file (current)',
+        desc = 'files (project)',
         function()
           require('telescope.builtin').find_files {
             cwd = vim.fn.expand('%:p:h', nil, nil),
-            find_command = { 'fd', '--type', 'f', '-d', '1' },
+            find_command = { 'fd', '-H', '--type', 'f' },
           }
         end,
       },
@@ -101,9 +98,139 @@ function M.extend()
       desc = 'type definition',
       lazy_req('telescope.builtin', 'lsp_type_definitions'),
     },
-    n = b {
-      desc = 'project files',
-      require('utils.buffers').project_files,
+    n = keys {
+      desc = 'zk',
+      redup = b {
+        desc = 'notes',
+        lazy_req('telescope', 'extensions.zk.notes'),
+      },
+      c = b {
+        desc = 'cd',
+        lazy_req('zk', 'cd'),
+      },
+      r = b {
+        desc = 'index',
+        lazy_req('zk', 'index'),
+      },
+      l = keys {
+        prev = b {
+          desc = 'links',
+          function()
+            -- FIXME:
+            require('telescope').extensions.zk.notes {
+              title = 'links',
+              linkBy = { vim.api.nvim_buf_get_name(0) },
+              recursive = true,
+            }
+          end,
+        },
+        next = b {
+          desc = 'backlinks',
+          function()
+            require('telescope').extensions.zk.notes {
+              title = 'backlinks',
+              linkTo = { vim.api.nvim_buf_get_name(0) },
+              recursive = true,
+            }
+          end,
+        },
+      },
+      j = b {
+        desc = 'new journal entry',
+        function()
+          local api = require 'zk.api'
+          local path = string.format('journal/%s.md', os.date '%x')
+          api.list(
+            nil,
+            { select = { 'filename', 'filenameStem', 'path', 'absPath' } },
+            function(_, entries)
+              for _, entry in ipairs(entries) do
+                if path == entry.path then
+                  vim.api.nvim_command('e ' .. entry.absPath)
+                  break
+                end
+              end
+              vim.defer_fn(function()
+                require('zk').new { dir = 'journal' }
+              end, 100)
+            end
+          )
+        end,
+      },
+      z = keys {
+        prev = b {
+          desc = 'new note from content',
+          function()
+            local zk_util = require 'zk.util'
+            local location = zk_util.get_lsp_location_from_selection()
+            local selected_text = zk_util.get_text_in_range(location.range)
+            require('plugins.binder.utils').keys '<esc>'
+            vim.ui.input({ prompt = 'note title' }, function(title)
+              if title ~= '' then
+                vim.defer_fn(function()
+                  require('zk').new {
+                    dir = 'notes',
+                    title = title,
+                    content = selected_text,
+                    insertLinkAtLocation = location,
+                  }
+                end, 100)
+              end
+            end)
+          end,
+          modes = 'x',
+        },
+        next = modes {
+          x = b {
+            desc = 'new note',
+            function()
+              local zk_util = require 'zk.util'
+              local location = zk_util.get_lsp_location_from_selection()
+              local selected_text = zk_util.get_text_in_range(location.range)
+              require('zk').new {
+                dir = 'notes',
+                title = selected_text,
+                insertLinkAtLocation = location,
+              }
+            end,
+          },
+          n = b {
+            desc = 'new note',
+            function()
+              vim.ui.input({ prompt = 'note title' }, function(title)
+                if title ~= '' then
+                  vim.defer_fn(function()
+                    require('zk').new { dir = 'notes', title = title }
+                  end, 100)
+                end
+              end)
+            end,
+          },
+        },
+      },
+      k = b {
+        desc = 'new task',
+        function()
+          vim.ui.input({ prompt = 'task title' }, function(title)
+            vim.defer_fn(function()
+              require('zk').new { dir = 'tasks', title = title }
+            end, 100)
+          end)
+        end,
+      },
+      o = b {
+        desc = 'orphans',
+        function()
+          require('telescope').extensions.zk.notes {
+            title = 'orphans',
+            orphan = true,
+          }
+        end,
+      },
+      t = b {
+        desc = 'tags',
+        lazy_req('telescope', 'extensions.zk.tags'),
+      },
     },
     m = b {
       desc = 'plugins',
@@ -113,9 +240,9 @@ function M.extend()
       desc = 'oldfiles',
       lazy_req('telescope.builtin', 'oldfiles', { only_cwd = true }),
     },
-    p = b {
+    l = b {
       desc = 'edit playground file',
-      require('plugins.binder.actions').edit_playground_file,
+      require('utils.buffers').edit_playground_file,
     },
     r = keys {
       prev = b {

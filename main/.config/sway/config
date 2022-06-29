@@ -27,7 +27,7 @@ default_floating_border none
 
 # https://github.com/francma/wob/blob/master/wob.1.scd
 exec wl-paste -t text --watch clipman store
-exec_always flashfocus
+exec flashfocus
 exec wlsunset -l 45.5 -L -73.6
 # exec wluma
 exec swayidle -w \
@@ -38,8 +38,9 @@ exec aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
 exec blueberry-tray
 exec .pnpm-global-bin/timinou
 exec .pnpm-global-bin/http-server -p 8083 .config/surfingkeys
-exec  .cheat.sh/ve/bin/python .cheat.sh/bin/srv.py # port 8002
 exec udiskie
+exec .local/bin/zk-git
+
 mouse_warping none
 focus_follows_mouse no
 for_window [workspace=0] layout stacking
@@ -58,7 +59,6 @@ exec ~/.local/bin/setbg-sway
 exec mako
 # exec languagetool --http
 exec ~/Media/Projects/sway-mega-hotkeys/cli.js
-exec ~/Media/Projects/nononotes/cli/index serve
 
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 

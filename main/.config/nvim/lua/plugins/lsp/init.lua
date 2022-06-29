@@ -69,54 +69,30 @@ function M.config()
     })
   end
 
-  -- will be called before noformat_on_attach
-  -- TODO: compare to base tsserver + cmp
-  local function ts_uttils_on_attach(client, _)
-    local ts_utils = require 'nvim-lsp-ts-utils'
-    ts_utils.setup {
-      debug = false,
-      disable_commands = false,
-      enable_import_on_completion = true, -- touched
-
-      -- import all
-      import_all_timeout = 5000, -- ms
-      -- lower numbers indicate higher priority
-      import_all_priorities = {
-        same_file = 1, -- add to existing import statement
-        local_files = 2, -- git files or files with relative path markers
-        buffer_content = 3, -- loaded buffer content
-        buffers = 4, -- loaded buffer names
-      },
-      import_all_scan_buffers = 100,
-      import_all_select_source = false,
-
-      -- update imports on file move
-      update_imports_on_move = true,
-      require_confirmation_on_move = true,
-      watch_dir = nil,
-
-      -- filter diagnostics
-      filter_out_diagnostics_by_severity = {},
-      filter_out_diagnostics_by_code = {},
-    }
-
-    -- required to fix code action ranges and filter diagnostics
-    ts_utils.setup_client(client)
-  end
-
   -- LSP settings
   local lspconfig = require 'lspconfig'
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
   capabilities.textDocument.completion.completionItem.snippetSupport = true
+  capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true,
+  }
 
   local flags = {
     debounce_text_changes = 500,
     allow_incremental_sync = true,
   }
 
+  lspconfig.bashls.setup {
+    on_attach = noformat_on_attach,
+    capabilities = capabilities,
+    flags = flags,
+    cmd = {vim.env.HOME .. '/.pnpm-global-bin/bash-language-server'},
+    -- weirdly cannot find it in the path
+  }
   for _, lsp in ipairs {
-    'bashls',
+    -- 'bashls',
     'html',
     'cssls',
     'vimls',
@@ -135,13 +111,14 @@ function M.config()
     capabilities = capabilities,
     flags = flags,
   }
-  lspconfig.tsserver.setup {
-    on_attach = function(client, bufnr)
-      noformat_on_attach(client, bufnr)
-      ts_uttils_on_attach(client, bufnr)
-    end,
-    capabilities = capabilities,
-    flags = flags,
+  require 'typescript'.setup {
+    disable_commands = false,
+    debug = false,
+    server = {
+      capabilities = capabilities,
+      on_attach = noformat_on_attach,
+      flags = flags,
+    }
   }
   local luadev = require('lua-dev').setup {
     lspconfig = {

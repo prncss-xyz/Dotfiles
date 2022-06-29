@@ -57,6 +57,16 @@ function M.split_right(size)
   vim.cmd('e ' .. file)
 end
 
+function M.split_external()
+  local win = vim.api.nvim_get_current_win()
+  local bufnr = vim.api.nvim_win_get_buf(win)
+  vim.api.nvim_open_win(
+    bufnr,
+    true,
+    { external = true, width = 50, height = 20 }
+  )
+end
+
 function M.winpick_focus()
   local win = require('window-picker').pick_window {}
   if win then

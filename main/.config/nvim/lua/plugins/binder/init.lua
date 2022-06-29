@@ -172,7 +172,27 @@ function M.config()
   binder.extend(
     'mark',
     keys {
-      redup = b {
+      o = keys {
+        prev = b { 'zO', desc = 'open current fold recursive' },
+        next = b { 'zo', desc = 'open current fold' },
+      },
+      c = keys {
+        prev = b { 'zC', desc = 'close current fold recursive' },
+        next = b { 'zc', desc = 'close current fold' },
+      },
+      a = keys {
+        prev = b { 'zA', desc = 'toggle current fold recursive' },
+        next = b { 'za', desc = 'toggle current fold' },
+      },
+      m = keys {
+        prev = b { 'zM', desc = 'close all folds' },
+        next = b { 'zm', desc = 'more fold' },
+      },
+      r = keys {
+        prev = b { 'zR', desc = 'open all folds' },
+        next = b { 'zr', desc = 'less folds' },
+      },
+      l = b {
         function()
           if not vim.g.secret then
             vim.fn.feedkeys(

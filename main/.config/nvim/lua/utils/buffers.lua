@@ -1,19 +1,5 @@
 local M = {}
 
-local function get_playground_dir()
-  local project_dir = vim.fn.getenv 'PROJECTS'
-  if project_dir:sub(project_dir:len(), project_dir:len()) ~= '/' then
-    project_dir = project_dir .. '/'
-  end
-  local cwd = vim.fn.getcwd()
-  if not vim.startswith(cwd, project_dir) then
-    return
-  end
-  local rel = cwd:sub(project_dir:len() + 1)
-  local path = project_dir .. 'extra/' .. rel
-  return path
-end
-
 function M.edit_playground_file()
   local ft = vim.bo.filetype
   if ft == '' then
@@ -31,7 +17,7 @@ function M.edit_playground_file()
   if ft == 'typescriptreact' then
     ft = 'tsx'
   end
-  local path = get_playground_dir()
+  local path = '_my_'
   if vim.fn.isdirectory(path) == 0 then
     vim.fn.mkdir(path, 'p')
   end
@@ -62,10 +48,6 @@ function M.edit_alt()
 end
 
 function M.project_files()
-  if vim.fn.getcwd() == os.getenv 'HOME' .. '/Personal/neuron' then
-    require('nononotes').prompt('edit', false, 'all')
-    return
-  end
   local ok = pcall(require('telescope.builtin').git_files)
   if ok then
     return

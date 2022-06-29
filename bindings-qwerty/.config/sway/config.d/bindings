@@ -21,6 +21,7 @@ bindsym $mod+e exec echo next editor > /tmp/sway-mega-hotkeys
 bindsym $mod+shift+e exec $terminal -e .local/bin/nvim_nonono
 bindsym $mod+g mode launch
 bindsym $mod+h exec $terminal "--app-id=launcher -e nvim Dotfiles/bindings-qwerty/.config/sway/config.d/bindings"
+bindsym $mod+i exec echo next dev > /tmp/sway-mega-hotkeys
 bindsym $mod+n exec makoctl dismiss
 bindsym $mod+shift+n exec makoctl dismiss --all
 bindsym $mod+m fullscreen
@@ -85,11 +86,10 @@ bindsym $mod+shift+$right move right, mode default
 mode launch {
   bindsym a for_window [title="^Dotfiles — main — NVIM$"] focus, mode default # FIXME: 
   # # bindsym j exec 'bash -c "wtype $(date +%y-%m-%d)"', mode default
-  bindsym c exec "clipman pick -t rofi", mode default
+  # bindsym c exec "clipman pick -t rofi", mode default
   bindsym d exec "$terminal --app-id=launcher -e .local/bin/fdocu", mode default
   bindsym shift+d exec "$terminal --app-id=launcher -e .local/bin/fdocu \*", mode default
   bindsym e exec "$terminal -e .local/bin/nvim_session", mode default
-  bindsym shift+e  exec "$terminal -e .local/bin/nvim_ghost", mode default
   bindsym f exec "$terminal --app-id=launcher -e .local/bin/fdoku", mode default
   bindsym g exec "rofi -show drun", mode default
   bindsym h exec "$terminal --app-id=launcher -e .local/bin/fman", mode default

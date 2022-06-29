@@ -87,6 +87,10 @@ function M.extend()
         desc = 'close',
         require('utils.windows').winpick_close,
       },
+      w = b {
+        desc = 'external',
+        require('utils.windows').split_external,
+      },
       z = keys {
         prev = b {
           desc = 'zen',
@@ -150,17 +154,29 @@ function M.extend()
       prev = b { desc = 'signature help', vim.lsp.buf.signature_help },
       next = b { desc = 'hover', vim.lsp.buf.hover },
     },
-    n = b {
-      desc = 'telescope notify',
-      lazy_req('telescope', 'extensions.notify.notify'),
+    m = b {
+      desc = 'toggle foldsigns',
+      function()
+        if vim.wo.foldcolumn == '1' then
+          vim.wo.foldcolumn = '0'
+        else
+          vim.wo.foldcolumn = '1'
+        end
+      end,
     },
     o = b {
       desc = 'open current external',
       require('utils').open_current,
     },
-    p = b {
-      desc = 'session develop',
-      require('setup-session').develop,
+    i = keys {
+      prev = b {
+        desc = 'setup-session launch',
+        lazy_req('setup-session', 'launch'),
+      },
+      next = b {
+        desc = 'setup-session develop',
+        lazy_req('setup-session', 'develop'),
+      },
     },
     t = b { desc = 'new terminal', require('utils').term },
     u = b {

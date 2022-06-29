@@ -8,6 +8,7 @@ if [ -S "$NVIM_LISTEN_ADDRESS" ]; then
   echo nvim --server "$NVIM_LISTEN_ADDRESS" --remote "$@"
   nvim --server "$NVIM_LISTEN_ADDRESS" --remote "$@"
 else
-  exec $TERMINAL -e nvim --listen "$NVIM_LISTEN_ADDRESS" "$@"  &
+  exec $TERMINAL -e sh ~/.local/bin/nvr_start --listen "$NVIM_LISTEN_ADDRESS" "$@" &
+  # exec $TERMINAL -e nvim --listen "$NVIM_LISTEN_ADDRESS" "$@"  &
   # --startuptime /tmp/nvim-startuptime
 fi

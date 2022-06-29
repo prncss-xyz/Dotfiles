@@ -35,6 +35,16 @@ function M.extend()
     },
     l = b { '`', desc = 'mark <char>' },
     m = keys {
+      desc = 'fold',
+      prev = b { '[z', desc = 'start current' },
+      next = b { ']z', desc = 'end current' },
+    },
+    n = keys {
+      desc = 'fold',
+      prev = b { 'zk', desc = 'start current' },
+      next = b { 'zj', desc = 'end current' },
+    },
+    q = keys {
       prev = b { '`[', desc = 'start of last mod', modes = 'nxo' },
       next = b { '`]', desc = 'begin of last mod', modes = 'nxo' },
     },

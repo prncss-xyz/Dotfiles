@@ -1,5 +1,23 @@
 local indent = 2
-local dotfiles = vim.env.DOTFILES or vim.fn.expand '~/.dotfiles'
+
+-- FIXME: not working
+
+function _G.foldexpr(lnum)
+  for l = lnum, 1, -1 do
+    local line = vim.fn.getline(lnum)
+    local _, n = line:find '^#+ '
+    if n then
+      return tostring(n)
+    end
+  end
+  return '0'
+end
+
+vim.cmd [[
+function! My_foldexpr() abort
+  return luaeval(printf('foldexpr(%d)', v:lnum))
+  endfunction
+]]
 
 local deep_merge = require('utils.std').deep_merge
 deep_merge(vim, {
@@ -20,8 +38,6 @@ deep_merge(vim, {
     completeopt = 'menuone,noselect',
     cursorline = true,
     expandtab = true,
-    foldexpr = '[[<cmd>lua require("nvim_treesitter").foldexpr()<cr>]]',
-    foldmethod = 'expr',
     hidden = true,
     ignorecase = true,
     incsearch = true,
@@ -70,6 +86,9 @@ deep_merge(vim, {
     number = false,
     relativenumber = false,
     signcolumn = 'yes',
+    foldlevel = 99,
+    foldenable = true,
+    -- foldexpr = 'My_foldexpr()',
   },
   opt = {
     diffopt = 'internal,filler,closeoff,algorithm:patience',
@@ -89,10 +108,6 @@ deep_merge(vim, {
     undofile = true, -- FIXME: not working
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
   },
-  -- like setglobal
-  opt_global = {},
-  -- like setlocal
-  opt_local = {},
   env = {},
 })
 

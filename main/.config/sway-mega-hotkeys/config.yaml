@@ -1,4 +1,7 @@
 matcher:
+  - label: "dev"
+    criteria: "name"
+    value: "DEV$"
   - label: "editor"
     criteria: "name"
     value: "NVIM$"
@@ -20,4 +23,4 @@ matcher:
 runner:
   editor: "$TERMINAL -e sh -c .local/bin/nvim_session"
   terminal: ".local/bin/new_term"
-  browser: ".local/bin/browser --new-window"
+  browser: ".local/bin/browser"

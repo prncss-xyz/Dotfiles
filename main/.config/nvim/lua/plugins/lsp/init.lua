@@ -97,7 +97,7 @@ function M.config()
     'cssls',
     'vimls',
     'yamlls',
-    'graphql',
+    -- 'graphql',
   } do
     lspconfig[lsp].setup {
       on_attach = noformat_on_attach,

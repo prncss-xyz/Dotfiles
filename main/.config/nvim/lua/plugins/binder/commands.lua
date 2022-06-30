@@ -40,7 +40,7 @@ function M.setup()
     }
   end
   for _, v in ipairs {
-    'gitignore'
+    'gitignore',
   } do
     require('binder.utils').light_command_legendary {
       desc = 'telescope ' .. v,
@@ -77,6 +77,11 @@ function M.setup()
   } do
     bind_command { ':' .. v .. ' ', unfinished = true }
   end
+
+  bind_command {
+    ':Delete',
+    ':call delete(expand("%"))|bdelete!',
+  }
 end
 
 return M

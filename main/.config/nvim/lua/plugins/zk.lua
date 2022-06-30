@@ -2,7 +2,7 @@ local M = {}
 
 function M.config()
   require('zk').setup {
-    picker = 'telescope',
+    picker = 'my_telescope',
     lsp = {
       config = {
         cmd = { 'zk', 'lsp' },

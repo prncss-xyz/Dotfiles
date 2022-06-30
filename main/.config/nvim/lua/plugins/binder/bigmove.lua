@@ -62,10 +62,11 @@ function M.extend()
       prev = b { '<Plug>(unimpaired-directory-previous)' },
       next = b { '<Plug>(unimpaired-directory-next)' },
     },
-    -- FIXME:
     e = b {
-      desc = 'node modules',
-      lazy_req('telescope', 'extensions.my.node_modules'),
+      desc = 'edit file',
+      function()
+        util.keys(':edit ' .. vim.fn.expand('%:h:p', nil, nil) .. '/')
+      end,
     },
     f = keys {
       next = b {
@@ -98,11 +99,17 @@ function M.extend()
       desc = 'type definition',
       lazy_req('telescope.builtin', 'lsp_type_definitions'),
     },
+    -- FIXME:
+    k = b {
+      desc = 'node modules',
+      lazy_req('telescope', 'extensions.my.node_modules'),
+    },
     n = keys {
       desc = 'zk',
       redup = b {
         desc = 'notes',
-        lazy_req('telescope', 'extensions.zk.notes'),
+        -- lazy_req('telescope', 'extensions.zk.notes'),
+        lazy_req('telescope', 'extensions.my.zk_notes'),
       },
       c = b {
         desc = 'cd',
@@ -117,7 +124,7 @@ function M.extend()
           desc = 'links',
           function()
             -- FIXME:
-            require('telescope').extensions.zk.notes {
+            require('telescope').extensions.my.zk_notes {
               title = 'links',
               linkBy = { vim.api.nvim_buf_get_name(0) },
               recursive = true,
@@ -127,7 +134,7 @@ function M.extend()
         next = b {
           desc = 'backlinks',
           function()
-            require('telescope').extensions.zk.notes {
+            require('telescope').extensions.my.zk_notes {
               title = 'backlinks',
               linkTo = { vim.api.nvim_buf_get_name(0) },
               recursive = true,
@@ -221,7 +228,7 @@ function M.extend()
       o = b {
         desc = 'orphans',
         function()
-          require('telescope').extensions.zk.notes {
+          require('telescope').extensions.my.zk_notes {
             title = 'orphans',
             orphan = true,
           }

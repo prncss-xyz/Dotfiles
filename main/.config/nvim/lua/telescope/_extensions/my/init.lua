@@ -9,7 +9,8 @@ for _, name in ipairs {
   'modules',
   'project_directory',
   'projects',
-  'uniduck'
+  'uniduck',
+  'zk_notes',
 } do
   exports[name] = require('telescope._extensions.my.' .. name)
 end

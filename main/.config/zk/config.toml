@@ -1,0 +1,30 @@
+[tool]
+
+# Command used to preview a note during interactive fzf mode.
+fzf-preview = "bat -p --color always {-1}"
+
+[filter]
+recents = "--sort created- --created-after 'last two weeks'"
+
+[alias]
+
+filmsy = "zk list --sort word-count --limit 20"
+# filmsy = "zk list --format '{{word-count}}\t{{title}}' --sort word-count --limit 20"
+
+# Edit the last modified note.
+edlast = "zk edit --limit 1 --sort modified- $@"
+
+# Edit the notes selected interactively among the notes created the last two weeks.
+recent = "zk edit --sort created- --created-after 'last two weeks' --interactive"
+
+# Show a random note.
+lucky = "zk list --quiet --format full --sort random --limit 1"
+
+# Use this alias to send a list of space-separated file paths matching the given filtering criteria to another program. See send notes for processing by other programs for more details.
+
+paths = "zk list --format \"'{{path}}'\" --quiet --delimiter ' ' $@"
+
+# Similarly, use this alias to expand filtered note paths inside a parent zk command taking a comma-separated paths list.
+inline = "zk list --quiet --format {{path}} --delimiter , $@"
+
+log = "zk list --quiet --format path --delimiter0 $@ | xargs -0 git log --patch --"

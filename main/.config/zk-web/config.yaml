@@ -1,0 +1,18 @@
+assets: Personal/zk/assets
+views:
+  filmsy:
+    args: '--sort word-count --limit 20'
+  recent:
+    args: '--sort created- --limit 20'
+  lucky:
+    args: '--sort random --limit 20'
+  orphan:
+    args: '--orphan'
+  kanban:
+    view: board
+    tags:
+      - task/backlog
+      - task/actif
+      - task/suivi
+      - task/fait
+      - task/révisé

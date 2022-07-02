@@ -13,14 +13,11 @@ return {
     { t 'pacman -Ql ', i(1, 'package') }
   ),
   s('pacman: remove <package>', { t 'sudo pacman -R ', i(1, 'package') }),
-  s(
-    'pacman: downgrade <package>',
-    {
-      t 'sudo pacman -U file:///var/cache/pkg/',
-      i(1, 'package'),
-      t '.pkg.tar.zst',
-    }
-  ),
+  s('pacman: downgrade <package>', {
+    t 'sudo pacman -U file:///var/cache/pkg/',
+    i(1, 'package'),
+    t '.pkg.tar.zst',
+  }),
   s('neovim: minimal config', { t 'nvim -u ~/.config/nvim/minimal.lua ' }),
   s("khal: list week's events", { t 'khal list now week' }),
   s(
@@ -48,5 +45,13 @@ return {
   s(
     'git: create branch and checkout',
     { t 'git checkout -b ', i(1, 'branch') }
+  ),
+  s(
+    'gh: create repo in sync',
+    {
+      t 'gh repo create --private --license MIT --clone --gitignore ',
+      i(1, 'Node'),
+      i(2, 'zk-bib'),
+    }
   ),
 }

@@ -62,11 +62,15 @@ function M.extend()
       prev = b { '<Plug>(unimpaired-directory-previous)' },
       next = b { '<Plug>(unimpaired-directory-next)' },
     },
-    e = b {
-      desc = 'edit file',
-      function()
-        util.keys(':edit ' .. vim.fn.expand('%:h:p', nil, nil) .. '/')
-      end,
+    e = keys {
+      prev = b {
+        desc = 'move file',
+        require('utils.buffers').move,
+      },
+      next = b {
+        desc = 'edit file',
+        require('utils.buffers').edit,
+      },
     },
     f = keys {
       next = b {

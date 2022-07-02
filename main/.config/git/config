@@ -39,3 +39,5 @@
 	cmd = git-nbmergetool merge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
 [mergetool]
 	prompt = false
+[ghq]
+  root = ~/Media/Projects/ghq

@@ -1,19 +1,5 @@
-dir: Media/readlist/
-dirs:
-  readlist: Media/readlist
-epubDir: epubs/readlist
-tags:
-  - pattern: plato.stanford.edu
-    tags: [philo]
-  - pattern: iep.utm.edu
-    tags: [philo]
-  - pattern: mrmoneymustache.com
-    tags: [org]
-  - pattern: freecodecamp.org
-    tags: [dev]
-  - pattern: signosemio.com
-    tags: [linguistique]
-  - pattern: psychologytoday.com
-    tags: [psycho]
-  - pattern: histoireengagee.ca
-    tags: histoire
+baseTags: [w/backlog]
+assetDir: /home/prncss/Personal/zk/assets
+noteDir: /home/prncss/Personal/zk/readings
+export:
+  reading/backlog: epubs/readlist

@@ -5,7 +5,7 @@ function M.config()
     { '(', ')' },
     { '[', ']' },
     { '{', '}' },
-    { '<', '>' },
+    -- { '<', '>' },
   }
 
   local ts = require 'flies.objects.treesitter'

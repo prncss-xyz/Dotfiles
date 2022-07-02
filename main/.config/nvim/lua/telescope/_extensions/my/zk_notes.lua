@@ -1,5 +1,6 @@
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
+local sorters = require 'telescope.sorters'
 local conf = require('telescope.config').values
 local actions = require 'telescope.actions'
 local action_state = require 'telescope.actions.state'
@@ -8,14 +9,6 @@ local putils = require 'telescope.previewers.utils'
 local entry_display = require 'telescope.pickers.entry_display'
 local previewers = require 'telescope.previewers'
 local state = require 'telescope.actions.state'
-
-local displayer = entry_display.create {
-  separator = ' ',
-  items = {
-    { width = 16 },
-    { remaining = true },
-  },
-}
 
 local function new_note_action(prompt_bufnr)
   actions.close(prompt_bufnr)
@@ -42,25 +35,6 @@ local function current_dir_action(prefix, _)
   vim.api.nvim_win_set_cursor(0, { 1, dir:len() })
 end
 
-local function make_display(entry)
-  local value = entry.value
-  local dir = vim.fn.fnamemodify(value.path, ':h:p')
-  local name = value.title or value.filenameStem
-  return displayer { dir, name }
-end
-
-local function create_note_entry_maker(_)
-  return function(note)
-    local title = note.title or note.path
-    return {
-      value = note,
-      path = note.absPath,
-      display = make_display,
-      ordinal = title,
-    }
-  end
-end
-
 local function make_note_previewer()
   return previewers.new_buffer_previewer {
     define_preview = function(self, entry)
@@ -72,6 +46,37 @@ local function make_note_previewer()
 end
 
 local function show_note_picker(notes, options)
+  local displayer = entry_display.create {
+    separator = ' ',
+    items = {
+      { width = options.path_width },
+      { remaining = true },
+    },
+  }
+
+  local function make_display(entry)
+    local value = entry.value
+    local dir = vim.fn.fnamemodify(value.path, ':h:p')
+    local name = value.title or value.filenameStem
+    if false then
+      return displayer { dir, name }
+    else
+      return dir .. '/' .. name
+    end
+  end
+
+  local function create_note_entry_maker(_)
+    return function(note)
+      local title = note.title or note.path
+      return {
+        value = note,
+        path = note.absPath,
+        display = make_display,
+        ordinal = title,
+      }
+    end
+  end
+
   local function cb(notes_)
     if options.multi_select == false then
       notes_ = { notes_ }
@@ -86,7 +91,8 @@ local function show_note_picker(notes, options)
       results = notes,
       entry_maker = create_note_entry_maker(options),
     },
-    sorter = conf.file_sorter(options),
+    -- sorter = conf.file_sorter(options),
+    sorter = sorters.get_fuzzy_file(),
     previewer = make_note_previewer(),
     display = make_display,
     attach_mappings = function(prompt_bufnr, map)
@@ -123,7 +129,12 @@ end
 return function(options)
   options = vim.tbl_extend(
     'force',
-    { multi_select = true, prompt_title = 'Zk notes', prompt_prefix = '> ' },
+    {
+      path_width = 20,
+      multi_select = true,
+      prompt_title = 'Zk notes',
+      prompt_prefix = conf.prompt_prefix,
+    },
     options or {}
   )
   local list_options = vim.tbl_extend(

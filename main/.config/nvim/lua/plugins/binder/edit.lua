@@ -8,11 +8,6 @@ function M.extend()
   local lazy_req = require('plugins.binder.utils').lazy_req
 
   return keys {
-    a = modes {
-      -- n = cmd { 'CodeActionMenu', 'code action',
-      n = b { vim.lsp.buf.code_action },
-      x = b { ":'<,'>lua vim.lsp.buf.range_code_action()<cr>" },
-    },
     b = b { 'gi', 'last insert point' },
     --[[
     o = function()
@@ -168,9 +163,12 @@ function M.extend()
         },
       },
     },
-    -- 'asdf'
     y = b { desc = 'wrap', '<Plug>(flies-wrap)', modes = 'nx' },
     z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },
+    ['<space>'] = modes {
+      n = b { vim.lsp.buf.code_action },
+      x = b { ":'<,'>lua vim.lsp.buf.range_code_action()<cr>" },
+    },
     ['<cr>'] = keys {
       prev = b { '<Plug>(unimpaired-blank-up)' },
       next = b { '<Plug>(unimpaired-blank-down)' },

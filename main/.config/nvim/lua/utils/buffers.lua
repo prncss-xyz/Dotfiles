@@ -1,5 +1,44 @@
 local M = {}
 
+function M.move()
+  local default = vim.fn.expand('%:h:p', nil, nil)
+  if default == '.' then
+    default = ''
+  else
+    default = default .. '/'
+  end
+  vim.ui.input({ prompt = 'move', default = default }, function(dest)
+    local source = vim.fn.expand('%', nil, nil)
+    if dest == nil or dest == '' or dest == source then
+      return
+    end
+    -- TODO: vim 0.8  use new API
+    -- TODO: test if directory
+    -- TODO: create needed directory
+    vim.cmd('sav ' .. dest)
+    vim.fn.delete(source)
+  end)
+end
+
+function M.edit()
+  local default = vim.fn.expand('%:h:p', nil, nil)
+  if default == '.' then
+    default = ''
+  else
+    default = default .. '/'
+  end
+  vim.ui.input({ prompt = 'edit', default = default }, function(dest)
+    local source = vim.fn.expand('%', nil, nil)
+    if dest == nil or dest == '' or dest == source then
+      return
+    end
+    -- TODO: vim 0.8  use new API
+    -- TODO: test if directory
+    -- TODO: create needed directory
+    vim.cmd('edit ' .. dest)
+  end)
+end
+
 function M.edit_playground_file()
   local ft = vim.bo.filetype
   if ft == '' then

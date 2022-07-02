@@ -8,5 +8,8 @@ sudo systemctl enable sshd
 sudo systemctl enable earlyoom
 
 systemctl --user enable psd
-systemctl --user enable syncthing
+systemctl --user enable wlsunset
 systemctl --user enable udiskie
+systemctl --user enable waybar
+systemctl --user enable syncthing
+systemctl --user enable systembus-notify

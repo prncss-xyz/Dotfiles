@@ -557,6 +557,7 @@ return require('packer').startup {
         'ZkMatch',
         'ZkTags',
       },
+      ft = 'markdown',
     }
     -- data files, no need for lazy loading
     use { 'nvim-telescope/telescope-symbols.nvim' }

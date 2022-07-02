@@ -23,6 +23,7 @@ function M.config()
     ensure_installed = {
       -- 'norg',
       'markdown',
+      'markdown_inline',
       'bash',
       'c',
       'cpp',

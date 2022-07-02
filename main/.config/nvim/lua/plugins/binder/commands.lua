@@ -81,6 +81,7 @@ function M.setup()
   bind_command {
     ':Delete',
     ':call delete(expand("%"))|bdelete!',
+    -- TODO: move to previous file or blank buffer
   }
 end
 

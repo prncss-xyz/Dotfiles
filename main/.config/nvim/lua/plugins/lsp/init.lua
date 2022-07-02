@@ -88,8 +88,6 @@ function M.config()
     on_attach = noformat_on_attach,
     capabilities = capabilities,
     flags = flags,
-    cmd = {vim.env.HOME .. '/.pnpm-global-bin/bash-language-server'},
-    -- weirdly cannot find it in the path
   }
   for _, lsp in ipairs {
     -- 'bashls',

@@ -1,4 +1,5 @@
 # shellcheck shell=sh
+# this is not fully working, think of it more like notes in the form of a script
 set -e
 
 USER1=prncss

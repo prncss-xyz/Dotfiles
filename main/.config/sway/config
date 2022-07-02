@@ -28,7 +28,6 @@ default_floating_border none
 # https://github.com/francma/wob/blob/master/wob.1.scd
 exec wl-paste -t text --watch clipman store
 exec flashfocus
-exec wlsunset -l 45.5 -L -73.6
 # exec wluma
 exec swayidle -w \
  timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
@@ -38,7 +37,6 @@ exec aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
 exec blueberry-tray
 exec .pnpm-global-bin/timinou
 exec .pnpm-global-bin/http-server -p 8083 .config/surfingkeys
-exec udiskie
 exec .local/bin/zk-git
 
 mouse_warping none
@@ -119,5 +117,5 @@ for_window [app_id="^launcher$"] floating enable, sticky enable, resize set widt
 
 ### Styling
 
-exec waybar
 include /etc/sway/config.d/*
+exec systemctl --user start sway-session.target

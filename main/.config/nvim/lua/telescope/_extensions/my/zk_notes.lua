@@ -6,7 +6,6 @@ local actions = require 'telescope.actions'
 local action_state = require 'telescope.actions.state'
 local action_utils = require 'telescope.actions.utils'
 local putils = require 'telescope.previewers.utils'
-local entry_display = require 'telescope.pickers.entry_display'
 local previewers = require 'telescope.previewers'
 local state = require 'telescope.actions.state'
 
@@ -46,32 +45,14 @@ local function make_note_previewer()
 end
 
 local function show_note_picker(notes, options)
-  local displayer = entry_display.create {
-    separator = ' ',
-    items = {
-      { width = options.path_width },
-      { remaining = true },
-    },
-  }
-
-  local function make_display(entry)
-    local value = entry.value
-    local dir = vim.fn.fnamemodify(value.path, ':h:p')
-    local name = value.title or value.filenameStem
-    if false then
-      return displayer { dir, name }
-    else
-      return dir .. '/' .. name
-    end
-  end
-
   local function create_note_entry_maker(_)
     return function(note)
-      local title = note.title or note.path
+      local dir = vim.fn.fnamemodify(note.path, ':h:p')
+      local title = dir .. '/' .. (note.title or note.path)
       return {
         value = note,
         path = note.absPath,
-        display = make_display,
+        display = title,
         ordinal = title,
       }
     end
@@ -91,10 +72,8 @@ local function show_note_picker(notes, options)
       results = notes,
       entry_maker = create_note_entry_maker(options),
     },
-    -- sorter = conf.file_sorter(options),
     sorter = sorters.get_fuzzy_file(),
     previewer = make_note_previewer(),
-    display = make_display,
     attach_mappings = function(prompt_bufnr, map)
       map('i', '<c-cr>', new_note_action)
       map('i', '<c-f>', function(prompt_bufnr_)
@@ -127,16 +106,12 @@ local function show_note_picker(notes, options)
 end
 
 return function(options)
-  options = vim.tbl_extend(
-    'force',
-    {
-      path_width = 20,
-      multi_select = true,
-      prompt_title = 'Zk notes',
-      prompt_prefix = conf.prompt_prefix,
-    },
-    options or {}
-  )
+  options = vim.tbl_extend('force', {
+    path_width = 20,
+    multi_select = true,
+    prompt_title = 'Zk notes',
+    prompt_prefix = conf.prompt_prefix,
+  }, options or {})
   local list_options = vim.tbl_extend(
     'force',
     { select = { 'title', 'absPath', 'path', 'filenameStem', 'rawContent' } },

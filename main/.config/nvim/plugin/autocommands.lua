@@ -22,18 +22,48 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
-for _, event in ipairs { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' } do
-  vim.api.nvim_create_autocmd(event, {
-    pattern = '*',
+vim.api.nvim_create_autocmd(
+  { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
+  {
+    pattern = '?*', -- do not match buffers with no name
     group = group,
+    nested = true, -- needed for next autocommand
     callback = function()
-      -- if vim.bo.buftype == '' then
-      if vim.fn.expand('%:p', nil, nil) ~= '' then
-        vim.cmd 'silent update'
+      if vim.bo.modifiable and vim.bo.modified then
+        vim.cmd 'silent :w'
       end
     end,
-  })
-end
+  }
+)
+
+-- Autocommit zettelkasten on every write
+vim.api.nvim_create_autocmd('BufWritePost', {
+  pattern = vim.fn.getenv 'ZK_NOTEBOOK_DIR' .. '/*',
+  group = group,
+  callback = function()
+    -- we cannot assume vim.getcwd is current buffer's directory
+    local cwd = vim.fn.expand('%:p:h', nil, nil)
+    local job = require('plenary').job
+    vim.defer_fn(function()
+      job
+        :new({
+          command = 'git',
+          args = { 'add', '--all' },
+          cwd = cwd,
+          on_exit = function()
+            job
+              :new({
+                command = 'git',
+                args = { 'commit', '--allow-empty-message', '-m', '' },
+                cwd = cwd,
+              })
+              :start()
+          end,
+        })
+        :start()
+    end, 0)
+  end,
+})
 
 local prefix = '/dev/shm/pass.'
 if vim.fn.expand('%:h', nil, nil):sub(1, prefix:len()) == prefix then
@@ -41,43 +71,33 @@ if vim.fn.expand('%:h', nil, nil):sub(1, prefix:len()) == prefix then
 else
   -- without this, deleted marks do not get removed on exit
   -- https://github.com/neovim/neovim/issues/4288
-  for _, event in ipairs {
+  vim.api.nvim_create_autocmd({
     'TabLeave',
     'FocusLost',
     'BufLeave',
     'VimLeavePre',
     'TextYankPost',
-  } do
-    vim.api.nvim_create_autocmd(event, {
-      pattern = '*',
-      group = group,
-      callback = function()
-        vim.cmd 'wshada'
-      end,
-    })
-  end
-  for _, event in ipairs {
-    'FocusGained',
-  } do
-    vim.api.nvim_create_autocmd(event, {
-      pattern = '*',
-      group = group,
-      callback = function()
-        vim.cmd 'rshada'
-      end,
-    })
-  end
-  for _, event in ipairs {
-    'CursorHold',
-  } do
-    vim.api.nvim_create_autocmd(event, {
-      pattern = '*',
-      group = group,
-      callback = function()
-        vim.cmd 'rshada|wshada'
-      end,
-    })
-  end
+  }, {
+    pattern = '*',
+    group = group,
+    callback = function()
+      vim.cmd 'wshada'
+    end,
+  })
+  vim.api.nvim_create_autocmd('FocusGained', {
+    pattern = '*',
+    group = group,
+    callback = function()
+      vim.cmd 'rshada'
+    end,
+  })
+  vim.api.nvim_create_autocmd('CursorHold', {
+    pattern = '*',
+    group = group,
+    callback = function()
+      vim.cmd 'rshada|wshada'
+    end,
+  })
 end
 
 -- FIXME: is it working?

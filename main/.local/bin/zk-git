@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-cd "$ZK_NOTEBOOK_DIR" || exit 1
-git commit --all --allow-empty-message --message ""
-swayidle -w timeout 200 'git commit --all --allow-empty-message --message ""'

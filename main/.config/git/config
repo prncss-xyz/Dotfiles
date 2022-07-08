@@ -40,4 +40,4 @@
 [mergetool]
 	prompt = false
 [ghq]
-  root = ~/Media/Projects/ghq
+  root = ~/Media/Projects

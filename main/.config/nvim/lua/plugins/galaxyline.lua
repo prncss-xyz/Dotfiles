@@ -228,7 +228,7 @@ local coordinates = function()
   local line = vim.fn.line '.'
   local column = vim.fn.col '.'
   local line_count = vim.fn.line '$'
-  return string.format('%3d:%02d %d ', line, column, line_count)
+  return string.format(' %3d:%02d %d ', line, column, line_count)
 end
 
 function M.config()
@@ -239,15 +239,17 @@ function M.config()
   local gls = gl.section
   gl.short_line_list = short_line_list
 
+  local diff_add = require('utils').extract_nvim_hl 'DiffAdd'
+  local diff_change = require('utils').extract_nvim_hl 'DiffChange'
+
   local colors = {
     warn = vim.g.terminal_color_3,
     error = vim.g.terminal_color_1,
     -- background_active = vim.g.terminal_color_14, -- TODO: use gitgutters highlight groups
     -- background_inactive = vim.g.terminal_color_12,
     -- neon colorscheme
-    background_active = '#8ec07c', -- TODO: use gitgutters highlight groups
-    -- background_active = '#8ec07c', -- TODO: use gitgutters highlight groups
-    background_inactive = '#458588',
+    background_active = diff_add.fg,
+    background_inactive = diff_change.fg,
     text = vim.g.terminal_color_7,
   }
 

@@ -54,8 +54,8 @@ function M.extend()
       },
     },
     c = b {
-      desc = 'refresh buffer list',
-      lazy_req('buffstory', 'refresh_list'),
+      desc = 'telescope repo',
+      lazy_req('telescope', 'extensions.repo.list'),
     },
     d = keys {
       desc = 'unimpaired directory',
@@ -72,25 +72,49 @@ function M.extend()
         require('utils.buffers').edit,
       },
     },
-    f = keys {
-      next = b {
-        desc = 'project files',
-        require('utils.buffers').project_files,
-      },
-      prev = b {
-        desc = 'files (project)',
-        function()
-          require('telescope.builtin').find_files {
-            cwd = vim.fn.expand('%:p:h', nil, nil),
-            find_command = { 'fd', '-H', '--type', 'f' },
-          }
-        end,
-      },
+    f = b {
+      desc = 'files (local)',
+      function()
+        require('telescope.builtin').find_files {
+          cwd = vim.fn.expand '%:p:h',
+          find_command = {
+            'fd',
+            '--hidden',
+            '--exclude',
+            '.git',
+            '--type',
+            'f',
+            '--strip-cwd-prefix',
+          },
+        }
+      end,
     },
-    g = b { desc = 'buffers', lazy_req('telescope.builtin', 'buffers') },
-    h = b {
-      desc = 'recent buffer',
+    g = b {
+      desc = 'buffstory select recent buffer',
       lazy_req('buffstory', 'select'),
+    },
+    h = b {
+      desc = 'files (project)',
+      function()
+        if vim.fn.getcwd() == vim.fn.getenv 'DOTFILES' then
+          -- FIX:  fd results seems to diverge from what is met when called from command line
+          -- in particular, some (but not all) hidden files are missing
+          -- using git_files as a workarount
+          require('telescope.builtin').git_files()
+          return
+        end
+        require('telescope.builtin').find_files {
+          find_command = {
+            'fd',
+            '--hidden',
+            '--exclude',
+            '.git',
+            '--type',
+            'f',
+            '--strip-cwd-prefix',
+          },
+        }
+      end,
     },
     i = keys {
       prev = b { desc = 'declaration', vim.lsp.buf.declaration },
@@ -110,6 +134,10 @@ function M.extend()
     },
     n = keys {
       desc = 'zk',
+      a = b {
+        desc = 'open asset',
+        require('plugins.zk.utils').open_asset,
+      },
       redup = b {
         desc = 'notes',
         -- lazy_req('telescope', 'extensions.zk.notes'),
@@ -149,85 +177,21 @@ function M.extend()
       j = b {
         desc = 'new journal entry',
         function()
-          local api = require 'zk.api'
-          local path = string.format('journal/%s.md', os.date '%x')
-          api.list(
-            nil,
-            { select = { 'filename', 'filenameStem', 'path', 'absPath' } },
-            function(_, entries)
-              for _, entry in ipairs(entries) do
-                if path == entry.path then
-                  vim.api.nvim_command('e ' .. entry.absPath)
-                  break
-                end
-              end
-              vim.defer_fn(function()
-                require('zk').new { dir = 'journal' }
-              end, 100)
-            end
-          )
+          require('plugins.zk.utils').new_journal_entry 'journal'
         end,
       },
       z = keys {
         prev = b {
           desc = 'new note from content',
-          function()
-            local zk_util = require 'zk.util'
-            local location = zk_util.get_lsp_location_from_selection()
-            local selected_text = zk_util.get_text_in_range(location.range)
-            require('plugins.binder.utils').keys '<esc>'
-            vim.ui.input({ prompt = 'note title' }, function(title)
-              if title ~= '' then
-                vim.defer_fn(function()
-                  require('zk').new {
-                    dir = 'notes',
-                    title = title,
-                    content = selected_text,
-                    insertLinkAtLocation = location,
-                  }
-                end, 100)
-              end
-            end)
-          end,
+          require('plugins.zk.utils').new_note_from_content,
           modes = 'x',
         },
         next = modes {
           x = b {
-            desc = 'new note',
-            function()
-              local zk_util = require 'zk.util'
-              local location = zk_util.get_lsp_location_from_selection()
-              local selected_text = zk_util.get_text_in_range(location.range)
-              require('zk').new {
-                dir = 'notes',
-                title = selected_text,
-                insertLinkAtLocation = location,
-              }
-            end,
-          },
-          n = b {
-            desc = 'new note',
-            function()
-              vim.ui.input({ prompt = 'note title' }, function(title)
-                if title ~= '' then
-                  vim.defer_fn(function()
-                    require('zk').new { dir = 'notes', title = title }
-                  end, 100)
-                end
-              end)
-            end,
+            desc = 'new note with title',
+            require('plugins.zk.utils').new_note_with_title,
           },
         },
-      },
-      k = b {
-        desc = 'new task',
-        function()
-          vim.ui.input({ prompt = 'task title' }, function(title)
-            vim.defer_fn(function()
-              require('zk').new { dir = 'tasks', title = title }
-            end, 100)
-          end)
-        end,
       },
       o = b {
         desc = 'orphans',

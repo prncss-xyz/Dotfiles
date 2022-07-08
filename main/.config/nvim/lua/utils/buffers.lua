@@ -1,34 +1,43 @@
 local M = {}
 
+
+
 function M.move()
-  local default = vim.fn.expand('%:h:p', nil, nil)
-  if default == '.' then
-    default = ''
-  else
-    default = default .. '/'
+  -- is there a move generic way to handle lsp move ?
+  local default = vim.fn.expand '%:.'
+  local tsserver = require('utils.lsp').is_client_current 'tsserver'
+  local prompt = 'move'
+  if tsserver then
+    prompt = prompt .. ' (tsserver)'
   end
-  vim.ui.input({ prompt = 'move', default = default }, function(dest)
-    local source = vim.fn.expand('%', nil, nil)
-    if dest == nil or dest == '' or dest == source then
+
+  vim.ui.input({ prompt = prompt, default = default }, function(target)
+    local source = vim.fn.expand '%:.'
+    if target == nil or target == '' or target == source then
       return
     end
-    -- TODO: vim 0.8  use new API
-    -- TODO: test if directory
     -- TODO: create needed directory
-    vim.cmd('sav ' .. dest)
-    vim.fn.delete(source)
+    -- TODO: test if directory
+    if false and tsserver then -- FIX:
+      vim.cmd 'TypescriptRenameFile'
+      require('typescript').renameFile(source, target)
+    else
+      -- TODO: vim 0.8  use new API
+      vim.cmd('sav ' .. target)
+      vim.fn.delete(source)
+    end
   end)
 end
 
 function M.edit()
-  local default = vim.fn.expand('%:h:p', nil, nil)
+  local default = vim.fn.expand '%:.:h'
   if default == '.' then
     default = ''
   else
     default = default .. '/'
   end
   vim.ui.input({ prompt = 'edit', default = default }, function(dest)
-    local source = vim.fn.expand('%', nil, nil)
+    local source = vim.fn.expand '%:.'
     if dest == nil or dest == '' or dest == source then
       return
     end
@@ -80,7 +89,7 @@ local function get_alt(file)
 end
 
 function M.edit_alt()
-  local alt = get_alt(vim.fn.expand('%', nil, nil))
+  local alt = get_alt(vim.fn.expand '%')
   if alt then
     vim.cmd('e ' .. alt)
   end

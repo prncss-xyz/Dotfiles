@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=Application
+Name=sway exit
+Exec=swaymsg exit

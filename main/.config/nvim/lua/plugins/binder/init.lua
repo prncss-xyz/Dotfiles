@@ -192,6 +192,10 @@ function M.config()
         prev = b { 'zR', desc = 'open all folds' },
         next = b { 'zr', desc = 'less folds' },
       },
+      t = b {
+        desc = 'FoldToggle (markdown)',
+        ':FoldToggle<cr>',
+      },
       l = b {
         function()
           if not vim.g.secret then

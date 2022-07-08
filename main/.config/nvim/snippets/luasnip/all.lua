@@ -120,20 +120,36 @@ table.insert(
 )
 
 local function todo_comment(str)
-  return {
-    d(1, function()
-      local lc, rc = get_comment 'line'
-      return sn(nil, { t(lc), t(str .. ': '), i(1, ''), t(rc) })
-    end, {}),
-  }
-end
-
-for _, str in ipairs { 'TODO', 'HACK', 'WARN', 'PERF', 'NOTE', 'FIXME' } do
-  -- needs this to write a todo comment while already in a comment
   table.insert(
     M,
-    s({ trig = str .. ' comment', descr = str }, todo_comment(str))
+    s(str .. ' comment', {
+      d(1, function()
+        local lc, rc = get_comment 'line'
+        return sn(nil, { t(lc), t(str .. ': '), i(1, ''), t(rc) })
+      end, {}),
+    })
   )
+end
+
+-- trying to keep TODO comments consistent with standard commit messages
+for _, k in ipairs {
+  'BUILD',
+  'CI',
+  'DOCS',
+  'FEAT',
+  'REFACT',
+  'STYLE',
+  'TEST',
+  'QUESTION',
+  'FIX',
+  'ISSUE',
+  'TODO',
+  'HACK',
+  'WARN',
+  'PERF',
+  'NOTE',
+} do
+  todo_comment(k)
 end
 
 _G.if_char_insert_space = function()

@@ -1,7 +1,7 @@
 local M = {}
 
 M.setup = function()
-  local symbols = require('symbols').symbols
+  local symbols = require('utils.symbols').symbols
   vim.g.symbols_outline = {
     width = require 'parameters'.pane_width,
     relative_width = false,

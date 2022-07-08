@@ -1,5 +1,122 @@
 local M = {}
 
+-- https://stackoverflow.com/questions/50459102/replace-accented-characters-in-string-to-standard-with-lua
+local tableAccents = {}
+tableAccents['À'] = 'A'
+tableAccents['Á'] = 'A'
+tableAccents['Â'] = 'A'
+tableAccents['Ã'] = 'A'
+tableAccents['Ä'] = 'A'
+tableAccents['Å'] = 'A'
+tableAccents['Æ'] = 'AE'
+tableAccents['Ç'] = 'C'
+tableAccents['È'] = 'E'
+tableAccents['É'] = 'E'
+tableAccents['Ê'] = 'E'
+tableAccents['Ë'] = 'E'
+tableAccents['Ì'] = 'I'
+tableAccents['Í'] = 'I'
+tableAccents['Î'] = 'I'
+tableAccents['Ï'] = 'I'
+tableAccents['Ð'] = 'D'
+tableAccents['Ñ'] = 'N'
+tableAccents['Ò'] = 'O'
+tableAccents['Ó'] = 'O'
+tableAccents['Ô'] = 'O'
+tableAccents['Õ'] = 'O'
+tableAccents['Ö'] = 'O'
+tableAccents['Ø'] = 'O'
+tableAccents['Ù'] = 'U'
+tableAccents['Ú'] = 'U'
+tableAccents['Û'] = 'U'
+tableAccents['Ü'] = 'U'
+tableAccents['Ý'] = 'Y'
+tableAccents['Þ'] = 'P'
+tableAccents['ß'] = 's'
+tableAccents['à'] = 'a'
+tableAccents['á'] = 'a'
+tableAccents['â'] = 'a'
+tableAccents['ã'] = 'a'
+tableAccents['ä'] = 'a'
+tableAccents['å'] = 'a'
+tableAccents['æ'] = 'ae'
+tableAccents['ç'] = 'c'
+tableAccents['è'] = 'e'
+tableAccents['é'] = 'e'
+tableAccents['ê'] = 'e'
+tableAccents['ë'] = 'e'
+tableAccents['ì'] = 'i'
+tableAccents['í'] = 'i'
+tableAccents['î'] = 'i'
+tableAccents['ï'] = 'i'
+tableAccents['ð'] = 'eth'
+tableAccents['ñ'] = 'n'
+tableAccents['ò'] = 'o'
+tableAccents['ó'] = 'o'
+tableAccents['ô'] = 'o'
+tableAccents['õ'] = 'o'
+tableAccents['ö'] = 'o'
+tableAccents['ø'] = 'o'
+tableAccents['ù'] = 'u'
+tableAccents['ú'] = 'u'
+tableAccents['û'] = 'u'
+tableAccents['ü'] = 'u'
+tableAccents['ý'] = 'y'
+tableAccents['þ'] = 'p'
+tableAccents['ÿ'] = 'y'
+
+function M.remove_accents(str)
+  local normalisedString = str:gsub(
+    '[%z\1-\127\194-\244][\128-\191]*',
+    tableAccents
+  )
+  return normalisedString
+end
+
+local function remove_forbidden_chars(str)
+  -- outmost parenthesis makes the function return the first value only
+  return (str:gsub('["*/:<>?\\|]', ''))
+end
+
+function M.capitalize_first_letter(str)
+  return str:sub(1, 1):upper() .. str:sub(2)
+end
+
+function M.remove_title_parts(title, opts)
+  opts.words = opts.words or {}
+  local words = {}
+  for _, word in ipairs(opts.words or {}) do
+    table.insert(words, word)
+    table.insert(words, M.capitalize_first_letter(word))
+  end
+  local prefixes = {}
+  for _, word in ipairs(opts.prefixes or {}) do
+    table.insert(prefixes, word)
+    table.insert(prefixes, M.capitalize_first_letter(word))
+  end
+  dump(words, prefixes)
+  local ws = {}
+  for _, w in ipairs(vim.split(title, ' ')) do
+    if w ~= '' then
+      dump(w, vim.tbl_contains(words, w))
+      if not vim.tbl_contains(words, w) then
+        for _, p in ipairs(prefixes) do
+          if vim.startswith(w, p) then
+            w = w:sub(p:len() + 1)
+          end
+        end
+        table.insert(ws, w)
+      end
+    end
+  end
+  title = table.concat(ws, ' ')
+  title = remove_forbidden_chars(title)
+  if opts.accents then
+    title = M.remove_accents(title)
+  end
+  return title
+end
+
 function M.split_string(str, delimiter)
   local result = {}
   local from = 1

@@ -16,10 +16,7 @@ alias o xdg-open
 alias t 'exa --icons --git --tree'
 alias y 'yt-dlp -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 abbr yx 'yt-dlp -x'
-abbr rmt 'read-meta'
-abbr rmtp 'read-meta papis'
-abbr rmte 'read-meta epub'
-abbr rmtm 'read-meta meta'
+abbr ze 'zk-bib eat -eo'
 
 update_cwd_osc # this is needed beacause aur package sets TERM to 'foot-extra' and not 'foot'
 

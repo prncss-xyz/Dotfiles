@@ -13,4 +13,5 @@ end
 
 R 'globals'
 R 'options'
+R 'signs'
 R 'plugins'

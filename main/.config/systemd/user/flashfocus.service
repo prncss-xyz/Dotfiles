@@ -1,0 +1,11 @@
+[Unit]
+Description=Flash of tranparency on focus
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/flashfocus
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

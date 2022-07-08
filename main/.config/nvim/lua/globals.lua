@@ -7,25 +7,14 @@ function _G.dump(...)
   return ...
 end
 
-function _G.vim_setup(o)
-  for k, v in pairs(o) do
-    for k2, v2 in pairs(v) do
-      vim[k][k2] = v2
-    end
-  end
-end
-
-function _G.vim_g_setup(o)
-  for k, v in pairs(o) do
-    vim.g[k] = v
-  end
-end
-
 local branches = {}
 
 function _G.my_title()
-  local dir = vim.env.PWD
+  local dir = vim.fn.getcwd()
   local home = vim.env.HOME
+  if dir == vim.env.ZK_NOTEBOOK_DIR then
+    return 'ZK'
+  end
   if dir == home then
     return 'NVIM'
   end

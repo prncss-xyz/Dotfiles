@@ -2,6 +2,8 @@ local M = {}
 
 local ftMap = {
   vim = 'indent',
+  markdown = '', -- markdown folds handled by 'masukomi/vim-markdown-folding'
+  NeogitCommitMessage = '',
 }
 
 local function handler(virtText, lnum, endLnum, width, truncate)

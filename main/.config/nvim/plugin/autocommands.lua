@@ -25,45 +25,20 @@ vim.api.nvim_create_autocmd('FileType', {
 vim.api.nvim_create_autocmd(
   { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
   {
-    pattern = '?*', -- do not match buffers with no name
+    pattern = '*?', -- do not match buffers with no name
     group = group,
-    nested = true, -- needed for next autocommand
     callback = function()
-      if vim.bo.modifiable and vim.bo.modified then
-        vim.cmd 'silent :w'
+      local fname = vim.fn.expand '%'
+      if
+        vim.bo.modifiable
+        and (vim.bo.modified or vim.fn.filereadable(fname) == 0)
+        and (vim.fn.isdirectory(fname) == 0)
+      then
+        vim.cmd 'silent :w!'
       end
     end,
   }
 )
-
--- Autocommit zettelkasten on every write
-vim.api.nvim_create_autocmd('BufWritePost', {
-  pattern = vim.fn.getenv 'ZK_NOTEBOOK_DIR' .. '/*',
-  group = group,
-  callback = function()
-    -- we cannot assume vim.getcwd is current buffer's directory
-    local cwd = vim.fn.expand('%:p:h', nil, nil)
-    local job = require('plenary').job
-    vim.defer_fn(function()
-      job
-        :new({
-          command = 'git',
-          args = { 'add', '--all' },
-          cwd = cwd,
-          on_exit = function()
-            job
-              :new({
-                command = 'git',
-                args = { 'commit', '--allow-empty-message', '-m', '' },
-                cwd = cwd,
-              })
-              :start()
-          end,
-        })
-        :start()
-    end, 0)
-  end,
-})
 
 local prefix = '/dev/shm/pass.'
 if vim.fn.expand('%:h', nil, nil):sub(1, prefix:len()) == prefix then
@@ -131,49 +106,28 @@ local function fetch_git_branch_plenary()
     :start()
 end
 
--- TODO: command to open in right directory
-local function fish_pet()
-  local filename = vim.fn.expand('%', nil, nil)
-  if not string.find(filename, 'tmp%..+%.fish') then
-    return
-  end
-  -- launch telescope if buffer is empty
-  local buf = vim.api.nvim_buf_get_lines(0, 0, 1, false)
-  if buf[1] ~= '' then
-    return
-  end
-  if buf[1] == '' then
-    vim.bo.filetype = 'fish'
-    require 'luasnip'
-    -- vim.defer_fn(function()
-    --   require('telescope').extensions.luasnip.luasnip {}
-    -- end, 10)
-  end
-end
-
 -- Without wrapping in an autocommand, you don't see the status line while telescope
 -- the classical way of creating an augroup and clearing it does not seem to work, hence the `once` variable
-local once = true
 vim.api.nvim_create_autocmd('VimEnter', {
   pattern = '*',
   group = group,
   callback = function()
     vim.schedule(function()
-      if once then
-        once = false
-      else
-        return
-      end
       fetch_git_branch_plenary()
       local filename = vim.fn.expand('%', nil, nil)
-      if string.find(filename, 'tmp%..+%.fish') then
-        fish_pet()
-      elseif #vim.fn.argv() > 0 then
+      if #vim.fn.argv() > 0 then
       elseif vim.fn.getcwd() == os.getenv 'HOME' then
         require('telescope').extensions.my.projects {}
       else
-        require('bufjump').backward()
-        -- vim.cmd 'BufSurfBack'
+        local prefix = vim.fn.getcwd() .. '/'
+        for _, file in ipairs(vim.v.oldfiles) do
+          if
+            vim.startswith(file, prefix) and vim.fn.filereadable(file) == 1
+          then
+            vim.cmd('edit ' .. file)
+            return
+          end
+        end
         -- require('harpoon.ui').nav_file(1)
         -- require('utils.buffers').project_files()
       end

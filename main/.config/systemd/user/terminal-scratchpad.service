@@ -1,0 +1,11 @@
+[Unit]
+Description=Flash of tranparency on focus
+PartOf=graphical-session.target
+After=terminal.service
+
+[Service]
+ExecStart=footclient --title=scratchpad
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

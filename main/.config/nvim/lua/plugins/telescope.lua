@@ -1,10 +1,12 @@
 local M = {}
 
 -- https://github.com/nvim-telescope/telescope.nvim/wiki/Configuration-Recipes#performing-an-arbitrary-command-by-extending-existing-find_files-picker
+
+-- https://github.com/nvim-telescope/telescope.nvim/wiki/Configuration-Recipes#dont-preview-binaries
 local previewers = require 'telescope.previewers'
 local Job = require 'plenary.job'
 local buffer_preview_maker = function(filepath, bufnr, opts)
-  filepath = vim.fn.expand(filepath, nil, nil)
+  filepath = vim.fn.expand(filepath)
   Job
     :new({
       command = 'file',
@@ -24,48 +26,56 @@ local buffer_preview_maker = function(filepath, bufnr, opts)
     :sync()
 end
 
-local termviewer = 'catimg'
+-- TODO: actions to delete and move cf. telescope file manager
 
-local function mime_hook(filepath, bufnr, opts)
-  local is_image = function(filepath)
-    local image_extensions = { 'png', 'jpg' } -- Supported image formats
-    local split_path = vim.split(filepath:lower(), '.', { plain = true })
-    local extension = split_path[#split_path]
-    return vim.tbl_contains(image_extensions, extension)
+local action_state = require 'telescope.actions.state'
+local function current_dir_action()
+  local entry = action_state.get_selected_entry()
+  if not entry then
+    return
   end
-  if is_image(filepath) then
-    local term = vim.api.nvim_open_term(bufnr, {})
-    local function send_output(_, data, _)
-      for _, d in ipairs(data) do
-        vim.api.nvim_chan_send(term, d .. '\r\n')
-      end
-    end
-    vim.fn.jobstart({
-      termviewer,
-      filepath, -- Terminal image viewer command
-    }, { on_stdout = send_output, stdout_buffered = true })
+
+  local raw = entry[1] -- entry.value.path
+  local dir = vim.fn.fnamemodify(raw, ':h:p')
+  if dir == '.' then
+    dir = ''
+  end
+  dir = dir .. '/'
+  require('plugins.binder.utils').keys('<c-u>' .. dir)
+end
+
+local actions = require 'telescope.actions'
+local state = require 'telescope.actions.state'
+
+-- TODO: intercept telescope relative path
+local function edit()
+  local raw = state.get_current_line()
+  local bufnr = vim.api.nvim_win_get_buf(0)
+  actions.close(bufnr)
+  if not raw then
+    return
+  end
+  if
+    raw:sub(1, 1) ~= '.'
+    and require('plugins.zk.utils').is_in_zk(vim.fn.expand '%:p')
+  then
+    require('plugins.zk.utils').make_note(raw)
   else
-    require('telescope.previewers.utils').set_preview_message(
-      bufnr,
-      opts.winid,
-      'Binary cannot be previewed'
-    )
+    vim.cmd('edit ' .. raw)
   end
 end
 
 function M.config()
   local telescope = require 'telescope'
-  local actions = require 'telescope.actions'
   local util = require 'plugins.binder.utils'
   local lazy_req = util.lazy_req
   telescope.setup {
     defaults = {
-      -- buffer_previewer_maker = buffer_preview_maker,
-      preview = {
-        mime_hook = mime_hook,
-      },
+      buffer_previewer_maker = buffer_preview_maker,
       mappings = {
         i = {
+          ['<c-f>'] = current_dir_action,
+          ['<c-cr>'] = edit,
           ['<c-a>'] = lazy_req('readline', 'beginning_of_line'),
           -- ['<c-f>'] = lazy_req('plugins.cmp', 'utils.confirm'),
           ['<c-q>'] = false, -- TODO: close
@@ -115,8 +125,25 @@ function M.config()
       },
     },
     extensions = {
-      cheat = {
-        mappings = {},
+      fzf = {
+        fuzzy = true,
+        override_generic_sorter = true,
+        override_file_sorter = true,
+        case_mode = 'smart_case',
+      },
+      repo = {
+        list = {
+          fd_opts = {
+            '--no-ignore-vcs',
+          },
+          search_dirs = {
+            vim.fn.getenv 'DOTFILES',
+            vim.fn.getenv 'PROJECTS', -- FIXME:
+            vim.fn.getenv 'ZK_NOTEBOOK_DIR',
+            -- '~/.local/share/nvim/site/pack',
+            -- node modules
+          },
+        },
       },
       -- curently not in use
       frecency = {
@@ -132,6 +159,8 @@ function M.config()
       },
     },
   }
+
+  require('telescope').load_extension 'fzf'
 end
 
 return M

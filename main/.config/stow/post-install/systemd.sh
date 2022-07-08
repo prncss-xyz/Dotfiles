@@ -13,3 +13,9 @@ systemctl --user enable udiskie
 systemctl --user enable waybar
 systemctl --user enable syncthing
 systemctl --user enable systembus-notify
+systemctl --user enable mako
+systemctl --user enable flashfocus
+systemctl --user enable blueberry-tray
+# systemctl --user enable kdeconnect-sms
+# systemctl --user enable kdeconnect-app
+systemctl --user enable sway-mega-hotkeys

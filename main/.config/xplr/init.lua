@@ -365,6 +365,16 @@ deep_merge(xplr, {
                   },
                 },
               },
+              e = {
+                help = 'zkb eat -eo',
+                messages = {
+                  {
+                    BashExec = [[
+                      zkb eat -eo "$XPLR_FOCUS_PATH"
+                    ]],
+                  },
+                },
+              },
               i = {
                 help = 'preview images',
                 messages = {

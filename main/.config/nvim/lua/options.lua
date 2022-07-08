@@ -43,6 +43,7 @@ deep_merge(vim, {
     incsearch = true,
     linebreak = true,
     mouse = 'a',
+    paste = false,
     shiftwidth = indent,
     -- shortmess = vim.o.shortmess .. 'c',
     shortmess = 'IFc',
@@ -104,12 +105,16 @@ deep_merge(vim, {
     spell = false,
     spelloptions = 'camel',
     -- textwidth = 80,
-    titlestring = '%{v:lua.my_title()}',
+    titlestring = '%{v:lua.my_title()}', -- defined in `globals.lua`
     undofile = true, -- FIXME: not working
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
   },
   env = {},
 })
+
+vim.diagnostic.config {
+  virtual_text = false,
+}
 
 -- neovim-qt
 if not vim.fn.exists 'GuiFont' then

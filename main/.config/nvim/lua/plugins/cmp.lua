@@ -1,13 +1,9 @@
 local M = {}
 
 function M.config()
-  if false then
-    print 'not cmp'
-    return
-  end
   local cmp = require 'cmp'
 
-  local symbolic = require('symbols').symbolic
+  local symbolic = require('utils.symbols').symbolic
 
   ---@diagnostic disable-next-line: redundant-parameter
   cmp.setup {

@@ -25,6 +25,7 @@ bindsym $mod+i exec echo next dev > /tmp/sway-mega-hotkeys
 bindsym $mod+n exec makoctl dismiss
 bindsym $mod+shift+n exec makoctl dismiss --all
 bindsym $mod+m fullscreen
+bindsym $mod+o exec echo next zk > /tmp/sway-mega-hotkeys
 bindsym $mod+p workspace back_and_forth
 bindsym $mod+q kill
 bindsym $mod+r mode "resize"

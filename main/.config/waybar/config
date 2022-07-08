@@ -1,16 +1,12 @@
 {
     "layer": "top",
     "position": "bottom",
-    "modules-left": ["clock", "custom/timinou", "sway/mode"],
+    "modules-left": ["clock", "sway/mode"],
     "modules-center": [ "sway/window"],
     "modules-right": ["cpu", "memory", "battery"],
     "sway/workspaces": {
       "current-only": true,
       "tooltip": false
-    },
-    "custom/timinou": {
-      "exec": "cat /tmp/timinou.txt",
-      "interval": 1
     },
     "sway/window": {
       "max-length": 90,

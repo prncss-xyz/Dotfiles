@@ -2,10 +2,10 @@ local install_path = vim.fn.stdpath 'data'
   .. '/site/pack/packer/start/packer.nvim'
 
 local function local_repo(name)
-  return os.getenv 'PROJECTS' .. '/' .. name
+  return os.getenv 'PROJECTS' .. '/github.com/prncss-xyz/' .. name
 end
 
-if vim.fn.empty(vim.fn.glob(install_path, nil, nil)) > 0 then
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.fn.system {
     'git',
     'clone',
@@ -27,10 +27,6 @@ end
 
 local function config(name)
   return string.format("require('plugins.%s').config()", name)
-end
-
-local function g_setup(o)
-  return string.format('vim_g_setup(%s)', vim.inspect(o))
 end
 
 local function setup(name)
@@ -166,7 +162,6 @@ return require('packer').startup {
       'neovim/nvim-lspconfig',
       module = 'lspconfig',
       event = 'BufReadPost',
-      setup = setup 'lsp',
       config = config 'lsp',
     }
     use {
@@ -229,6 +224,7 @@ return require('packer').startup {
     use {
       'hrsh7th/nvim-cmp',
       module = 'cmp',
+      -- event = { 'InsertEnter' },
       event = { 'InsertEnter', 'CmdlineEnter' },
       config = function()
         require('plugins.cmp').config()
@@ -368,19 +364,17 @@ return require('packer').startup {
       'folke/trouble.nvim',
       module = 'trouble',
       module_pattern = 'trouble.*',
-      cmd = {
-        'TodoQuickFix',
-        'TodoLocList',
-        'TodoTrouble',
-        'TodoTelescope',
-      },
       config = config 'trouble',
     }
     use {
       'folke/todo-comments.nvim',
       event = 'BufReadPost',
-      cmd = { 'TodoTrouble', 'TodoTelescope' },
-      config = default_config 'todo-comments',
+      config = config 'todo-comments',
+      module = 'todo-comments',
+      cmd = {
+        'TodoTrouble',
+        'TodoTelescope',
+      },
     }
     use {
       'folke/zen-mode.nvim',
@@ -442,6 +436,12 @@ return require('packer').startup {
       module = 'split',
     }
 
+    use {
+      'lalitmee/browse.nvim',
+      module = 'browse',
+      module_pattern = 'browse.*',
+    }
+
     -- Navigation
     use {
       'karb94/neoscroll.nvim',
@@ -463,21 +463,14 @@ return require('packer').startup {
     }
     use {
       'haya14busa/vim-asterisk',
-      setup = g_setup { ['asterisk#keeppos'] = 1 },
+      setup = function()
+        vim.g['asterisk#keeppos'] = 1
+      end,
     }
     use {
       'edluffy/specs.nvim',
       after = 'neoscroll.nvim',
       config = function() end,
-    }
-    use {
-      local_repo 'bufjump.nvim',
-      module = 'bufjump',
-      config = function()
-        require('bufjump').setup {
-          cond = require('bufjump').under_cwd,
-        }
-      end,
     }
     use {
       -- local_repo 'marks.nvim',
@@ -519,9 +512,6 @@ return require('packer').startup {
     use {
       'nvim-telescope/telescope-node-modules.nvim',
       module = 'telescope._extensions.node_modules',
-      -- config = function()
-      --   require('telescope').load_extension 'node_modules'
-      -- end,
     }
     use {
       'nvim-telescope/telescope-fzf-native.nvim',
@@ -529,12 +519,17 @@ return require('packer').startup {
       module = 'telescope._extensions.fzf',
     }
     use {
-      'crispgm/telescope-heading.nvim',
-      module = 'telescope._extensions.heading',
-    }
-    use {
       'nvim-telescope/telescope-project.nvim',
       module = 'telescope._extensions.project',
+    }
+    use {
+      'cljoly/telescope-repo.nvim',
+      module = 'telescope._extensions.repo',
+    }
+    use {
+      'nvim-telescope/telescope-file-browser.nvim',
+      module = 'telescope._extensions.file_browser',
+      disable = true,
     }
     use {
       'nvim-telescope/telescope-dap.nvim',
@@ -558,13 +553,6 @@ return require('packer').startup {
         'ZkTags',
       },
       ft = 'markdown',
-    }
-    -- data files, no need for lazy loading
-    use { 'nvim-telescope/telescope-symbols.nvim' }
-    use {
-      'nvim-telescope/telescope-cheat.nvim',
-      module = 'telescope._extensions.cheat',
-      module_pattern = 'telescope._extensions.cheat.*',
     }
 
     -- Bindings
@@ -713,17 +701,17 @@ return require('packer').startup {
       disable = true,
     }
     use {
-      'metakirby5/codi.vim',
-      cmd = { 'Codi', 'Codi!', 'Codi!!' },
-      disable = true,
-    }
-    use {
       'rafcamlet/nvim-luapad',
       cmd = { 'Luapad', 'LuaRun' },
       module = 'luapad',
       module_pattern = 'luapad.*',
       config = default_config 'luapad',
     }
+    use {
+      'metakirby5/codi.vim',
+      cmd = { 'Codi', 'CodiNew', 'CodiSelect', 'CodiExpand' },
+    }
+    -- eventual replacement for codi, not quite mature though
     use {
       'jbyuki/dash.nvim',
       module = 'dash',

@@ -47,11 +47,7 @@ function M.extend()
     rr = b { '"+', modes = 'nx' },
     r = b { '"', modes = 'nx' },
     s = modes {
-      nx = b {
-        function()
-          require('plugins.binder.actions').hop12 ',=;+-*/_'
-        end,
-      },
+      nx = b { require('plugins.binder.actions').hop12 },
       o = b {
         function()
           require('hop').hint_char2 {
@@ -76,22 +72,13 @@ function M.extend()
     ['<space>'] = b {
       desc = 'legendary find',
       lazy_req('legendary', 'find'),
+      modes = 'nx',
     },
-    -- ['<space>'] = b {
-    --   desc = 'commands',
-    --   lazy_req('telescope.builtin', 'commands'),
-    -- },
     [d.right] = b { 'l', 'right', modes = 'nxo' },
     [d.left] = b { 'h', 'left', modes = 'nxo' },
     [d.up] = b { 'k', 'up', modes = 'nxo' },
     [d.down] = b { 'j', 'down', modes = 'nxo' },
     [d.search] = b { '/', modes = 'nxo' },
-    -- ['<c-p>'] = modes {
-    --   i = b { lazy_req('luasnip', 'change_choice', -1) },
-    -- },
-    -- ['<c-n>'] = modes {
-    --   i = b { lazy_req('luasnip', 'change_choice', 1) },
-    -- },
     ['<c-q>'] = b { 'ZZ', desc = 'quit' },
     ['<c-v>'] = b { '"+P', modes = 'nv' },
     -- also: require("luasnip.extras.select_choice")

@@ -26,17 +26,17 @@ default_floating_border none
 # set $menu dmenu_path | dmenu | xargs swaymsg exec --
 
 # https://github.com/francma/wob/blob/master/wob.1.scd
-exec wl-paste -t text --watch clipman store
-exec flashfocus
+# exec wl-paste -t text --watch clipman store
+# exec flashfocus
 # exec wluma
 exec swayidle -w \
  timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
  timeout 330 'swaylock' \
  before-sleep 'swaylock'
-exec aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
-exec blueberry-tray
-exec .pnpm-global-bin/timinou
-exec .pnpm-global-bin/http-server -p 8083 .config/surfingkeys
+# exec aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
+# exec blueberry-tray
+# exec .pnpm-global-bin/timinou
+# exec .pnpm-global-bin/http-server -p 8083 .config/surfingkeys
 
 mouse_warping none
 focus_follows_mouse no
@@ -49,13 +49,9 @@ for_window [title="^scratchpad$"] move scratchpad
 # FIXME:
 # exec xdg-settings set default-web-browser firefox.desktop
 exec foot --server
-
 exec sh -c "sleep 1; $TERMINAL --title=scratchpad"
-# exec $terminal --title=scratchpad
 exec ~/.local/bin/setbg-sway
-exec mako
 # exec languagetool --http
-exec ~/Media/Projects/sway-mega-hotkeys/cli.js
 
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 
@@ -96,8 +92,8 @@ for_window [app_id=^celluloid$] inhibit_idle fullscreen
 
 for_window [workspace=3] layout stacking
 assign [app_id="^org\.kde\.kdeconnect"] workspace 3
-exec kdeconnect-sms
-exec kdeconnect-app
+# exec kdeconnect-sms
+# exec kdeconnect-app
 assign [app_id="^com\.github\.wwmm\.easyeffects"] workspace 3
 # exec easyeffects
 

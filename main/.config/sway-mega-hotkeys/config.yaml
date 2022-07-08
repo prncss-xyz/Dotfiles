@@ -1,26 +1,30 @@
 matcher:
-  - label: "dev"
-    criteria: "name"
-    value: "DEV$"
-  - label: "editor"
-    criteria: "name"
-    value: "NVIM$"
-  - label: "terminal"
-    criteria: "app_id"
-    value: "foot"
-  - label: "terminal"
-    criteria: "app_id"
-    value: "kitty"
-  - label: "terminal"
-    criteria: "app_id"
-    value: "tym"
-  - label: "browser"
-    criteria: "app_id"
-    value: "firefox"
-  - label: "browser"
-    criteria: "app_id"
-    value: "chromium"
+  - label: 'dev'
+    criteria: 'name'
+    value: 'DEV$'
+  - label: 'zk'
+    criteria: 'name'
+    value: 'ZK$'
+  - label: 'editor'
+    criteria: 'name'
+    value: 'NVIM$'
+  - label: 'terminal'
+    criteria: 'app_id'
+    value: 'foot'
+  - label: 'terminal'
+    criteria: 'app_id'
+    value: 'kitty'
+  - label: 'terminal'
+    criteria: 'app_id'
+    value: 'tym'
+  - label: 'browser'
+    criteria: 'app_id'
+    value: 'firefox'
+  - label: 'browser'
+    criteria: 'app_id'
+    value: 'chromium'
 runner:
-  editor: "$TERMINAL -e sh -c .local/bin/nvim_session"
-  terminal: ".local/bin/new_term"
-  browser: ".local/bin/browser"
+  zk: '$TERMINAL -e sh -c .local/bin/nvim_zk'
+  editor: '$TERMINAL -e sh -c .local/bin/nvim_session'
+  terminal: '.local/bin/new_term'
+  browser: '.local/bin/browser'

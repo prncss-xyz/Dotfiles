@@ -59,20 +59,13 @@ M.jump_next = utils.first_cb(
   -- util.lazy_req('tabout', 'taboutMulti')
 )
 
-function M.hop12(one_list)
+function M.hop12()
   local char = vim.fn.getchar()
   char = vim.fn.nr2char(char)
   if char == utils.t '<esc>' then
     return
   end
-  local one_char = false
-  if string.find(one_list, char, 1, true) then
-    one_char = true
-  end
-  if vim.bo.filetype == 'markdown' and string.find('.:', char, 1, true) then
-    one_char = true
-  end
-  if one_char then
+  if string.find(char, '[%p]') then
     vim.fn.feedkeys(
       utils.t('<cmd>lua require "hop".hint_char1()<cr>' .. char),
       'm'

@@ -20,24 +20,7 @@ local function test(s)
 	return res
 end
 
-return {
-	s({ trig = "f" }, {
-		t("("),
-		i(2),
-		t(") => "),
-		i(3),
-	}),
-	-- s({ trig = 'function' }, {
-	--   t 'function ',
-	--   i(1, 'name'),
-	--   t '(',
-	--   i(2),
-	--   t ') {',
-	--   t { '', '  ' },
-	--   i(3),
-	--   t { '', '}', '' },
-	-- }),
-
+local M = {
 	s({ trig = "i" }, {
 		t("if ("),
 		i(1, "false"),
@@ -72,5 +55,40 @@ return {
 			sn(1, { t({ "} else {", "\t" }), i(1, "// block") }),
 		}),
 	}),
-	s({ trig = "test" }, test({ t("test") })),
 }
+
+table.insert(M, s("lambda", fmt("([]) => []", { i(1, "_params"), i(2, "0") }, { delimiters = "[]" })))
+table.insert(
+	M,
+	s('f', fmt(
+		[[
+      function []([]) {
+        []
+      }
+    ]],
+		{ i(1, "name"), i(2, "_params"), i(3, "// TODO:") },
+		{ delimiters = "[]" }
+	))
+)
+table.insert(M, s("test", test({ t("test") })))
+table.insert(
+	M,
+	s(
+		"rethrow",
+		fmt(
+			[[
+        try {
+          [] 
+        } catch (error) {
+          if (error.code !== "[]") throw error;[]
+        }
+      ]],
+			{ i(1, "// TODO:"), i(2, "ENOENT"), i(3, "") },
+			{
+				delimiters = "[]",
+			}
+		)
+	)
+)
+
+return M

@@ -1,0 +1,22 @@
+tags: [w/backlog]
+noteDir: sources
+removeTitle:
+  words:
+    - the
+    - a
+    - le
+    - la
+    - les
+    - de
+    - du
+  prefixes:
+    - d'
+    - l'
+  characters: '"*/:<>?\\|'
+  accents: false
+export:
+  caca: test/caca
+  pipi: test/pipi
+  crotte: test/crotte
+  # w/backlog: epubs/readlist
+  # w/follow: epubs/follow

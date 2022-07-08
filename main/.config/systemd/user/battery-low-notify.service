@@ -5,6 +5,7 @@ After=graphical-session.target
 
 [Service]
 ExecStart=%h/.local/bin/battery-low-notify
+Restart=on-failure
 
 [Install]
 WantedBy=graphical-session.target

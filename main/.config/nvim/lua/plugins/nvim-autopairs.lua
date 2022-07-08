@@ -1,7 +1,7 @@
 local M = {}
 
 local function cr()
-  require 'plugins.binder.actions'.cr()
+  require('plugins.binder.actions').cr()
   return _G.MPairs.completion_confirm()
 end
 
@@ -30,6 +30,28 @@ function M.config()
       check_comma = true,
     },
   }
+  local Rule = require 'nvim-autopairs.rule'
+  local npairs = require 'nvim-autopairs'
+  local cond = require 'nvim-autopairs.conds'
+  local opt = require('nvim-autopairs').config
+
+  -- FIXME: 
+  if false then
+    local basic = function(...)
+      local move_func = opt.enable_moveright and cond.move_right or cond.none
+      local rule = Rule(...)
+        :with_move(move_func())
+        :with_pair(cond.not_add_quote_inside_quote())
+
+      if #opt.ignored_next_char > 1 then
+        rule:with_pair(cond.not_after_regex(opt.ignored_next_char))
+      end
+      rule:use_undo(opt.break_undo)
+      return rule
+    end
+    npairs.add_rule(basic('_', '_', 'markdown'))
+  end
+
   vim.api.nvim_set_keymap('i', '<cr>', '', {
     noremap = true,
     expr = true,

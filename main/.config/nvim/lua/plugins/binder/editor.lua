@@ -128,6 +128,15 @@ function M.extend()
         desc = 'tags',
         lazy_req('telescope.builtin', 'help_tags'),
       },
+      b = keys {
+        desc = 'lalitmee/browse.nvim',
+        d = b { lazy_req('browse.devdocs', 'search') },
+        -- vim.fn.jobstart(string.format("%s 'https://devdocs.io/#q=%s'", open_cmd, input_with_filetype))
+        m = b { lazy_req('browse.mdn', 'search') },
+        -- vim.fn.jobstart(string.format("%s 'https://developer.mozilla.org/en-US/search?q=%s'", open_cmd, input))
+        redup = b { lazy_req('browse.devdocs', 'search_with_filetype') },
+        -- vim.fn.jobstart(string.format("%s 'https://devdocs.io/#q=%s'", open_cmd, input))
+      },
       c = b {
         desc = 'highlights',
         lazy_req('telescope.builtin', 'highlights'),

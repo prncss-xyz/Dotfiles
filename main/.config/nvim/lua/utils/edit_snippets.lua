@@ -1,5 +1,3 @@
-local M = {}
-
 local function format_item(choice)
   return choice.name
 end
@@ -11,10 +9,10 @@ local function on_choice(choice)
   vim.cmd('edit ' .. choice.path)
 end
 
-function M.edit_snippets()
+-- TODO: when no filetype or with set parameter, input language
+return function()
   if false then
-    require('luasnip.loaders.from_lua').edit_snippet_files()
-    return
+    return require('luasnip.loaders.from_lua').edit_snippet_files()
   end
   local vim_conf = require('parameters').vim_conf
   local snip_dir = vim_conf .. '/snippets'
@@ -63,5 +61,3 @@ function M.edit_snippets()
   )
   vim.ui.select(items, { format_item = format_item }, on_choice)
 end
-
-return M

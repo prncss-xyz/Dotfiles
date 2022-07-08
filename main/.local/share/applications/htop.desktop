@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=htop
+Comment=Process monitoring
+Exec=htop
+Terminal=true

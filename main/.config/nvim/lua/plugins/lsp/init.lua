@@ -2,29 +2,6 @@ local M = {}
 
 -- `null_ls` uses its own configuration file
 
-function M.setup()
-  vim.fn.sign_define(
-    'DiagnosticSignError',
-    { text = ' ', texthl = 'diagnosticvirtualtextError' }
-  )
-  vim.fn.sign_define(
-    'DiagnosticSignWarn',
-    { text = ' ', texthl = 'diagnosticvirtualtextWarn' }
-  )
-  vim.fn.sign_define(
-    'DiagnosticSignHint',
-    { text = '', texthl = 'diagnosticvirtualtextHint' }
-  )
-  vim.fn.sign_define(
-    'DiagnosticSignInfo',
-    { text = ' ', texthl = 'diagnosticvirtualtextInfo' }
-  )
-
-  vim.diagnostic.config {
-    virtual_text = false,
-  }
-end
-
 function M.config()
   -- Are also used by vim-illuminate.
   -- The defaults option (CursorLine) was quite unreadable.
@@ -109,14 +86,14 @@ function M.config()
     capabilities = capabilities,
     flags = flags,
   }
-  require 'typescript'.setup {
+  require('typescript').setup {
     disable_commands = false,
     debug = false,
     server = {
       capabilities = capabilities,
       on_attach = noformat_on_attach,
       flags = flags,
-    }
+    },
   }
   local luadev = require('lua-dev').setup {
     lspconfig = {

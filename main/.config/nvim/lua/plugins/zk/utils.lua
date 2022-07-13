@@ -99,27 +99,28 @@ function M.make_note_(dir, title)
     tags = '',
     title = title,
   }
-  if is_subdir_any(dir, { 'journal' }) then
+  local log = 'log'
+  if is_subdir_any(dir, { log }) then
     file = data.date
     local pre
-    if is_subdir(dir, 'journal/d') then
+    if is_subdir(dir, log .. '/d') then
       pre = 'daily '
-    elseif is_subdir(dir, 'journal/w') then
+    elseif is_subdir(dir, log .. '/w') then
       pre = 'weekly '
-    elseif is_subdir(dir, 'journal/m') then
+    elseif is_subdir(dir, log .. '/m') then
       pre = 'monthly '
-    elseif is_subdir(dir, 'journal/y') then
+    elseif is_subdir(dir, log .. '/y') then
       pre = 'yearly '
     else
       pre = ''
     end
     data.title = pre .. data.date
   end
-  if is_subdir_any(dir, { 'tasks' }) then
-    file = os.date '%Y%m%d%H%M' .. ' ' .. file
-  end
-  if is_subdir_any(dir, { 'tasks', 'projects', 'writing', 'inventory' }) then
+  if is_subdir_any(dir, { 'w' }) then
     data.tags = 'w/backlog'
+  end
+  if is_subdir_any(dir, { 'w/tasks' }) then
+    file = os.date '%Y%m%d' .. ' ' .. file
   end
   if is_subdir_any(dir, { 'topics' }) then
     data.lang = 'en'
@@ -138,14 +139,6 @@ function M.make_note_(dir, title)
     data.lang = 'en'
     local id = gen_id()
     file = author .. issued .. id .. ' ' .. title
-    dump {
-      res = res,
-      author = author,
-      date = issued,
-      title = title,
-      id = id,
-      file = file,
-    }
     template = template
       or fmt(
         [[
@@ -227,7 +220,7 @@ function M.setup_autocommit()
     group = group,
     callback = function()
       -- we cannot assume vim.getcwd is current buffer's directory
-      local cwd = vim.fn.expand('%:p:h', nil, nil)
+      local cwd = vim.fn.expand '%:p:h'
       local job = require('plenary').job
       vim.defer_fn(function()
         job

@@ -55,6 +55,13 @@ function M.config()
     window = {
       width = require('parameters').pane_width,
     },
+    zk = {
+      window = {
+        mappings = {
+          m = 'show_debug_info',
+        },
+      },
+    },
     filesystem = {
       follow_current_file = true,
       hijack_netrw_behavior = 'open_default',

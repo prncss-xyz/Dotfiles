@@ -268,51 +268,6 @@ deep_merge(xplr, {
             },
           },
         },
-        last = {
-          key_bindings = {
-            on_key = {
-              m = {
-                help = 'mvf last',
-                messages = {
-                  {
-                    BashExec = [[ mvf --last ]],
-                  },
-                },
-              },
-              t = {
-                help = 'mvf last',
-                messages = {
-                  {
-                    BashExec = [[ tag-put "$XPLR_FOCUS_PATH" --repeat ]],
-                  },
-                },
-              },
-              w = {
-                help = 'tag put last',
-                messages = {
-                  {
-                    BashExec = [[ tag-put --last ]],
-                  },
-                },
-              },
-              W = {
-                help = 'tag del last',
-                messages = {
-                  {
-                    BashExec = [[ tag-del --last ]],
-                  },
-                },
-              },
-              esc = {
-                help = 'default mode',
-                messages = {
-                  'PopMode',
-                  { SwitchModeBuiltin = 'default' },
-                },
-              },
-            },
-          },
-        },
         wl_copy = {
           -- adapted from https://github.com/sayanarijit/wl-clipboard.xplr
           name = 'copy',
@@ -522,16 +477,30 @@ deep_merge(xplr, {
                   'Back',
                 },
               },
+              b = {
+                help = 'mvf',
+                messages = {
+                  {
+                    BashExec = [[
+                      if [ -f "$XPLR_FOCUS_PATH" ]; then
+                        mvf "$XPLR_FOCUS_PATH"
+                      fi
+                    ]],
+                  },
+                },
+              },
+              B = {
+                help = 'mvf --last',
+                messages = {
+                  {
+                    BashExec = [[ mvf --last ]],
+                  },
+                },
+              },
               a = {
                 help = 'create',
                 messages = {
                   { SwitchModeBuiltin = 'create' },
-                },
-              },
-              b = {
-                help = 'last',
-                messages = {
-                  { SwitchModeCustom = 'last' },
                 },
               },
               space = {
@@ -548,32 +517,23 @@ deep_merge(xplr, {
                 help = 'last visited path',
                 messages = { 'LastVisitedPath' },
               },
-              z = {
-                help = 'tag put current',
-                messages = {
-                  {
-                    BashExec = [[ tag-put "$XPLR_FOCUS_PATH" ]],
-                  },
-                },
-              },
-              Z = {
-                help = 'tag del current',
-                messages = {
-                  {
-                    BashExec = [[ tag-del "$XPLR_FOCUS_PATH" ]],
-                  },
-                },
-              },
               m = {
-                help = 'mvf current',
+                help = 'move here',
                 messages = {
                   {
-                    BashExec = [[
-                      if [ -f "$XPLR_FOCUS_PATH" ]; then
-                        mvf "$XPLR_FOCUS_PATH"
+                    BashExecSilently = [[
+                      (while IFS= read -r line; do
+                      if mv -v -- "${line:?}" ./; then
+                        echo LogSuccess: $line moved to $PWD >> "${XPLR_PIPE_MSG_IN:?}"
+                      else
+                        echo LogError: Failed to move $line to $PWD >> "${XPLR_PIPE_MSG_IN:?}"
                       fi
+                        done < "${XPLR_PIPE_SELECTION_OUT:?}")
+                        echo ExplorePwdAsync >> "${XPLR_PIPE_MSG_IN:?}"
+                        read -p "[enter to continue]"
                     ]],
                   },
+                  'PopMode',
                 },
               },
               o = {
@@ -632,6 +592,20 @@ deep_merge(xplr, {
                 help = 'copy',
                 messages = {
                   { SwitchModeCustom = 'wl_copy' },
+                },
+              },
+              z = {
+                help = 'zk-bib eat -eo',
+                messages = {
+                  {
+                    BashExec = [[
+                      if [ -f "$XPLR_FOCUS_PATH" ]; then
+                        zk-bib eat -eo "$XPLR_FOCUS_PATH"
+                      else
+                        echo "Sory, this is not a file."
+                      fi
+                    ]],
+                  },
                 },
               },
               [d.right] = { -- right
@@ -768,20 +742,6 @@ deep_merge(xplr, {
                 help = 'follow symlink',
                 messages = { 'FollowSymlink', 'PopMode' },
               },
-              t = {
-                help = 'tag',
-                messages = {
-                  {
-                    BashExecSilently = [[
-                      PTH="$(tag-go "$PWD")"  
-                      if [ "$PTH" ]; then
-                        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
-                      fi
-                    ]],
-                  },
-                  'PopMode',
-                },
-              },
               u = {
                 help = 'top',
                 messages = { 'FocusFirst', 'PopMode' },
@@ -832,89 +792,6 @@ deep_merge(xplr, {
                   { CallLuaSilently = 'custom.type_to_nav_start' },
                 },
               },
-              u = {
-                help = 'add tag to selection',
-                messages = {
-                  {
-                    BashExec = [[
-                    tag="$(tag-ls | fzf --print-query | tail -1)"  
-                    if [ -n "$tag" ]; then
-                      tag-u "$tag" | sort -u /dev/stdin | while read -r PTH ; do
-                        ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
-                        echo "SelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
-                      done
-                    fi
-                  ]],
-                  },
-                },
-              },
-              U = {
-                help = 'intersect tag with selection',
-                messages = {
-                  {
-                    BashExec = [[
-                    tag="$(tag-ls | fzf --print-query | tail -1)"  
-                    if [ -n "$tag" ]; then
-                      echo > "$XPLR_SESSION_PATH/raw"
-                      tag-u "$tag" | while read -r PTH ; do
-                        echo "$(realpath "$PTH")" >> "$XPLR_SESSION_PATH/raw"
-                      done
-                      sort "$XPLR_SESSION_PATH/raw" > "$XPLR_SESSION_PATH/operand"
-                      cat "$XPLR_PIPE_SELECTION_OUT" | while read -r PTH ; do
-                        if [ -z "$(look "$PTH" "$XPLR_SESSION_PATH/operand")" ]; then
-                          ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
-                          echo "UnSelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
-                        fi
-                      done
-                    fi
-                    ]],
-                  },
-                },
-              },
-              d = {
-                help = 'remove tag from selection',
-                messages = {
-                  {
-                    BashExec = [[
-                    tag="$(tag-ls | fzf --print-query | tail -1)"  
-                    if [ -n "$tag" ]; then
-                      tag-u "$tag" | sort -u /dev/stdin | while read -r PTH ; do
-                        ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
-                        echo "UnSelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
-                      done
-                    fi
-                  ]],
-                  },
-                },
-              },
-              a = {
-                help = 'select untagged from current dir',
-                messages = {
-                  {
-                    BashExecSilently = [[
-                      for PTH in *; do
-                        if [ -z "$(tag-get "$PTH")" ]; then
-                          ESC="$(echo "$PTH"|sed 's/"/\\"/g')"
-                          echo "SelectPath: \"$ESC\"" >> "$XPLR_PIPE_MSG_IN"
-                        fi
-                      done
-                    ]],
-                  },
-                },
-              },
-              m = {
-                -- TODO: revert to builtin when there is not .tags
-                help = 'move with tags here',
-                messages = {
-                  {
-                    BashExec = [[
-                      cat "$XPLR_PIPE_SELECTION_OUT" | while read -r line ; do
-                        tag-mv "$line" "$PWD"
-                      done
-                    ]],
-                  },
-                },
-              },
               o = {
                 help = 'open from selection',
                 messages = {
@@ -924,23 +801,6 @@ deep_merge(xplr, {
                       if [ -n "$PTH" ]; then
                         xdg-open "$PTH"
                       fi
-                    ]],
-                  },
-                },
-              },
-              w = {
-                help = 'assign tag to selection',
-                messages = {
-                  {
-                    BashExec = [[
-                      cat "$XPLR_PIPE_SELECTION_OUT" | while read -r line ; do
-                        if [ -z "$succ" ]; then
-                          succ=succ
-                          tag-put "$line"
-                        else
-                          tag-put "$line" --repeat
-                        fi
-                      done
                     ]],
                   },
                 },
@@ -1011,9 +871,9 @@ for _, mode in ipairs { 'type_to_nav' } do
 end
 
 xplr.config.general.focus_ui.prefix = '▸ '
-                                       
-xplr.config.general.focus_selection_ui.suffix = "]"
-xplr.config.general.focus_selection_ui.suffix = "]"
+
+xplr.config.general.focus_selection_ui.suffix = ']'
+xplr.config.general.focus_selection_ui.suffix = ']'
 xplr.config.general.focus_ui.suffix = ' ◂'
 xplr.config.general.default_ui.prefix = '  '
 xplr.config.general.selection_ui.prefix = ' {'

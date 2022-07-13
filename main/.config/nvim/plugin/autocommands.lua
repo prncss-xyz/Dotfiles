@@ -40,8 +40,8 @@ vim.api.nvim_create_autocmd(
   }
 )
 
-local prefix = '/dev/shm/pass.'
-if vim.fn.expand('%:h', nil, nil):sub(1, prefix:len()) == prefix then
+local pass_prefix = '/dev/shm/pass.'
+if vim.fn.expand('%:h', nil, nil):sub(1, pass_prefix:len()) == pass_prefix then
   vim.g.secret = true
 else
   -- without this, deleted marks do not get removed on exit
@@ -114,7 +114,6 @@ vim.api.nvim_create_autocmd('VimEnter', {
   callback = function()
     vim.schedule(function()
       fetch_git_branch_plenary()
-      local filename = vim.fn.expand('%', nil, nil)
       if #vim.fn.argv() > 0 then
       elseif vim.fn.getcwd() == os.getenv 'HOME' then
         require('telescope').extensions.my.projects {}

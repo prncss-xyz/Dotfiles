@@ -46,6 +46,8 @@ return require('packer').startup {
       config = default_config('nvim-web-devicons', { default = true }),
     }
 
+    use { 'jghauser/mkdir.nvim' } -- automatically creates missing directories on saving a file
+
     -- treesitter
     use {
       'nvim-treesitter/nvim-treesitter',
@@ -396,10 +398,11 @@ return require('packer').startup {
       cmd = { 'UndotreeToggle' },
     }
     use {
-      'nvim-neo-tree/neo-tree.nvim',
+      local_repo 'neo-tree.nvim',
       branch = 'v2.x',
       config = config 'neo-tree',
-      cmd = { 'Neotree' },
+      module = 'neo-tree',
+      cmd = { 'Neotree', 'NeoTreeShow' },
     }
     use {
       'kyazdani42/nvim-tree.lua',

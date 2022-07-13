@@ -173,6 +173,10 @@ function M.extend()
         end
       end,
     },
+    n = b {
+      desc = 'neo-tree zk',
+      ':Neotree source=zk<cr>',
+    },
     o = b {
       desc = 'open current external',
       require('utils').open_current,

@@ -94,11 +94,9 @@ function M.remove_title_parts(title, opts)
     table.insert(prefixes, word)
     table.insert(prefixes, M.capitalize_first_letter(word))
   end
-  dump(words, prefixes)
   local ws = {}
   for _, w in ipairs(vim.split(title, ' ')) do
     if w ~= '' then
-      dump(w, vim.tbl_contains(words, w))
       if not vim.tbl_contains(words, w) then
         for _, p in ipairs(prefixes) do
           if vim.startswith(w, p) then

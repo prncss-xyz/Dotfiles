@@ -43,7 +43,6 @@ deep_merge(vim, {
     incsearch = true,
     linebreak = true,
     mouse = 'a',
-    paste = false,
     shiftwidth = indent,
     -- shortmess = vim.o.shortmess .. 'c',
     shortmess = 'IFc',
@@ -100,6 +99,7 @@ deep_merge(vim, {
     foldlevel = 20,
     -- foldlevelstart=20,
     lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
+    paste = false,
     secure = true, -- disable autocmd etc for project local vimrc files
     sessionoptions = 'curdir,folds,tabpages,winsize',
     spell = false,
@@ -131,3 +131,5 @@ vim.api.nvim_create_autocmd('FileType', {
     })
   end,
 })
+
+vim.diagnostic.config { virtual_text = false, update_in_insert = true }

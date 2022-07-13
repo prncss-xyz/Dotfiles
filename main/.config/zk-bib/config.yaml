@@ -15,8 +15,4 @@ removeTitle:
   characters: '"*/:<>?\\|'
   accents: false
 export:
-  caca: test/caca
-  pipi: test/pipi
-  crotte: test/crotte
-  # w/backlog: epubs/readlist
-  # w/follow: epubs/follow
+  w/backlog/0: epubs/backlog 0

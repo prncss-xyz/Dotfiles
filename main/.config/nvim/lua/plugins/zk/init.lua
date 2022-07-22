@@ -3,7 +3,7 @@ local M = {}
 function M.config()
   require('plugins.zk.utils').setup_autocommit()
   require('zk').setup {
-    picker = 'my_telescope',
+    picker = 'telescope',
     lsp = {
       config = {
         cmd = { 'zk', 'lsp' },

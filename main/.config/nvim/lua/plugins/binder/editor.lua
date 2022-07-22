@@ -163,6 +163,16 @@ function M.extend()
       prev = b { desc = 'signature help', vim.lsp.buf.signature_help },
       next = b { desc = 'hover', vim.lsp.buf.hover },
     },
+    l = keys {
+      prev = b {
+        desc = 'toggle cursor conceal',
+        require('utils.vim').toggle_conceal_cursor,
+      },
+      next = b {
+        desc = 'toggle conceal',
+        require('utils.vim').toggle_conceal,
+      },
+    },
     m = b {
       desc = 'toggle foldsigns',
       function()

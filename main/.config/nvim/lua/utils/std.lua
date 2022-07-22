@@ -128,12 +128,13 @@ function M.split_string(str, delimiter)
   return result
 end
 
--- ?? vim.tbl_deep_extend instead ??
--- TODO merge arrays
 function M.deep_merge(t1, t2)
+  local offset = #t1
   for k, v in pairs(t2) do
     if (type(v) == 'table') and (type(t1[k] or false) == 'table') then
       M.deep_merge(t1[k], t2[k])
+    elseif (type(k) == 'number') then
+      t1[offset + k] = v
     else
       t1[k] = v
     end

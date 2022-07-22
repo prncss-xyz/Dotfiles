@@ -1,5 +1,21 @@
 local M = {}
 
+function M.toggle_conceal()
+  if vim.o.conceallevel > 0 then
+    vim.o.conceallevel = 0
+  else
+    vim.o.conceallevel = 2
+  end
+end
+
+function M.toggle_conceal_cursor()
+  if vim.o.concealcursor == 'n' then
+    vim.o.concealcursor = ''
+  else
+    vim.o.concealcursor = 'n'
+  end
+end
+
 -- https://github.com/echasnovski/mini.nvim/blob/main/lua/mini/surround.lua
 function M.get_marks_pos(mode)
   -- Region is inclusive on both ends

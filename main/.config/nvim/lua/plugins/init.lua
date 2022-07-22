@@ -232,6 +232,7 @@ return require('packer').startup {
         require('plugins.cmp').config()
       end,
     }
+    use { 'hrsh7th/cmp-calc', after = 'nvim-cmp' }
     use { 'hrsh7th/cmp-buffer', after = 'nvim-cmp' }
     use {
       'hrsh7th/cmp-path',
@@ -398,11 +399,16 @@ return require('packer').startup {
       cmd = { 'UndotreeToggle' },
     }
     use {
-      local_repo 'neo-tree.nvim',
+      'nvim-neo-tree/neo-tree.nvim',
       branch = 'v2.x',
       config = config 'neo-tree',
       module = 'neo-tree',
-      cmd = { 'Neotree', 'NeoTreeShow' },
+      cmd = { 'Neotree' },
+    }
+    use {
+      local_repo 'neo-tree-zk.nvim',
+      module = 'neo-tree.sources.zk',
+      module_pattern = 'neo-tree-zk.sources.zk.*',
     }
     use {
       'kyazdani42/nvim-tree.lua',
@@ -476,7 +482,6 @@ return require('packer').startup {
       config = function() end,
     }
     use {
-      -- local_repo 'marks.nvim',
       'chentoast/marks.nvim',
       event = 'BufReadPost',
       config = function()

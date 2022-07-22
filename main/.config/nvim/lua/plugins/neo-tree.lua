@@ -28,6 +28,12 @@ end
 function M.config()
   -- highlights: NeoTreeFileNameOpened     File name when the file is open. Not used yet.
   require('neo-tree').setup {
+    sources = {
+      'filesystem',
+      'buffers',
+      'git_status',
+      'zk',
+    },
     enable_git_status = true,
     enable_diagnostics = true,
     default_component_configs = {
@@ -55,13 +61,14 @@ function M.config()
     window = {
       width = require('parameters').pane_width,
     },
-    zk = {
-      window = {
-        mappings = {
-          m = 'show_debug_info',
-        },
-      },
-    },
+    -- zk = {
+    --   follow_current_file = true,
+    --   window = {
+    --     mappings = {
+    --       n = 'change_query',
+    --     },
+    --   },
+    -- },
     filesystem = {
       follow_current_file = true,
       hijack_netrw_behavior = 'open_default',

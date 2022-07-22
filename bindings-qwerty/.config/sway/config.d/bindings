@@ -22,10 +22,10 @@ bindsym $mod+shift+e exec $terminal -e .local/bin/nvim_nonono
 bindsym $mod+g mode launch
 bindsym $mod+h exec $terminal "--app-id=launcher -e nvim Dotfiles/bindings-qwerty/.config/sway/config.d/bindings"
 bindsym $mod+i exec echo next dev > /tmp/sway-mega-hotkeys
-bindsym $mod+n exec makoctl dismiss
-bindsym $mod+shift+n exec makoctl dismiss --all
 bindsym $mod+m fullscreen
-bindsym $mod+o exec echo next zk > /tmp/sway-mega-hotkeys
+bindsym $mod+n exec echo next zk > /tmp/sway-mega-hotkeys
+bindsym $mod+o exec makoctl dismiss
+bindsym $mod+shift+o exec makoctl dismiss --all
 bindsym $mod+p workspace back_and_forth
 bindsym $mod+q kill
 bindsym $mod+r mode "resize"

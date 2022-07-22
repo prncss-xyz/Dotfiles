@@ -29,6 +29,7 @@ function M.config()
       ghost_text = false,
     },
     sources = {
+      { name = 'calc' },
       { name = 'luasnip' },
       { name = 'fish' },
       { name = 'npm', keyword_length = 4 },
@@ -38,7 +39,6 @@ function M.config()
       { name = 'buffer' },
     },
   }
-
 
   for _, f in ipairs { 'gitcommit', 'NeogitCommitMessage' } do
     cmp.setup.filetype(f, {

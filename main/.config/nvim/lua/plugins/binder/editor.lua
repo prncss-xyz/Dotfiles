@@ -5,9 +5,9 @@ function M.extend()
   local keys = binder.keys
   local b = binder.b
   local modes = binder.modes
-  local util = require 'plugins.binder.utils'
-  local lazy_req = util.lazy_req
-  local repeatable = util.repeatable
+  local utils = require 'plugins.binder.utils'
+  local lazy_req = utils.lazy_req
+  local repeatable = utils.repeatable
 
   return keys {
     redup = keys {
@@ -100,7 +100,7 @@ function M.extend()
         next = b { require('utils.windows').zoom },
       },
       [';'] = b {
-        util.lazy(require('utils.windows').split_right, 85),
+        utils.lazy(require('utils.windows').split_right, 85),
         desc = 'vertical 85',
       },
     },
@@ -122,20 +122,19 @@ function M.extend()
         desc = 'neo-tree',
       },
     },
+    r = b {
+      desc = 'docs view',
+      function()
+        require('utils.windows').show_ui('docs-view', function()
+          require('utils.docs-view').reveal()
+        end)
+      end,
+    },
     h = keys {
       desc = 'help',
       redup = b {
         desc = 'tags',
         lazy_req('telescope.builtin', 'help_tags'),
-      },
-      b = keys {
-        desc = 'lalitmee/browse.nvim',
-        d = b { lazy_req('browse.devdocs', 'search') },
-        -- vim.fn.jobstart(string.format("%s 'https://devdocs.io/#q=%s'", open_cmd, input_with_filetype))
-        m = b { lazy_req('browse.mdn', 'search') },
-        -- vim.fn.jobstart(string.format("%s 'https://developer.mozilla.org/en-US/search?q=%s'", open_cmd, input))
-        redup = b { lazy_req('browse.devdocs', 'search_with_filetype') },
-        -- vim.fn.jobstart(string.format("%s 'https://devdocs.io/#q=%s'", open_cmd, input))
       },
       c = b {
         desc = 'highlights',
@@ -184,9 +183,17 @@ function M.extend()
       end,
     },
     n = b {
-      desc = 'neo-tree zk',
-      ':Neotree source=zk<cr>',
+      desc = 'docs view',
+      function()
+        require('utils.windows').show_ui('neo-tree', function()
+          vim.cmd('Neotree source=zk')
+        end)
+      end,
     },
+    -- n = b {
+    --   desc = 'neo-tree zk',
+    --   ':Neotree source=zk<cr>',
+    -- },
     o = b {
       desc = 'open current external',
       require('utils').open_current,

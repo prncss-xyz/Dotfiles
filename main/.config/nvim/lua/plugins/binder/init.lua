@@ -83,12 +83,6 @@ function M.config()
       t = b { 'UltestOutput', cmd = true },
     }
   )
-  binder.extend(
-    'extra',
-    keys {
-      t = b { desc = 'test file', '<Plug>PlenaryTestFile' },
-    }
-  )
   binder.with_labels('todo', 'w', {
     quickfix = b {
       lazy_req('utils.windows', 'show_ui', 'Trouble', 'TodoTrouble'),

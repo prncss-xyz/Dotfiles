@@ -29,6 +29,7 @@ function M.config()
       ghost_text = false,
     },
     sources = {
+      { name = 'cmp_overseer' },
       { name = 'calc' },
       { name = 'luasnip' },
       { name = 'fish' },

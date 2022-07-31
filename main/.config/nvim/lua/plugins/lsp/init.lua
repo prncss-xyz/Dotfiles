@@ -38,12 +38,12 @@ function M.config()
     require('aerial').on_attach(client, bufnr)
     -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
     -- FIXME:
-    vim.api.nvim_create_autocmd('CursorHold', {
-      buffer = bufnr,
-      callback = function()
-        vim.diagnostic.open_float()
-      end,
-    })
+    -- vim.api.nvim_create_autocmd('CursorHold', {
+    --   buffer = bufnr,
+    --   callback = function()
+    --     vim.diagnostic.open_float()
+    --   end,
+    -- })
   end
 
   -- LSP settings
@@ -96,6 +96,16 @@ function M.config()
     },
   }
   local luadev = require('lua-dev').setup {
+    library = {
+      vimruntime = true,
+      types = true,
+      plugins = {
+        'nvim-treesitter',
+        'plenary.nvim',
+        'telescope.nvim',
+        'neotest',
+      },
+    },
     lspconfig = {
       capabilities = capabilities,
       cmd = { 'lua-language-server' },

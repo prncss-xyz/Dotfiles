@@ -11,8 +11,20 @@ views:
   kanban:
     view: board
     tags:
-      - task/backlog
-      - task/actif
-      - task/suivi
-      - task/fait
-      - task/révisé
+      - w/backlog/3
+      - w/backlog/2
+      - w/backlog/1
+      - w/backlog/0
+      - w/active
+      - w/pending
+      - w/follow
+      - w/stable
+      - w/published
+      - w/completed
+  focus:
+    view: board
+    tags:
+      - w/backlog/0
+      - w/active
+      - w/pending
+      - w/follow

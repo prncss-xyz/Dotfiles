@@ -7,6 +7,7 @@ vim.filetype.add {
   },
   pattern = {
     ['.*/%.config/waybar/config'] = 'json',
+    ['.*/%.config/systemd/user/.*%.service'] = 'toml',
     ['.*/sway/.*'] = 'sway',
   },
 }

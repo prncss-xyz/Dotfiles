@@ -69,10 +69,29 @@ function M.extend()
     xx = b { 'dd' },
     yy = b { 'yy', modes = 'n' },
     y = b { 'y', modes = 'nx' },
-    ['<space>'] = b {
+    ['<space>'] = modes {
       desc = 'legendary find',
-      lazy_req('legendary', 'find'),
-      modes = 'nx',
+      n = b {
+        function()
+          require('legendary').find(
+            'keymaps',
+            require('legendary.filters').mode 'n'
+          )
+        end,
+      },
+      x = b {
+        function()
+          require('legendary').find(
+            'keymaps',
+            require('legendary.filters').mode 'x'
+          )
+        end,
+      },
+    },
+    ['<cr>'] = b {
+      require('plugins.binder.actions').cr,
+      expr = true,
+      modes = 'i',
     },
     [d.right] = b { 'l', 'right', modes = 'nxo' },
     [d.left] = b { 'h', 'left', modes = 'nxo' },

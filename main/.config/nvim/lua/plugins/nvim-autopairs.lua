@@ -35,7 +35,7 @@ function M.config()
   local cond = require 'nvim-autopairs.conds'
   local opt = require('nvim-autopairs').config
 
-  -- FIXME: 
+  -- FIXME: have ** and __ behave like quotes in markdown
   if false then
     local basic = function(...)
       local move_func = opt.enable_moveright and cond.move_right or cond.none
@@ -51,12 +51,6 @@ function M.config()
     end
     npairs.add_rule(basic('_', '_', 'markdown'))
   end
-
-  vim.api.nvim_set_keymap('i', '<cr>', '', {
-    noremap = true,
-    expr = true,
-    callback = cr,
-  })
 end
 
 return M

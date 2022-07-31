@@ -8,6 +8,11 @@ function M.extend()
   local lazy_req = require('plugins.binder.utils').lazy_req
 
   return keys {
+    a = b {
+      desc = 'reindent',
+      '=',
+      modes = 'nx',
+    },
     b = b { 'gi', 'last insert point' },
     --[[
     o = function()
@@ -69,6 +74,11 @@ function M.extend()
     --     modes = 'nx',
     --   },
     -- },
+    f = modes {
+      desc = 'bullet renumber',
+      n = b { ':RenumberList<cr>' },
+      x = b { ':RenumberSelection<cr>' },
+    },
     g = keys {
       prev = b { '<cmd>SplitjoinJoin<cr>' },
       next = b { '<cmd>SplitjoinSplit<cr>' },
@@ -104,7 +114,7 @@ function M.extend()
     },
     o = keys {
       prev = b { 'O' },
-      next = b { 'o' },
+      next = b { ':InsertNewBullet<cr>' }, -- 'o'
     },
     r = keys {
       prev = b { 'R' },
@@ -146,22 +156,26 @@ function M.extend()
       modes = 'nx',
     },
     ['<tab>'] = keys {
-      prev = modes {
-        n = b {
-          desc = 'dedent',
-          '<<',
-        },
-      },
-      next = modes {
-        n = b {
-          desc = 'indent',
-          '>>',
-        },
-        x = b {
-          desc = 'reindent',
-          '=',
-        },
-      },
+      prev = b { '<<' },
+      next = b { '>>' },
+      -- prev = modes {
+      --   desc = 'dedent', -- '<<',
+      --   n = b {
+      --     ':BulletPromote<cr>',
+      --   },
+      --   x = b {
+      --     ':BulletPromoteVisual<cr>',
+      --   },
+      -- },
+      -- next = modes {
+      --   desc = 'indent', -- '>>',
+      --   n = b {
+      --     ':BulletDemote<cr>',
+      --   },
+      --   x = b {
+      --     ':BulletDemoteVisual<cr>',
+      --   },
+      -- },
     },
     y = b { desc = 'wrap', '<Plug>(flies-wrap)', modes = 'nx' },
     z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },

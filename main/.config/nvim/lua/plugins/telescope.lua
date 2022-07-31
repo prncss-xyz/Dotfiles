@@ -69,7 +69,7 @@ function M.config()
           ['<c-cr>'] = edit,
           ['<c-a>'] = lazy_req('readline', 'beginning_of_line'),
           -- ['<c-f>'] = lazy_req('plugins.cmp', 'utils.confirm'),
-          ['<c-q>'] = false, -- TODO: close
+          -- ['<c-q>'] = false, -- TODO: close
           ['<c-e>'] = lazy_req('readline', 'end_of_line'),
           ['<m-f>'] = lazy_req('readline', 'forward_word'),
           ['<c-k>'] = lazy_req('readline', 'kill_line'),

@@ -30,7 +30,8 @@ vim.api.nvim_create_autocmd(
     callback = function()
       local fname = vim.fn.expand '%'
       if
-        vim.bo.modifiable
+        vim.bo.buftype == ''
+        and vim.bo.modifiable
         and (vim.bo.modified or vim.fn.filereadable(fname) == 0)
         and (vim.fn.isdirectory(fname) == 0)
       then

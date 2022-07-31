@@ -121,42 +121,45 @@ return require('packer').startup {
     }
     use { 'jbyuki/one-small-step-for-vimkind', module = 'osv' }
     use {
-      'vim-test/vim-test',
-      cmd = {
-        'TestNearest',
-        'TestFile',
-        'TestSuite',
-        'TestLast',
-        'TestVisit',
-      },
+      'nvim-neotest/neotest-plenary',
+      module = 'neotest-plenary',
     }
     use {
-      'rcarriga/vim-ultest',
+      'nvim-neotest/neotest-plenary',
+      module = 'neotest-plenary',
+    }
+    use {
+      'haydenmeade/neotest-jest',
+      module = 'neotest-jest',
+    }
+    use {
+      'nvim-neotest/neotest',
+      wants = 'overseer.nvim',
       requires = {
-        'vim-test/vim-test',
+        'nvim-lua/plenary.nvim',
+        'nvim-treesitter/nvim-treesitter',
+        'antoinemadec/FixCursorHold.nvim',
       },
-      run = ':UpdateRemotePlugins',
+      module = 'neotest',
+      config = config 'neotest',
+    }
+    use {
+      'stevearc/overseer.nvim',
+      config = config 'overseer',
+      module = 'overseer',
       cmd = {
-        'Ultest',
-        'UltestNearest',
-        'UltestDebug',
-        'UltestLast',
-        'UltestDebugNearest',
-        'UltestOutput',
-        'UltestAttach',
-        'UltestStop',
-        'UltestStopNearest',
-        'UltestSummary',
-        'UltestSummaryOpen',
-        'UltestSummaryClose',
-        'UltestClear',
+        'OverseerOpen',
+        'OverseerClose',
+        'OverseerToggle',
+        'OverseerSaveBundle',
+        'OverseerLoadBundle',
+        'OverseerDeleteBundle',
+        'OverseerRunCmd',
+        'OverseerRun',
+        'OverseerBuild',
+        'OverseerQuickAction',
+        'OverseerTaskAction',
       },
-      setup = function()
-        require('plugins.ultest').setup()
-      end,
-      config = function()
-        require('plugins.ultest').config()
-      end,
     }
 
     -- LSP
@@ -319,6 +322,8 @@ return require('packer').startup {
     }
     use {
       'masukomi/vim-markdown-folding',
+      ft = 'markdown',
+      cmd = { 'FoldToggle' },
     }
     use {
       local_repo 'buffstory.nvim',
@@ -443,12 +448,6 @@ return require('packer').startup {
     use {
       local_repo 'split.nvim',
       module = 'split',
-    }
-
-    use {
-      'lalitmee/browse.nvim',
-      module = 'browse',
-      module_pattern = 'browse.*',
     }
 
     -- Navigation
@@ -588,6 +587,18 @@ return require('packer').startup {
     }
     -- Edition
     use {
+      use 'dkarter/bullets.vim',
+      cmd = {
+        'InsertNewBullet',
+        'RenumberSelection',
+        'RenumberList',
+        'BulletDemote',
+        'BulletPromote',
+        'BulletDemoteVisual',
+        'BulletPromoteVisual',
+      },
+    }
+    use {
       local_repo 'templum.nvim',
       config = config 'templum',
       event = 'VimEnter',
@@ -706,18 +717,6 @@ return require('packer').startup {
           },
         },
       }),
-      disable = true,
-    }
-    use {
-      'rafcamlet/nvim-luapad',
-      cmd = { 'Luapad', 'LuaRun' },
-      module = 'luapad',
-      module_pattern = 'luapad.*',
-      config = default_config 'luapad',
-    }
-    use {
-      'metakirby5/codi.vim',
-      cmd = { 'Codi', 'CodiNew', 'CodiSelect', 'CodiExpand' },
     }
     -- eventual replacement for codi, not quite mature though
     use {

@@ -20,6 +20,22 @@ function M.setup()
     'Gitsigns stage_buffer',
     'Gitsigns reset_buffer',
     'TSHighlightCapturesUnderCursor',
+    'SnipRun',
+    'SnipInfo',
+    'SnipReset',
+    'SnipReplMemoryClean',
+    'SnipClose',
+    'OverseerOpen',
+    'OverseerClose',
+    'OverseerToggle',
+    'OverseerSaveBundle',
+    'OverseerLoadBundle',
+    'OverseerDeleteBundle',
+    'OverseerRunCmd',
+    'OverseerRun',
+    'OverseerBuild',
+    'OverseerQuickAction',
+    'OverseerTaskAction',
   } do
     bind_command { ':' .. v }
   end

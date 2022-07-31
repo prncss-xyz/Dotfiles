@@ -16,3 +16,7 @@ removeTitle:
   accents: false
 export:
   w/backlog/0: epubs/backlog 0
+toHTML:
+  name: zk-web
+  args:
+    - html

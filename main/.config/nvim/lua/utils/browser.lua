@@ -1,10 +1,10 @@
 local M = {}
 
-local function get_visual_selection() end
+local get_selection = require('utils.vim').get_selection
 
 local browser = os.getenv 'BROWSER'
 
-function M.open(url)
+function M.browse(url)
   require('plenary').job
     :new({
       command = browser,
@@ -14,30 +14,29 @@ function M.open(url)
 end
 
 function M.search_cword(base)
-  local word = vim.fn.expand ('<cword>', nil, nil)
+  local word = vim.fn.expand('<cword>', nil, nil)
   local qs = require('utils.std').encode_uri(word)
-  M.open(base .. qs)
+  M.browse(base .. qs)
 end
 
-function M.open_file()
+function M.search_visual(base)
+  local word = table.concat(get_selection(), ' ')
+  local qs = require('utils.std').encode_uri(word)
+  M.browse(base .. qs)
+end
+
+function M.browse_cfile()
   local word = vim.fn.expand '<cfile>'
   if word:match '^[^/]+/[^/]+$' then
     word = 'www.github.com/' .. word
   end
-  M.open(word)
-end
-
-function M.search_visual(base)
-  get_visual_selection(function(word)
-    local qs = require('utils.std').encode_uri(word)
-    M.open(base .. qs)
-  end)
+  M.browse(word)
 end
 
 function M.man()
-  local file = require('io').open('/tmp/sway-mega-hotkeys', 'a')
-  file:write 'next browser'
-  file:close()
+  -- local file = require('io').open('/tmp/sway-mega-hotkeys', 'a')
+  -- file:write 'next browser'
+  -- file:close()
   local word = vim.fn.expand '<cword>'
   require('plenary').job
     :new({

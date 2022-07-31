@@ -96,7 +96,19 @@ function M.extend()
     h = b {
       desc = 'files (project)',
       function()
-        if vim.fn.getcwd() == vim.fn.getenv 'DOTFILES' then
+        if true then
+          require('telescope.builtin').find_files {
+            find_command = {
+              'rg',
+              '--files',
+              '--hidden',
+              '-g',
+              '!.git',
+            },
+          }
+          return
+        end
+        if false then
           -- FIX:  fd results seems to diverge from what is met when called from command line
           -- in particular, some (but not all) hidden files are missing
           -- using git_files as a workarount

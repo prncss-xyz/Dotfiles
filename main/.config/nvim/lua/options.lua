@@ -13,6 +13,7 @@ function _G.foldexpr(lnum)
   return '0'
 end
 
+
 vim.cmd [[
 function! My_foldexpr() abort
   return luaeval(printf('foldexpr(%d)', v:lnum))
@@ -73,14 +74,7 @@ deep_merge(vim, {
     -- autosave = 1,
     do_filetype_lua = 1,
     did_load_filetypes = 0,
-    -- FIXME: not respected by new treesitter grammar
-    markdown_fenced_languages = {
-      'js=javascript',
-      'ts=typescript',
-      'shell=sh',
-      'bash=sh',
-      'console=sh',
-    },
+    bullets_set_mappings = 0
   },
   wo = {
     number = false,

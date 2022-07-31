@@ -5,7 +5,7 @@ After=graphical-session.target
 
 [Service]
 Environment=PORT=4000
-ExecStart=node Media/Projects/github.com/prncss-xyz/zk-web/index.js serve
+ExecStart=.local/bin/zk-web serve
 Restart=on-failure
 
 [Install]

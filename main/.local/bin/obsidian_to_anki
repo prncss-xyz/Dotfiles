@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# FEAT: apply to each subdir
+python ~/Media/Projects/Obsidian_to_Anki/obsidian_to_anki.py $ZK_NOTEBOOK_DIR

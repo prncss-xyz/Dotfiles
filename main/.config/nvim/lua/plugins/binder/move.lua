@@ -67,11 +67,6 @@ function M.extend()
       ),
     },
     -- s = b { require('utils').telescope_symbols_md_lsp, desc = 'lsp symbol' },
-    t = np {
-      desc = 'failed test',
-      prev = b { '<Plug>(ultest-prev-fail)' },
-      next = b { '<Plug>(ultest-next-fail)' },
-    },
     u = modes {
       n = np {
         desc = 'page',

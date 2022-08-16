@@ -373,7 +373,7 @@ function M.config()
         ['.'] = b { desc = 'run last', lazy_req('dap', 'run_last') },
         k = b { desc = 'up', lazy_req('dap', 'up') },
         j = b { desc = 'down', lazy_req('dap', 'down') },
-        l = b { desc = 'launch', lazy_req('dap', 'launch') },
+        l = b { desc = 'launch', lazy_req('plugins.dap', 'launch') },
         r = b { desc = 'repl open', lazy_req('dap', 'repl.open') },
         h = keys {
           prev = b {

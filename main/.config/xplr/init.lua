@@ -212,6 +212,55 @@ for _, key in ipairs { 'c', 'e', 's', '!' } do
   xplr.config.modes.builtin.action.key_bindings.on_key[key] = nil
 end
 
+xplr.config.modes.builtin.delete.key_bindings.on_key = {
+  ['D'] = {
+    help = 'force delete',
+    messages = {
+      {
+        BashExecSilently = [===[
+              (while IFS= read -r line; do
+              if rm -rfv -- "${line:?}"; then
+                echo LogSuccess: $line deleted >> "${XPLR_PIPE_MSG_IN:?}"
+              else
+                echo LogError: Failed to delete $line >> "${XPLR_PIPE_MSG_IN:?}"
+              fi
+              done < "${XPLR_PIPE_RESULT_OUT:?}")
+              echo ExplorePwdAsync >> "${XPLR_PIPE_MSG_IN:?}"
+              read -p "[enter to continue]"
+            ]===],
+      },
+      'PopMode',
+    },
+  },
+  d = {
+    help = 'delete',
+    messages = {
+      {
+        BashExecSilently = [===[
+              (while IFS= read -r line; do
+              if [ -d "$line" ] && [ ! -L "$line" ]; then
+                if rmdir -v -- "${line:?}"; then
+                  echo LogSuccess: $line deleted >> "${XPLR_PIPE_MSG_IN:?}"
+                else
+                  echo LogError: Failed to delete $line >> "${XPLR_PIPE_MSG_IN:?}"
+                fi
+              else
+                if rm -v -- "${line:?}"; then
+                  echo LogSuccess: $line deleted >> "${XPLR_PIPE_MSG_IN:?}"
+                else
+                  echo LogError: Failed to delete $line >> "${XPLR_PIPE_MSG_IN:?}"
+                fi
+              fi
+              done < "${XPLR_PIPE_RESULT_OUT:?}")
+              echo ExplorePwdAsync >> "${XPLR_PIPE_MSG_IN:?}"
+              read -p "[enter to continue]"
+            ]===],
+      },
+      'PopMode',
+    },
+  },
+}
+
 -- TODO: bash to lua
 deep_merge(xplr, {
   config = {
@@ -595,12 +644,12 @@ deep_merge(xplr, {
                 },
               },
               z = {
-                help = 'zk-bib eat -eo',
+                help = 'zk-bib eat -o',
                 messages = {
                   {
                     BashExec = [[
                       if [ -f "$XPLR_FOCUS_PATH" ]; then
-                        zk-bib eat -eo "$XPLR_FOCUS_PATH"
+                        zk-bib eat -o "$XPLR_FOCUS_PATH"
                       else
                         echo "Sory, this is not a file."
                       fi

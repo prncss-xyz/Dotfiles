@@ -159,6 +159,10 @@ function M.extend()
         desc = 'cd',
         lazy_req('zk', 'cd'),
       },
+      d = b {
+        desc = 'delete asset',
+        require('plugins.zk.utils').remove_asset,
+      },
       r = b {
         desc = 'index',
         lazy_req('zk', 'index'),

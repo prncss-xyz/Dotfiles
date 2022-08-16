@@ -14,8 +14,8 @@ Path ~/Media/mail/gmail-princesse-lamarche/
 Inbox ~/Media/mail/gmail-princesse-lamarche/Inbox
 
 Channel gmail-princesse-lamarche-inbox
-Master :gmail-princesse-lamarche-remote:
-Slave :gmail-princesse-lamarche-local:
+Far :gmail-princesse-lamarche-remote:
+Near :gmail-princesse-lamarche-local:
 Patterns * ![Gmail]* 
 Create Both
 SyncState *
@@ -30,7 +30,7 @@ User princesse@princesse.xyz
 PassCmd "pass show webmail.gandi.net/princesse@princesse.xyz"
 SSLType STARTTLS
 SSLVersion TLSv1.2
-CertificateFile ~/.certs/gandi.pem
+CertificateFile ~/Media/Assets/gandi.pem
 # To obtain the certificate, I ran this command:
 # openssl s_client -showcerts -connect gandi.net:443
 # I used the first (out of tree) certificate from the output
@@ -48,8 +48,8 @@ Path ~/Media/mail/princesse-xyz/
 Inbox ~/Media/mail/princesse-xyz/Inbox
 
 Channel princesse-xyz-inbox
-Master :princesse-xyz-remote:
-Slave :princesse-xyz-local:
+Far :princesse-xyz-remote:
+Near :princesse-xyz-local:
 Patterns * !"All Mail"
 Create Both
 SyncState *

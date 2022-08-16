@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-res=$(tr ',' '\t' <~/Personal/bookmarks.csv | fzf --delimiter='\t' --nth=1,2 --with-nth=1 | cut -f2)
+res=$(tr ',' '\t' <~/Personal/zk/bookmarks.csv | fzf --delimiter='\t' --nth=1,2 --with-nth=1 | cut -f2)
 if [ -n "$res" ]; then
-  swaymsg exec .local/bin/browser "$res"
+	.local/bin/browser --new-window "$res"
   # TODO: sway-mega-hotkey command
 fi

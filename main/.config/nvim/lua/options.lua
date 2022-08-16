@@ -74,7 +74,6 @@ deep_merge(vim, {
     -- autosave = 1,
     do_filetype_lua = 1,
     did_load_filetypes = 0,
-    bullets_set_mappings = 0
   },
   wo = {
     number = false,

@@ -24,7 +24,10 @@ views:
   focus:
     view: board
     tags:
+      - w/backlog/2
+      - w/backlog/1
       - w/backlog/0
       - w/active
       - w/pending
       - w/follow
+      - w/stable

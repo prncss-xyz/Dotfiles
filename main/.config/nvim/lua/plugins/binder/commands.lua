@@ -6,6 +6,7 @@ function M.setup()
   local bind_command = require('legendary').bind_command
   for _, v in ipairs {
     'FoldToggle',
+    'FeMaco',
     'registers',
     'LaunchOSV',
     'Reload',
@@ -86,8 +87,11 @@ function M.setup()
   end
   bind_command {
     ':Delete',
-    ':call delete(expand("%"))|bdelete!',
-    -- TODO: move to previous file or blank buffer
+    function ()
+      local filename = vim.api.nvim_buf_get_name(0)
+      require 'utils.bbye'.close()
+      os.remove(filename)
+    end
   }
   bind_command {
     ':EditSnippet',

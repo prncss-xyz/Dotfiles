@@ -29,16 +29,14 @@ end
 local function git_name()
   local res
   local Job = require('plenary').job
-  Job
-    :new({
-      command = 'git',
-      args = { 'config', '--get', 'user.name' },
-      cwd = os.getenv 'HOME',
-      on_exit = function(j, _)
-        res = j:result()[1] or 'name'
-      end,
-    })
-    :sync()
+  Job:new({
+    command = 'git',
+    args = { 'config', '--get', 'user.name' },
+    cwd = os.getenv 'HOME',
+    on_exit = function(j, _)
+      res = j:result()[1] or 'name'
+    end,
+  }):sync()
   return res
 end
 
@@ -98,6 +96,15 @@ local function chmod_x()
     res = res .. char
   end
   vim.fn.setfperm(filename, res)
+end
+
+
+local function from_buf_title()
+  return d(1, function()
+    --[[ local title = vim.b.title or 'title' ]]
+    local title = 'title' --TODO: get note title
+    return sn(1, i(1, title), {})
+  end, {}, {})
 end
 
 return {
@@ -175,6 +182,15 @@ return {
         p(module, '(.+).test.tsx$'),
         t { "';", '', '' },
         i(2, '// tests'),
+      },
+    },
+    {
+      ' - extra%.md$',
+      {
+        t { '# ' },
+        from_buf_title(),
+        --[[ i(1, 'title'), ]]
+        t { ' - extra', '', '' },
       },
     },
   },

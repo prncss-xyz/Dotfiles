@@ -4,33 +4,25 @@ local extract_nvim_hl = require('utils').extract_nvim_hl
 
 function M.config()
   vim.o.showtabline = 2 -- always show tabline
-  local diff_add = extract_nvim_hl 'DiffAdd'
-  local diff_change = extract_nvim_hl 'DiffChange'
-  local normal = extract_nvim_hl 'Normal'
+  local default = extract_nvim_hl 'lualine_b_normal'
+  local active = extract_nvim_hl 'lualine_a_normal'
   local buffstory = require 'buffstory'
   local render = function(f)
+    f.set_colors(default)
     local function format_buf(info)
-      if info.index == 5 then
-        f.add { '|', fg = diff_add.fg, bg = normal.bg }
-      end
       if info.current then
-        f.set_fg(normal.bg)
-        f.set_bg(diff_add.fg)
-      else
-        f.set_fg(diff_change.fg)
-        f.set_bg(normal.bg)
+        f.set_fg(active.fg)
+        f.set_bg(active.bg)
       end
       f.add ' '
       f.add(f.icon(info.filename))
       f.add ' '
-      f.add(info.filename)
+
+      local succ, title = pcall(vim.api.nvim_buf_get_var, info.buf, 'title')
+      f.add(succ and title or info.filename)
       f.add ' '
     end
-    local buflist = {}
-    for i = 1, 4 do
-      buflist[i] = buffstory.buflist[i]
-    end
-    f.make_bufs(format_buf, buflist)
+    f.make_bufs(format_buf, buffstory.display_list)
   end
 
   require('tabline_framework').setup { render = render }

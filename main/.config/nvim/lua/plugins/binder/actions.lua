@@ -26,9 +26,6 @@ function M.cr()
     return _G.MPairs.completion_confirm and _G.MPairs.completion_confirm()
       or utils.t '<cr>'
   end
-  vim.defer_fn(function()
-    vim.cmd 'InsertNewBullet'
-  end, 0)
   return ''
 end
 

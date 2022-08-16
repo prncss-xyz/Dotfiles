@@ -14,7 +14,6 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   }
   vim.cmd 'packadd packer.nvim'
 end
-
 -- FIXME:
 
 local function default_config(name, config)
@@ -36,7 +35,15 @@ end
 return require('packer').startup {
   function()
     use 'wbthomason/packer.nvim'
-    use { 'nvim-lua/plenary.nvim', module = 'plenary' }
+    use {
+      'nvim-lua/plenary.nvim',
+      module = 'plenary',
+    }
+    use {
+      'kevinhwang91/promise-async',
+      module = { 'async', 'promise' },
+      module_pattern = 'promise-async',
+    }
     use { 'nvim-lua/popup.nvim', module = 'popup' }
     use { 'MunifTanjim/nui.nvim', module = 'nui' }
     use { 'tami5/sqlite.lua', module = 'sqlite' }
@@ -45,8 +52,6 @@ return require('packer').startup {
       module = 'nvim-web-devicons',
       config = default_config('nvim-web-devicons', { default = true }),
     }
-
-    use { 'jghauser/mkdir.nvim' } -- automatically creates missing directories on saving a file
 
     -- treesitter
     use {
@@ -103,65 +108,6 @@ return require('packer').startup {
     -- lua docs in :help
     use { 'milisims/nvim-luaref' }
 
-    -- DAP
-    use {
-      'mfussenegger/nvim-dap',
-      module = 'dap',
-      config = function()
-        require('plugins.dap').config()
-      end,
-    }
-    use {
-      'rcarriga/nvim-dap-ui',
-      requires = { 'mfussenegger/nvim-dap' },
-      module = 'dapui',
-      config = function()
-        require('dapui').setup()
-      end,
-    }
-    use { 'jbyuki/one-small-step-for-vimkind', module = 'osv' }
-    use {
-      'nvim-neotest/neotest-plenary',
-      module = 'neotest-plenary',
-    }
-    use {
-      'nvim-neotest/neotest-plenary',
-      module = 'neotest-plenary',
-    }
-    use {
-      'haydenmeade/neotest-jest',
-      module = 'neotest-jest',
-    }
-    use {
-      'nvim-neotest/neotest',
-      wants = 'overseer.nvim',
-      requires = {
-        'nvim-lua/plenary.nvim',
-        'nvim-treesitter/nvim-treesitter',
-        'antoinemadec/FixCursorHold.nvim',
-      },
-      module = 'neotest',
-      config = config 'neotest',
-    }
-    use {
-      'stevearc/overseer.nvim',
-      config = config 'overseer',
-      module = 'overseer',
-      cmd = {
-        'OverseerOpen',
-        'OverseerClose',
-        'OverseerToggle',
-        'OverseerSaveBundle',
-        'OverseerLoadBundle',
-        'OverseerDeleteBundle',
-        'OverseerRunCmd',
-        'OverseerRun',
-        'OverseerBuild',
-        'OverseerQuickAction',
-        'OverseerTaskAction',
-      },
-    }
-
     -- LSP
     use {
       'neovim/nvim-lspconfig',
@@ -177,16 +123,10 @@ return require('packer').startup {
       end,
     }
     use {
-      'simrat39/symbols-outline.nvim',
-      after = 'nvim-lspconfig',
-      cmd = { 'SymbolsOutline', 'SymbolsOutlineOpen' },
-      setup = setup 'symbols-outline',
-      disable = true,
-    }
-    use {
       'stevearc/aerial.nvim',
       config = config 'aerial',
       module = 'aerial',
+      after = 'lualine.nvim',
       cmd = {
         'AerialOpen',
         'AerialClose',
@@ -219,9 +159,7 @@ return require('packer').startup {
     use { 'nanotee/sqls.nvim', module = 'sqls' }
     use {
       'brymer-meneses/grammar-guard.nvim',
-      after = 'nvim-lspconfig',
-      config = config 'grammar-guard',
-      disable = true,
+      module = 'grammar-guard',
     }
 
     -- completion
@@ -258,7 +196,6 @@ return require('packer').startup {
     -- insert or delete brackets, parentheses, quotes in pair
     use {
       'windwp/nvim-autopairs',
-      -- after = 'nvim-cmp',
       config = config 'nvim-autopairs',
       event = 'InsertEnter',
     }
@@ -268,6 +205,108 @@ return require('packer').startup {
       event = 'InsertEnter',
       config = config 'luasnip',
     }
+
+    -- tasks
+    use {
+      'mfussenegger/nvim-dap',
+      module = 'dap',
+      config = function()
+        require('plugins.dap').config()
+      end,
+    }
+    use {
+      'theHamsta/nvim-dap-virtual-text',
+      after = 'nvim-dap',
+      config = default_config 'nvim-dap-virtual-text',
+    }
+    use {
+      'rcarriga/nvim-dap-ui',
+      requires = { 'mfussenegger/nvim-dap' },
+      module = 'dapui',
+      config = function()
+        require('dapui').setup()
+      end,
+    }
+    use { 'jbyuki/one-small-step-for-vimkind', module = 'osv' }
+    use {
+      'mxsdev/nvim-dap-vscode-js',
+      -- module = 'dap-vscode-js',
+      requires = { 'mfussenegger/nvim-dap' },
+      config = config 'nvim-dap-vscode-js',
+      after = 'nvim-dap',
+    }
+    use {
+      'microsoft/vscode-js-debug',
+      opt = true,
+      run = 'npm install --legacy-peer-deps && npm run compile',
+    }
+    use {
+      'nvim-neotest/neotest-plenary',
+      module = 'neotest-plenary',
+    }
+    use {
+      'haydenmeade/neotest-jest',
+      module = 'neotest-jest',
+    }
+    use {
+      'nvim-neotest/neotest',
+      requires = {
+        'nvim-lua/plenary.nvim',
+        'nvim-treesitter/nvim-treesitter',
+        'antoinemadec/FixCursorHold.nvim',
+      },
+      module = 'neotest',
+      config = config 'neotest',
+    }
+    use {
+      'stevearc/overseer.nvim',
+      config = config 'overseer',
+      module = { 'overseer', 'neotest.consumers.overseer' },
+      cmd = {
+        'OverseerOpen',
+        'OverseerClose',
+        'OverseerToggle',
+        'OverseerSaveBundle',
+        'OverseerLoadBundle',
+        'OverseerDeleteBundle',
+        'OverseerRunCmd',
+        'OverseerRun',
+        'OverseerBuild',
+        'OverseerQuickAction',
+        'OverseerTaskAction',
+      },
+    }
+
+    -- Runners
+    -- binary installed with `yay -S neovim-sniprun`
+    use {
+      'michaelb/sniprun',
+      run = 'bash ./install.sh',
+      module = 'sniprun',
+      -- module_pattern = 'sniprun.*',
+      config = function()
+        -- FIX: this seems never to be called
+        print 'sniprun user config'
+        -- assert(false)
+        require('sniprun').setup {
+          selected_interpreters = {
+            'Python3_jupyter',
+          },
+          -- display = { 'FloatingWindow' },
+        }
+      end,
+    }
+    -- eventual replacement for codi, not quite mature though
+    use {
+      'jbyuki/dash.nvim',
+      module = 'dash',
+      cmd = { 'DashRun', 'DashConnect', 'DashDebug' },
+    }
+    use {
+      'jbyuki/carrot.nvim',
+      cmd = { 'CarrotEval', 'CarrotNewBlock' },
+    }
+
     -- Git
     use {
       'lewis6991/gitsigns.nvim',
@@ -308,12 +347,39 @@ return require('packer').startup {
       end,
     }
 
-    -- UI
+    -- Themes
+    use 'rafamadriz/neon'
+    use 'ishan9299/nvim-solarized-lua'
+    use 'sainnhe/gruvbox-material'
+    use { 'rose-pine/neovim', as = 'rose-pine' }
+
+    -- apparance
     use {
-      'kevinhwang91/promise-async',
-      module = { 'async', 'promise' },
-      module_pattern = 'promise-async',
+      'karb94/neoscroll.nvim',
+      module = 'neoscroll',
+      config = function()
+        require('neoscroll').setup {
+          mappings = {},
+        }
+      end,
     }
+    use {
+      'kevinhwang91/nvim-hlslens',
+      config = function()
+        require('hlslens').setup {
+          calm_down = true,
+        }
+      end,
+      module = 'hlslens',
+    }
+    use {
+      'edluffy/specs.nvim',
+      after = 'neoscroll.nvim',
+      config = function() end,
+    }
+    use { 'mvllow/modes.nvim', config = default_config 'modes' }
+
+    -- UI
     use {
       'kevinhwang91/nvim-ufo',
       requires = 'kevinhwang91/promise-async',
@@ -334,19 +400,19 @@ return require('packer').startup {
     use {
       'rafcamlet/tabline-framework.nvim',
       config = config 'tabline-framework',
+      wants = 'lualine.nvim',
       event = 'BufEnter',
     }
     use {
-      -- TODO: replace by maintained plugin
-      'glepnir/galaxyline.nvim',
-      event = 'BufEnter',
-      config = config 'galaxyline',
+      'nvim-lualine/lualine.nvim',
+      -- wants = { 'aerial.nvim', 'overseer.nvim' },
+      event = 'BufReadPost',
+      config = config 'lualine',
     }
     use {
       'stevearc/dressing.nvim',
       config = default_config 'dressing',
-      event = 'BufReadPost',
-      -- module = vim.ui,
+      event = 'bufreadpost',
     }
     use {
       'rcarriga/nvim-notify',
@@ -365,7 +431,7 @@ return require('packer').startup {
     }
     use {
       'lukas-reineke/indent-blankline.nvim',
-      event = 'BufReadPre',
+      event = 'bufreadpre',
       config = config 'indent-blankline',
     }
     use {
@@ -416,69 +482,16 @@ return require('packer').startup {
       module_pattern = 'neo-tree-zk.sources.zk.*',
     }
     use {
-      'kyazdani42/nvim-tree.lua',
-      requires = 'kyazdani42/nvim-web-devicons',
-      config = function()
-        require('plugins.nvim-tree').config()
-      end,
-      cmd = {
-        'NvimTreeClipboard',
-        'NvimTreeClose',
-        'NvimTreeFindFile',
-        'NvimTreeFocus',
-        'NvimTreeOpen',
-        'NvimTreeRefresh',
-        'NvimTreeResize',
-        'NvimTreeToggle',
-      },
-      disable = true,
-    }
-    use {
-      'fhill2/xplr.nvim',
-      run = function()
-        require('xplr').install { hide = true }
-      end,
-      module = 'xplr',
-      config = function()
-        require('plugins.xplr').config()
-      end,
-      requires = { { 'nvim-lua/plenary.nvim' }, { 'MunifTanjim/nui.nvim' } },
-      disable = true,
-    }
-    use {
       local_repo 'split.nvim',
       module = 'split',
     }
 
     -- Navigation
     use {
-      'karb94/neoscroll.nvim',
-      module = 'neoscroll',
-      config = function()
-        require('neoscroll').setup {
-          mappings = {},
-        }
-      end,
-    }
-    use {
-      'kevinhwang91/nvim-hlslens',
-      config = function()
-        require('hlslens').setup {
-          calm_down = true,
-        }
-      end,
-      module = 'hlslens',
-    }
-    use {
       'haya14busa/vim-asterisk',
       setup = function()
         vim.g['asterisk#keeppos'] = 1
       end,
-    }
-    use {
-      'edluffy/specs.nvim',
-      after = 'neoscroll.nvim',
-      config = function() end,
     }
     use {
       'chentoast/marks.nvim',
@@ -585,18 +598,13 @@ return require('packer').startup {
       event = 'VimEnter',
       config = config 'binder',
     }
+
     -- Edition
     use {
-      use 'dkarter/bullets.vim',
-      cmd = {
-        'InsertNewBullet',
-        'RenumberSelection',
-        'RenumberList',
-        'BulletDemote',
-        'BulletPromote',
-        'BulletDemoteVisual',
-        'BulletPromoteVisual',
-      },
+      'AckslD/nvim-FeMaco.lua',
+      cmd = 'FeMaco',
+      module = 'femaco',
+      config = default_config 'femaco',
     }
     use {
       local_repo 'templum.nvim',
@@ -624,21 +632,24 @@ return require('packer').startup {
       end,
     }
     use {
-      'tommcdo/vim-exchange',
-      event = 'BufReadPost',
-      setup = function()
-        vim.g.exchange_no_mappings = 1
+      'gbprod/substitute.nvim',
+      module = 'substitute',
+      config = function()
+        require('substitute').setup {
+          range = {
+            prefix = false,
+            prompt_current_text = false,
+            confirm = false,
+            complete_word = false,
+            motion1 = false,
+            motion2 = false,
+            suffix = '',
+          },
+          exchange = {
+            motion = false,
+          },
+        }
       end,
-      disable = true,
-    }
-    local mac_repo = local_repo 'macrobatics'
-    use {
-      'svermeulen/vim-macrobatics',
-      event = 'BufReadPost',
-      setup = function()
-        vim.g.Mac_NamedMacrosDirectory = mac_repo
-      end,
-      disable = true,
     }
     use {
       'tpope/vim-repeat',
@@ -656,12 +667,6 @@ return require('packer').startup {
 
     -- Session
     use {
-      local_repo 'setup-session.nvim',
-      config = default_config 'setup-session',
-      module = 'setup-session',
-      cmd = 'SetupSessionInfo',
-    }
-    use {
       'ethanholz/nvim-lastplace',
       event = 'BufReadPre',
       config = default_config('nvim-lastplace', {
@@ -676,7 +681,7 @@ return require('packer').startup {
     }
     use {
       'ahmedkhalf/project.nvim',
-      config = default_config 'project_nvim',
+      config = config 'project',
       event = 'BufReadPost',
     }
     use {
@@ -684,49 +689,6 @@ return require('packer').startup {
       module = { 'harpoon', '._extensions.marks' },
       module_pattern = 'harpoon.*',
       config = config 'harpoon',
-    }
-
-    -- Theming
-    use { 'mvllow/modes.nvim', config = default_config 'modes', disable = false }
-
-    -- Themes
-    use 'rafamadriz/neon'
-    use 'ishan9299/nvim-solarized-lua'
-    use 'sainnhe/gruvbox-material'
-    use { 'rose-pine/neovim', as = 'rose-pine' }
-
-    -- Runners
-    -- binary installed with `yay -S neovim-sniprun`
-    use {
-      'michaelb/sniprun',
-      module = 'sniprun',
-      module_pattern = 'sniprun.*',
-      cmd = {
-        'SnipRun',
-        'SnipInfo',
-        'SnipReset',
-        'SnipReplMemoryClean',
-        'SnipClose',
-      },
-      config = default_config('sniprun', {
-        require('sniprun').setup {
-          live_mode_toggle = 'on',
-          selected_interpreters = {
-            'Python3_jupyter',
-            -- 'JS_TS_deno'
-          },
-        },
-      }),
-    }
-    -- eventual replacement for codi, not quite mature though
-    use {
-      'jbyuki/dash.nvim',
-      module = 'dash',
-      cmd = { 'DashRun', 'DashConnect', 'DashDebug' },
-    }
-    use {
-      'jbyuki/carrot.nvim',
-      cmd = { 'CarrotEval', 'CarrotNewBlock' },
     }
 
     -- Various

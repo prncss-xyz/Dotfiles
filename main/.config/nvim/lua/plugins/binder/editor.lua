@@ -9,6 +9,14 @@ function M.extend()
   local lazy_req = utils.lazy_req
   local repeatable = utils.repeatable
 
+  -- NOTE:
+  -- vim.keymap.set('n', 'q<space>', function()
+  --   utils.keys ':'
+  -- end)
+  -- vim.keymap.set('x', 'q<space>', function()
+  --   utils.keys ':'
+  -- end)
+
   return keys {
     redup = keys {
       prev = b { require('utils.windows').show_ui_last, desc = 'last ui' },
@@ -186,7 +194,7 @@ function M.extend()
       desc = 'docs view',
       function()
         require('utils.windows').show_ui('neo-tree', function()
-          vim.cmd('Neotree source=zk')
+          vim.cmd 'Neotree source=zk'
         end)
       end,
     },
@@ -242,7 +250,13 @@ function M.extend()
         lazy_req('telescope', 'extensions.neoclip.default'),
       },
     },
-    ['<space>'] = b { ':', modes = 'nx' },
+    ['<space>'] = b {
+      desc = 'command',
+      function()
+        utils.keys ':'
+      end,
+      modes = 'nx',
+    },
   }
 end
 

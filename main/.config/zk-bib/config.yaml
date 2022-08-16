@@ -1,4 +1,4 @@
-tags: [w/backlog]
+tags: [inbox]
 noteDir: sources
 removeTitle:
   words:
@@ -12,7 +12,7 @@ removeTitle:
   prefixes:
     - d'
     - l'
-  characters: '"*/:<>?\\|'
+  characters: '"*/:<>?\|'
   accents: false
 export:
   w/backlog/0: epubs/backlog 0

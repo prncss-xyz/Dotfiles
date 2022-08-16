@@ -6,6 +6,8 @@ return {
   s('set keyboard layout', { t 'loadkeys ', i(1, 'cf') }),
   s('set symtem time date', { t 'sudo ntpd -qg; sudo hwclock -w' }),
   s('network: ping', { t 'ping 1.1.1.1' }),
+  s('pacman: list unused dependencies', { t 'pacman -Qdt' }),
+  s('pacman: remove unused dependencies', { t 'pacman -Rsn $(pacman -Qdtq)' }),
   s('pacman: update keyring', { t 'pacman -S archlinux-keyring' }),
   s('pacman: display package owing <file>', { t 'pacman -Qo ', i(1, 'file') }),
   s(

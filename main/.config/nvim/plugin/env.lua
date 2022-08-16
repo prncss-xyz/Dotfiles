@@ -4,7 +4,7 @@ local function my(name)
   return 'github.com/prncss-xyz/' .. name
 end
 
-require('utils.set_env').setup {
+require('utils.env').setup {
   prefix = require('parameters').project_files .. '/',
   port = true,
   confs = {

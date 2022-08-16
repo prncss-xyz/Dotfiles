@@ -53,7 +53,7 @@ launch() {
 		ebook-reader "${FPATH}" &
 		return
 		;;
-  docx)
+  docx | doc | rtf | abw)
 		libreoffice "${FPATH}" &
 		return
 		;;

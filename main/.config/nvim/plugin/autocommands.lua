@@ -14,6 +14,18 @@ if vim.fn.has 'gui' == 0 then
   })
 end
 
+-- Adds '-' on next line when editing a list 
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'markdown' },
+  group = group,
+  callback = function()
+    vim.cmd [[
+      setlocal formatoptions+=r
+      setlocal comments-=fb:- comments+=:-
+    ]]
+  end,
+})
+
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'gitcommit', 'gitrebase', 'gitconfig', 'NeogitCommitMessage' },
   group = group,
@@ -107,6 +119,18 @@ local function fetch_git_branch_plenary()
     :start()
 end
 
+vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost' }, {
+  pattern = '*.md',
+  group = group,
+  callback = require('plugins.zk.utils').update_title,
+})
+
+vim.api.nvim_create_autocmd({ 'CursorHold' }, {
+  pattern = '*.md',
+  group = group,
+  callback = require('plugins.zk.utils').update_title_void,
+})
+
 -- Without wrapping in an autocommand, you don't see the status line while telescope
 -- the classical way of creating an augroup and clearing it does not seem to work, hence the `once` variable
 vim.api.nvim_create_autocmd('VimEnter', {
@@ -117,7 +141,9 @@ vim.api.nvim_create_autocmd('VimEnter', {
       fetch_git_branch_plenary()
       if #vim.fn.argv() > 0 then
       elseif vim.fn.getcwd() == os.getenv 'HOME' then
-        require('telescope').extensions.my.projects {}
+        -- TODO: make safe on bootstraping
+        -- FIX: mysterious A input
+        require('telescope').extensions.repo.list {}
       else
         local prefix = vim.fn.getcwd() .. '/'
         for _, file in ipairs(vim.v.oldfiles) do
@@ -128,8 +154,15 @@ vim.api.nvim_create_autocmd('VimEnter', {
             return
           end
         end
-        -- require('harpoon.ui').nav_file(1)
-        -- require('utils.buffers').project_files()
+        require('telescope.builtin').find_files {
+          find_command = {
+            'rg',
+            '--files',
+            '--hidden',
+            '-g',
+            '!.git',
+          },
+        }
       end
       -- TODO: force statusline refresh
     end)

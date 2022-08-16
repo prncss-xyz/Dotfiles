@@ -1,14 +1,53 @@
 local M = {}
 
 function M.config()
-  require('overseer').setup {
+  local overseer = require 'overseer'
+  overseer.setup {
     pre_task_hook = function(task_defn)
-      local env = require('utils.set_env').env
-      if env then
-        task_defn.env = env
-        dump(task_defn)
+      task_defn.env = require('utils.env').get()
+    end,
+  }
+
+  overseer.register_template {
+    generator = function()
+      if require('utils.std').file_exists 'package.json' then
+        return {
+          {
+            name = 'pnpm install --recursive',
+            params = {},
+            builder = function()
+              return {
+                cmd = { 'pnpm', 'install', 'recursive' },
+              }
+            end,
+          },
+          {
+            name = 'pnpm update --recursive',
+            params = {},
+            builder = function()
+              return {
+                cmd = { 'pnpm', 'update', 'recursive' },
+              }
+            end,
+          },
+          {
+            name = 'pnpm prune',
+            params = {},
+            builder = function()
+              return {
+                cmd = { 'pnpm', 'prune' },
+              }
+            end,
+          },
+        }
+      else
+        return {}
       end
     end,
+    -- FIX: do not seem to work as described
+    -- condition = function()
+    --   return require('utils.std').file_exists 'package.json'
+    -- end,
   }
 end
 

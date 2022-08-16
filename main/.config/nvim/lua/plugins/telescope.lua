@@ -110,10 +110,6 @@ function M.config()
         '--hidden',
       },
       color_devicons = true,
-      file_ignore_patterns = {
-        '.git/*',
-        'node_modules/*',
-      },
     },
     extensions = {
       fzf = {
@@ -126,10 +122,16 @@ function M.config()
         list = {
           fd_opts = {
             '--no-ignore-vcs',
+            '--exclude',
+            'node_modules',
+            '--exclude',
+            '0 archivés',
+            '--max-depth',
+            '4'
           },
           search_dirs = {
             vim.fn.getenv 'DOTFILES',
-            vim.fn.getenv 'PROJECTS', -- FIXME:
+            vim.fn.getenv 'PROJECTS',
             vim.fn.getenv 'ZK_NOTEBOOK_DIR',
             -- '~/.local/share/nvim/site/pack',
             -- node modules

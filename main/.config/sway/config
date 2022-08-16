@@ -1,4 +1,11 @@
 output * scale 2
+
+# if not, gtk waits 20 seconds for dbus connection
+# https://github.com/swaywm/sway/issues/5732
+# https://github.com/swaywm/sway/wiki/GTK-3-settings-on-Wayland
+exec systemctl --user import-environment
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+
 set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
 workspace_layout stacking
 workspace 0

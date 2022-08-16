@@ -2,9 +2,11 @@ local M = {}
 
 local group = vim.api.nvim_create_augroup('My_zk', {})
 
+local path_separator = '/'
+
 local pattern = vim.fn.getenv 'ZK_NOTEBOOK_DIR'
-if not vim.endswith(pattern, '/') then
-  pattern = pattern .. '/'
+if not vim.endswith(pattern, path_separator) then
+  pattern = pattern .. path_separator
 end
 pattern = pattern .. '*'
 
@@ -12,7 +14,7 @@ local function is_subdir(dir, prefix)
   if dir == prefix then
     return true
   end
-  if vim.startswith(dir, prefix .. '/') then
+  if vim.startswith(dir, prefix .. path_separator) then
     return true
   end
   return false
@@ -25,6 +27,72 @@ local function is_subdir_any(dir, prefixes)
     end
   end
   return false
+end
+
+local function rel(dir, path)
+  if not vim.endswith(dir, path_separator) then
+    dir = dir .. path_separator
+  end
+  if not vim.startswith(path, dir) then
+    return
+  end
+  local len = dir:len()
+  return path:sub(1, len - 1), path:sub(len + 1)
+end
+
+---@param bufnr number?
+---@return string? path inside a notebook
+local function resolve_notebook_path_from_dir(path, cwd)
+  -- if the buffer has no name (i.e. it is empty), set the current working directory as it's path
+  if not path or path == '' then
+    path = cwd
+  end
+  if not require('zk.util').notebook_root(path) then
+    if not require('zk.util').notebook_root(cwd) then
+      -- if neither the buffer nor the cwd belong to a notebook, use $ZK_NOTEBOOK_DIR as fallback if available
+      if vim.env.ZK_NOTEBOOK_DIR then
+        path = vim.env.ZK_NOTEBOOK_DIR
+      end
+    else
+      -- the buffer doesn't belong to a notebook, but the cwd does!
+      path = cwd
+    end
+  end
+  -- at this point, the buffer either belongs to a notebook, or everything else failed
+  return path
+end
+
+function M.update_title_void()
+  local succ, title = pcall(vim.api.nvim_buf_get_var, 0, 'title')
+  if succ and title == '' then
+    M.update_title()
+  end
+end
+
+function M.update_title()
+  local fullPath = vim.api.nvim_buf_get_name(0)
+  local dir, path
+  if vim.fn.getenv 'ZK_NOTEBOOK_DIR' then
+    dir, path = rel(vim.fn.getenv 'ZK_NOTEBOOK_DIR', fullPath)
+  end
+  if dir then
+    vim.b.title = ''
+    require('zk.api').list(dir, {
+      select = { 'title' },
+      hrefs = { path },
+      limit = 1,
+    }, function(err, notes)
+      if err then
+        print('Error querying notes ' .. vim.inspect(err))
+        return
+      end
+      if notes[1] then
+        vim.b.title = notes[1].title
+      else
+        vim.b.title = nil
+      end
+    end)
+  end
 end
 
 function M.open_asset()
@@ -53,162 +121,33 @@ function M.open_asset()
   end
 end
 
-function M.is_in_zk(dir)
-  -- TODO: other critarias
-  if is_subdir(dir, vim.fn.getenv 'ZK_NOTEBOOK_DIR') then
-    return true
+function M.remove_asset()
+  local zk_dir = vim.fn.getenv 'ZK_NOTEBOOK_DIR'
+  local dir = zk_dir .. '/sources'
+  local f = vim.fn.expand '%:p'
+  if is_subdir(f, dir) then
+    local id = f:sub(dir:len() + 2)
+    require('plenary.job')
+      :new({
+        command = 'zk-bib',
+        args = { 'asset', id },
+        on_exit = function(j, return_val)
+          if return_val == 0 then
+            local path = zk_dir .. '/' .. j:result()[1]
+            vim.ui.input(
+              string.format('Do you really want to remove %q? (y/N)', path),
+              function(res)
+                if res == 'y' then
+                  os.remove(path)
+                  vim.notify(string.format('File %q deleted', path))
+                end
+              end
+            )
+          end
+        end,
+      })
+      :start()
   end
-  return false
-end
-
-function M.make_note(raw)
-  local dir = vim.fn.fnamemodify(raw, ':h:p')
-  if dir == '.' then
-    dir = ''
-  end
-  local title = vim.fn.fnamemodify(raw, ':t')
-  M.make_note_(dir, title)
-end
-
-local function gen_id()
-  local id = ''
-  for _ = 1, 5 do
-    id = id .. string.char(math.random(0x61, 0x74))
-  end
-  return id
-end
-
-function M.make_note_(dir, title)
-  local file = title
-  file = require('utils.std').remove_title_parts(title, {
-    words = { 'the', 'a', 'le', 'la', 'les', 'de', 'du' },
-    prefixes = { "d'", "l'" },
-    accents = false,
-  })
-  local template
-  -- TODO: remove after ':' etc.
-
-  local ls = require 'luasnip'
-  local i = ls.insert_node
-  local t = ls.text_node
-  local s = ls.snippet
-  local fmt = require('luasnip.extras.fmt').fmt
-  local data = {
-    lang = 'en',
-    date = os.date '%Y-%m-%d',
-    tags = '',
-    title = title,
-  }
-  local log = 'log'
-  if is_subdir_any(dir, { log }) then
-    file = data.date
-    local pre
-    if is_subdir(dir, log .. '/d') then
-      pre = 'daily '
-    elseif is_subdir(dir, log .. '/w') then
-      pre = 'weekly '
-    elseif is_subdir(dir, log .. '/m') then
-      pre = 'monthly '
-    elseif is_subdir(dir, log .. '/y') then
-      pre = 'yearly '
-    else
-      pre = ''
-    end
-    data.title = pre .. data.date
-  end
-  if is_subdir_any(dir, { 'w' }) then
-    data.tags = 'w/backlog'
-  end
-  if is_subdir_any(dir, { 'w/tasks' }) then
-    file = os.date '%Y%m%d' .. ' ' .. file
-  end
-  if is_subdir_any(dir, { 'topics' }) then
-    data.lang = 'en'
-  end
-  if is_subdir_any(dir, { 'sources' }) then
-    local res = vim.split(title, ' ')
-    local author = res[1]
-    if author == '' then
-      author = 'unknown'
-    end
-    local issued = res[2]
-    if not issued:find '^%d' then
-      issued = os.date '%Y'
-    end
-    title = table.concat(res, ' ', 3)
-    data.lang = 'en'
-    local id = gen_id()
-    file = author .. issued .. id .. ' ' .. title
-    template = template
-      or fmt(
-        [[
-    ---
-    lang: {lang}
-    date: {date}
-    tags: [{tags}]
-    citation:
-      title: {title}
-      issued: {issued}
-      authors:
-        - family: {author}
-          given: {given}
-    id: {id}
-    ---
-    
-    # {author} {issued} {title}
-
-    {end_}
-    ]],
-        {
-          lang = i(1, data.lang),
-          date = data.date,
-          tags = i(2, ''),
-          title = title,
-          issued = issued,
-          author = author,
-          given = i(3, ''),
-          id = id,
-          end_ = i(4, ''),
-        }
-      )
-  end
-
-  template = template
-    or fmt(
-      [[
-  ---
-  lang: {}
-  date: {}
-  tags: [{}]
-  ---
-  
-  # {}
-
-  {}
-  ]],
-      {
-        i(2, data.lang),
-        t(data.date),
-        i(3, data.tags),
-        t(data.title),
-        i(1, ''),
-      }
-    )
-  local path = file .. '.md'
-  if dir ~= '' then
-    path = dir .. '/' .. path
-  end
-
-  if vim.fn.filereadable(path) == 0 and vim.fn.isdirectory(path) == 0 then
-    vim.api.nvim_create_autocmd('BufNewFile', {
-      once = true,
-      pattern = '*',
-      callback = function()
-        ls.snip_expand(s('', template))
-      end,
-    })
-  end
-  vim.cmd('edit ' .. path)
 end
 
 function M.setup_autocommit()

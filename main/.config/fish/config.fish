@@ -4,6 +4,7 @@ alias c 'bat --style=changes,header,rule,snip'
 alias d zi
 # alias e 'exec $VISUAL'
 alias e nvr_do
+alias n nvim
 alias f fsearch-ext
 alias gh 'GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1) /usr/bin/gh '
 abbr -g gncc 'commit -a --allow-empty-message -m ""'
@@ -16,7 +17,7 @@ alias o xdg-open
 alias t 'exa --icons --git --tree'
 alias y 'yt-dlp -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 abbr yx 'yt-dlp -x'
-abbr ze 'zk-bib eat -eo'
+abbr ze 'zk-bib eat -o'
 
 update_cwd_osc # this is needed beacause aur package sets TERM to 'foot-extra' and not 'foot'
 

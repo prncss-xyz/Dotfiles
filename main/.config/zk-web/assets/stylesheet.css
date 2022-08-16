@@ -1,0 +1,45 @@
+#nav {
+  display: flex;
+  flex-wrap: wrap;
+}
+#nav a {
+  padding-left: 14px;
+}
+
+#tags a {
+  color: black;
+}
+#tags .column {
+  padding-top: 20px;
+}
+#tags .column-title {
+  color: black;
+  font-weight: bold;
+}
+#tags .section {
+  margin-top: 20px;
+}
+#tags .section-title {
+  font-style: italic;
+}
+
+#board {
+  display: flex;
+  min-width: 200em;
+}
+#board a {
+  color: black;
+}
+#board .column {
+  padding-left: 20px;
+}
+#board .column-title {
+  color: black;
+  font-weight: bold;
+}
+#board .section {
+  margin-top: 20px;
+}
+#board .section-title {
+  font-style: italic;
+}

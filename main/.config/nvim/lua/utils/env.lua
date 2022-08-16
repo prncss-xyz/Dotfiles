@@ -32,19 +32,20 @@ function dump(...)
   print(unpack(objects))
   return ...
 end
-local function set_var(name, command, args)
+
+local function set_var(env, name, command, args)
   job
     :new({
       command = command,
       args = args,
       on_exit = function(j)
-        M.env[name] = j:result()[1]
+        env[name] = j:result()[1]
       end,
     })
-    :start()
+    :sync()
 end
 
-local function from_pass(path)
+local function set_var_from_pass(env, path)
   job
     :new({
       command = 'pass',
@@ -56,38 +57,51 @@ local function from_pass(path)
             if col then
               local name = row:sub(1, col - 1)
               local value = row:sub(col + 1)
-              M.env[name] = value
+              env[name] = value
             end
           end
         end
       end,
     })
-    :start()
+    :sync()
 end
 
-local function apply_conf(conf)
+local function apply_conf(env, conf)
   for name, value in pairs(conf) do
     if type(value) == 'table' then
-      set_var(name, unpack(value))
+      set_var(env, name, unpack(value))
     else
-      M.env[name] = value
+      env[name] = value
     end
   end
 end
 
-function M.set_env()
-  local pwd = vim.env.PWD
-  M.env = {}
+local function get_env(pwd)
+  local env = {}
+  if port then
+    env.PORT = get_new_port()
+  end
   for path, conf in pairs(confs) do
     if prefix .. path == pwd then
-      if port then
-        M.env.port = get_new_port()
-      end
-      from_pass(path)
-      apply_conf(conf)
+      set_var_from_pass(env, path)
+      apply_conf(env, conf)
       break
     end
   end
+  return env
+end
+
+local memo = {}
+
+function M.get()
+  local pwd = vim.env.PWD
+  memo[pwd] = memo[pwd] or get_env(pwd)
+  return memo[pwd]
+end
+
+function M.invalidate()
+  local pwd = vim.env.PWD
+  memo[pwd] = nil
 end
 
 function M.setup(t)

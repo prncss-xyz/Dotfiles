@@ -74,11 +74,6 @@ function M.extend()
     --     modes = 'nx',
     --   },
     -- },
-    f = modes {
-      desc = 'bullet renumber',
-      n = b { ':RenumberList<cr>' },
-      x = b { ':RenumberSelection<cr>' },
-    },
     g = keys {
       prev = b { '<cmd>SplitjoinJoin<cr>' },
       next = b { '<cmd>SplitjoinSplit<cr>' },
@@ -114,13 +109,53 @@ function M.extend()
     },
     o = keys {
       prev = b { 'O' },
-      next = b { ':InsertNewBullet<cr>' }, -- 'o'
+      next = b { 'o' },
+    },
+    q = keys {
+      next = modes {
+        desc = 'substitute',
+        n = b {
+          -- lazy_req('substitute', 'operator'),
+          function()
+            require('flies.actions').op(
+              "<cmd>lua require('substitute').operator()<cr>",
+              -- lazy_req('substitute', 'operator'),
+              { domain = 'inner' }
+            )
+          end,
+        },
+        x = b {
+          lazy_req('substitute', 'visual'),
+        },
+      },
     },
     r = keys {
       prev = b { 'R' },
       next = b { 'r' },
     },
     s = b { vim.lsp.buf.rename, 'rename' },
+    t = keys {
+      desc = 'exchange',
+      prev = b {
+        desc = 'cancel',
+        lazy_req('substitute.exchange', 'cancel'),
+      },
+      next = modes {
+        n = b {
+          -- lazy_req('substitute', 'operator'),
+          function()
+            require('flies.actions').op(
+              "<cmd>lua require('substitute.exchange').operator()<cr>",
+              -- lazy_req('substitute.exchange', 'operator'),
+              { domain = 'inner' }
+            )
+          end,
+        },
+        x = b {
+          lazy_req('substitute.exchange', 'visual'),
+        },
+      },
+    },
     u = keys {
       -- [p(p 'u')] = {
       --   rep [["zc<C-R>=casechange#next(@z)<CR><Esc>v`[']],
@@ -158,24 +193,6 @@ function M.extend()
     ['<tab>'] = keys {
       prev = b { '<<' },
       next = b { '>>' },
-      -- prev = modes {
-      --   desc = 'dedent', -- '<<',
-      --   n = b {
-      --     ':BulletPromote<cr>',
-      --   },
-      --   x = b {
-      --     ':BulletPromoteVisual<cr>',
-      --   },
-      -- },
-      -- next = modes {
-      --   desc = 'indent', -- '>>',
-      --   n = b {
-      --     ':BulletDemote<cr>',
-      --   },
-      --   x = b {
-      --     ':BulletDemoteVisual<cr>',
-      --   },
-      -- },
     },
     y = b { desc = 'wrap', '<Plug>(flies-wrap)', modes = 'nx' },
     z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },

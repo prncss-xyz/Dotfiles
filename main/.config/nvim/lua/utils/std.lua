@@ -150,6 +150,19 @@ function M.invert(tbl)
   return res
 end
 
+function M.reverse(t)
+  local i = 1
+  local j
+  while true do
+    j = #t + 1 - i
+    if j <= i then
+      break
+    end
+    t[i], t[j] = t[j], t[i]
+    i = i + 1
+  end
+end
+
 -- http://lua-users.org/wiki/StringRecipes
 function M.encode_uri(str)
   if str then

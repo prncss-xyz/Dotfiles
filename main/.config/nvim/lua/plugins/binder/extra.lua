@@ -56,6 +56,63 @@ function M.extend()
       next = b { desc = 'play', '@' }, -- @@ play again
       -- ['.'] = b { desc = 'play last', '@@' },
     },
+    o = keys {
+      desc = 'overseer',
+      redup = b {
+        desc = 'run',
+        ':OverseerRun<cr>',
+      },
+      q = b {
+        desc = 'toggle',
+        ':OverseerToggle<cr>',
+      },
+    },
+    r = keys {
+      desc = 'sniprun',
+      redup = modes {
+        desc = 'run',
+        n = b {
+          function()
+            require('sniprun').run()
+          end,
+        },
+        x = b {
+          function()
+            require('sniprun').run 'v'
+          end,
+        },
+      },
+      c = b {
+        desc = 'clear repl',
+        function()
+          require('sniprun').clear_repl()
+        end,
+      },
+      i = b {
+        desc = 'info',
+        function()
+          require('sniprun').info()
+        end,
+      },
+      l = b {
+        desc = 'live toggle',
+        function()
+          require('sniprun.live_mode').toggle()
+        end,
+      },
+      p = b {
+        desc = 'close all',
+        function()
+          require('sniprun.display').close_all()
+        end,
+      },
+      x = b {
+        desc = 'reset',
+        function()
+          require('sniprun').reset()
+        end,
+      },
+    },
     t = keys {
       desc = 'neotest',
       redup = b {
@@ -65,7 +122,12 @@ function M.extend()
       f = b {
         desc = 'run file',
         function()
-          require('neotest').run.run { vim.fn.expand '%' }
+          -- workarount as 'neotest.plenary' do not seem to work currently
+          if vim.bo.filetype == 'lua' then
+            require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
+          else
+            require('neotest').run.run { vim.fn.expand '%' }
+          end
         end,
       },
       x = b {
@@ -139,6 +201,15 @@ function M.extend()
         '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
       },
       pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
+      ss = b {
+        desc = 'browse session PORT',
+        function()
+          local port = require('utils.env').get().PORT
+          if port then
+            require('utils.browser').browse('http://localhost:' .. port)
+          end
+        end,
+      },
       sea = map_search('https://www.seriouseats.com/search?q=', 'seriouseats'),
       sep = map_search(
         'https://plato.stanford.edu/search/searcher.py?query=',

@@ -414,11 +414,6 @@ return require('packer').startup {
       event = 'bufreadpost',
     }
     use {
-      'rcarriga/nvim-notify',
-      config = config 'nvim-notify',
-      disable = true,
-    }
-    use {
       's1n7ax/nvim-window-picker',
       tag = 'v1.*',
       config = function()
@@ -544,11 +539,6 @@ return require('packer').startup {
     use {
       'cljoly/telescope-repo.nvim',
       module = 'telescope._extensions.repo',
-    }
-    use {
-      'nvim-telescope/telescope-file-browser.nvim',
-      module = 'telescope._extensions.file_browser',
-      disable = true,
     }
     use {
       'nvim-telescope/telescope-dap.nvim',
@@ -689,7 +679,6 @@ return require('packer').startup {
       module_pattern = 'harpoon.*',
       config = config 'harpoon',
     }
-
     -- Various
     use { 'lewis6991/impatient.nvim' }
     use { 'dstein64/vim-startuptime' }

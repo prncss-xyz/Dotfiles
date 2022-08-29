@@ -14,7 +14,6 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   }
   vim.cmd 'packadd packer.nvim'
 end
--- FIXME:
 
 local function default_config(name, config)
   return string.format(

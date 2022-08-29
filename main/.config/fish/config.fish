@@ -21,6 +21,7 @@ abbr ze 'zk-bib eat -o'
 
 update_cwd_osc # this is needed beacause aur package sets TERM to 'foot-extra' and not 'foot'
 
+mcfly init fish | source
 starship init fish | source
 zoxide init fish | source
 # kitty + complete setup fish | source

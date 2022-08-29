@@ -9,6 +9,29 @@ function M.config()
   }
 
   overseer.register_template {
+    name = 'pnpm install',
+    builder = function(params)
+      return {
+        cmd = { 'pnpm' },
+        args = { 'install', params.name },
+        name = 'pnpm install',
+      }
+      -- block
+    end,
+    params = {
+      name = {
+        type = 'string',
+        optional = false,
+      },
+    },
+    condition = {
+      callback = function()
+        return require('utils.std').file_exists 'package.json'
+      end,
+    },
+  }
+
+  overseer.register_template {
     generator = function()
       if require('utils.std').file_exists 'package.json' then
         return {

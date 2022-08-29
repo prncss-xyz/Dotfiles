@@ -73,18 +73,12 @@ function M.extend()
       desc = 'legendary find',
       n = b {
         function()
-          require('legendary').find(
-            'keymaps',
-            require('legendary.filters').mode 'n'
-          )
+          require('legendary').find({ filters = require('legendary.filters').mode('n') })
         end,
       },
       x = b {
         function()
-          require('legendary').find(
-            'keymaps',
-            require('legendary.filters').mode 'x'
-          )
+          require('legendary').find({ filters = require('legendary.filters').mode('x') })
         end,
       },
     },

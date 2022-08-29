@@ -29,6 +29,7 @@ bindsym $mod+shift+o exec makoctl dismiss --all
 bindsym $mod+p workspace back_and_forth
 bindsym $mod+q kill
 bindsym $mod+r mode "resize"
+bindsym $mod+c exec ydotool click 0xC1
 bindsym $mod+t exec echo next terminal > /tmp/sway-mega-hotkeys
 bindsym $mod+shift+t exec echo previous terminal > /tmp/sway-mega-hotkeys
 bindsym $mod+u exec echo next default > /tmp/sway-mega-hotkeys

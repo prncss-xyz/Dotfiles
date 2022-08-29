@@ -142,7 +142,7 @@ return require('packer').startup {
       'RRethy/vim-illuminate',
       setup = setup 'illuminate',
       config = config 'illuminate',
-      module = 'illuminate',
+      event = 'BufEnter',
     }
     use {
       'rmagatti/goto-preview',
@@ -189,7 +189,6 @@ return require('packer').startup {
         'nvim-lua/plenary.nvim',
       },
     }
-    use { 'mtoohey31/cmp-fish', ft = 'fish' }
     use { 'hrsh7th/cmp-cmdline', after = 'nvim-cmp' }
     use { 'dmitmel/cmp-cmdline-history', after = 'nvim-cmp' }
     use { 'davidsierradz/cmp-conventionalcommits', after = 'nvim-cmp' }

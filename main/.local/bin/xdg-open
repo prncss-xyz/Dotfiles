@@ -3,7 +3,7 @@
 launch() {
 
 	FPATH="${1:-.}"
-  echo "$FPATH"
+	echo "$FPATH"
 
 	# if it is a directory, open the oldest file of file manager if empty
 	if [ -d "$FPATH" ]; then
@@ -12,7 +12,7 @@ launch() {
 			$TERMINAL -e xplr "$FPATH"
 			exit 0
 		fi
-    FPATH="$FPATH1"
+		FPATH="$FPATH1"
 	fi
 
 	case "${FPATH}" in
@@ -38,7 +38,7 @@ launch() {
 		mdopen "${FPATH}" &
 		return
 		;;
-	htm | html)
+	htm | html | pdf)
 		browser "${FPATH}" &
 		return
 		;;
@@ -53,8 +53,12 @@ launch() {
 		ebook-reader "${FPATH}" &
 		return
 		;;
-  docx | doc | rtf | abw)
+	docx | doc | rtf | abw)
 		libreoffice "${FPATH}" &
+		return
+		;;
+	epub)
+		com.github.johnfactotum.Foliate "${FPATH}" &
 		return
 		;;
 	esac

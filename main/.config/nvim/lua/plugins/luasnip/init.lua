@@ -4,15 +4,15 @@ function M.config()
   local ls = require 'luasnip'
   ls.config.set_config { history = false, enable_autosnippets = false }
 
+  -- FIX: broke with a82d84a 
   if false then
-    require('luasnip.loaders.from_vscode').lazy_load '' -- to load snippets in plugin path
+    require('luasnip.loaders.from_vscode').lazy_load {
+      paths = { require('parameters').vim_conf .. '/snippets/textmate' },
+    }
   end
 
-  require('luasnip.loaders.from_vscode').lazy_load {
-    paths = require 'parameters'.vim_conf .. '/snippets/textmate',
-  }
   require('luasnip.loaders.from_lua').lazy_load {
-    paths = require 'parameters'.vim_conf .. '/snippets/luasnip',
+    paths = { require('parameters').vim_conf .. '/snippets/luasnip' },
   }
 end
 

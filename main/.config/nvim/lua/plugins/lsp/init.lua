@@ -34,7 +34,7 @@ function M.config()
     client.resolved_capabilities.document_formatting = false
     client.resolved_capabilities.document_range_formatting = false
     client.config.flags.debounce_text_changes = 150
-    require('illuminate').on_attach(client)
+    --[[ require('illuminate').on_attach(client) ]]
     require('aerial').on_attach(client, bufnr)
     -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
     -- FIXME:

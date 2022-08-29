@@ -1,0 +1,11 @@
+[Unit]
+Description=Notification daemon
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/ydotoold
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

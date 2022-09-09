@@ -3,7 +3,7 @@
     "position": "bottom",
     "modules-left": ["clock", "sway/mode"],
     "modules-center": [ "sway/window"],
-    "modules-right": ["cpu", "memory", "battery"],
+    "modules-right": ["cpu", "memory", "battery", "temperature"],
     "sway/workspaces": {
       "current-only": true,
       "tooltip": false
@@ -12,14 +12,16 @@
       "max-length": 90,
       "tooltip": false
     },
+    "temperature": {
+      "thermal-zone": 3,
+    },
     "cpu": {
       "interval": 10,
-      "format": "{usage} · {load:0.01f} · {avg_frequency:0.01f}",
-      "max-length": 10,
+      "format": "{load:0.01f} · {usage}% · {avg_frequency:0.01f}GHz",
       "tooltip": false
     },
     "memory": {
-      "format": "{avail:0.1f}",
+      "format": "{avail:0.1f}GB",
       "tooltip": false
     },
     "battery": {

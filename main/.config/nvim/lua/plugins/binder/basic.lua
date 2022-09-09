@@ -73,12 +73,16 @@ function M.extend()
       desc = 'legendary find',
       n = b {
         function()
-          require('legendary').find({ filters = require('legendary.filters').mode('n') })
+          require('legendary').find {
+            filters = require('legendary.filters').mode 'n',
+          }
         end,
       },
       x = b {
         function()
-          require('legendary').find({ filters = require('legendary.filters').mode('x') })
+          require('legendary').find {
+            filters = require('legendary.filters').mode 'x',
+          }
         end,
       },
     },
@@ -101,12 +105,29 @@ function M.extend()
     ['<m-f>'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
     ['<m-p>'] = b { desc = 'window back', 'wincmd p', cmd = true },
     ['<m-r>'] = b { desc = 'last window', '<c-w><c-p>' },
-    ['<m-t>'] = b { desc = 'last buffer', 'e #', cmd = true },
+    ['<m-t>'] = b {
+      desc = 'last buffer',
+      function()
+        require('buffstory').last()
+      end,
+    },
     ['<m-q>'] = b { desc = 'close window', 'q', cmd = true },
     ['<m-w>'] = b { desc = 'close buffer', require('utils.bbye').close },
-    ['<m-h>'] = b {
+    ['<m-u>'] = b {
+      desc = 'pick special window',
+      function()
+        require('utils.windows').cycle_focus_within_buftype(false)
+      end,
+    },
+    ['<m-i>'] = b {
+      desc = 'pick plain window',
+      function()
+        require('utils.windows').cycle_focus_within_buftype(true)
+      end,
+    },
+    ['<m-o>'] = b {
       desc = 'pick window',
-      require('utils.windows').winpick_focus,
+      require('utils.windows').focus_any,
     },
     [alt(d.left)] = b {
       lazy_req('utils.wrap_win', 'left'),

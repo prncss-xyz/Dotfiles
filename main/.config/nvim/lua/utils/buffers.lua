@@ -1,7 +1,5 @@
 local M = {}
 
-
-
 function M.move()
   -- is there a move generic way to handle lsp move ?
   local default = vim.fn.expand '%:.'

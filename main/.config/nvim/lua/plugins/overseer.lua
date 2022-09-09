@@ -9,6 +9,16 @@ function M.config()
   }
 
   overseer.register_template {
+    name = 'term',
+    builder = function()
+      return {
+        -- footclient wont pass the environment
+        cmd = { 'foot' },
+      }
+    end,
+  }
+
+  overseer.register_template {
     name = 'pnpm install',
     builder = function(params)
       return {

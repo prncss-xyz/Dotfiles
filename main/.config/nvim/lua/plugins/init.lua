@@ -413,6 +413,20 @@ return require('packer').startup {
       event = 'bufreadpost',
     }
     use {
+      'vigoux/notifier.nvim',
+      config = default_config 'notifier',
+    }
+    use {
+      'j-hui/fidget.nvim',
+      config = default_config 'fidget.nvim',
+      disable = true,
+    }
+    use {
+      'rcarriga/nvim-notify',
+      config = config 'nvim-notify',
+      disable = true,
+    }
+    use {
       's1n7ax/nvim-window-picker',
       tag = 'v1.*',
       config = function()

@@ -7,8 +7,8 @@ alias e nvr_do
 alias n nvim
 alias f fsearch-ext
 alias gh 'GITHUB_TOKEN=(pass github.com/prncss-xyz|tail -1) /usr/bin/gh '
-abbr -g gncc 'commit -a --allow-empty-message -m ""'
-abbr hm 'man -H'
+abbr -g gca 'git add --all; git commit --allow-empty-message -m ""'
+abbr mh 'man -H'
 alias l 'exa --icons --git'
 alias nod 'nodemon --config ~/.config/nodemon/config.json'
 alias o xdg-open

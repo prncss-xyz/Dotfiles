@@ -15,6 +15,7 @@ function M.config()
       filetypes = { 'markdown' },
     },
   }
+  require('plugins.zk.domains').setup()
 end
 
 return M

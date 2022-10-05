@@ -52,10 +52,10 @@ function M.extend()
     r = np {
       desc = 'reference',
       prev = function()
-        require('illuminate').next_reference { wrap = true, reverse = true }
+        require('illuminate').goto_next_reference { wrap = true, reverse = true }
       end,
       next = function()
-        require('illuminate').next_reference { wrap = true }
+        require('illuminate').goto_next_reference { wrap = true }
       end,
     },
     s = b {

@@ -64,7 +64,7 @@ exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 
 input type:keyboard {
   xkb_layout ca
-  xkb_variant multi
+  # xkb_variant multi
   # xkb_options ctrl:nocaps
   xkb_options caps:escape 
   # xkb_options ctrl:swapcaps
@@ -72,11 +72,11 @@ input type:keyboard {
 
 # man xkeyboard-config
 # input "1008:10826:Lite-On_Technology_Corp_HP_USB_Slim_Keyboard_-_Skylab" {}
-input "1133:45890:Keyboard_K380_Keyboard" {
-  xkb_layout "ca"
-  xkb_variant multi 
-  xkb_options caps:escape 
-}
+# input "1133:45890:Keyboard_K380_Keyboard" {
+  # xkb_layout "ca"
+  # xkb_variant multi 
+  # xkb_options caps:escape 
+# }
 
 # } # bluetooth
 # input "8738:137:MGI_USB_Compact_Pro_Keyboard_System_Control" {}

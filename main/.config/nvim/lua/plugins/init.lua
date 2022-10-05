@@ -413,17 +413,13 @@ return require('packer').startup {
       event = 'bufreadpost',
     }
     use {
-      'vigoux/notifier.nvim',
-      config = default_config 'notifier',
+      'rcarriga/nvim-notify',
+      config = config 'nvim-notify',
+      disable = true,
     }
     use {
       'j-hui/fidget.nvim',
       config = default_config 'fidget.nvim',
-      disable = true,
-    }
-    use {
-      'rcarriga/nvim-notify',
-      config = config 'nvim-notify',
       disable = true,
     }
     use {

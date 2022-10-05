@@ -2,11 +2,10 @@ local M = {}
 
 function M.config()
   local overseer = require 'overseer'
-  overseer.setup {
-    pre_task_hook = function(task_defn)
-      task_defn.env = require('utils.env').get()
-    end,
-  }
+  overseer.setup {}
+  overseer.add_template_hook(nil, function(task_defn)
+    task_defn.env = require('utils.env').get()
+  end)
 
   overseer.register_template {
     name = 'term',

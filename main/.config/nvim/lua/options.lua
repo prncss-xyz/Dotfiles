@@ -35,7 +35,6 @@ deep_merge(vim, {
     autowriteall = true,
     backup = false,
     -- clipboard = 'unnamedplus',
-    cmdheight = 1,
     completeopt = 'menuone,noselect',
     cursorline = true,
     expandtab = true,
@@ -72,8 +71,6 @@ deep_merge(vim, {
   },
   g = {
     -- autosave = 1,
-    do_filetype_lua = 1,
-    did_load_filetypes = 0,
   },
   wo = {
     number = false,
@@ -91,7 +88,6 @@ deep_merge(vim, {
     fillchars = 'eob: ', -- remove annoying tildes in gutter beneath file buffer
     foldlevel = 20,
     -- foldlevelstart=20,
-    lazyredraw = true, -- when running macros and regexes on a large file, lazy redraw tells neovim/vim not to draw the screen
     paste = false,
     secure = true, -- disable autocmd etc for project local vimrc files
     sessionoptions = 'curdir,folds,tabpages,winsize',

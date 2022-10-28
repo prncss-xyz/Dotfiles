@@ -133,6 +133,13 @@ function M.extend()
       prev = b { 'R' },
       next = b { 'r' },
     },
+    -- s = b {
+    --   desc = 'lsp rename',
+    --   function()
+    --     return ':IncRename ' .. vim.fn.expand '<cword>'
+    --   end,
+    --   expr = true
+    -- },
     s = b { vim.lsp.buf.rename, 'rename' },
     t = keys {
       desc = 'exchange',
@@ -190,9 +197,11 @@ function M.extend()
       '<Plug>(flies-explode)',
       modes = 'nx',
     },
-    ['<tab>'] = keys {
-      prev = b { '<<' },
-      next = b { '>>' },
+    ['<tab>'] = modes {
+      nx = keys {
+        prev = b { '<<' },
+        next = b { '>>' },
+      },
     },
     y = b { desc = 'wrap', '<Plug>(flies-wrap)', modes = 'nx' },
     z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },

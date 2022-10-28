@@ -151,7 +151,6 @@ require('xpm').setup {
 
 -- local plugins
 require('icons').setup()
-require('type-to-nav').setup()
 -- local modules.utils = require 'utils'
 
 local function deep_merge(t1, t2)
@@ -369,13 +368,12 @@ deep_merge(xplr, {
                   },
                 },
               },
-              e = {
-                help = 'zkb eat -eo',
+              h = {
+                help = 'help',
                 messages = {
+                  'PopMode',
                   {
-                    BashExec = [[
-                      zkb eat -eo "$XPLR_FOCUS_PATH"
-                    ]],
+                    BashExec = 'less "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"',
                   },
                 },
               },
@@ -435,6 +433,13 @@ deep_merge(xplr, {
                   },
                 },
               },
+              q = {
+                help = 'quit mode',
+                messages = {
+                  'PopMode',
+                  { SwitchModeBuiltin = 'quit' },
+                },
+              },
               t = {
                 help = 'terminal',
                 messages = {
@@ -453,20 +458,14 @@ deep_merge(xplr, {
                   },
                 },
               },
-              h = {
-                help = 'help',
+              z = {
+                help = 'zk-bib eat -e',
                 messages = {
-                  'PopMode',
                   {
-                    BashExec = 'less "$XPLR_PIPE_GLOBAL_HELP_MENU_OUT"',
+                    BashExec = [[
+                      zk-bib eat -e "$XPLR_FOCUS_PATH"
+                    ]],
                   },
-                },
-              },
-              q = {
-                help = 'quit mode',
-                messages = {
-                  'PopMode',
-                  { SwitchModeBuiltin = 'quit' },
                 },
               },
               space = {
@@ -619,12 +618,6 @@ deep_merge(xplr, {
                   'ToggleSelectAll',
                 },
               },
-              t = {
-                help = 'type-to-nav',
-                messages = {
-                  { CallLuaSilently = 'custom.type_to_nav_start' },
-                },
-              },
               v = {
                 help = 'selection mode',
                 messages = {
@@ -644,12 +637,12 @@ deep_merge(xplr, {
                 },
               },
               z = {
-                help = 'zk-bib eat -o',
+                help = 'zk-bib eat -oe',
                 messages = {
                   {
                     BashExec = [[
                       if [ -f "$XPLR_FOCUS_PATH" ]; then
-                        zk-bib eat -o "$XPLR_FOCUS_PATH"
+                        zk-bib eat -oe "$XPLR_FOCUS_PATH"
                       else
                         echo "Sory, this is not a file."
                       fi
@@ -676,9 +669,7 @@ deep_merge(xplr, {
                 messages = {
                   'PopMode',
                   { SwitchModeBuiltin = 'search' },
-                  { SetInputPrompt = '/' },
-                  { SetInputBuffer = '(?i)' },
-                  'ExplorePwdAsync',
+                  { SetInputBuffer = '' },
                 },
               },
             },
@@ -835,12 +826,6 @@ deep_merge(xplr, {
                   'ClearSelection',
                 },
               },
-              t = {
-                help = 'type-to-nav',
-                messages = {
-                  { CallLuaSilently = 'custom.type_to_nav_start' },
-                },
-              },
               o = {
                 help = 'open from selection',
                 messages = {
@@ -904,16 +889,6 @@ for _, mode in ipairs { 'default', 'selection_ops' } do
     messages = { 'ToggleSelection', 'FocusNext' },
   }
   xplr.config.modes.builtin[mode].key_bindings.on_key['back-tab'] = {
-    help = 'toggle selection backward',
-    messages = { 'ToggleSelection', 'FocusPrevious' },
-  }
-end
-for _, mode in ipairs { 'type_to_nav' } do
-  xplr.config.modes.custom[mode].key_bindings.on_key.tab = {
-    help = 'toggle selection',
-    messages = { 'ToggleSelection', 'FocusNext' },
-  }
-  xplr.config.modes.custom[mode].key_bindings.on_key['back-tab'] = {
     help = 'toggle selection backward',
     messages = { 'ToggleSelection', 'FocusPrevious' },
   }

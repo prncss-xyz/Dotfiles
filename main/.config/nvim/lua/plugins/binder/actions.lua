@@ -83,15 +83,4 @@ function M.hop12()
   end
 end
 
-function M.lsp_format()
-  if false then
-    local format = vim.b.format
-    if format then
-      format()
-    end
-  else
-    vim.lsp.buf.formatting_sync(nil, nil)
-  end
-end
-
 return M

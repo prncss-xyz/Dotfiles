@@ -31,11 +31,9 @@ function M.config()
 
   local function noformat_on_attach(client, bufnr)
     -- TODO: bindings
-    client.resolved_capabilities.document_formatting = false
-    client.resolved_capabilities.document_range_formatting = false
+    client.server_capabilities.documentFormattingProvider = false
+    client.server_capabilities.documentRangeFormattingProvider = false
     client.config.flags.debounce_text_changes = 150
-    --[[ require('illuminate').on_attach(client) ]]
-    require('aerial').on_attach(client, bufnr)
     -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
     -- FIXME:
     -- vim.api.nvim_create_autocmd('CursorHold', {
@@ -48,8 +46,8 @@ function M.config()
 
   -- LSP settings
   local lspconfig = require 'lspconfig'
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-  capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+  -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+  local capabilities = require('cmp_nvim_lsp').default_capabilities()
   capabilities.textDocument.completion.completionItem.snippetSupport = true
   capabilities.textDocument.foldingRange = {
     dynamicRegistration = false,
@@ -95,51 +93,52 @@ function M.config()
       flags = flags,
     },
   }
-  local luadev = require('lua-dev').setup {
-    library = {
-      vimruntime = true,
-      types = true,
-      plugins = {
-        'nvim-treesitter',
-        'plenary.nvim',
-        'telescope.nvim',
-        'neotest',
-      },
-    },
-    lspconfig = {
+  require('neodev').setup {
+    override = function(root_dir, library)
+      if
+        require('neodev.util').has_file(root_dir, '/home/prncss/Dotfiles/')
+      then
+        library.enabled = true
+        library.plugins = true
+      end
+    end,
+  }
+
+  lspconfig.sumneko_lua.setup {
+    server = {
       capabilities = capabilities,
-      cmd = { 'lua-language-server' },
       on_attach = noformat_on_attach,
-      settings = {
-        Lua = {
-          diagnostics = {
-            globals = {
-              -- nvim
-              'vim',
-              'dump',
-              -- packer.nvim
-              'use',
-              -- xplr
-              'xplr',
-              'version',
-              -- busted
-              'it',
-              'describe',
-              'assert',
-            },
+      flags = flags,
+    },
+    cmd = { 'lua-language-server' },
+    settings = {
+      Lua = {
+        diagnostics = {
+          globals = {
+            -- nvim
+            'vim',
+            'dump',
+            -- packer.nvim
+            'use',
+            -- xplr
+            'xplr',
+            'version',
+            -- busted
+            'it',
+            'describe',
+            'assert',
           },
-          runtime = {
-            version = 'LuaJIT',
-          },
-          telemetry = {
-            enable = false,
-          },
+        },
+        runtime = {
+          version = 'LuaJIT',
+        },
+        telemetry = {
+          enable = false,
         },
       },
       flags = flags,
     },
   }
-  lspconfig.sumneko_lua.setup(luadev)
 
   lspconfig.sqls.setup {
     on_attach = function(client, bufnr)

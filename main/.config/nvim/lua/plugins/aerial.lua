@@ -2,8 +2,10 @@ local M = {}
 
 function M.config()
   require('aerial').setup {
-    default_direction = 'left',
-    min_width = require 'parameters'.pane_width,
+    layout = {
+      default_direction = 'left',
+      min_width = require('parameters').pane_width,
+    },
     backends = {
       'treesitter',
       'lsp',
@@ -20,7 +22,7 @@ function M.config()
     --   'Method',
     --   'Struct',
     -- },
-      -- To see all available values, see :help SymbolKind
+    -- To see all available values, see :help SymbolKind
   }
 end
 

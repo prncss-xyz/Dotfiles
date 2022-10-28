@@ -18,6 +18,15 @@ function M.extend()
       desc = 'current buffer fuzzy find',
       lazy_req('telescope.builtin', 'current_buffer_fuzzy_find', {}),
     },
+    b = np {
+      desc = 'aerial symbol',
+      prev = function()
+        vim.cmd 'AerialPrev'
+      end,
+      next = function()
+        vim.cmd 'AerialNext'
+      end,
+    },
     c = keys {
       prev = b { actions.asterisk_gz, desc = 'current word start' },
       next = b { actions.asterisk_z, desc = 'current word' },
@@ -52,10 +61,10 @@ function M.extend()
     r = np {
       desc = 'reference',
       prev = function()
-        require('illuminate').goto_next_reference { wrap = true, reverse = true }
+        require('illuminate').goto_prev_reference(true)
       end,
       next = function()
-        require('illuminate').goto_next_reference { wrap = true }
+        require('illuminate').goto_next_reference(true)
       end,
     },
     s = b {

@@ -153,7 +153,7 @@ return require('packer').startup {
       'jose-elias-alvarez/typescript.nvim',
       module = 'typescript',
     }
-    use { 'folke/lua-dev.nvim', module = 'lua-dev' }
+    use { 'folke/neodev.nvim', module = 'neodev' }
     use { 'b0o/schemastore.nvim', module = 'schemastore' }
     use { 'nanotee/sqls.nvim', module = 'sqls' }
     use {
@@ -259,6 +259,9 @@ return require('packer').startup {
     use {
       'stevearc/overseer.nvim',
       config = config 'overseer',
+      -- config = function ()
+      --   require 'overseer'.setup()
+      -- end,
       module = { 'overseer', 'neotest.consumers.overseer' },
       cmd = {
         'OverseerOpen',
@@ -413,16 +416,6 @@ return require('packer').startup {
       event = 'bufreadpost',
     }
     use {
-      'rcarriga/nvim-notify',
-      config = config 'nvim-notify',
-      disable = true,
-    }
-    use {
-      'j-hui/fidget.nvim',
-      config = default_config 'fidget.nvim',
-      disable = true,
-    }
-    use {
       's1n7ax/nvim-window-picker',
       tag = 'v1.*',
       config = function()
@@ -463,6 +456,29 @@ return require('packer').startup {
       config = default_config 'twilight',
       module = 'twilight',
       cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
+    }
+    use {
+      'smjonas/inc-rename.nvim',
+      config = default_config 'inc_rename',
+      cmd = { 'IncRename' },
+      disable = true,
+    }
+    use {
+      'levouh/tint.nvim',
+      config = default_config 'tint',
+      event = 'ColorSchemePre',
+    }
+    use {
+      'rcarriga/nvim-notify',
+      config = config 'nvim-notify',
+      event = 'VimEnter',
+    }
+    use {
+      'folke/noice.nvim',
+      after = 'nvim-notify',
+      config = function()
+        require('noice').setup()
+      end,
     }
     use {
       -- 'simnalamburt/vim-mundo'

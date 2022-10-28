@@ -1,9 +1,3 @@
 [binds]
-m = exec footclient --app-id=launcher -e mvf "$imv_current_file"
-bm = exec imv-do mvf --last
-w = exec imv-do tag-put "$imv_current_file"
-bw = exec imv-do tag-put --last
-<Shift+W> = exec imv-do tag-del "$imv_current_file"
-.<Shift+W> = exec imv-do tag-del --last
 n = next 1
 p = prev 1

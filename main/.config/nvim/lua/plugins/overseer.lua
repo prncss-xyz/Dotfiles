@@ -40,47 +40,52 @@ function M.config()
     },
   }
 
-  overseer.register_template {
-    generator = function()
-      if require('utils.std').file_exists 'package.json' then
-        return {
-          {
-            name = 'pnpm install --recursive',
-            params = {},
-            builder = function()
-              return {
-                cmd = { 'pnpm', 'install', 'recursive' },
-              }
-            end,
-          },
-          {
-            name = 'pnpm update --recursive',
-            params = {},
-            builder = function()
-              return {
-                cmd = { 'pnpm', 'update', 'recursive' },
-              }
-            end,
-          },
-          {
-            name = 'pnpm prune',
-            params = {},
-            builder = function()
-              return {
-                cmd = { 'pnpm', 'prune' },
-              }
-            end,
-          },
-        }
-      else
-        return {}
-      end
-    end,
-    -- FIX: do not seem to work as described
-    -- condition = function()
-    --   return require('utils.std').file_exists 'package.json'
-    -- end,
-  }
+  -- FIXME: apparently a breaking change affects this
+  if false then
+    overseer.register_template {
+      generator = function()
+        if false then
+          if require('utils.std').file_exists 'package.json' then
+            return {
+              {
+                name = 'pnpm install --recursive',
+                params = {},
+                builder = function()
+                  return {
+                    cmd = { 'pnpm', 'install', 'recursive' },
+                  }
+                end,
+              },
+              {
+                name = 'pnpm update --recursive',
+                params = {},
+                builder = function()
+                  return {
+                    cmd = { 'pnpm', 'update', 'recursive' },
+                  }
+                end,
+              },
+              {
+                name = 'pnpm prune',
+                params = {},
+                builder = function()
+                  return {
+                    cmd = { 'pnpm', 'prune' },
+                  }
+                end,
+              },
+            }
+          else
+            return {}
+          end
+        end
+      end,
+      -- FIX: do not seem to work as described
+      -- condition = function()
+      --   return require('utils.std').file_exists 'package.json'
+      -- end,
+    }
+  end
 end
 
 return M

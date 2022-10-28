@@ -34,10 +34,10 @@ launch() {
 	fi
 
 	case "${ext}" in
-	md | markdown)
-		mdopen "${FPATH}" &
-		return
-		;;
+	# md | markdown)
+	# 	browser "$(mdopen "${FPATH}")" &
+	# 	return
+	# 	;;
 	htm | html | pdf)
 		browser "${FPATH}" &
 		return

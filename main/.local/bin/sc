@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# fuzzy find conflict files; opens with nvim diff if text; opens in xplr otherwise
+
+res="$(fd \.sync-conflict- ~/Media ~/Personal | fzf --preview 'bat  --style=changes,header,rule,snip --color=always {}')"
+if [ -n "$res" ]; then
+	ext="${res##*.}"
+	if [ -n "$ext" ]; then
+		ext="$(printf "%s" "${ext}" | tr '[:upper:]' '[:lower:]')"
+	fi
+	case "${ext}" in
+	txt | jsx | tsx)
+		nvim -d "${res%%.sync-conflict-*}"*
+		exit 0
+		;;
+	esac
+
+	MIMETYPE="$(file -bL --mime-type -- "${res}")"
+	case "${MIMETYPE}" in
+	text/html)
+		xplr "$res"
+		exit 0
+		;;
+	text/*)
+		nvim -d "${res%%.sync-conflict-*}"*
+		exit 0
+		;;
+	*)
+		xplr "$res"
+		exit 0
+		;;
+	esac
+fi

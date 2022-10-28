@@ -47,6 +47,10 @@ function M.extend()
       next = b { desc = 'scroll bottom', lazy_req('neoscroll', 'zb', 250) },
       c = b { desc = 'scroll middle', lazy_req('neoscroll', 'zz', 250) },
     },
+    c = b {
+      desc = 'select adjacent command lines',
+      require 'utils.select_comment'
+    },
     q = keys {
       desc = 'marco',
       prev = b {

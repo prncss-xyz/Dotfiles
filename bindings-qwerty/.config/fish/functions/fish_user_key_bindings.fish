@@ -23,8 +23,8 @@ function fish_user_key_bindings
     # bind \cp history-token-search-backward
     bind \cq 'pushd .'
     # bind fzf-cd-widget
-    # bind \cr fzf-history-widget
-    bind \cr __mcfly-history-widget
+    bind \cr fzf-history-widget
+    # bind \cr __mcfly-history-widget
     # \cu kill to bol
     # \cv paste
     # \cw kill to bow

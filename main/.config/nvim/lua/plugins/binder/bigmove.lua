@@ -64,8 +64,8 @@ function M.extend()
     },
     e = keys {
       prev = b {
-        desc = 'move file',
-        require('utils.buffers').move,
+        desc = 'rename file',
+        require('utils.buffers').rename,
       },
       next = b {
         desc = 'edit file',
@@ -92,6 +92,10 @@ function M.extend()
     g = b {
       desc = 'buffstory select recent buffer',
       lazy_req('buffstory', 'select'),
+    },
+    v = b {
+      desc = 'move file',
+      lazy_req('telescope', 'extensions.my.move'),
     },
     h = b {
       desc = 'files (project)',

@@ -5,6 +5,7 @@ local exports = {}
 for _, name in ipairs {
   'gitignore',
   'md_help',
+  'move',
   'installed_plugins',
   'modules',
   'project_directory',

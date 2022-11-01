@@ -1,10 +1,10 @@
 local M = {}
 
-function M.move()
-  -- is there a move generic way to handle lsp move ?
+function M.rename()
+  -- is there a more generic way to handle lsp move ?
   local default = vim.fn.expand '%:.'
   local tsserver = require('utils.lsp').is_client_current 'tsserver'
-  local prompt = 'move'
+  local prompt = 'rename'
   if tsserver then
     prompt = prompt .. ' (tsserver)'
   end
@@ -25,6 +25,13 @@ function M.move()
       vim.fn.delete(source)
     end
   end)
+end
+
+function M.move(dest)
+  -- TODO: vim 0.8  use new API
+  -- vim.cmd('sav ' .. target)
+  vim.cmd { cmd = 'sav', args = { target } }
+  vim.fn.delete(source)
 end
 
 function M.edit()

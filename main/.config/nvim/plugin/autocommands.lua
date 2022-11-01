@@ -14,7 +14,7 @@ if vim.fn.has 'gui' == 0 then
   })
 end
 
--- Adds '-' on next line when editing a list 
+-- Adds '-' on next line when editing a list
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'markdown' },
   group = group,
@@ -41,11 +41,10 @@ vim.api.nvim_create_autocmd(
     group = group,
     callback = function()
       local fname = vim.fn.expand '%'
-      if
-        vim.bo.buftype == ''
-        and vim.bo.modifiable
-        and (vim.bo.modified or vim.fn.filereadable(fname) == 0)
-        and (vim.fn.isdirectory(fname) == 0)
+      if vim.bo.buftype == ''
+          and vim.bo.modifiable
+          and (vim.bo.modified or vim.fn.filereadable(fname) == 0)
+          and (vim.fn.isdirectory(fname) == 0)
       then
         vim.cmd 'silent :w!'
       end
@@ -108,15 +107,15 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 local function fetch_git_branch_plenary()
   local job = require('plenary').job
   job
-    :new({
-      command = 'git',
-      args = { 'branch', '--show-current' },
-      cwd = os.getenv 'PWD',
-      on_exit = function(j)
-        vim.b.gitsigns_head = j:result()[1]
-      end,
-    })
-    :start()
+      :new({
+        command = 'git',
+        args = { 'branch', '--show-current' },
+        cwd = os.getenv 'PWD',
+        on_exit = function(j)
+          vim.b.gitsigns_head = j:result()[1]
+        end,
+      })
+      :start()
 end
 
 vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost' }, {
@@ -130,7 +129,6 @@ vim.api.nvim_create_autocmd({ 'CursorHold' }, {
   group = group,
   callback = require('plugins.zk.utils').update_title_void,
 })
-
 -- Without wrapping in an autocommand, you don't see the status line while telescope
 -- the classical way of creating an augroup and clearing it does not seem to work, hence the `once` variable
 vim.api.nvim_create_autocmd('VimEnter', {
@@ -139,7 +137,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
   callback = function()
     vim.schedule(function()
       fetch_git_branch_plenary()
-      if #vim.fn.argv() > 0 then
+      if #vim.v.argv > 1 then
       elseif vim.fn.getcwd() == os.getenv 'HOME' then
         -- TODO: make safe on bootstraping
         -- FIX: mysterious A input
@@ -147,8 +145,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
       else
         local prefix = vim.fn.getcwd() .. '/'
         for _, file in ipairs(vim.v.oldfiles) do
-          if
-            vim.startswith(file, prefix) and vim.fn.filereadable(file) == 1
+          if vim.startswith(file, prefix) and vim.fn.filereadable(file) == 1
           then
             vim.cmd('edit ' .. file)
             return

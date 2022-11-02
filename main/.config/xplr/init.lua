@@ -1,4 +1,4 @@
-version = '0.19.0'
+version = '0.20.0'
 
 -- override builtin modes to get rid of deep_merge
 -- fzm: project root or current dir, unless in downloads (by mimetype then)
@@ -204,7 +204,7 @@ for _, key in ipairs { 'c', 'e', 's', '!' } do
   xplr.config.modes.builtin.action.key_bindings.on_key[key] = nil
 end
 
-for _, key in ipairs { 'g' } do
+for _, key in ipairs { 'g', 'x' } do
   xplr.config.modes.builtin.go_to.key_bindings.on_key[key] = nil
 end
 for _, key in ipairs { 'c', 'e', 's', '!' } do
@@ -791,7 +791,7 @@ deep_merge(xplr, {
                 messages = {
                   {
                     BashExecSilently = [[
-                      PTH=$(fd --type file .|shuf -n1) 
+                      PTH=$(fd --type file .|shuf -n1)
                       if [ "$PTH" ]; then
                         echo FocusPath: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
                       fi

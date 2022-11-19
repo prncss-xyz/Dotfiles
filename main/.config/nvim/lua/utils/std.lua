@@ -115,19 +115,6 @@ function M.remove_title_parts(title, opts)
   return title
 end
 
-function M.split_string(str, delimiter)
-  local result = {}
-  local from = 1
-  local delim_from, delim_to = string.find(str, delimiter, from)
-  while delim_from do
-    table.insert(result, string.sub(str, from, delim_from - 1))
-    from = delim_to + 1
-    delim_from, delim_to = string.find(str, delimiter, from)
-  end
-  table.insert(result, string.sub(str, from))
-  return result
-end
-
 function M.deep_merge(t1, t2)
   local offset = #t1
   for k, v in pairs(t2) do

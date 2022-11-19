@@ -49,16 +49,49 @@ function M.extend()
     },
     c = b {
       desc = 'select adjacent command lines',
-      require 'utils.select_comment'
+      require 'utils.select_comment',
     },
-    q = keys {
-      desc = 'marco',
-      prev = b {
-        desc = 'record',
-        'q',
+    e = b {
+      desc = 'toggle emmet',
+      function()
+        require('utils.lsp').toggle_client 'emmet_ls'
+      end,
+    },
+    f = b {
+      desc = 'longnose',
+      require('utils.longnose').main,
+    },
+    j = keys {
+      desc = 'typescript',
+      -- Despite the name, this command fixes a handful of specific issues,
+      -- most notably non-async functions that use await and unreachable code.
+      a = b {
+        desc = 'fix all',
+        lazy_req('typescript', 'actions.fixAll'),
       },
-      next = b { desc = 'play', '@' }, -- @@ play again
-      -- ['.'] = b { desc = 'play last', '@@' },
+      o = b {
+        desc = 'organize imports',
+        lazy_req('typescript', 'actions.organizeImports'),
+      },
+      s = b {
+        desc = 'go to source definition',
+        function()
+          require('typescript').goToSourceDefinition()
+        end,
+      },
+      -- operates with full paths: .renameFile(source, target)
+      v = b {
+        desc = 'rename file',
+        '<cmd>TypescriptRenameFile<cr>',
+      },
+      y = b {
+        desc = 'add missing imports',
+        lazy_req('typescript', 'actions.addMissingImports'),
+      },
+      x = b {
+        desc = 'remove unused',
+        lazy_req('typescript', 'actions.removeUnused'),
+      },
     },
     o = keys {
       desc = 'overseer',
@@ -70,6 +103,19 @@ function M.extend()
         desc = 'toggle',
         ':OverseerToggle<cr>',
       },
+      y = b {
+        desc = 'browse dev',
+        require('utils.browser').browse_dev,
+      },
+    },
+    q = keys {
+      desc = 'marco',
+      prev = b {
+        desc = 'record',
+        'q',
+      },
+      next = b { desc = 'play', '@' }, -- @@ play again
+      -- ['.'] = b { desc = 'play last', '@@' },
     },
     r = keys {
       desc = 'sniprun',
@@ -205,15 +251,6 @@ function M.extend()
         '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
       },
       pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
-      ss = b {
-        desc = 'browse session PORT',
-        function()
-          local port = require('utils.env').get().PORT
-          if port then
-            require('utils.browser').browse('http://localhost:' .. port)
-          end
-        end,
-      },
       sea = map_search('https://www.seriouseats.com/search?q=', 'seriouseats'),
       sep = map_search(
         'https://plato.stanford.edu/search/searcher.py?query=',
@@ -234,6 +271,34 @@ function M.extend()
         'https://www.youtube.com/results?search_query=',
         'youtube'
       ),
+    },
+    x = keys {
+      desc = 'refactoring',
+      a = modes {
+        desc = 'debug print',
+        n = b {
+          function()
+            require('refactoring').debug.print_var { normal = true }
+          end,
+        },
+        x = b {
+          function()
+            require('refactoring').debug.print_var {}
+          end,
+        },
+      },
+      h = b {
+        desc = 'telescope',
+        function()
+          require('telescope').extensions.refactoring.refactors()
+        end,
+      },
+      x = b {
+        desc = 'debug print',
+        function()
+          require('refactoring').debug.cleanup {}
+        end,
+      },
     },
     z = keys {
       desc = 'spell',

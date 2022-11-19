@@ -3,5 +3,6 @@
     "Lua.completion.autoRequire": false,
     "Lua.diagnostics.disable": [
         "param-type-mismatch"
-    ]
+    ],
+    "Lua.workspace.checkThirdParty": false
 }

@@ -13,7 +13,6 @@ function _G.foldexpr(lnum)
   return '0'
 end
 
-
 vim.cmd [[
 function! My_foldexpr() abort
   return luaeval(printf('foldexpr(%d)', v:lnum))

@@ -19,7 +19,7 @@ function M.cr()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   local line = vim.api.nvim_buf_get_lines(0, row - 1, row, true)[1]
   if line:match '^%s*#!/%w' and vim.bo.filetype == '' then
-    vim.cmd 'filetype detect'
+    vim.cmd { cmd = 'filetype', args = { 'detect' } }
   end
   local surr = line:sub(col, col + 1)
   if surr == '()' or surr == '{}' or surr == '[]' then

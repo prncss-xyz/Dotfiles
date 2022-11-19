@@ -53,7 +53,14 @@ function M.config()
   for _, pair in ipairs(pairs) do
     local l, r = unpack(pair)
     queries[l] = require('flies.objects.pair'):new { pair }
-    queries[r] = require('flies.objects.pair'):new { pair, reversed = true }
+    queries[r] = require('flies.objects.pair'):new { { r, l } }
+  end
+  for _, pair in ipairs {
+    { '<', '>' },
+  } do
+    local l, r = unpack(pair)
+    queries[l] = require('flies.objects.pair'):new { pair }
+    queries[r] = require('flies.objects.pair'):new { { r, l } }
   end
   for c in string.gmatch('._/|\\$', '.') do
     queries[c] = require('flies.objects.subline').separator:new(c)

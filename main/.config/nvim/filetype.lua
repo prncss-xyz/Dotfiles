@@ -4,6 +4,7 @@ vim.filetype.add {
     ['.stylelintrc'] = 'json',
     ['.htmlhintrc'] = 'json',
     ['.busted'] = 'lua',
+    ['.envrc'] = 'bash',
   },
   pattern = {
     ['.*/%.config/waybar/config'] = 'json',

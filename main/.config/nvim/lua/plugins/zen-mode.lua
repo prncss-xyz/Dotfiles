@@ -14,7 +14,7 @@ function M.config()
         showcmd = false,
       },
       gitsigns = { enabled = true },
-      twilight = { enabled = true },
+      twilight = { enabled = false },
     },
     on_open = function()
       -- FIXME: not working

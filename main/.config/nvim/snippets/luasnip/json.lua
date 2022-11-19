@@ -1,4 +1,5 @@
 ---@diagnostic disable: undefined-global
+local preferred_quote = '"'
 
 local function clip_to_snip()
   local clip = vim.fn.getreg '+'

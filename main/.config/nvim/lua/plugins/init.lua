@@ -1,5 +1,5 @@
 local install_path = vim.fn.stdpath 'data'
-  .. '/site/pack/packer/start/packer.nvim'
+    .. '/site/pack/packer/start/packer.nvim'
 
 local function local_repo(name)
   return os.getenv 'PROJECTS' .. '/github.com/prncss-xyz/' .. name
@@ -134,8 +134,8 @@ return require('packer').startup {
     }
     use {
       'ThePrimeagen/refactoring.nvim',
-      module = 'refactoring',
       config = default_config 'refactoring',
+      module = { 'telescope._extensions.refactoring', 'refactoring' },
     }
     use {
       'RRethy/vim-illuminate',
@@ -200,6 +200,7 @@ return require('packer').startup {
     use {
       'L3MON4D3/LuaSnip',
       module = 'luasnip',
+      module_pattern = 'luasnip.*',
       event = 'InsertEnter',
       config = config 'luasnip',
     }
@@ -413,7 +414,7 @@ return require('packer').startup {
     use {
       'stevearc/dressing.nvim',
       config = default_config 'dressing',
-      event = 'bufreadpost',
+      event = 'BufReadPost',
     }
     use {
       's1n7ax/nvim-window-picker',
@@ -426,9 +427,22 @@ return require('packer').startup {
       module = 'window-picker',
     }
     use {
+      'nvim-zh/colorful-winsep.nvim',
+      config = function()
+        require('colorful-winsep').setup()
+      end,
+      event = 'BufReadPost',
+      disable = true,
+    }
+    use {
       'lukas-reineke/indent-blankline.nvim',
       event = 'bufreadpre',
       config = config 'indent-blankline',
+    }
+    use {
+      'lukas-reineke/headlines.nvim',
+      event = 'bufreadpre',
+      config = default_config 'headlines',
     }
     use {
       'folke/trouble.nvim',
@@ -472,10 +486,12 @@ return require('packer').startup {
       'rcarriga/nvim-notify',
       config = config 'nvim-notify',
       event = 'VimEnter',
+      disable = true,
     }
     use {
       'folke/noice.nvim',
       after = 'nvim-notify',
+      disable = true,
       config = function()
         require('noice').setup()
       end,
@@ -615,6 +631,22 @@ return require('packer').startup {
 
     -- Edition
     use {
+      -- no need for lazy loading
+      'gpanders/editorconfig.nvim',
+    }
+    use {
+      'NMAC427/guess-indent.nvim',
+      config = default_config 'guess-indent',
+      cmd = 'GuessIndent',
+      module = 'guess-indent',
+    }
+    use {
+      'nvim-pack/nvim-spectre',
+      config = config 'nvim-spectre',
+      module = 'spectre',
+      module_pattern = 'spectre.action',
+    }
+    use {
       'AckslD/nvim-FeMaco.lua',
       cmd = 'FeMaco',
       module = 'femaco',
@@ -644,6 +676,12 @@ return require('packer').startup {
       config = function()
         require('plugins.dial').config()
       end,
+      disable = true,
+    }
+    use {
+      local_repo 'longnose.nvim',
+      config = config 'longnose',
+      module = 'longnose',
     }
     use {
       'gbprod/substitute.nvim',

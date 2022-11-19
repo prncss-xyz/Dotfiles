@@ -130,13 +130,28 @@ function M.extend()
         desc = 'neo-tree',
       },
     },
-    r = b {
-      desc = 'docs view',
-      function()
-        require('utils.windows').show_ui('docs-view', function()
-          require('utils.docs-view').reveal()
-        end)
-      end,
+    r = modes {
+      desc = 'spectre',
+      n = keys {
+        next = b {
+          desc = 'open',
+          lazy_req('spectre', 'open'),
+        },
+        prev = b {
+          desc = 'open file seach',
+          lazy_req('spectre', 'open_file_search'),
+        },
+      },
+      x = keys {
+        next = b {
+          desc = 'open visual',
+          lazy_req('spectre', 'open_visual'),
+        },
+        prev = b {
+          desc = 'open visual select word',
+          lazy_req('spectre', 'open_visual', { select_word = true }),
+        },
+      },
     },
     h = keys {
       desc = 'help',
@@ -206,16 +221,6 @@ function M.extend()
       desc = 'open current external',
       require('utils').open_current,
     },
-    i = keys {
-      prev = b {
-        desc = 'setup-session launch',
-        lazy_req('setup-session', 'launch'),
-      },
-      next = b {
-        desc = 'setup-session develop',
-        lazy_req('setup-session', 'develop'),
-      },
-    },
     t = b { desc = 'new terminal', require('utils').term },
     u = b {
       desc = 'undo tree',
@@ -235,6 +240,14 @@ function M.extend()
         desc = 'projects',
         lazy_req('telescope', 'extensions.my.projects'),
       },
+    },
+    w = b {
+      desc = 'docs view',
+      function()
+        require('utils.windows').show_ui('docs-view', function()
+          require('utils.docs-view').reveal()
+        end)
+      end,
     },
     x = b { desc = 'xplr', require('utils').xplr_launch },
     y = keys {

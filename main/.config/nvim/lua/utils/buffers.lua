@@ -1,5 +1,22 @@
 local M = {}
 
+function M.mv(source, target)
+  if tsserver then -- FIX:
+    -- TODO: create needed directory
+    -- TODO: test if path is directory
+    vim.cmd 'TypescriptRenameFile'
+    require('typescript').renameFile(
+      vim.env.pwd + '/' + source,
+      vim.env.pwd + '/' + target
+    )
+    vim.fn.delete(source)
+  else
+    -- TODO: vim 0.8  use new API
+    vim.cmd { cmd = 'sav', args = { target } }
+    vim.fn.delete(source)
+  end
+end
+
 function M.rename()
   -- is there a more generic way to handle lsp move ?
   local default = vim.fn.expand '%:.'
@@ -14,24 +31,8 @@ function M.rename()
     if target == nil or target == '' or target == source then
       return
     end
-    -- TODO: create needed directory
-    -- TODO: test if directory
-    if false and tsserver then -- FIX:
-      vim.cmd 'TypescriptRenameFile'
-      require('typescript').renameFile(source, target)
-    else
-      -- TODO: vim 0.8  use new API
-      vim.cmd('sav ' .. target)
-      vim.fn.delete(source)
-    end
+    M.fn(source, target)
   end)
-end
-
-function M.move(dest)
-  -- TODO: vim 0.8  use new API
-  -- vim.cmd('sav ' .. target)
-  vim.cmd { cmd = 'sav', args = { target } }
-  vim.fn.delete(source)
 end
 
 function M.edit()
@@ -49,7 +50,7 @@ function M.edit()
     -- TODO: vim 0.8  use new API
     -- TODO: test if directory
     -- TODO: create needed directory
-    vim.cmd('edit ' .. dest)
+    vim.cmd { cmd = 'edit', args = { dest } }
   end)
 end
 
@@ -75,31 +76,7 @@ function M.edit_playground_file()
     vim.fn.mkdir(path, 'p')
   end
   local filename = path .. '/playground.' .. ft
-  vim.cmd('e ' .. filename)
-end
-
-local alt_patterns = {
-  { '(.+)%_spec(%.[%w%d]+)$', '%1%2' },
-  { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
-  { '(.+)%.lua$', '%1_spec.lua' },
-  { '(.+) %- extra%.md$', '%1.md' },
-  { '(.+)%.md$', '%1 - extra.md' },
-  { '(.+)(%.[%w%d]+)$', '%1.test%2' },
-}
-
-local function get_alt(file)
-  for _, pattern in ipairs(alt_patterns) do
-    if file:match(pattern[1]) then
-      return file:gsub(pattern[1], pattern[2])
-    end
-  end
-end
-
-function M.edit_alt()
-  local alt = get_alt(vim.fn.expand '%')
-  if alt then
-    vim.cmd('e ' .. alt)
-  end
+  vim.cmd { cmd = 'edit', args = { filename } }
 end
 
 function M.project_files()

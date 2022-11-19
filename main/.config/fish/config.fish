@@ -35,6 +35,7 @@ zoxide init fish | source
 set -gx MAMBA_EXE "/usr/bin/micromamba"
 set -gx MAMBA_ROOT_PREFIX "/home/prncss/micromamba"
 eval "/usr/bin/micromamba" shell hook --shell fish --prefix "/home/prncss/micromamba" | source
+eval (direnv hook fish)
 # <<< mamba initialize <<<
 complete -c cht -xa '(cht :list)'
 set time date

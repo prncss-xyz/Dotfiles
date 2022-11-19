@@ -12,7 +12,7 @@ local buffer_preview_maker = function(filepath, bufnr, opts)
     args = { '--mime-type', '-b', filepath },
     on_exit = function(j)
       local mime_type = vim.split(j:result()[1], '/')[1]
-      if mime_type == 'text' then
+      if mime_type == 'text' or vim.endswith(filepath, 'json') then
         previewers.buffer_previewer_maker(filepath, bufnr, opts)
       else
         -- maybe we want to write something to the buffer here
@@ -91,7 +91,7 @@ function M.config()
           ['qv'] = actions.file_vsplit,
           ['qd'] = function(prompt_bufnr)
             local selection =
-              require('telescope.actions.state').get_selected_entry()
+            require('telescope.actions.state').get_selected_entry()
             local dir = vim.fn.fnamemodify(selection.path, ':p:h')
             require('telescope.actions').close(prompt_bufnr)
             -- Depending on what you want put `cd`, `lcd`, `tcd`
@@ -127,7 +127,7 @@ function M.config()
             '--exclude',
             '0 archivés',
             '--max-depth',
-            '4'
+            '4',
           },
           search_dirs = {
             vim.fn.getenv 'DOTFILES',
@@ -154,7 +154,12 @@ function M.config()
   }
 
   require('telescope').load_extension 'fzf'
-  require('telescope').load_extension 'noice'
+  pcall(function()
+    require('telescope').load_extension 'noice'
+  end)
+  pcall(function()
+    require('telescope').load_extension 'refactoring'
+  end)
 end
 
 return M

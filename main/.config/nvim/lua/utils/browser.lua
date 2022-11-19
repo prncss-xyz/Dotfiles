@@ -6,11 +6,20 @@ local browser = os.getenv 'BROWSER'
 
 function M.browse(url)
   require('plenary').job
-    :new({
-      command = browser,
-      args = { '--new-window', url },
-    })
-    :start()
+      :new({
+        command = browser,
+        args = { '--new-window', url },
+      })
+      :start()
+end
+
+function M.browse_dev()
+  require('plenary').job
+      :new({
+        command = 'browse_dev',
+        pwd = vim.fn.getenv 'PWD',
+      })
+      :start()
 end
 
 function M.search_cword(base)
@@ -39,11 +48,11 @@ function M.man()
   -- file:close()
   local word = vim.fn.expand '<cword>'
   require('plenary').job
-    :new({
-      command = 'man',
-      args = { '-h', word },
-    })
-    :start()
+      :new({
+        command = 'man',
+        args = { '-h', word },
+      })
+      :start()
 end
 
 return M

@@ -3,7 +3,7 @@ M = {}
 -- REFACT: get consistent with commands
 
 function M.setup()
-  local bind_command = require('legendary').bind_command
+  local command = require('legendary').command
   for _, v in ipairs {
     'FoldToggle',
     'FeMaco',
@@ -38,7 +38,7 @@ function M.setup()
     'OverseerQuickAction',
     'OverseerTaskAction',
   } do
-    bind_command { ':' .. v }
+    command { ':' .. v }
   end
   for _, v in ipairs {
     'help_tags',
@@ -83,9 +83,9 @@ function M.setup()
     'Dump',
     'PutText',
   } do
-    bind_command { ':' .. v .. ' ', unfinished = true }
+    command { ':' .. v .. ' ', unfinished = true }
   end
-  bind_command {
+  command {
     ':Delete',
     function ()
       local filename = vim.api.nvim_buf_get_name(0)
@@ -93,7 +93,7 @@ function M.setup()
       os.remove(filename)
     end
   }
-  bind_command {
+  command {
     ':EditSnippet',
     require 'utils.edit_snippets',
   }

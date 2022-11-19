@@ -2,6 +2,8 @@ local M = {}
 
 local last_ui
 
+local commands = {}
+
 function M.show_ui(keep, cb)
   if type(keep) == 'string' then
     keep = { keep }
@@ -26,7 +28,15 @@ function M.show_ui(keep, cb)
           end
         end
         if del then
-          vim.api.nvim_win_close(win, false)
+          if ft == 'neo-tree' then
+            vim.cmd 'NeoTreeClose'
+          elseif ft == 'aerial' then
+            vim.cmd 'AerialCLose'
+          else
+            vim.notify('unknown command for buftype ' .. bt)
+            vim.notify('unknown command for filetype ' .. ft)
+            -- vim.api.nvim_win_close(win, false)
+          end
         end
       end
     end)
@@ -185,6 +195,7 @@ function M.pick(plain)
       return (buftype == '') == plain
     end, windows_id)
   end
+
   local wins = vim.api.nvim_tabpage_list_wins(0)
   wins = filter(wins)
   if #wins == 2 then

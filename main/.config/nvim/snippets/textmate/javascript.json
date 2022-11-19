@@ -63,18 +63,6 @@
     "prefix": "dt",
     "body": "describe('${TM_FILENAME_BASE}', () => {\n\t${0}\n})"
   },
-  "it asynchronous": {
-    "prefix": "it",
-    "body": "it('${1:description}', async () => {\n\t${0}\n})"
-  },
-  "it.todo": {
-    "prefix": "itt",
-    "body": "it.todo('${1:description}')"
-  },
-  "it with a callback": {
-    "prefix": "itd",
-    "body": "it('${1:description}', (done) => {\n\t${0}\n})"
-  },
   "before": {
     "prefix": "bf",
     "body": "before(async () => {\n\t${0}\n})"
@@ -202,10 +190,6 @@
   "reduce": {
     "prefix": "reduce",
     "body": "${1:iterable}.reduce((${2:previous}, ${3:current}) => {\n\t${0}\n}${4:, initial})"
-  },
-  "filter": {
-    "prefix": "filter",
-    "body": "${1:iterable}.filter((${2:item}) => {\n\t${0}\n})"
   },
   "find": {
     "prefix": "find",
@@ -418,26 +402,6 @@
   "named generator": {
     "prefix": "gfn",
     "body": "function* ${1:name}(${2:arguments}) {\n\t${0}\n}"
-  },
-  "console.log": {
-    "prefix": "console.log",
-    "body": "console.log(${0})"
-  },
-  "console.log a variable": {
-    "prefix": "cv",
-    "body": "console.log('${0}:', ${0})"
-  },
-  "console.error": {
-    "prefix": "ce",
-    "body": "console.error(${0})"
-  },
-  "console.warn": {
-    "prefix": "cw",
-    "body": "console.warn(${0})"
-  },
-  "console.dir": {
-    "prefix": "cod",
-    "body": "console.dir('${0}:', ${0})"
   },
   "constructor": {
     "prefix": "cn",
@@ -662,79 +626,9 @@
     "body": ["import { $0 } from \"${1:module}\";"],
     "description": "Import external module."
   },
-  "Region Start": {
-    "prefix": "#region",
-    "body": ["//#region $0"],
-    "description": "Folding Region Start"
-  },
-  "Region End": {
-    "prefix": "#endregion",
-    "body": ["//#endregion"],
-    "description": "Folding Region End"
-  },
-  "Log warning to console": {
-    "prefix": "warn",
-    "body": ["console.warn($1);", "$0"],
-    "description": "Log warning to the console"
-  },
-  "Log error to console": {
-    "prefix": "error",
-    "body": ["console.error($1);", "$0"],
-    "description": "Log error to the console"
-  },
-  "test": {
-    "prefix": "test",
-    "body": ["test('${1:description}', () => {", "\t${2:// test}", "});"],
-    "description": "a jest test"
-  },
-  "describe it": {
-    "prefix": "describe it",
-    "body": [
-      "describe('${1:description}', () => {",
-      "\tit('${2:description}', () => {",
-      "\t\t${3:// test}",
-      "\t});",
-      "});"
-    ],
-    "description": "description"
-  },
-  "describe": {
-    "prefix": "describe",
-    "body": ["describe('${1:description}', () => {", "\t${2:// test}", "});"],
-    "description": "description"
-  },
-  "it": {
-    "prefix": "it",
-    "body": ["it('${1:description}', () => {", "\t${2:// test}", "});"],
-    "description": "a jest test"
-  },
-  "expect to be": {
-    "prefix": "expect toBe",
-    "body": ["expect(${1:passed}).toBe(${2:expected});"],
+  "expect": {
+    "prefix": "expect",
+    "body": ["expect(${1:passed}).to${2:Be}(${3:expected});"],
     "description": "test exact equality"
-  },
-  "describe it match": {
-    "prefix": "describe it matchSnapshot",
-    "body": [
-      "describe('${1:Component}', () => {",
-      "\tit('renders correctly', () => {",
-      "\t\tconst tree = renderer.create(<$1 $2/>).toJSON();",
-      "\t\texpect(tree).toMatchSnapshot();",
-      "\t});",
-      "});"
-    ],
-    "description": "description"
-  },
-  "expect to match": {
-    "prefix": "expect toMatchSnapshot",
-    "body": ["expect(${1:passed}).toMatchSnapshot();"],
-    "description": "test exact equality"
-  },
-  "jest file": {
-    "prefix": "jest file",
-    "body": [
-      "import { $1 } from './${2}';",
-      ""
-    ]
   }
 }

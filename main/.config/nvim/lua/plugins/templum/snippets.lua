@@ -9,15 +9,14 @@ local c = ls.choice_node
 local d = ls.dynamic_node
 local p = require('luasnip.extras').partial
 local l = require('luasnip.extras').lambda
+local fmt = require('luasnip.extras.fmt').fmt
 
 -- TODO: explore selection
-
-local split_string = require('utils.std').split_string
 
 local templates_dir = vim.env.HOME .. '/.config/nvim/snippets/templum'
 
 local function title()
-  local pat = split_string(vim.fn.expand('%:p:h', nil, nil), '/')
+  local pat = vim.split(vim.fn.expand('%:p:h', nil, nil), '/')
   pat = pat[#pat]
   return pat
 end
@@ -70,7 +69,7 @@ local function from_file_fmt(filename, args, opts)
       end
       local raw = h:read '*a'
       h:close()
-      return sn(1, require('luasnip.extras.fmt').fmt(raw, args or {}), opts)
+      return sn(1, fmt(raw, args or {}), opts)
     end, {}, {}),
   }
 end
@@ -78,6 +77,18 @@ end
 local function module(pattern)
   local filename = vim.fn.expand '%'
   return filename:match(pattern)
+end
+
+local function quoted_filename()
+  local source = vim.fn.expand '%:t'
+  source = string.gsub(source, '(.test.)', '.')
+  return string.format('%q', './' .. source)
+end
+
+local function raw_filename()
+  local source = vim.fn.expand '%:t'
+  source = string.gsub(source, '(.test.tsx)', '')
+  return source
 end
 
 local function chmod_x()
@@ -97,7 +108,6 @@ local function chmod_x()
   end
   vim.fn.setfperm(filename, res)
 end
-
 
 local function from_buf_title()
   return d(1, function()
@@ -154,36 +164,75 @@ return {
         i(2, '// tests'),
       },
     },
-    {
-      '%.test%.jsx$',
-      {
-        t {
-          "import React from 'react';",
-          "import renderer from 'react-test-renderer';",
-          'import ',
-        },
-        i(1, 'M'),
-        t " from './",
-        p(module, '(.+).test.jsx$'),
-        t { "';", '', '' },
-        i(2, '// tests'),
-      },
-    },
-    {
-      '%.test%.tsx$',
-      {
-        t {
-          "import React from 'react';",
-          "import renderer from 'react-test-renderer';",
-          'import ',
-        },
-        i(1, 'M'),
-        t " from './",
-        p(module, '(.+).test.tsx$'),
-        t { "';", '', '' },
-        i(2, '// tests'),
-      },
-    },
+    -- {
+    --   '%.test%.tsx$',
+    --   {
+    --     fmt(
+    --       [[
+    --     import { describe, expect, it, vi } from "vitest";
+    --     import { render, screen } from "@testing-library/react";
+    --     import userEvent from "@testing-library/user-event";
+    --     import { [] } from [];
+    --
+    --     describe("[]", async () => {
+    --       const { container } = render(
+    --         <[] />
+    --       );
+    --       it("should match snapshot", () => {
+    --         expect(container).toMatchSnapshot();
+    --       });
+    --     });
+    --       ]],
+    --       {
+    --         -- i(1, "Element"),
+    --         p(raw_filename),
+    --         -- i(2, "filepath"),
+    --         p(quoted_filename),
+    --         p(raw_filename),
+    --         p(raw_filename),
+    --         -- f(function(args)
+    --         -- 	return args[1][1]
+    --         -- end, { 1 }),
+    --         -- f(function(args)
+    --         -- 	return args[1][1]
+    --         -- end, { 1 }),
+    --       },
+    --       {
+    --         delimiters = '[]',
+    --       }
+    --     ),
+    --   },
+    -- },
+    -- {
+    --   '%.test%.jsx$',
+    --   {
+    --     t {
+    --       "import React from 'react';",
+    --       "import renderer from 'react-test-renderer';",
+    --       'import ',
+    --     },
+    --     i(1, 'M'),
+    --     t " from './",
+    --     p(module, '(.+).test.jsx$'),
+    --     t { "';", '', '' },
+    --     i(2, '// tests'),
+    --   },
+    -- },
+    -- {
+    --   '%.test%.tsx$',
+    --   {
+    --     t {
+    --       "import React from 'react';",
+    --       "import renderer from 'react-test-renderer';",
+    --       'import ',
+    --     },
+    --     i(1, 'M'),
+    --     t " from './",
+    --     p(module, '(.+).test.tsx$'),
+    --     t { "';", '', '' },
+    --     i(2, '// tests'),
+    --   },
+    -- },
     {
       ' - extra%.md$',
       {

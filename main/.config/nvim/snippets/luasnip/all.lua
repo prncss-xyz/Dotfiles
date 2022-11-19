@@ -1,5 +1,7 @@
 ---@diagnostic disable: undefined-global
 
+local preferred_quote = require('parameters').preferred_quote
+
 local M = {
   s('date', p(os.date, '%x')),
   s('time', p(os.date, '%H:%M')),

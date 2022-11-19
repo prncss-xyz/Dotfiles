@@ -29,7 +29,13 @@ function M.extend()
         lazy_req('harpoon.cmd-ui', 'toggle_quick_menu'),
       },
     },
-    a = b { desc = 'edit alt', require('utils.buffers').edit_alt },
+    -- a = b { desc = 'test file', require('utils.buffers').edit_alt },
+    a = b {
+      desc = 'test file',
+      function()
+        require('utils.relative_files').alternative 'test'
+      end,
+    },
     b = keys {
       desc = 'bookmark',
       a = keys {
@@ -92,10 +98,6 @@ function M.extend()
     g = b {
       desc = 'buffstory select recent buffer',
       lazy_req('buffstory', 'select'),
-    },
-    v = b {
-      desc = 'move file',
-      lazy_req('telescope', 'extensions.my.move'),
     },
     h = b {
       desc = 'files (project)',
@@ -227,6 +229,10 @@ function M.extend()
         lazy_req('telescope', 'extensions.zk.tags'),
       },
     },
+    -- v = b {
+    --   desc = 'move file',
+    --   lazy_req('telescope', 'extensions.my.move'),
+    -- },
     m = b {
       desc = 'plugins',
       lazy_req('telescope', 'extensions.my.installed_plugins'),
@@ -260,9 +266,27 @@ function M.extend()
       ),
       next = lazy_req('trouble', 'next', { skip_groups = true, jump = true }),
     },
+    u = b {
+      desc = 'snapshot file',
+      function()
+        require('utils.relative_files').alternative 'snapshot'
+      end,
+    },
+    v = b {
+      desc = 'css file',
+      function()
+        require('utils.relative_files').alternative 'css'
+      end,
+    },
     w = b {
       desc = 'todo',
       lazy_req('telescope', 'extensions.todo-comments.todo'),
+    },
+    ['.'] = b {
+      desc = 'config file',
+      function()
+        require('utils.relative_files').projection 'config'
+      end,
     },
     ['é'] = keys {
       prev = b {

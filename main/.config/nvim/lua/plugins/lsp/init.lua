@@ -160,8 +160,6 @@ function M.config()
       filetypes = { 'html', 'css', 'typescriptreact', 'javascriptreact' },
     }
   end
-
-  require 'plugins.lsp.utils'
 end
 
 return M

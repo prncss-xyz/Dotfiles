@@ -52,13 +52,19 @@ function M.extend()
     d = keys {
       -- b { '<Plug>(dial-increment-additional)', modes = 'x' },
       -- b { '<Plug>(dial-decrement-additional)', modes = 'x' },
+      -- prev = modes {
+      --   n = b { '<Plug>(dial-decrement)' },
+      --   x = b { require('plugins.dial').utils.decrement_x },
+      -- },
+      -- next = modes {
+      --   n = b { '<Plug>(dial-increment)' },
+      --   x = b { require('plugins.dial').utils.increment_x },
+      -- },
       prev = modes {
-        n = b { '<Plug>(dial-decrement)' },
-        x = b { require('plugins.dial').utils.decrement_x },
+        n = b { lazy_req('longnose', 'replace', 'descend') },
       },
       next = modes {
-        n = b { '<Plug>(dial-increment)' },
-        x = b { require('plugins.dial').utils.increment_x },
+        n = b { lazy_req('longnose', 'replace', 'ascend') },
       },
     },
     e = b { desc = 'swap', '<Plug>(flies-swap)', modes = 'nx' },

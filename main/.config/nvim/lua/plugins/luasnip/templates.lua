@@ -23,8 +23,6 @@ end
 -- exact string matches filename only (no dir)
 -- regex matches against whole path
 
-local split_string = require('utils.std').split_string
-
 local M = {}
 
 local busted = [[return {
@@ -36,6 +34,6 @@ local busted = [[return {
     ROOT = {"."}
   }
 }]]
-table.insert(M, s({ trig = '.busted' }, { t(split_string(busted, '\n')) }))
+table.insert(M, s({ trig = '.busted' }, { t(vim.split(busted, '\n')) }))
 
 return M

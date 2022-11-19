@@ -14,6 +14,8 @@ if [ -z "$NVIM_LISTEN_ADDRESS" ]; then
   export NVIM_LISTEN_ADDRESS="/tmp/nvim-$$.sock"
 fi
 
+eval "$(direnv hook bash)"
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 

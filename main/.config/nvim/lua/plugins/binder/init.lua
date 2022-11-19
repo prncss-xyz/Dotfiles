@@ -8,7 +8,7 @@ function M.config()
   local binder = require 'binder'
   binder.setup {
     dual_key = require('binder.utils').prepend 'p',
-    bind_keymap = require('binder.utils').bind_keymap_legendary,
+    bind_keymap = require('binder.utils').keymap_legendary,
     prefix = 'plugins.binder.',
   }
   local keys = binder.keys

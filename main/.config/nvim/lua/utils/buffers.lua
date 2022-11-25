@@ -53,6 +53,21 @@ function M.edit()
   end)
 end
 
+function M.edit_newest()
+  local res
+  local Job = require('plenary').job
+  Job:new({
+    command = 'sh',
+    -- --FIX: not working
+    args = { '-c', 'sh -c "fd --maxdepth 1 --type file|sort -r|tail -1"' },
+    cwd = os.getenv 'HOME',
+    on_exit = function(j, _)
+      res = j:result()
+    end,
+  }):sync()
+  dump(res)
+end
+
 function M.edit_playground_file()
   local ft = vim.bo.filetype
   if ft == '' then

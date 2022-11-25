@@ -1,9 +1,5 @@
 local M = {}
 
-local function t(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
 function M.config()
   local binder = require 'binder'
   binder.setup {
@@ -18,6 +14,31 @@ function M.config()
   local repeatable = util.repeatable
   local lazy = util.lazy
   local lazy_req = util.lazy_req
+
+  for char in ("#$%&'*_,-0?@]^_`DEFHIMNPpQVx~+?f"):gmatch '.' do
+    vim.keymap.set('n', 'g' .. char, '<nop>', {})
+  end
+  for _, char in ipairs {
+    '<c-]>',
+    '<c-a>',
+    '<c-g>',
+    '<c-h>',
+    '<cr>',
+    '<down>',
+    '<end>',
+    '<home>',
+    '<leftmouse>',
+    '<middlemouse>',
+    '<rightmouse>',
+    '<tab>',
+    '<up>',
+    '?h?',
+    'g??',
+  } do
+    vim.keymap.set('n', 'g' .. char, '<nop>', {})
+  end
+  vim.keymap.set('n', 'o', '<nop>', {})
+  vim.keymap.set('x', 'o', '<nop>', {})
 
   binder.bind(keys {
     register = 'basic',
@@ -39,23 +60,21 @@ function M.config()
       register = 'extra',
       next = b { '<nop>' },
     },
-    q = keys {
-      register = 'editor',
-      next = b { '<nop>' },
-      j = keys {
-        desc = 'peek',
-        register = 'peek',
-      },
-      t = keys {
-        desc = 'quickfix',
-        register = 'quickfix',
-      },
-    },
     z = keys {
       register = 'bigmove',
       next = b { '<nop>' },
     },
   })
+  require('plugins.binder.commands').setup()
+  require('plugins.binder.lang').setup()
+  binder.extend_with 'basic'
+  binder.extend_with 'edit'
+  binder.extend_with 'move'
+  binder.extend_with 'bigmove'
+  binder.extend_with 'extra'
+  binder.extend_with 'mark'
+  require('plugins.binder.textobjects').setup()
+
   require('key-menu').set('n', 'g')
   require('key-menu').set('n', 'h')
   require('key-menu').set('n', 'm')
@@ -64,274 +83,6 @@ function M.config()
   require('key-menu').set('n', 'qj')
   require('key-menu').set('n', 'qt')
   require('key-menu').set('n', 'z')
-  binder.extend(
-    'mark',
-    keys {
-      o = keys {
-        prev = b { 'zO', desc = 'open current fold recursive' },
-        next = b { 'zo', desc = 'open current fold' },
-      },
-      c = keys {
-        prev = b { 'zC', desc = 'close current fold recursive' },
-        next = b { 'zc', desc = 'close current fold' },
-      },
-      a = keys {
-        prev = b { 'zA', desc = 'toggle current fold recursive' },
-        next = b { 'za', desc = 'toggle current fold' },
-      },
-      m = keys {
-        prev = b { 'zM', desc = 'close all folds' },
-        next = b { 'zm', desc = 'more fold' },
-      },
-      r = keys {
-        prev = b { 'zR', desc = 'open all folds' },
-        next = b { 'zr', desc = 'less folds' },
-      },
-      t = b {
-        desc = 'FoldToggle (markdown)',
-        ':FoldToggle<cr>',
-      },
-      l = b {
-        function()
-          if not vim.g.secret then
-            vim.fn.feedkeys(
-              t '<cmd>rshada<cr><Plug>(Marks-toggle)<cmd>wshada!<cr>',
-              'm'
-            )
-          end
-        end,
-        desc = 'toggle next available mark at cursor',
-      },
-    }
-  )
-  --[[
-        '<Plug>(Marks-next)',
-      pl = plug {
-        '(Marks-delete)',
-        desc = 'Delete a letter mark (will wait for input).',
-      },
-      l = plug {
-        '(Marks-set)',
-        desc = 'Sets a letter mark (will wait for input).',
-      },
-      prev = b {
-        '<Plug>(Marks-set)',
-      },
-      next = b {
-        function()
-          require('marks').mark_state:all_to_list 'quickfixlist'
-          require('telescope.builtin').quickfix()
-        end,
-      },
-        l = plug { '(Marks-prev)', name = 'Goes to previous mark in buffer.' },
-  --]]
-  binder.with_labels('bookmarks', 'b', {
-    mark = keys {
-      -- prev = b { '<Plug>(Marks-next-bookmark)' },
-      -- next = b {
-      --   function()
-      --     require('marks').bookmark_state:all_to_list 'quickfixlist'
-      --     require('telescope.builtin').quickfix()
-      --   end,
-      -- },
-      -- [a.mark] = {
-      --   ['pp' .. a.mark] = plug {
-      --     '(Marks-deletebuf)',
-      --     name = 'Deletes all marks in current buffer.',
-      --   },
-      --   ['p' .. a.mark] = plug {
-      --     '(Marks-deleteline)',
-      --     name = 'Deletes all marks on current line.',
-      --   },
-      -- },
-      -- a = require('utils').bookmark_next(0),
-      -- s = require('utils').bookmark_next(1),
-      -- d = require('utils').bookmark_next(2),
-      -- f = require('utils').bookmark_next(3),
-      -- b = plug '(Marks-prev-bookmark)',
-      next = b {
-        b = {
-          '<cmd>rshada<cr><Plug>(Marks-delete-bookmark)<cmd>wshada!<cr>',
-        },
-      },
-      a = b { '<Plug>(Marks-set-bookmark0)' },
-      s = b { '<Plug>(Marks-set-bookmark1)' },
-      d = b { '<Plug>(Marks-set-bookmark2)' },
-      f = b { '<Plug>(Marks-set-bookmark3)' },
-    },
-  })
-  binder.with_labels('symbol', 's', {
-    editor = b {
-      desc = 'aerial',
-      lazy_req('utils.windows', 'show_ui', 'aerial', 'AerialOpen'),
-    },
-    -- FIXME:
-    -- bigmove = b { lazy_req('telescope.builtin', 'lsp_definitions') },
-    bigmove = b { lazy_req('telescope.builtin', 'lsp_definitions') },
-    extra = b {
-      desc = 'show line',
-      lazy('vim.diagnostic.open_float', nil, { source = 'always' }),
-    },
-  })
-  binder.with_labels('diagnostic', 'd', {
-    extra = keys {
-      c = keys {
-        prev = b { desc = 'incoming calls', vim.lsp.buf.incoming_call },
-        next = b { desc = 'outgoing calls', vim.lsp.buf.outgoing_calls },
-      },
-      s = b { desc = 'definition', vim.lsp.buf.definition },
-      k = b { desc = 'hover', vim.lsp.buf.hover },
-      r = b { desc = 'references', vim.lsp.buf.references },
-      t = b { desc = 'go to type definition', vim.lsp.buf.type_definition },
-      w = keys {
-        desc = 'worspace folder',
-        a = b {
-          desc = 'add workspace folder',
-          vim.lsp.buf.add_workspace_folder,
-        },
-        l = b {
-          desc = 'ls workspace folder',
-          vim.lsp.buf.list_workspace_folder,
-        },
-        d = b {
-          desc = 'rm workspace folder',
-          vim.lsp.buf.remove_workspace_folder,
-        },
-      },
-      x = b { desc = 'signature help', vim.lsp.buf.signature_help },
-    },
-  })
-  if true then
-    binder.with_labels('dap', 'a', {
-      editor = b {
-        desc = 'ui',
-        lazy_req('utils.windows', 'show_ui', 'dap', lazy_req('dapui', 'open')),
-      },
-      extra = keys {
-        b = keys {
-          prev = b {
-            desc = 'clear breakpoints',
-            lazy_req('dap', 'clear_breakpoints'),
-          },
-          next = b {
-            desc = 'toggle breakpoints',
-            lazy_req('dap', 'toggle_breakpoint'),
-          },
-        },
-        c = repeatable { desc = 'continue', lazy_req('dap', 'continue') },
-        i = repeatable { desc = 'step into', lazy_req('dap', 'step_into') },
-        o = keys {
-          prev = repeatable { desc = 'step out', lazy_req('dap', 'step_out') },
-          next = repeatable {
-            desc = 'step over',
-            lazy_req('dap', 'step_over'),
-          },
-        },
-        x = keys {
-          prev = b { desc = 'disconnect', lazy_req('dap', 'disconnect') },
-          next = b { desc = 'terminate', lazy_req('dap', 'terminate') },
-        },
-        ['.'] = b { desc = 'run last', lazy_req('dap', 'run_last') },
-        k = b { desc = 'up', lazy_req('dap', 'up') },
-        j = b { desc = 'down', lazy_req('dap', 'down') },
-        l = b { desc = 'launch', lazy_req('plugins.dap', 'launch') },
-        r = b { desc = 'repl open', lazy_req('dap', 'repl.open') },
-        h = keys {
-          prev = b {
-            "<cmd>lua require'dap.ui.variables'.hover()<cr>",
-            desc = 'hover',
-          },
-          next = b {
-            "<cmd>lua require'dap.ui.widgets'.hover()<cr>",
-            desc = 'widgets',
-          },
-        },
-        v = b {
-          "<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
-          desc = 'visual hover',
-        },
-        ['?'] = b {
-          "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
-          desc = 'variables scopes',
-        },
-        tc = b {
-          "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
-          desc = 'commands',
-        },
-        ['t,'] = b {
-          "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
-          desc = 'configurations',
-        },
-        tb = b {
-          "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
-          desc = 'list breakpoints',
-        },
-        tv = b {
-          "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
-          desc = 'dap variables',
-        },
-        tf = b {
-          "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
-          desc = 'dap frames',
-        },
-        ['<cr>'] = repeatable {
-          desc = 'run to cursor',
-          lazy_req('dap', 'run_to_cursor'),
-        },
-      },
-    })
-  end
-  require('plugins.binder.commands').setup()
-  require('plugins.binder.lang').setup()
-  binder.extend_with 'basic'
-  binder.extend_with 'editor'
-  binder.extend_with 'edit'
-  binder.extend_with 'move'
-  binder.extend_with 'bigmove'
-  binder.extend_with 'extra'
-  require('plugins.binder.textobjects').setup()
 end
-
---[[
-
-local function map_basic()
-  -- TODO:
-  local reg = require('modules.binder').reg
-  reg {
-    [','] = {
-      name = 'hint',
-      modes = {
-        n = '`',
-        x = ':lua require("tsht").nodes()<CR>',
-        o = function()
-          require('tsht').nodes()
-        end,
-      },
-    },
-    [a.edit] = {
-      w = {
-        function()
-          require('telescope.builtin').symbols {
-            sources = { 'math', 'emoji' },
-          }
-        end,
-        'symbols',
-        modes = 'n',
-      },
-      [d.spell] = {
-        function()
-          require('telescope.builtin').spell_suggest(
-            require('telescope.themes').get_cursor {}
-          )
-        end,
-        'spell suggest',
-        modes = 'nx',
-      },
-    },
-  }
-end
-
-00 1247 LOC
---]]
 
 return M

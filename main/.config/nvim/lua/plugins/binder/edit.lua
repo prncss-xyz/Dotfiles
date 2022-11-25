@@ -68,18 +68,6 @@ function M.extend()
       },
     },
     e = b { desc = 'swap', '<Plug>(flies-swap)', modes = 'nx' },
-    -- x = keys {
-    --   next = b {
-    --     desc = 'exchange',
-    --     '<Plug>(ExchangeClear)',
-    --     modes = 'nx',
-    --   },
-    --   prev = b {
-    --     desc = 'exchange',
-    --     '<Plug>(Exchange)',
-    --     modes = 'nx',
-    --   },
-    -- },
     f = keys {
       desc = 'debug print',
       prev = b {

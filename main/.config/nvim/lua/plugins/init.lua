@@ -530,6 +530,11 @@ return require('packer').startup {
       module_pattern = 'neo-tree-zk.sources.zk.*',
     }
     use {
+      'is0n/fm-nvim',
+      config = config 'fm-nvim',
+      cmd = { 'Xplr' },
+    }
+    use {
       local_repo 'split.nvim',
       module = 'split',
     }

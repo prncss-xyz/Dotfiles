@@ -168,6 +168,9 @@ function M.config()
         runtime = {
           version = 'LuaJIT',
         },
+        workspace = {
+          checkThirdParty = false,
+        },
         telemetry = {
           enable = false,
         },

@@ -9,27 +9,158 @@ function M.extend()
   local np = util.np
   local lazy_req = util.lazy_req
   require('key-menu').set('n', 'zb')
+  require('key-menu').set('n', 'zz')
   require('key-menu').set('n', 'zp')
   return keys {
     redup = keys {
-      redup = b {
-        desc = 'harpoon ui',
-        lazy_req('harpoon.ui', 'toggle_quick_menu'),
+      desc = 'telescope',
+      -- also: require("luasnip.extras.select_choice")
+      a = b {
+        desc = 'oldfiles',
+        lazy_req('telescope.builtin', 'oldfiles', { only_cwd = true }),
       },
-      y = b { desc = 'harpoon add', lazy_req('harpoon.mark', 'add_file') },
-      j = b { desc = 'harpoon file 1', lazy_req('harpoon.ui', 'nav_file', 1) },
-      k = b { desc = 'harpoon file 2', lazy_req('harpoon.ui', 'nav_file', 2) },
-      l = b { desc = 'harpoon file 3', lazy_req('harpoon.ui', 'nav_file', 3) },
-      [';'] = b {
-        desc = 'harpoon file 4',
-        lazy_req('harpoon.ui', 'nav_file', 4),
+      b = b {
+        desc = 'buffers',
+        lazy_req('telescope.builtin', 'buffers'),
       },
-      [' '] = b {
-        desc = 'harpoon command menu',
-        lazy_req('harpoon.cmd-ui', 'toggle_quick_menu'),
+      c = b {
+        desc = 'telescope repo',
+        lazy_req('telescope', 'extensions.repo.list'),
+      },
+      e = b {
+        desc = 'files (workspace)',
+        function()
+          if true then
+            require('telescope.builtin').find_files {
+              prompt_title = 'files (project)',
+              find_command = {
+                'rg',
+                '--files',
+                '--hidden',
+                '-g',
+                '!.git',
+              },
+            }
+            return
+          end
+          if false then
+            -- FIX:  fd results seems to diverge from what is met when called from command line
+            -- in particular, some (but not all) hidden files are missing
+            -- using git_files as a workarount
+            require('telescope.builtin').git_files()
+            return
+          end
+          require('telescope.builtin').find_files {
+            prompt_title = 'files (workspace)',
+            find_command = {
+              'fd',
+              '--hidden',
+              '--exclude',
+              '.git',
+              '--type',
+              'f',
+              '--strip-cwd-prefix',
+            },
+          }
+        end,
+      },
+      f = b {
+        desc = 'files (local)',
+        function()
+          require('telescope.builtin').find_files {
+            prompt_title = 'files (local)',
+            cwd = vim.fn.expand '%:p:h',
+            find_command = {
+              'fd',
+              '--hidden',
+              '--exclude',
+              '.git',
+              '--type',
+              'f',
+              '--strip-cwd-prefix',
+            },
+          }
+        end,
+      },
+      g = b {
+        desc = 'buffstory select recent buffer',
+        lazy_req('buffstory', 'select'),
+      },
+      h = b {
+        desc = 'telescope status',
+        function()
+          require('telescope.builtin').git_status()
+        end,
+      },
+      -- FIXME:
+      k = b {
+        desc = 'node modules',
+        lazy_req('telescope', 'extensions.my.node_modules'),
+      },
+      m = b {
+        desc = 'plugins',
+        lazy_req('telescope', 'extensions.my.installed_plugins'),
+      },
+      n = b {
+        desc = 'notes',
+        -- lazy_req('telescope', 'extensions.zk.notes'),
+        lazy_req('telescope', 'extensions.my.zk_notes'),
+      },
+      r = b {
+        desc = 'telescope references',
+        function()
+          require('telescope.builtin').lsp_references {}
+        end,
+      },
+      w = b {
+        desc = 'todo',
+        lazy_req('telescope', 'extensions.todo-comments.todo'),
+      },
+      ['é'] = keys {
+        prev = b {
+          desc = 'live grep (workspace)',
+          function()
+            require('telescope.builtin').live_grep {
+              prompt_title = 'live grep (workspace)',
+            }
+          end,
+        },
+        next = b {
+          desc = 'live grep (local)',
+          function()
+            require('telescope.builtin').live_grep {
+              prompt_title = 'live grep (local)',
+              search_dirs = { vim.fn.expand('%:h', nil, nil) },
+            }
+          end,
+        },
       },
     },
-    -- a = b { desc = 'test file', require('utils.buffers').edit_alt },
+
+    r = b {
+      desc = 'harpoon terminal 1',
+      lazy_req('harpoon.term', 'gotoTerminal', 1),
+    },
+    t = b {
+      desc = 'harpoon terminal 2',
+      lazy_req('harpoon.term', 'gotoTerminal', 2),
+    },
+    y = b {
+      desc = 'harpoon terminal 3',
+      lazy_req('harpoon.term', 'gotoTerminal', 3),
+    },
+    -- update "main/.config/nvim/lua/plugins/neo-tree.lua"
+    u = b { desc = 'harpoon file 1', lazy_req('harpoon.ui', 'nav_file', 1) },
+    i = b { desc = 'harpoon file 2', lazy_req('harpoon.ui', 'nav_file', 2) },
+    o = b { desc = 'harpoon file 3', lazy_req('harpoon.ui', 'nav_file', 3) },
+    p = b {
+      desc = 'harpoon file 4',
+      lazy_req('harpoon.ui', 'nav_file', 4),
+    },
+    j = b { desc = 'buf 1', lazy_req('buffstory', 'open', 1) },
+    k = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
+    l = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
+    [';'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
     a = b {
       desc = 'test file',
       function()
@@ -64,31 +195,67 @@ function M.extend()
       prev = b { '<Plug>(unimpaired-directory-previous)' },
       next = b { '<Plug>(unimpaired-directory-next)' },
     },
-    i = keys {
-      prev = b { desc = 'declaration', vim.lsp.buf.declaration },
-      next = b {
-        desc = 'implementations',
-        lazy_req('telescope.builtin', 'lsp_implementations'),
+    e = b {
+      desc = 'follow filename',
+      'gf',
+    },
+    f = keys {
+      desc = 'quickfix/trouble/tree',
+      b = b {
+        desc = 'buffers',
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree buffers'),
       },
+      d = b {
+        desc = 'diagnostics',
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Trouble',
+          'Trouble workspace_diagnostics'
+        ),
+      },
+      f = b {
+        desc = 'neo-tree',
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree'),
+      },
+      -- FIXME:
+      g = b { require('utils.windows').show_ui_last, desc = 'last ui' },
+      h = b {
+        desc = 'neo-tree git',
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree git_status'),
+      },
+      n = b {
+        desc = 'zk',
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree source=zk'),
+      },
+      l = b {
+        desk = 'bookmarks',
+        function()
+          require('marks').bookmark_state:all_to_list 'quickfixlist'
+          require('utils.windows').show_ui('Trouble', 'Trouble quickfix')
+        end,
+      },
+      r = b {
+        desc = 'trouble references',
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Trouble',
+          'Trouble lsp_references'
+        ),
+      },
+      w = b {
+        lazy_req('utils.windows', 'show_ui', 'Trouble', 'TodoTrouble'),
+      },
+      x = b { require('utils.windows').show_ui, desc = 'close ui' },
     },
-    j = b {
-      desc = 'type definition',
-      lazy_req('telescope.builtin', 'lsp_type_definitions'),
+    g = b {
+      desc = 'last buffer',
+      function()
+        require('buffstory').last()
+      end,
     },
-    l = b {
-      desc = 'edit playground file',
-      require('utils.buffers').edit_playground_file,
-    },
-    t = np {
-      desc = 'trouble',
-      prev = lazy_req(
-        'trouble',
-        'previous',
-        { skip_groups = true, jump = true }
-      ),
-      next = lazy_req('trouble', 'next', { skip_groups = true, jump = true }),
-    },
-    u = b {
+    s = b {
       desc = 'snapshot file',
       function()
         require('utils.relative_files').alternative 'snapshot'
@@ -99,6 +266,10 @@ function M.extend()
       function()
         require('utils.relative_files').alternative 'css'
       end,
+    },
+    x = b {
+      desc = 'edit playground file',
+      require('utils.buffers').edit_playground_file,
     },
     ['.'] = b {
       desc = 'config file',

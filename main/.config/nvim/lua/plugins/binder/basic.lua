@@ -39,8 +39,8 @@ function M.extend()
     },
     i = b { 'i' },
     n = b { lazy_req('flies.move_again', 'next') },
-    O = b { '<nop>', modes = 'nx' },
-    o = b { '<nop>', modes = 'nx' },
+    -- O = b { '<nop>', modes = 'nx' },
+    -- o = b { '<nop>', modes = 'nx' },
     p = b {
       lazy_req('flies.move_again', 'previous'),
     },
@@ -99,18 +99,18 @@ function M.extend()
     ['<c-q>'] = b { 'quitall!', desc = 'quit', cmd = true },
     ['<c-v>'] = b { '"+P', modes = 'nv' },
     -- also: require("luasnip.extras.select_choice")
-    ['<m-a>'] = b { desc = 'buf 1', lazy_req('buffstory', 'open', 1) },
-    ['<m-s>'] = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
-    ['<m-d>'] = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
-    ['<m-f>'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
+    -- ['<m-a>'] = b { desc = 'buf 1', lazy_req('buffstory', 'open', 1) },
+    -- ['<m-s>'] = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
+    -- ['<m-d>'] = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
+    -- ['<m-f>'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
     ['<m-p>'] = b { desc = 'window back', 'wincmd p', cmd = true },
     ['<m-r>'] = b { desc = 'last window', '<c-w><c-p>' },
-    ['<m-t>'] = b {
-      desc = 'last buffer',
-      function()
-        require('buffstory').last()
-      end,
-    },
+    -- ['<m-t>'] = b {
+    --   desc = 'last buffer',
+    --   function()
+    --     require('buffstory').last()
+    --   end,
+    -- },
     ['<m-q>'] = b { desc = 'close window', 'q', cmd = true },
     ['<m-w>'] = b { desc = 'close buffer', require('utils.bbye').close },
     ['<m-u>'] = b {

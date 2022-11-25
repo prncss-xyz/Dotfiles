@@ -16,7 +16,7 @@ function M.extend()
     redup = b { '``', desc = 'before last jump' },
     a = b {
       desc = 'current buffer fuzzy find',
-      lazy_req('telescope.builtin', 'current_buffer_fuzzy_find', {}),
+      lazy_req('telescope.builtin', 'current_buffer_fuzzy_find', { bufnr = 0 }),
     },
     b = modes {
       nx = np {
@@ -38,7 +38,61 @@ function M.extend()
       prev = vim.diagnostic.goto_prev,
       next = vim.diagnostic.goto_next,
     },
-    e = b { '<nop>' },
+    e = keys {
+      desc = 'peek',
+      redup = b {
+        desc = 'focus',
+        '<c-w>w',
+      },
+      h = b {
+        desc = 'git',
+        lazy_req('gitsigns', 'blame_line', { full = true }),
+      },
+      k = b { desc = 'hover', vim.lsp.buf.hover },
+
+      l = b {
+        '<Plug>(Marks-preview)',
+      },
+      r = b {
+        desc = 'reference',
+        lazy_req('goto-preview', 'goto_preview_references'),
+      },
+      s = b {
+        desc = 'definition',
+        lazy_req('goto-preview', 'goto_preview_definition'),
+      },
+      t = b { 'UltestOutput', cmd = true },
+      x = b { desc = 'signature help', vim.lsp.buf.signature_help },
+    },
+    f = keys {
+      desc = 'loclist/trouble',
+      d = b {
+        desc = 'diagnostics',
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Trouble',
+          'Trouble document_diagnostics'
+        ),
+      },
+      s = b {
+        desc = 'aerial symbols',
+        lazy_req('utils.windows', 'show_ui', 'aerial', 'AerialOpen'),
+      },
+      h = b {
+        desc = 'hunks',
+        lazy_req('utils.windows', 'show_ui', 'Trouble', 'Gitsigns setqflist'),
+      },
+      u = b {
+        desc = 'undo tree',
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          { 'undotree', 'diff' },
+          'UndotreeToggle'
+        ),
+      },
+    },
     h = np {
       desc = 'hunk',
       prev = lazy_req('gitsigns', 'prev_hunk'),
@@ -73,24 +127,21 @@ function M.extend()
       desc = 'aerial symbols',
       function()
         if
-          vim.tbl_contains(
-            {
-              -- OrgMode
-              -- AsciiDoc
-              -- Beancount
-              'help',
-              'norg',
-              'rst',
-              'latex',
-              'tex',
-              'markdown',
-              'vimwiki',
-              'pandoc',
-              'markdown.pandoc',
-              'markdown.gtm',
-            },
-            vim.bo.filetype
-          )
+          vim.tbl_contains({
+            -- OrgMode
+            -- AsciiDoc
+            -- Beancount
+            'help',
+            'norg',
+            'rst',
+            'latex',
+            'tex',
+            'markdown',
+            'vimwiki',
+            'pandoc',
+            'markdown.pandoc',
+            'markdown.gtm',
+          }, vim.bo.filetype)
         then
           require('telescope').extensions.heading.heading()
         else
@@ -98,7 +149,27 @@ function M.extend()
         end
       end,
     },
-    -- s = b { require('utils').telescope_symbols_md_lsp, desc = 'lsp symbol' },
+    t = np {
+      desc = 'trouble',
+      prev = lazy_req(
+        'trouble',
+        'previous',
+        { skip_groups = true, jump = true }
+      ),
+      next = lazy_req('trouble', 'next', { skip_groups = true, jump = true }),
+    },
+
+    -- i = keys {
+    --   prev = b { desc = 'declaration', vim.lsp.buf.declaration },
+    --   next = b {
+    --     desc = 'implementations',
+    --     lazy_req('telescope.builtin', 'lsp_implementations'),
+    --   },
+    -- },
+    -- j = b {
+    --   desc = 'type definition',
+    --   lazy_req('telescope.builtin', 'lsp_type_definitions'),
+    -- },
     u = modes {
       n = np {
         desc = 'page',

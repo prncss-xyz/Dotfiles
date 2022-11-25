@@ -33,8 +33,8 @@ function M.show_ui(keep, cb)
           elseif ft == 'aerial' then
             vim.cmd 'AerialCLose'
           else
-            vim.notify('unknown command for buftype ' .. bt)
-            vim.notify('unknown command for filetype ' .. ft)
+            -- vim.notify('unknown command for buftype ' .. bt)
+            -- vim.notify('unknown command for filetype ' .. ft)
             -- vim.api.nvim_win_close(win, false)
           end
         end

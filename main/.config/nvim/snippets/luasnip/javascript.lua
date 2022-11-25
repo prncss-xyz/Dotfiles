@@ -1,5 +1,7 @@
 ---@diagnostic disable: undefined-global
 
+local same = require('utils.snippets').same
+
 local preferred_quote = require('parameters').preferred_quote
 
 local function concat(t1, t2)
@@ -11,20 +13,57 @@ end
 
 local M = {}
 
+--  TODO: case, try, class, default, else, extends, import, with
+
+for _, keyword in ipairs {
+  'break;',
+  'continue;',
+  'delete ',
+  'export ',
+  'extends ',
+  'instanceof ',
+  'return ',
+  'super',
+  'super.',
+  'this',
+  'throw ',
+  'typeof ',
+  'void',
+  'yield ',
+} do
+  table.insert(M, s(keyword, { t(keyword) }))
+end
+
 table.insert(
   M,
-  s({ trig = 'i' }, {
+  s(
+    'const',
+    fmt('const [] = [];', { i(1, 'name'), i(2, '0') }, { delimiters = '[]' })
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'let',
+    fmt('let [] = [];', { i(1, 'name'), i(2, '0') }, { delimiters = '[]' })
+  )
+)
+
+table.insert(
+  M,
+  s('i', {
     t 'if (',
     i(1, 'false'),
     t { ') {', '\t ' },
-    i(2, '// block'),
+    i(2, '// TODO:'),
     t { '', '}' },
   })
 )
 
 table.insert(
   M,
-  s({ trig = 'k' }, {
+  s('k', {
     i(1, 'name'),
     t '(',
     i(2),
@@ -41,22 +80,22 @@ table.insert(
       function []([]) {
         []
       }
-    ]],
+    ]] ,
       { i(1, 'name'), i(2, '_params'), i(3, '// TODO:') },
       { delimiters = '[]' }
     )
   )
 )
 
-table.insert(M, s({ trig = 'r' }, { t 'return ' }))
+table.insert(M, s('r', { t 'return ' }))
 
 table.insert(
   M,
-  s({ trig = 'w' }, {
+  s('w', {
     t 'while (',
     i(1, 'true'),
     t { ') {', '\t' },
-    i(2, '// block'),
+    i(2, '// TODO:'),
     t { '', '}' },
   })
 )
@@ -64,28 +103,26 @@ table.insert(
 -- FIXME: indentation
 table.insert(
   M,
-  s({ trig = 'e' }, {
+  s('e', {
     c(1, {
-      sn(1, { t { '} else {', '\t' }, i(1, '// block') }),
+      sn(1, { t { '} else {', '\t' }, i(1, '// TODO:') }),
       sn(
         1,
-        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '// block') }
+        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '// TODO:') }
       ),
     }),
   })
 )
 
---
-
 table.insert(
   M,
-  s({ trig = 'else if' }, {
+  s('else if', {
     c(1, {
       sn(
         1,
-        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '// block') }
+        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '// TODO:') }
       ),
-      sn(1, { t { '} else {', '\t' }, i(1, '// block') }),
+      sn(1, { t { '} else {', '\t' }, i(1, '// TODO:') }),
     }),
   })
 )
@@ -133,8 +170,8 @@ table.insert(
   s(
     '.map',
     fmt(
-      '.map(([]) => [])',
-      { i(1, 'identifier'), i(2, 'indentifier') },
+      '.map(([]) => [][])',
+      { i(1, 'identifier'), same(1), i(0) },
       { delimiters = '[]' }
     )
   )
@@ -169,7 +206,7 @@ table.insert(
       ([]) => {
         return []
       }
-    ]],
+    ]] ,
       { i(1, '_params'), i(2, '0') },
       { delimiters = '[]' }
     )
@@ -185,7 +222,7 @@ table.insert(
       async ([]) => {
         return []
       }
-    ]],
+    ]] ,
       { i(1, '_params'), i(2, '0') },
       { delimiters = '[]' }
     )
@@ -217,14 +254,14 @@ table.insert(
 table.insert(
   M,
   s(
-    { trig = 'describe' },
+    'describe',
     fmt(
       [[
         describe("[]", () => {
           []
         })
       ]],
-      { i(1, 'description'), i(2, '// block') },
+      { i(1, 'description'), i(2, '// TODO:') },
       { delimiters = '[]' }
     )
   )
@@ -233,14 +270,14 @@ table.insert(
 table.insert(
   M,
   s(
-    { trig = 'it' },
+    'it',
     fmt(
       [[
         it("[]", () => {
           []
         })
       ]],
-      { i(1, 'description'), i(2, '// block') },
+      { i(1, 'description'), i(2, '// TODO:') },
       { delimiters = '[]' }
     )
   )
@@ -249,14 +286,14 @@ table.insert(
 table.insert(
   M,
   s(
-    { trig = 'it async' },
+    'it async',
     fmt(
       [[
         it("[]", async () => {
           []
         })
       ]],
-      { i(1, 'description'), i(2, '// block') },
+      { i(1, 'description'), i(2, '// TODO:') },
       { delimiters = '[]' }
     )
   )
@@ -265,7 +302,7 @@ table.insert(
 table.insert(
   M,
   s(
-    { trig = 'expect toThrow' },
+    'expect toThrow',
     fmt(
       [[
         expect(() => { [] }).toThrow[]([]);

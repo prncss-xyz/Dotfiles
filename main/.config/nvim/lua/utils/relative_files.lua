@@ -2,6 +2,8 @@ local M = {}
 
 local std = require 'utils.std'
 
+-- see also: https://github.com/rgroli/other.nvim 
+
 local config = {
   alternatives = {
     test = {

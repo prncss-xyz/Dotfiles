@@ -138,6 +138,9 @@ function M.config()
           },
         },
       },
+      headings = {
+        treesitter = true,
+      },
       -- curently not in use
       frecency = {
         default_workspace = 'CWD',

@@ -75,38 +75,26 @@ if true then
 end
 
 -- https://github.com/L3MON4D3/LuaSnip/wiki/Cool-Snippets
-local calculate_comment_string = require('Comment.ft').calculate
-local region = require('Comment.utils').get_region
-local ctype_enum = require('Comment.utils').ctype
-
-local function get_comment(ctype_string)
-  -- Don't add comment string inside a comment
-  local context = require 'cmp.config.context'
-  if
-    context.in_treesitter_capture 'comment'
-    or context.in_syntax_group 'Comment'
-  then
-    return '', ''
-  end
-
+---@param ctype integer 1 for `line`-comment and 2 for `block`-comment
+local get_cstring = function(ctype)
+  local calculate_comment_string = require('Comment.ft').calculate
+  local utils = require 'Comment.utils'
+  -- use the `Comments.nvim` API to fetch the comment string for the region (eq. '--%s' or '--[[%s]]' for `lua`)
   local cstring = calculate_comment_string {
-    ctype = ctype_enum[ctype_string],
-    range = region(),
-  } or ''
-  local lcs, rcs = unpack(
-    vim.split(cstring, '%s', { plain = true, trimempty = true })
-  )
-  lcs = lcs and lcs .. ' ' or ''
-  rcs = rcs and ' ' .. rcs or ''
-  return lcs, rcs
+    ctype = ctype,
+    range = utils.get_region(),
+  } or vim.bo.commentstring
+  -- as we want only the strings themselves and not strings ready for using `format` we want to split the left and right side
+  return utils.unwrap_cstr(cstring)
 end
 
 table.insert(
   M,
   s({ trig = 'c', descr = 'comment' }, {
     d(1, function()
-      local lc, rc = get_comment 'line'
-      return sn(1, { t(lc), i(1, 'comment'), t(rc) })
+      local lc, rc = get_cstring 'line'
+      -- local lc, rc = '<<', '>>'
+      return sn(nil, { t(lc), i(1, 'comment'), t(rc) })
     end, {}),
   })
 )
@@ -115,8 +103,8 @@ table.insert(
   M,
   s({ trig = 'cc', descr = 'multiline comment' }, {
     d(1, function()
-      local lc, rc = get_comment 'block'
-      return sn(1, { t(lc), i(1, 'comment'), t(rc) })
+      local lc, rc = get_cstring 'block'
+      return sn(nil, { t(lc), i(1, 'comment'), t(rc) })
     end, {}),
   })
 )
@@ -126,7 +114,7 @@ local function todo_comment(str)
     M,
     s(str .. ' comment', {
       d(1, function()
-        local lc, rc = get_comment 'line'
+        local lc, rc = get_cstring 'line'
         return sn(nil, { t(lc), t(str .. ': '), i(1, ''), t(rc) })
       end, {}),
     })
@@ -200,6 +188,7 @@ local function chmod_x()
     res = res .. char
   end
   vim.fn.setfperm(filename, res)
+  vim.cmd { cmd = 'filetype', args = { 'detect' } }
 end
 
 table.insert(
@@ -215,16 +204,5 @@ table.insert(
     i(0, ''),
   })
 )
-
-local sample = fmt(
-  [[
-bah
-  '{}'
-blop
-]],
-  { i(1, 'toto') }
-)
-
-table.insert(M, s('sample', sample))
 
 return M

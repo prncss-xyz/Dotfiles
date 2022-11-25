@@ -71,11 +71,32 @@ function M.extend()
     },
     s = b {
       desc = 'aerial symbols',
-      lazy_req(
-        'telescope',
-        'extensions.aerial.aerial',
-        { show_nesting = true } -- does it change something
-      ),
+      function()
+        if
+          vim.tbl_contains(
+            {
+              -- OrgMode
+              -- AsciiDoc
+              -- Beancount
+              'help',
+              'norg',
+              'rst',
+              'latex',
+              'tex',
+              'markdown',
+              'vimwiki',
+              'pandoc',
+              'markdown.pandoc',
+              'markdown.gtm',
+            },
+            vim.bo.filetype
+          )
+        then
+          require('telescope').extensions.heading.heading()
+        else
+          require('telescope').extensions.aerial.aerial()
+        end
+      end,
     },
     -- s = b { require('utils').telescope_symbols_md_lsp, desc = 'lsp symbol' },
     u = modes {

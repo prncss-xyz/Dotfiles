@@ -1,6 +1,7 @@
 local M = {}
 
 function M.mv(source, target)
+  local tsserver = require('utils.lsp').get_client 'tsserver'
   if tsserver then -- FIX:
     -- TODO: create needed directory
     -- TODO: test if path is directory
@@ -11,7 +12,6 @@ function M.mv(source, target)
     )
     vim.fn.delete(source)
   else
-    -- TODO: vim 0.8  use new API
     vim.cmd { cmd = 'sav', args = { target } }
     vim.fn.delete(source)
   end
@@ -20,7 +20,7 @@ end
 function M.rename()
   -- is there a more generic way to handle lsp move ?
   local default = vim.fn.expand '%:.'
-  local tsserver = require('utils.lsp').is_client_current 'tsserver'
+  local tsserver = require('utils.lsp').get_client 'tsserver'
   local prompt = 'rename'
   if tsserver then
     prompt = prompt .. ' (tsserver)'
@@ -31,7 +31,7 @@ function M.rename()
     if target == nil or target == '' or target == source then
       return
     end
-    M.fn(source, target)
+    M.mv(source, target)
   end)
 end
 
@@ -47,7 +47,6 @@ function M.edit()
     if dest == nil or dest == '' or dest == source then
       return
     end
-    -- TODO: vim 0.8  use new API
     -- TODO: test if directory
     -- TODO: create needed directory
     vim.cmd { cmd = 'edit', args = { dest } }

@@ -1,3 +1,5 @@
+-- could use mini-bufremove instead
+
 -- Bbye (rewritten in Lua)
 -- https://github.com/romgrk/barbar.nvim/blob/master/lua/bufferline/bbye.lua
 --

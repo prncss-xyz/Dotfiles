@@ -64,105 +64,6 @@ function M.config()
   require('key-menu').set('n', 'qj')
   require('key-menu').set('n', 'qt')
   require('key-menu').set('n', 'z')
-
-  binder.extend(
-    'peek',
-    keys {
-      redup = b {
-        desc = 'focus',
-        '<c-w>w',
-      },
-      d = b {
-        desc = 'definition',
-        lazy_req('goto-preview', 'goto_preview_definition'),
-      },
-      r = b {
-        desc = 'reference',
-        lazy_req('goto-preview', 'goto_preview_references'),
-      },
-      t = b { 'UltestOutput', cmd = true },
-    }
-  )
-  binder.with_labels('todo', 'w', {
-    quickfix = b {
-      lazy_req('utils.windows', 'show_ui', 'Trouble', 'TodoTrouble'),
-    },
-  })
-  binder.with_labels('git', 'g', {
-    peek = b {
-      desc = 'peek',
-      lazy_req('gitsigns', 'blame_line', { full = true }),
-    },
-    quickfix = b {
-      desc = 'hunks',
-      lazy_req('utils.windows', 'show_ui', 'Trouble', 'Gitsigns setqflist'),
-    },
-    editor = keys {
-      redup = b {
-        desc = 'neogit',
-        lazy_req('utils.windows', 'show_ui', 'Neogit', 'Neogit'),
-      },
-      b = b {
-        desc = 'branch',
-        lazy_req(
-          'utils.windows',
-          'show_ui',
-          'Neogit',
-          lazy_req('neogit', 'open')
-        ),
-      },
-      c = b {
-        desc = 'commit',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      d = keys {
-        desc = 'diffview',
-        prev = b {
-          desc = 'diffview',
-          lazy_req('utils.windows', 'show_ui', 'Diffview', 'DiffviewOpen'),
-        },
-        next = b {
-          desc = 'diffview file history',
-          lazy_req(
-            'utils.windows',
-            'show_ui',
-            'Diffview',
-            'DiffviewFileHistory'
-          ),
-        },
-      },
-      H = b {
-        desc = 'help',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      l = b {
-        desc = 'log',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      p = keys {
-        prev = b {
-          desc = 'push',
-          lazy_req('neogit', 'open'), -- split, vsplit
-        },
-        next = b {
-          desc = 'pull',
-          lazy_req('neogit', 'open'), -- split, vsplit
-        },
-      },
-      r = b {
-        desc = 'rebase',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      z = b {
-        desc = 'stash',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      ['<cr>'] = b {
-        desc = 'blame toggle',
-        lazy_req('gitsigns', 'toggle_current_line_blame', { full = true }),
-      },
-    },
-  })
   binder.extend(
     'mark',
     keys {
@@ -224,17 +125,6 @@ function M.config()
       },
         l = plug { '(Marks-prev)', name = 'Goes to previous mark in buffer.' },
   --]]
-  binder.with_labels('marks', 'l', {
-    peek = b {
-      '<Plug>(Marks-preview)',
-    },
-    quickfix = b {
-      function()
-        require('marks').mark_state:all_to_list 'quickfixlist'
-        require('utils.windows').show_ui('Trouble', 'Trouble quickfix')
-      end,
-    },
-  })
   binder.with_labels('bookmarks', 'b', {
     mark = keys {
       -- prev = b { '<Plug>(Marks-next-bookmark)' },
@@ -269,22 +159,14 @@ function M.config()
       d = b { '<Plug>(Marks-set-bookmark2)' },
       f = b { '<Plug>(Marks-set-bookmark3)' },
     },
-    quickfix = b {
-      function()
-        require('marks').bookmark_state:all_to_list 'quickfixlist'
-        require('utils.windows').show_ui('Trouble', 'Trouble quickfix')
-      end,
-    },
   })
   binder.with_labels('symbol', 's', {
     editor = b {
       desc = 'aerial',
       lazy_req('utils.windows', 'show_ui', 'aerial', 'AerialOpen'),
     },
-    quickfix = b {
-      desc = 'lsp references',
-      lazy_req('utils.windows', 'show_ui', 'Trouble', 'Trouble lps_references'),
-    },
+    -- FIXME:
+    -- bigmove = b { lazy_req('telescope.builtin', 'lsp_definitions') },
     bigmove = b { lazy_req('telescope.builtin', 'lsp_definitions') },
     extra = b {
       desc = 'show line',
@@ -292,36 +174,14 @@ function M.config()
     },
   })
   binder.with_labels('diagnostic', 'd', {
-    editor = keys {
-      desc = 'trouble',
-      prev = b {
-        lazy_req(
-          'utils.windows',
-          'show_ui',
-          'Trouble',
-          'Trouble document_diagnostics'
-        ),
-        desc = 'document',
-      },
-      next = b {
-        lazy_req(
-          'utils.windows',
-          'show_ui',
-          'Trouble',
-          'Trouble workspace_diagnostics'
-        ),
-        desc = 'workspace',
-      },
-    },
     extra = keys {
       c = keys {
         prev = b { desc = 'incoming calls', vim.lsp.buf.incoming_call },
         next = b { desc = 'outgoing calls', vim.lsp.buf.outgoing_calls },
       },
-      d = b { desc = 'definition', vim.lsp.buf.definition },
+      s = b { desc = 'definition', vim.lsp.buf.definition },
       k = b { desc = 'hover', vim.lsp.buf.hover },
       r = b { desc = 'references', vim.lsp.buf.references },
-      s = b { desc = 'signature help', vim.lsp.buf.signature_help },
       t = b { desc = 'go to type definition', vim.lsp.buf.type_definition },
       w = keys {
         desc = 'worspace folder',
@@ -338,6 +198,7 @@ function M.config()
           vim.lsp.buf.remove_workspace_folder,
         },
       },
+      x = b { desc = 'signature help', vim.lsp.buf.signature_help },
     },
   })
   if true then

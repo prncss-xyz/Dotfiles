@@ -48,12 +48,12 @@ return {
     'git: create branch and checkout',
     { t 'git checkout -b ', i(1, 'branch') }
   ),
-  s(
-    'gh: create repo in sync',
-    {
-      t 'gh repo create --private --license MIT --clone --gitignore ',
-      i(1, 'Node'),
-      i(2, 'zk-bib'),
-    }
-  ),
+  s('gh: create repo in sync', {
+    t 'gh repo create --private --license MIT --clone --gitignore ',
+    i(1, 'Node'),
+    i(2, 'zk-bib'),
+  }),
+  s('systemd: import environment', {
+    t 'systemctl --user import-environment',
+  }),
 }

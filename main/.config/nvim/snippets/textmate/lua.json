@@ -1,28 +1,4 @@
 {
-  "local assignment": {
-    "prefix": "local assignment",
-    "body": ["local ${1:name} = ${0:0}"],
-    "description": "create a variable"
-  },
-  "local require": {
-    "prefix": "local require",
-    "body": ["local ${1:name} = require '${2:module}'"],
-    "description": "require module as a variable"
-  },
-  "class": {
-    "prefix": "class",
-    "body": [
-      "local ${1:name} = {}",
-      "",
-      "$1.new = function($2)",
-      "\tlocal o = {$3}",
-      "\t${4: -- block}",
-      "\treturn o",
-      "end",
-      ""
-    ],
-    "description": "Create a class"
-  },
   "repeat until": {
     "prefix": "repeat until",
     "body": ["repeat",  "\t${1: -- block}", "until ${2: false}"]
@@ -64,30 +40,4 @@
     ],
     "description": "read file line by line"
   },
-  "test": {
-    "prefix": "test",
-    "body": [
-      "describe('${1:description}', function()",
-      "\tit('${2:description}', function()",
-      "\t\t${3:-- assertions}",
-      "\tend)",
-      "end)"
-    ]
-  },
-  "test, describe": {
-    "prefix": "describe",
-    "body": [
-      "describe('${1:description}', function()",
-      "\t${2:-- tests}",
-      "end)"
-    ]
-  },
-  "test, it": {
-    "prefix": "it",
-    "body": ["it('${1:description}', function()", "\t${2:-- test}", "end)"]
-  },
-  "test, same": {
-    "prefix": "same",
-    "body": ["assert.are.same(${1:expected}, ${2:passed})"]
-  }
 }

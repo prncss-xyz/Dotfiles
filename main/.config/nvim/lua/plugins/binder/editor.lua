@@ -62,12 +62,12 @@ function M.extend()
       desc = 'windows',
       -- TODO: zoom
       prev = b { lazy_req('split', 'close'), desc = 'close' },
-      -- q = b { desc = 'lsp', lazy_req('split', 'open_lsp'), modes = 'nx' },
-      -- r = modes {
-      --   desc = 'pop',
-      --   n = b { lazy_req('split', 'pop', { target = 'here' }, 'n') },
-      --   x = b { lazy_req('split', 'pop', { target = 'here' }, 'x') },
-      -- },
+      q = b { desc = 'lsp', lazy_req('split', 'open_lsp'), modes = 'nx' },
+      r = modes {
+        desc = 'pop',
+        n = b { lazy_req('split', 'pop', { target = 'here' }, 'n') },
+        x = b { lazy_req('split', 'pop', { target = 'here' }, 'x') },
+      },
       e = b {
         desc = 'swap',
         require('utils.windows').winpick_swap,
@@ -120,15 +120,75 @@ function M.extend()
         require('utils').edit_current,
       },
     },
-    f = keys {
-      prev = b {
-        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree git_status'),
-        desc = 'neo-tree git',
+    h = keys {
+      desc = 'git',
+      redup = b {
+        desc = 'neogit',
+        lazy_req('utils.windows', 'show_ui', 'Neogit', 'Neogit'),
       },
-      next = b {
-        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree'),
-        desc = 'neo-tree',
+      b = b {
+        desc = 'branch',
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Neogit',
+          lazy_req('neogit', 'open')
+        ),
       },
+      c = b {
+        desc = 'commit',
+        lazy_req('neogit', 'open'), -- split, vsplit
+      },
+      d = keys {
+        desc = 'diffview',
+        prev = b {
+          desc = 'diffview',
+          lazy_req('utils.windows', 'show_ui', 'Diffview', 'DiffviewOpen'),
+        },
+        next = b {
+          desc = 'diffview file history',
+          lazy_req(
+            'utils.windows',
+            'show_ui',
+            'Diffview',
+            'DiffviewFileHistory'
+          ),
+        },
+      },
+      H = b {
+        desc = 'help',
+        lazy_req('neogit', 'open'), -- split, vsplit
+      },
+      l = b {
+        desc = 'log',
+        lazy_req('neogit', 'open'), -- split, vsplit
+      },
+      p = keys {
+        prev = b {
+          desc = 'push',
+          lazy_req('neogit', 'open'), -- split, vsplit
+        },
+        next = b {
+          desc = 'pull',
+          lazy_req('neogit', 'open'), -- split, vsplit
+        },
+      },
+      r = b {
+        desc = 'rebase',
+        lazy_req('neogit', 'open'), -- split, vsplit
+      },
+      z = b {
+        desc = 'stash',
+        lazy_req('neogit', 'open'), -- split, vsplit
+      },
+      ['<cr>'] = b {
+        desc = 'blame toggle',
+        lazy_req('gitsigns', 'toggle_current_line_blame', { full = true }),
+      },
+    },
+    i = b {
+      desc = 'messages',
+      '<cmd>Noice<cr>',
     },
     r = modes {
       desc = 'spectre',
@@ -153,11 +213,281 @@ function M.extend()
         },
       },
     },
-    h = keys {
+    j = keys {
+      desc = 'peek',
+      redup = b {
+        desc = 'focus',
+        '<c-w>w',
+      },
+      h = b {
+        desc = 'git',
+        lazy_req('gitsigns', 'blame_line', { full = true }),
+      },
+      k = b { desc = 'hover', vim.lsp.buf.hover },
+
+      l = b {
+        '<Plug>(Marks-preview)',
+      },
+      r = b {
+        desc = 'reference',
+        lazy_req('goto-preview', 'goto_preview_references'),
+      },
+      s = b {
+        desc = 'definition',
+        lazy_req('goto-preview', 'goto_preview_definition'),
+      },
+      t = b { 'UltestOutput', cmd = true },
+      x = b { desc = 'signature help', vim.lsp.buf.signature_help },
+    },
+    m = keys {
+      desc = 'toggle',
+      s = b {
+        desc = 'toggle conceal',
+        require('utils.vim').toggle_conceal,
+      },
+      t = b {
+        desc = 'toggle cursor conceal',
+        require('utils.vim').toggle_conceal_cursor,
+      },
+      m = b {
+        desc = 'toggle foldsigns',
+        function()
+          if vim.wo.foldcolumn == '1' then
+            vim.wo.foldcolumn = '0'
+          else
+            vim.wo.foldcolumn = '1'
+          end
+        end,
+      },
+    },
+    l = keys {
+      desc = 'loclist/trouble',
+      d = b {
+        desc = 'diagnostics',
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Trouble',
+          'Trouble document_diagnostics'
+        ),
+      },
+      h = b {
+        desc = 'hunks',
+        lazy_req('utils.windows', 'show_ui', 'Trouble', 'Gitsigns setqflist'),
+      },
+    },
+    o = b {
+      desc = 'open current external',
+      require('utils').open_current,
+    },
+    -- t = b { desc = 'new terminal', require('utils').term },
+    -- could merge with neo-tree
+    t = keys {
+      desc = 'quickfix/trouble/tree',
+      b = b {
+        desc = 'buffers',
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree buffers'),
+      },
+      d = b {
+        desc = 'diagnostics',
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Trouble',
+          'Trouble workspace_diagnostics'
+        ),
+      },
+      f = b {
+        desc = 'neo-tree',
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree'),
+      },
+      h = keys {
+        desc = 'neo-tree git',
+        lazy_req('utils.windows', 'show_ui', 'neo-tree', 'Neotree git_status'),
+      },
+      n = b {
+        desc = 'zk',
+        function()
+          require('utils.windows').show_ui('neo-tree', function()
+            vim.cmd 'Neotree source=zk'
+          end)
+        end,
+      },
+      l = b {
+        desk = 'bookmarks',
+        function()
+          require('marks').bookmark_state:all_to_list 'quickfixlist'
+          require('utils.windows').show_ui('Trouble', 'Trouble quickfix')
+        end,
+      },
+      r = b {
+        desc = 'trouble references',
+        ':Trouble lsp_references<cr>',
+      },
+      w = b {
+        lazy_req('utils.windows', 'show_ui', 'Trouble', 'TodoTrouble'),
+      },
+    },
+    u = b {
+      desc = 'undo tree',
+      lazy_req(
+        'utils.windows',
+        'show_ui',
+        { 'undotree', 'diff' },
+        'UndotreeToggle'
+      ),
+    },
+    v = keys {
+      prev = b {
+        desc = 'projects (directory)',
+        lazy_req('telescope', 'extensions.my.project_directory'),
+      },
+      next = b {
+        desc = 'projects',
+        lazy_req('telescope', 'extensions.my.projects'),
+      },
+    },
+    w = keys {
+      desc = 'telescope',
+      e = b {
+        desc = 'files (workspace)',
+        function()
+          if true then
+            require('telescope.builtin').find_files {
+              find_command = {
+                'rg',
+                '--files',
+                '--hidden',
+                '-g',
+                '!.git',
+              },
+            }
+            return
+          end
+          if false then
+            -- FIX:  fd results seems to diverge from what is met when called from command line
+            -- in particular, some (but not all) hidden files are missing
+            -- using git_files as a workarount
+            require('telescope.builtin').git_files()
+            return
+          end
+          require('telescope.builtin').find_files {
+            find_command = {
+              'fd',
+              '--hidden',
+              '--exclude',
+              '.git',
+              '--type',
+              'f',
+              '--strip-cwd-prefix',
+            },
+          }
+        end,
+      },
+      f = b {
+        desc = 'files (local)',
+        function()
+          require('telescope.builtin').find_files {
+            cwd = vim.fn.expand '%:p:h',
+            find_command = {
+              'fd',
+              '--hidden',
+              '--exclude',
+              '.git',
+              '--type',
+              'f',
+              '--strip-cwd-prefix',
+            },
+          }
+        end,
+      },
+      g = b {
+        desc = 'buffstory select recent buffer',
+        lazy_req('buffstory', 'select'),
+      },
+      h = b {
+        desc = 'telescope status',
+        function()
+          require('telescope.builtin').git_status()
+        end,
+      },
+      b = b {
+        desc = 'buffers',
+        lazy_req('telescope.builtin', 'buffers'),
+      },
+      c = b {
+        desc = 'telescope repo',
+        lazy_req('telescope', 'extensions.repo.list'),
+      },
+      -- FIXME:
+      k = b {
+        desc = 'node modules',
+        lazy_req('telescope', 'extensions.my.node_modules'),
+      },
+      m = b {
+        desc = 'plugins',
+        lazy_req('telescope', 'extensions.my.installed_plugins'),
+      },
+      n = b {
+        desc = 'notes',
+        -- lazy_req('telescope', 'extensions.zk.notes'),
+        lazy_req('telescope', 'extensions.my.zk_notes'),
+      },
+      o = b {
+        desc = 'oldfiles',
+        lazy_req('telescope.builtin', 'oldfiles', { only_cwd = true }),
+      },
+      r = b {
+        desc = 'telescope references',
+        function()
+          require('telescope.builtin').lsp_references {}
+        end,
+      },
+      w = b {
+        desc = 'todo',
+        lazy_req('telescope', 'extensions.todo-comments.todo'),
+      },
+      ['é'] = keys {
+        prev = b {
+          desc = 'live grep (workspace)',
+          function()
+            require('telescope.builtin').live_grep {
+              prompt_title = 'live grep (workspace)',
+            }
+          end,
+        },
+        next = b {
+          desc = 'live grep (local)',
+          function()
+            require('telescope.builtin').live_grep {
+              prompt_title = 'live grep (local)',
+              search_dirs = { vim.fn.expand('%:h', nil, nil) },
+            }
+          end,
+        },
+      },
+    },
+    -- w = b {
+    --   desc = 'docs view',
+    --   function()
+    --     require('utils.windows').show_ui('docs-view', function()
+    --       require('utils.docs-view').reveal()
+    --     end)
+    --   end,
+    -- },
+    x = b { desc = 'xplr', require('utils').xplr_launch },
+    y = keys {
       desc = 'help',
       redup = b {
         desc = 'tags',
-        lazy_req('telescope.builtin', 'help_tags'),
+        -- tab | horizontal | vertical
+
+        function()
+          require('telescope.builtin').help_tags {
+            -- FIXME: not working
+            cmd = 'vertical',
+          }
+        end,
       },
       c = b {
         desc = 'highlights',
@@ -181,76 +511,7 @@ function M.extend()
         lazy_req('telescope', 'extensions.my.uniduck'),
       },
     },
-    k = keys {
-      prev = b { desc = 'signature help', vim.lsp.buf.signature_help },
-      next = b { desc = 'hover', vim.lsp.buf.hover },
-    },
-    l = keys {
-      prev = b {
-        desc = 'toggle cursor conceal',
-        require('utils.vim').toggle_conceal_cursor,
-      },
-      next = b {
-        desc = 'toggle conceal',
-        require('utils.vim').toggle_conceal,
-      },
-    },
-    m = b {
-      desc = 'toggle foldsigns',
-      function()
-        if vim.wo.foldcolumn == '1' then
-          vim.wo.foldcolumn = '0'
-        else
-          vim.wo.foldcolumn = '1'
-        end
-      end,
-    },
-    n = b {
-      desc = 'docs view',
-      function()
-        require('utils.windows').show_ui('neo-tree', function()
-          vim.cmd 'Neotree source=zk'
-        end)
-      end,
-    },
-    -- n = b {
-    --   desc = 'neo-tree zk',
-    --   ':Neotree source=zk<cr>',
-    -- },
-    o = b {
-      desc = 'open current external',
-      require('utils').open_current,
-    },
-    t = b { desc = 'new terminal', require('utils').term },
-    u = b {
-      desc = 'undo tree',
-      lazy_req(
-        'utils.windows',
-        'show_ui',
-        { 'undotree', 'diff' },
-        'UndotreeToggle'
-      ),
-    },
-    v = keys {
-      prev = b {
-        desc = 'projects (directory)',
-        lazy_req('telescope', 'extensions.my.project_directory'),
-      },
-      next = b {
-        desc = 'projects',
-        lazy_req('telescope', 'extensions.my.projects'),
-      },
-    },
-    w = b {
-      desc = 'docs view',
-      function()
-        require('utils.windows').show_ui('docs-view', function()
-          require('utils.docs-view').reveal()
-        end)
-      end,
-    },
-    x = b { desc = 'xplr', require('utils').xplr_launch },
-    y = keys {
+    z = keys {
       desc = 'neoclip',
       q = b {
         desc = 'marco',

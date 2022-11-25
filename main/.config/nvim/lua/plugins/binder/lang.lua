@@ -31,7 +31,8 @@ function M.setup()
         require('plugins.binder.actions').jump_next,
         desc = 'next insert point',
       },
-      ['<c-v>'] = b { '<c-r>+' },
+      ['<c-v>'] = b { '<c-r><c-o>+' },
+      -- ['<c-v>'] = b { '<c-r>+' },
       ['<c-r>r'] = b {
         '<c-r>"',
       },

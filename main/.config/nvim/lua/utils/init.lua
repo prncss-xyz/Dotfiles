@@ -1,5 +1,18 @@
 local M = {}
 
+function M.blank()
+  local text = ''
+  for i = 1, vim.v.count1 do
+    text = text .. '\n'
+    local buffers = require'longnose.utils.buffers'
+    local cursor = buffers.get_cursor(0)
+    -- TODO: 
+    -- buffers.text_replace(0, {, , text})
+  end
+end
+
+
+
 -- https://github.com/nanozuki/tabby.nvim/blob/main/lua/tabby/util.lua
 function M.extract_nvim_hl(name)
   local hl_str = vim.api.nvim_exec('highlight ' .. name, true)

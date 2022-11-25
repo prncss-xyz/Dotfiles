@@ -57,9 +57,19 @@ function M.extend()
         require('utils.lsp').toggle_client 'emmet_ls'
       end,
     },
-    f = b {
-      desc = 'longnose',
-      require('utils.longnose').main,
+    f = keys {
+      e = b {
+        desc = 'edit file',
+        require('utils.buffers').edit,
+      },
+      r = b {
+        desc = 'rename file',
+        require('utils.buffers').rename,
+      },
+      v = b {
+        desc = 'move file',
+        lazy_req('telescope', 'extensions.my.move'),
+      },
     },
     j = keys {
       desc = 'typescript',
@@ -91,6 +101,85 @@ function M.extend()
       x = b {
         desc = 'remove unused',
         lazy_req('typescript', 'actions.removeUnused'),
+      },
+    },
+    n = keys {
+      desc = 'zk',
+      a = b {
+        desc = 'open asset',
+        require('plugins.zk.utils').open_asset,
+      },
+      redup = b {
+        desc = 'notes',
+        -- lazy_req('telescope', 'extensions.zk.notes'),
+        lazy_req('telescope', 'extensions.my.zk_notes'),
+      },
+      c = b {
+        desc = 'cd',
+        lazy_req('zk', 'cd'),
+      },
+      d = b {
+        desc = 'delete asset',
+        require('plugins.zk.utils').remove_asset,
+      },
+      r = b {
+        desc = 'index',
+        lazy_req('zk', 'index'),
+      },
+      l = keys {
+        prev = b {
+          desc = 'links',
+          function()
+            -- FIXME:
+            require('telescope').extensions.my.zk_notes {
+              title = 'links',
+              linkBy = { vim.api.nvim_buf_get_name(0) },
+              recursive = true,
+            }
+          end,
+        },
+        next = b {
+          desc = 'backlinks',
+          function()
+            require('telescope').extensions.my.zk_notes {
+              title = 'backlinks',
+              linkTo = { vim.api.nvim_buf_get_name(0) },
+              recursive = true,
+            }
+          end,
+        },
+      },
+      j = b {
+        desc = 'new journal entry',
+        function()
+          require('plugins.zk.utils').new_journal_entry 'journal'
+        end,
+      },
+      z = keys {
+        prev = b {
+          desc = 'new note from content',
+          require('plugins.zk.utils').new_note_from_content,
+          modes = 'x',
+        },
+        next = modes {
+          x = b {
+            desc = 'new note with title',
+            require('plugins.zk.utils').new_note_with_title,
+          },
+        },
+      },
+      o = b {
+        desc = 'orphans',
+        function()
+          require('telescope').extensions.my.zk_notes {
+            title = 'orphans',
+            orphan = true,
+          }
+        end,
+      },
+      t = b {
+        desc = 'tags',
+        lazy_req('telescope', 'extensions.zk.tags'),
       },
     },
     o = keys {
@@ -273,32 +362,11 @@ function M.extend()
       ),
     },
     x = keys {
-      desc = 'refactoring',
-      a = modes {
-        desc = 'debug print',
-        n = b {
-          function()
-            require('refactoring').debug.print_var { normal = true }
-          end,
-        },
-        x = b {
-          function()
-            require('refactoring').debug.print_var {}
-          end,
-        },
-      },
-      h = b {
-        desc = 'telescope',
-        function()
-          require('telescope').extensions.refactoring.refactors()
-        end,
-      },
-      x = b {
-        desc = 'debug print',
-        function()
-          require('refactoring').debug.cleanup {}
-        end,
-      },
+      -- Just to test if same results as code actions
+      desc = 'refactoring telescope',
+      function()
+        require('telescope').extensions.refactoring.refactors()
+      end,
     },
     z = keys {
       desc = 'spell',

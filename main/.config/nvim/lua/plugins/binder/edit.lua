@@ -61,10 +61,10 @@ function M.extend()
       --   x = b { require('plugins.dial').utils.increment_x },
       -- },
       prev = modes {
-        n = b { lazy_req('longnose', 'replace', 'descend') },
+        n = b { lazy_req('longnose', 'exec', 'replace', 'subline', 'descend') },
       },
       next = modes {
-        n = b { lazy_req('longnose', 'replace', 'ascend') },
+        n = b { lazy_req('longnose', 'exec', 'replace', 'subline', 'ascend') },
       },
     },
     e = b { desc = 'swap', '<Plug>(flies-swap)', modes = 'nx' },
@@ -80,9 +80,43 @@ function M.extend()
     --     modes = 'nx',
     --   },
     -- },
+    f = keys {
+      desc = 'debug print',
+      prev = b {
+        desc = 'cleanup',
+        function()
+          require('refactoring').debug.cleanup {}
+        end,
+      },
+      next = modes {
+        n = b {
+          function()
+            require('refactoring').debug.print_var { normal = true }
+          end,
+        },
+        x = b {
+          function()
+            require('refactoring').debug.print_var {}
+          end,
+        },
+      },
+    },
     g = keys {
-      prev = b { '<cmd>SplitjoinJoin<cr>' },
-      next = b { '<cmd>SplitjoinSplit<cr>' },
+      desc = 'trevj (splitjoin)',
+      prev = b {
+        'splitjoin',
+        function()
+          require('trevj').format_at_cursor()
+        end,
+      },
+      next = b {
+        desc = 'treesj',
+        '<cmd>TSJToggle<cr>',
+      },
+    },
+    l = b {
+      desc = 'longnose',
+      lazy_req('longnose', 'exec', 'replace'),
     },
     m = b { 'J', 'join', modes = 'nx' },
     n = keys {

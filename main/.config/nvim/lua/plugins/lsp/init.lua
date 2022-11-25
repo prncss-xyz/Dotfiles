@@ -34,14 +34,6 @@ function M.config()
     client.server_capabilities.documentFormattingProvider = false
     client.server_capabilities.documentRangeFormattingProvider = false
     client.config.flags.debounce_text_changes = 150
-    -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization
-    -- FIXME:
-    -- vim.api.nvim_create_autocmd('CursorHold', {
-    --   buffer = bufnr,
-    --   callback = function()
-    --     vim.diagnostic.open_float()
-    --   end,
-    -- })
   end
 
   -- LSP settings
@@ -65,16 +57,27 @@ function M.config()
     flags = flags,
   }
   for _, lsp in ipairs {
-    -- 'bashls',
+    'bashls',
     'html',
-    'cssls',
-    'vimls',
+    -- 'cssls',
+    -- 'vimls',
     'yamlls',
-    -- 'graphql',
+    'graphql',
   } do
     lspconfig[lsp].setup {
       on_attach = noformat_on_attach,
       capabilities = capabilities,
+      flags = flags,
+    }
+  end
+  -- graphql, needs graphqlrc: https://the-guild.dev/graphql/config/docs
+  do
+    local capabilities_ = vim.lsp.protocol.make_client_capabilities()
+    capabilities.textDocument.completion.completionItem.snippetSupport = true
+    lspconfig.cssls.setup {
+      settings = {},
+      on_attach = noformat_on_attach,
+      capabilities = capabilities_,
       flags = flags,
     }
   end
@@ -87,11 +90,40 @@ function M.config()
   require('typescript').setup {
     disable_commands = false,
     debug = false,
-    server = {
-      capabilities = capabilities,
-      on_attach = noformat_on_attach,
-      flags = flags,
+    settings = {
+      completions = {
+        completeFunctionCalls = true,
+      },
+      javascript = {
+        inlayHints = {
+          includeInlayEnumMemberValueHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayParameterNameHints = 'all', -- 'none' | 'literals' | 'all';
+          includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayVariableTypeHints = true,
+        },
+      },
+      typescript = {
+        inlayHints = {
+          includeInlayEnumMemberValueHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayParameterNameHints = 'all', -- 'none' | 'literals' | 'all';
+          includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayVariableTypeHints = true,
+        },
+      },
     },
+    capabilities = capabilities,
+    on_attach = function(client, bufnr)
+      noformat_on_attach(client, bufnr)
+      -- FIXME: is it working?
+      require('inlay-hints').on_attach(client, bufnr)
+    end,
+    flags = flags,
   }
   require('neodev').setup {
     override = function(root_dir, library)
@@ -105,14 +137,18 @@ function M.config()
   }
 
   lspconfig.sumneko_lua.setup {
-    server = {
-      capabilities = capabilities,
-      on_attach = noformat_on_attach,
-      flags = flags,
-    },
+    capabilities = capabilities,
+    on_attach = function(client, bufnr)
+      noformat_on_attach(client, bufnr)
+      require('inlay-hints').on_attach(client, bufnr)
+    end,
+    flags = flags,
     cmd = { 'lua-language-server' },
     settings = {
       Lua = {
+        hint = {
+          enable = true,
+        },
         diagnostics = {
           globals = {
             -- nvim

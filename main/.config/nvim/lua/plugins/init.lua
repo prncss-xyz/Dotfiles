@@ -1,18 +1,26 @@
-local install_path = vim.fn.stdpath 'data'
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath 'data'
     .. '/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system {
+      'git',
+      'clone',
+      '--depth',
+      '1',
+      'https://github.com/wbthomason/packer.nvim',
+      install_path,
+    }
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
+end
+
+local packer_bootstrap = ensure_packer()
 
 local function local_repo(name)
   return os.getenv 'PROJECTS' .. '/github.com/prncss-xyz/' .. name
-end
-
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  vim.fn.system {
-    'git',
-    'clone',
-    'https://github.com/wbthomason/packer.nvim',
-    install_path,
-  }
-  vim.cmd 'packadd packer.nvim'
 end
 
 local function default_config(name, config)
@@ -113,6 +121,11 @@ return require('packer').startup {
       module = 'lspconfig',
       event = 'BufReadPost',
       config = config 'lsp',
+    }
+    use {
+      'simrat39/inlay-hints.nvim',
+      module = 'inlay-hints',
+      config = default_config 'inlay-hints',
     }
     use {
       'jose-elias-alvarez/null-ls.nvim',
@@ -490,8 +503,8 @@ return require('packer').startup {
     }
     use {
       'folke/noice.nvim',
-      after = 'nvim-notify',
-      disable = true,
+      -- after = 'nvim-notify',
+      event = 'VimEnter',
       config = function()
         require('noice').setup()
       end,
@@ -574,6 +587,11 @@ return require('packer').startup {
       module = 'telescope._extensions.fzf',
     }
     use {
+      'crispgm/telescope-heading.nvim',
+      module = 'telescope._extensions.heading',
+    }
+    -- FIXME: might not need
+    use {
       'nvim-telescope/telescope-project.nvim',
       module = 'telescope._extensions.project',
     }
@@ -647,28 +665,32 @@ return require('packer').startup {
       module_pattern = 'spectre.action',
     }
     use {
-      'AckslD/nvim-FeMaco.lua',
-      cmd = 'FeMaco',
-      module = 'femaco',
-      config = default_config 'femaco',
-    }
-    use {
       local_repo 'templum.nvim',
       config = config 'templum',
       event = 'VimEnter',
     }
     use { 'linty-org/readline.nvim', module = 'readline' }
     use {
-      'AckslD/nvim-neoclip.lua',
-      config = config 'nvim-neoclip',
+      'AckslD/nvim-FeMaco.lua',
+      cmd = 'FeMaco',
+      module = 'femaco',
+      config = default_config 'femaco',
     }
     use {
-      'AndrewRadev/splitjoin.vim',
-      setup = function()
-        vim.g.splitjoin_join_mapping = ''
-        vim.g.splitjoin_split_mapping = ''
-      end,
-      cmd = { 'SplitjoinJoin', 'SplitjoinSplit' },
+      'AckslD/nvim-neoclip.lua',
+      config = default_config 'neoclip',
+      event = 'VimEnter',
+    }
+    -- TODO: choose one
+    use {
+      'AckslD/nvim-trevJ.lua',
+      config = default_config 'trevj',
+      module = 'trevj',
+    }
+    use {
+      'Wansmer/treesj',
+      config = default_config 'treesj',
+      cmd = { 'TSJToggle', 'TSJSplit', 'TSJJoin' },
     }
     use {
       'monaqa/dial.nvim',
@@ -745,6 +767,12 @@ return require('packer').startup {
     -- Various
     use { 'lewis6991/impatient.nvim' }
     use { 'dstein64/vim-startuptime' }
+
+    -- Automatically set up your configuration after cloning packer.nvim
+    -- Put this at the end after all plugins
+    if packer_bootstrap then
+      require('packer').sync()
+    end
   end,
   config = {
     display = {

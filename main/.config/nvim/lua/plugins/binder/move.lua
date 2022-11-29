@@ -13,11 +13,66 @@ function M.extend()
   local d = require('plugins.binder.parameters').d
 
   return keys {
-    redup = b { '``', desc = 'before last jump' },
-    a = b {
-      desc = 'current buffer fuzzy find',
-      lazy_req('telescope.builtin', 'current_buffer_fuzzy_find', { bufnr = 0 }),
+    redup = keys {
+      a = b {
+        desc = 'current buffer fuzzy find',
+        lazy_req(
+          'telescope.builtin',
+          'current_buffer_fuzzy_find',
+          { bufnr = 0 }
+        ),
+      },
+      j = b {
+        desc = 'jumplist',
+        lazy_req('telescope.builtin', 'jumplist'),
+      },
+      l = b {
+        desc = 'marks',
+        lazy_req('telescope.builtin', 'marks'),
+      },
+      r = b {
+        desc = 'register',
+        lazy_req('telescope.builtin', 'register'),
+      },
+      s = b {
+        desc = 'aerial symbols',
+        function()
+          if
+            vim.tbl_contains({
+              -- OrgMode
+              -- AsciiDoc
+              -- Beancount
+              'help',
+              'norg',
+              'rst',
+              'latex',
+              'tex',
+              'markdown',
+              'vimwiki',
+              'pandoc',
+              'markdown.pandoc',
+              'markdown.gtm',
+            }, vim.bo.filetype)
+          then
+            require('telescope').extensions.heading.heading()
+          else
+            require('telescope').extensions.aerial.aerial()
+          end
+        end,
+      },
+      -- i = keys {
+      --   prev = b { desc = 'declaration', vim.lsp.buf.declaration },
+      --   next = b {
+      --     desc = 'implementations',
+      --     lazy_req('telescope.builtin', 'lsp_implementations'),
+      --   },
+      -- },
+      -- j = b {
+      --   desc = 'type definition',
+      --   lazy_req('telescope.builtin', 'lsp_type_definitions'),
+      -- },
     },
+    -- redup = b { '``', desc = 'before last jump' },
     b = modes {
       nx = np {
         desc = 'aerial symbol',
@@ -123,32 +178,6 @@ function M.extend()
         require('illuminate').goto_next_reference(true)
       end,
     },
-    s = b {
-      desc = 'aerial symbols',
-      function()
-        if
-          vim.tbl_contains({
-            -- OrgMode
-            -- AsciiDoc
-            -- Beancount
-            'help',
-            'norg',
-            'rst',
-            'latex',
-            'tex',
-            'markdown',
-            'vimwiki',
-            'pandoc',
-            'markdown.pandoc',
-            'markdown.gtm',
-          }, vim.bo.filetype)
-        then
-          require('telescope').extensions.heading.heading()
-        else
-          require('telescope').extensions.aerial.aerial()
-        end
-      end,
-    },
     t = np {
       desc = 'trouble',
       prev = lazy_req(
@@ -158,18 +187,6 @@ function M.extend()
       ),
       next = lazy_req('trouble', 'next', { skip_groups = true, jump = true }),
     },
-
-    -- i = keys {
-    --   prev = b { desc = 'declaration', vim.lsp.buf.declaration },
-    --   next = b {
-    --     desc = 'implementations',
-    --     lazy_req('telescope.builtin', 'lsp_implementations'),
-    --   },
-    -- },
-    -- j = b {
-    --   desc = 'type definition',
-    --   lazy_req('telescope.builtin', 'lsp_type_definitions'),
-    -- },
     u = modes {
       n = np {
         desc = 'page',

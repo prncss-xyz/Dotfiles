@@ -56,6 +56,10 @@ function M.extend()
       },
       c = repeatable { desc = 'continue', lazy_req('dap', 'continue') },
       i = repeatable { desc = 'step into', lazy_req('dap', 'step_into') },
+      s = b {
+        desc = 'LaunchOSV',
+        lazy_req('plugins.osv', 'launch'),
+      },
       o = keys {
         prev = repeatable { desc = 'step out', lazy_req('dap', 'step_out') },
         next = repeatable {
@@ -119,11 +123,6 @@ function M.extend()
         lazy_req('dap', 'run_to_cursor'),
       },
     },
-    b = keys {
-      prev = b { desc = 'scroll top', lazy_req('neoscroll', 'zt', 250) },
-      next = b { desc = 'scroll bottom', lazy_req('neoscroll', 'zb', 250) },
-      c = b { desc = 'scroll middle', lazy_req('neoscroll', 'zz', 250) },
-    },
     c = b {
       desc = 'select adjacent command lines',
       require 'utils.select_comment',
@@ -134,6 +133,13 @@ function M.extend()
       c = keys {
         prev = b { desc = 'incoming calls', vim.lsp.buf.incoming_call },
         next = b { desc = 'outgoing calls', vim.lsp.buf.outgoing_calls },
+      },
+
+      e = b {
+        desc = 'toggle emmet',
+        function()
+          require('utils.lsp').toggle_client 'emmet_ls'
+        end,
       },
       s = b { desc = 'definition', vim.lsp.buf.definition },
       k = b { desc = 'hover', vim.lsp.buf.hover },
@@ -163,93 +169,7 @@ function M.extend()
     --     require('utils').edit_current,
     --   },
     -- },
-    e = b {
-      desc = 'toggle emmet',
-      function()
-        require('utils.lsp').toggle_client 'emmet_ls'
-      end,
-    },
-    f = keys {
-      e = b {
-        desc = 'edit file',
-        require('utils.buffers').edit,
-      },
-      r = b {
-        desc = 'rename file',
-        require('utils.buffers').rename,
-      },
-      v = b {
-        desc = 'move file',
-        lazy_req('telescope', 'extensions.my.move'),
-      },
-    },
-    h = keys {
-      desc = 'git',
-      redup = b {
-        desc = 'neogit',
-        lazy_req('utils.windows', 'show_ui', 'Neogit', 'Neogit'),
-      },
-      b = b {
-        desc = 'branch',
-        lazy_req(
-          'utils.windows',
-          'show_ui',
-          'Neogit',
-          lazy_req('neogit', 'open')
-        ),
-      },
-      c = b {
-        desc = 'commit',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      d = keys {
-        desc = 'diffview',
-        prev = b {
-          desc = 'diffview',
-          lazy_req('utils.windows', 'show_ui', 'Diffview', 'DiffviewOpen'),
-        },
-        next = b {
-          desc = 'diffview file history',
-          lazy_req(
-            'utils.windows',
-            'show_ui',
-            'Diffview',
-            'DiffviewFileHistory'
-          ),
-        },
-      },
-      k = b {
-        desc = 'help',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      l = b {
-        desc = 'log',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      p = keys {
-        prev = b {
-          desc = 'push',
-          lazy_req('neogit', 'open'), -- split, vsplit
-        },
-        next = b {
-          desc = 'pull',
-          lazy_req('neogit', 'open'), -- split, vsplit
-        },
-      },
-      r = b {
-        desc = 'rebase',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      z = b {
-        desc = 'stash',
-        lazy_req('neogit', 'open'), -- split, vsplit
-      },
-      ['<cr>'] = b {
-        desc = 'blame toggle',
-        lazy_req('gitsigns', 'toggle_current_line_blame', { full = true }),
-      },
-    },
-    k = keys {
+    e = keys {
       desc = 'help',
       redup = b {
         desc = 'tags',
@@ -293,28 +213,210 @@ function M.extend()
         lazy_req('telescope', 'extensions.my.uniduck'),
       },
     },
-    r = modes {
-      desc = 'spectre',
-      n = keys {
-        next = b {
-          desc = 'open',
-          lazy_req('spectre', 'open'),
+    f = keys {
+      d = b {
+        desc = 'duplicate file',
+        require('khutulun').duplicate,
+      },
+      e = modes {
+        n = b {
+          desc = 'edit',
+          require('khutulun').create,
         },
-        prev = b {
-          desc = 'open file seach',
-          lazy_req('spectre', 'open_file_search'),
+        x = b {
+          desc = 'create new file from selection',
+          require('khutulun').create_from_selection,
         },
       },
-      x = keys {
-        next = b {
-          desc = 'open visual',
-          lazy_req('spectre', 'open_visual'),
+      y = keys {
+        l = b {
+          desc = 'yank filename',
+          require('khutulun').yank_filename,
         },
-        prev = b {
-          desc = 'open visual select word',
-          lazy_req('spectre', 'open_visual', { select_word = true }),
+        y = b {
+          desc = 'yank filepath',
+          require('khutulun').yank_filepath,
         },
       },
+      r = b {
+        desc = 'rename file',
+        require('khutulun').rename,
+      },
+      v = b {
+        desc = 'move file',
+        require('khutulun').move,
+      },
+      x = b {
+        desc = 'delete file',
+        require('khutulun').delete,
+        -- lazy_req('genghis', 'trashFile', { trashLocation = 'your path' }),
+      },
+    },
+    g = keys {
+      desc = 'runner',
+      redup = b {
+        desc = 'dash run',
+        ':DashRun<cr>',
+      },
+      y = b {
+        desc = 'dash connect<cr>',
+        ':DashConnect<cr>',
+      },
+      m = b {
+        desc = 'carrot eval',
+        ':CarrotEval<cr>',
+      },
+      n = b {
+        desc = 'carrot new block',
+        ':CarrotNewBlock<cr>',
+      },
+      s = b {
+        desc = 'dash step',
+        repeatable { lazy_req('dash', 'step') },
+      },
+      v = modes {
+        desc = 'dash inspect',
+        n = b { lazy_req('dash', 'inspect') },
+        v = b { lazy_req('dash', 'vinspect') },
+      },
+      c = b {
+        desc = 'dash continue',
+        repeatable { lazy_req('dash', 'continue') },
+      },
+      p = b {
+        desc = 'dash toggle breakpoit',
+        lazy_req('dash', 'toggle_breakpoint'),
+      },
+    },
+    G = keys {
+      desc = 'sniprun',
+      redup = modes {
+        desc = 'run',
+        n = b {
+          function()
+            require('sniprun').run()
+          end,
+        },
+        x = b {
+          function()
+            require('sniprun').run 'v'
+          end,
+        },
+      },
+      c = b {
+        desc = 'clear repl',
+        function()
+          require('sniprun').clear_repl()
+        end,
+      },
+      i = b {
+        desc = 'info',
+        function()
+          require('sniprun').info()
+        end,
+      },
+      l = b {
+        desc = 'live toggle',
+        function()
+          require('sniprun.live_mode').toggle()
+        end,
+      },
+      p = b {
+        desc = 'close all',
+        function()
+          require('sniprun.display').close_all()
+        end,
+      },
+      x = b {
+        desc = 'reset',
+        function()
+          require('sniprun').reset()
+        end,
+      },
+    },
+    h = keys {
+      desc = 'git',
+      redup = b {
+        desc = 'neogit',
+        lazy_req('utils.windows', 'show_ui', 'Neogit', 'Neogit'),
+      },
+      b = b {
+        desc = 'branch',
+        lazy_req(
+          'utils.windows',
+          'show_ui',
+          'Neogit',
+          lazy_req('neogit', 'open', { 'branch' })
+        ),
+      },
+      c = keys {
+        desc = 'commit',
+        prev = b {
+          lazy_req('neogit', 'open', { 'commit' }), -- split, vsplit
+        },
+        next = b {
+          require('utils.git').commit,
+        },
+      },
+      d = keys {
+        desc = 'diffview',
+        prev = b {
+          desc = 'diffview',
+          lazy_req('utils.windows', 'show_ui', 'Diffview', 'DiffviewOpen'),
+        },
+        next = b {
+          desc = 'diffview file history',
+          lazy_req(
+            'utils.windows',
+            'show_ui',
+            'Diffview',
+            'DiffviewFileHistory'
+          ),
+        },
+      },
+      k = b {
+        desc = 'help',
+        lazy_req('neogit', 'open', { 'help' }), -- split, vsplit
+      },
+      l = b {
+        desc = 'log',
+        lazy_req('neogit', 'open', { 'log' }), -- split, vsplit
+      },
+      p = keys {
+        prev = b {
+          desc = 'push',
+          lazy_req('neogit', 'open', { 'push' }), -- split, vsplit
+        },
+        next = b {
+          desc = 'pull',
+          lazy_req('neogit', 'open', { 'pull' }), -- split, vsplit
+        },
+      },
+      r = b {
+        desc = 'rebase',
+        lazy_req('neogit', 'open', { 'rebase' }), -- split, vsplit
+      },
+      -- TODO: confirm
+      -- s = b {
+      --   desc = 'stage buffer',
+      --   '<cmd>Gitsigns stage_buffer<cr>',
+      -- },
+      -- x = b {
+      --   desc = 'stage buffer',
+      --   '<cmd>Gitsigns reset_buffer<cr>',
+      -- },
+      z = b {
+        desc = 'stash',
+        lazy_req('neogit', 'open', { 'stash' }), -- split, vsplit
+      },
+      ['<cr>'] = b {
+        desc = 'blame toggle',
+        lazy_req('gitsigns', 'toggle_current_line_blame', { full = true }),
+      },
+    },
+    i = b {
+      desc = 'messages',
+      '<cmd>Noice<cr>',
     },
     j = keys {
       desc = 'typescript',
@@ -346,6 +448,78 @@ function M.extend()
       x = b {
         desc = 'remove unused',
         lazy_req('typescript', 'actions.removeUnused'),
+      },
+    },
+    k = keys {
+      c = b {
+        desc = 'PackerCompile',
+        '<cmd>PackerCompile<cr>',
+      },
+      i = b {
+        desc = 'PackerInstall',
+        '<cmd>PackerInstall<cr>',
+      },
+      m = b {
+        desc = 'StartupTime',
+        '<cmd>StartupTime<cr>',
+      },
+      p = b {
+        desc = 'PackerProfile',
+        '<cmd>PackerProfile<cr>',
+      },
+      r = b {
+        desc = 'Reload',
+        require('utils.buffers').reload,
+      },
+      s = b {
+        desc = 'PackerSync',
+        '<cmd>PackerSync<cr>',
+      },
+      t = b {
+        desc = 'PackerStatus',
+        '<cmd>PackerStatus<cr>',
+      },
+      u = b {
+        desc = 'PackerUpdate',
+        '<cmd>PackerUpdate<cr>',
+      },
+    },
+    l = keys {
+      desc = 'neoclip',
+      q = b {
+        desc = 'marco',
+        lazy_req('telescope', 'extensions.macroscope.default'),
+      },
+      r = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.+') },
+      f = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.f') },
+      y = b {
+        desc = 'yank',
+        lazy_req('telescope', 'extensions.neoclip.default'),
+      },
+    },
+    m = keys {
+      desc = 'toggle',
+      f = b {
+        desc = 'fold toggle (markdown)',
+        '<cmd>FoldToggle<cr>',
+      },
+      m = b {
+        desc = 'toggle foldsigns',
+        function()
+          if vim.wo.foldcolumn == '1' then
+            vim.wo.foldcolumn = '0'
+          else
+            vim.wo.foldcolumn = '1'
+          end
+        end,
+      },
+      s = b {
+        desc = 'toggle conceal',
+        require('utils.vim').toggle_conceal,
+      },
+      t = b {
+        desc = 'toggle cursor conceal',
+        require('utils.vim').toggle_conceal_cursor,
       },
     },
     n = keys {
@@ -430,8 +604,12 @@ function M.extend()
     o = keys {
       desc = 'overseer',
       redup = b {
-        desc = 'run',
+        desc = 'run cmd',
         ':OverseerRun<cr>',
+      },
+      c = b {
+        desc = 'run shell cmd',
+        ':OverseerRunCmd<cr>',
       },
       q = b {
         desc = 'toggle',
@@ -451,111 +629,27 @@ function M.extend()
       next = b { desc = 'play', '@' }, -- @@ play again
       -- ['.'] = b { desc = 'play last', '@@' },
     },
-    g = keys {
-      desc = 'runner',
-      redup = b {
-        desc = 'dash run',
-        ':DashRun<cr>',
-      },
-      y = b {
-        desc = 'dash connect<cr>',
-        ':DashConnect<cr>',
-      },
-      m = b {
-        desc = 'carrot eval',
-        ':CarrotEval<cr>',
-      },
-      n = b {
-        desc = 'carrot new block',
-        ':CarrotNewBlock<cr>',
-      },
-      s = b {
-        desc = 'dash step',
-        repeatable { lazy_req('dash', 'step') },
-      },
-      v = modes {
-        desc = 'dash inspect',
-        n = b { lazy_req('dash', 'inspect') },
-        v = b { lazy_req('dash', 'vinspect') },
-      },
-      c = b {
-        desc = 'dash continue',
-        repeatable { lazy_req('dash', 'continue') },
-      },
-      p = b {
-        desc = 'dash toggle breakpoit',
-        lazy_req('dash', 'toggle_breakpoint'),
-      },
-    },
-    G = keys {
-      desc = 'sniprun',
-      redup = modes {
-        desc = 'run',
-        n = b {
-          function()
-            require('sniprun').run()
-          end,
+    r = modes {
+      desc = 'spectre',
+      n = keys {
+        next = b {
+          desc = 'open',
+          lazy_req('spectre', 'open'),
         },
-        x = b {
-          function()
-            require('sniprun').run 'v'
-          end,
+        prev = b {
+          desc = 'open file seach',
+          lazy_req('spectre', 'open_file_search'),
         },
       },
-      c = b {
-        desc = 'clear repl',
-        function()
-          require('sniprun').clear_repl()
-        end,
-      },
-      i = b {
-        desc = 'info',
-        function()
-          require('sniprun').info()
-        end,
-      },
-      l = b {
-        desc = 'live toggle',
-        function()
-          require('sniprun.live_mode').toggle()
-        end,
-      },
-      p = b {
-        desc = 'close all',
-        function()
-          require('sniprun.display').close_all()
-        end,
-      },
-      x = b {
-        desc = 'reset',
-        function()
-          require('sniprun').reset()
-        end,
-      },
-    },
-    i = b {
-      desc = 'messages',
-      '<cmd>Noice<cr>',
-    },
-    m = keys {
-      desc = 'toggle',
-      s = b {
-        desc = 'toggle conceal',
-        require('utils.vim').toggle_conceal,
-      },
-      t = b {
-        desc = 'toggle cursor conceal',
-        require('utils.vim').toggle_conceal_cursor,
-      },
-      m = b {
-        desc = 'toggle foldsigns',
-        function()
-          if vim.wo.foldcolumn == '1' then
-            vim.wo.foldcolumn = '0'
-          else
-            vim.wo.foldcolumn = '1'
-          end
-        end,
+      x = keys {
+        next = b {
+          desc = 'open visual',
+          lazy_req('spectre', 'open_visual'),
+        },
+        prev = b {
+          desc = 'open visual select word',
+          lazy_req('spectre', 'open_visual', { select_word = true }),
+        },
       },
     },
     s = keys {
@@ -577,12 +671,7 @@ function M.extend()
       f = b {
         desc = 'run file',
         function()
-          -- workarount as 'neotest.plenary' do not seem to work currently
-          if vim.bo.filetype == 'lua' then
-            require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
-          else
-            require('neotest').run.run { vim.fn.expand '%' }
-          end
+          require('neotest').run.run { vim.fn.expand '%' }
         end,
       },
       x = b {
@@ -604,6 +693,11 @@ function M.extend()
       -- require("neotest").run.run({strategy = "dap"})
       -- require("neotest").run.attach()
     },
+    u = keys {
+      prev = b { desc = 'scroll top', lazy_req('neoscroll', 'zt', 250) },
+      next = b { desc = 'scroll bottom', lazy_req('neoscroll', 'zb', 250) },
+      c = b { desc = 'scroll middle', lazy_req('neoscroll', 'zz', 250) },
+    },
     v = b { desc = 'reselect', 'gv' },
     w = keys {
       desc = 'windows',
@@ -616,6 +710,9 @@ function M.extend()
       h = b {
         desc = 'horizontal split equal',
         ':sp<cr>',
+      },
+      i = b {
+        require('utils.windows').info,
       },
       j = modes {
         desc = 'open',
@@ -739,19 +836,6 @@ function M.extend()
       ),
     },
     -- f = b { desc = 'xplr', require('utils').xplr_launch },
-    l = keys {
-      desc = 'neoclip',
-      q = b {
-        desc = 'marco',
-        lazy_req('telescope', 'extensions.macroscope.default'),
-      },
-      r = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.+') },
-      f = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.f') },
-      y = b {
-        desc = 'yank',
-        lazy_req('telescope', 'extensions.neoclip.default'),
-      },
-    },
     z = keys {
       desc = 'harpoon',
       redup = keys {
@@ -764,6 +848,20 @@ function M.extend()
       [' '] = b {
         desc = 'harpoon command menu',
         lazy_req('harpoon.cmd-ui', 'toggle_quick_menu'),
+      },
+    },
+    ['<tab>'] = keys {
+      f = b {
+        desc = 'Femaco',
+        '<cmd>Femaco<cr>',
+      },
+      g = b {
+        desc = 'TSPlaygroundToggle',
+        '<cmd>TSPlaygroundToggle<cr>',
+      },
+      h = b {
+        desc = 'TSHighlightCapturesUnderCursor',
+        '<cmd>TSHighlightCapturesUnderCursor<cr>',
       },
     },
     [' '] = b {

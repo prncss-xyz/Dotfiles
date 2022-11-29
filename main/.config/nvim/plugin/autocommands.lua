@@ -40,14 +40,26 @@ vim.api.nvim_create_autocmd(
     pattern = '*?', -- do not match buffers with no name
     group = group,
     callback = function()
-      local fname = vim.fn.expand '%'
-      if vim.bo.buftype == ''
-          and vim.bo.modifiable
-          and (vim.bo.modified or vim.fn.filereadable(fname) == 0)
-          and (vim.fn.isdirectory(fname) == 0)
-      then
-        vim.cmd 'silent :w!'
+      if not vim.api.nvim_buf_is_valid(0) then
+        return
       end
+      if vim.bo.buftype ~= '' then
+        return
+      end
+      if not vim.bo.modifiable then
+        return
+      end
+      local fname = vim.api.nvim_buf_get_name(0)
+      if vim.fn.isdirectory(fname) == 1 then
+        return
+      end
+      if vim.fn.filereadable(fname) == 0 then
+        return
+      end
+      if not vim.bo.modified then
+        return
+      end
+      vim.cmd 'silent :w!'
     end,
   }
 )
@@ -107,15 +119,15 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 local function fetch_git_branch_plenary()
   local job = require('plenary').job
   job
-      :new({
-        command = 'git',
-        args = { 'branch', '--show-current' },
-        cwd = os.getenv 'PWD',
-        on_exit = function(j)
-          vim.b.gitsigns_head = j:result()[1]
-        end,
-      })
-      :start()
+    :new({
+      command = 'git',
+      args = { 'branch', '--show-current' },
+      cwd = os.getenv 'PWD',
+      on_exit = function(j)
+        vim.b.gitsigns_head = j:result()[1]
+      end,
+    })
+    :start()
 end
 
 vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost' }, {
@@ -145,7 +157,8 @@ vim.api.nvim_create_autocmd('VimEnter', {
       else
         local prefix = vim.fn.getcwd() .. '/'
         for _, file in ipairs(vim.v.oldfiles) do
-          if vim.startswith(file, prefix) and vim.fn.filereadable(file) == 1
+          if
+            vim.startswith(file, prefix) and vim.fn.filereadable(file) == 1
           then
             vim.cmd('edit ' .. file)
             return

@@ -24,7 +24,7 @@ function M.extend()
         lazy_req('telescope.builtin', 'buffers'),
       },
       c = b {
-        desc = 'telescope repo',
+        desc = 'repo',
         lazy_req('telescope', 'extensions.repo.list'),
       },
       e = b {
@@ -83,11 +83,11 @@ function M.extend()
         end,
       },
       g = b {
-        desc = 'buffstory select recent buffer',
+        desc = 'recent buffer',
         lazy_req('buffstory', 'select'),
       },
       h = b {
-        desc = 'telescope status',
+        desc = 'git status',
         function()
           require('telescope.builtin').git_status()
         end,
@@ -107,10 +107,12 @@ function M.extend()
         lazy_req('telescope', 'extensions.my.zk_notes'),
       },
       r = b {
-        desc = 'telescope references',
-        function()
-          require('telescope.builtin').lsp_references {}
-        end,
+        desc = 'references',
+        lazy_req('telescope.builtin', 'lsp_references'),
+      },
+      s = b {
+        desc = 'workspace symbols',
+        lazy_req('telescope.builtin', 'lsp_workspace_symbols'),
       },
       w = b {
         desc = 'todo',
@@ -189,6 +191,10 @@ function M.extend()
         prev = b { lazy_req('marks', 'prev_bookmark3') },
         next = b { lazy_req('marks', 'next_bookmark3') },
       },
+    },
+    c = b {
+      desc = 'snippets',
+      require('utils.snippets').edit,
     },
     d = keys {
       desc = 'unimpaired directory',

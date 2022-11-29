@@ -2,7 +2,11 @@ local M = {}
 
 local last_ui
 
-local commands = {}
+function M.info()
+  local context = require('hop.window').get_window_context()
+  context = context[1].contexts[1]
+  dump(context)
+end
 
 function M.show_ui(keep, cb)
   if type(keep) == 'string' then

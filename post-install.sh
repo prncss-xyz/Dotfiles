@@ -3,7 +3,7 @@
 HOSTNAME="${HOSTNAME-$hostname}"
 
 cd ~/Dotfiles/stow || exit 1 # on a fresh install, stow will take config info from current dir
-stow stow host-"$HOSTNAME" main extra perso bindings-qwerty
+stow stow host-"$HOSTNAME" main perso bindings-qwerty
 sudo pacman -Sy
 
 dir=$(mktemp -d)

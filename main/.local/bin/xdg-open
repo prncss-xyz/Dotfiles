@@ -54,7 +54,8 @@ launch() {
 		return
 		;;
 	docx | doc | rtf | abw)
-		libreoffice "${FPATH}" &
+		# libreoffice "${FPATH}" &
+		koreader "${FPATH}" &
 		return
 		;;
 	epub)

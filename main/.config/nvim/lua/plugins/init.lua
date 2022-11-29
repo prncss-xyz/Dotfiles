@@ -44,7 +44,9 @@ return require('packer').startup {
     use 'wbthomason/packer.nvim'
     use {
       'nvim-lua/plenary.nvim',
-      module = 'plenary',
+      -- https://github.com/nvim-neotest/neotest-plenary/issues/3
+      -- not working
+      -- module = 'plenary',
     }
     use {
       'kevinhwang91/promise-async',
@@ -257,6 +259,10 @@ return require('packer').startup {
       module = 'neotest-plenary',
     }
     use {
+      'marilari88/neotest-vitest',
+      module = 'neotest-vitest',
+    }
+    use {
       'haydenmeade/neotest-jest',
       module = 'neotest-jest',
     }
@@ -265,10 +271,24 @@ return require('packer').startup {
       requires = {
         'nvim-lua/plenary.nvim',
         'nvim-treesitter/nvim-treesitter',
-        'antoinemadec/FixCursorHold.nvim',
       },
       module = 'neotest',
       config = config 'neotest',
+    }
+    use {
+      'andythigpen/nvim-coverage',
+      module = 'coverage',
+      after = 'neotest',
+      cmd = {
+        'Coverage',
+        'CoverageLoad',
+        'CoverageShow',
+        'CoverageHide',
+        'CoverageToggle',
+        'CoverageClear',
+        'CoverageSummary',
+      },
+      config = default_config 'coverage',
     }
     use {
       'stevearc/overseer.nvim',
@@ -296,18 +316,14 @@ return require('packer').startup {
     -- binary installed with `yay -S neovim-sniprun`
     use {
       'michaelb/sniprun',
-      run = 'bash ./install.sh',
+      run = 'bash install.sh',
       module = 'sniprun',
       -- module_pattern = 'sniprun.*',
       config = function()
-        -- FIX: this seems never to be called
-        print 'sniprun user config'
-        -- assert(false)
         require('sniprun').setup {
           selected_interpreters = {
             'Python3_jupyter',
           },
-          -- display = { 'FloatingWindow' },
         }
       end,
     }
@@ -426,7 +442,7 @@ return require('packer').startup {
     }
     use {
       'stevearc/dressing.nvim',
-      config = default_config 'dressing',
+      config = config 'dressing',
       event = 'BufReadPost',
     }
     use {
@@ -686,12 +702,6 @@ return require('packer').startup {
       config = default_config 'neoclip',
       event = 'VimEnter',
     }
-    -- TODO: choose one
-    use {
-      'AckslD/nvim-trevJ.lua',
-      config = default_config 'trevj',
-      module = 'trevj',
-    }
     use {
       'Wansmer/treesj',
       config = default_config 'treesj',
@@ -770,8 +780,19 @@ return require('packer').startup {
       config = config 'harpoon',
     }
     -- Various
-    use { 'lewis6991/impatient.nvim' }
     use { 'dstein64/vim-startuptime' }
+    use {
+      'echasnovski/mini.bufremove',
+      config = default_config 'mini.bufremove',
+      -- MiniBufremove.unshow()
+    }
+    use {
+      -- 'chrisgrieser/nvim-genghis',
+      local_repo 'khutulun.nvim',
+      module = 'khutulun',
+      config = config 'khutulun',
+    }
+    use { 'lewis6991/impatient.nvim' }
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins

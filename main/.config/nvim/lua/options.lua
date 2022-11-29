@@ -80,6 +80,7 @@ deep_merge(vim, {
     -- foldexpr = 'My_foldexpr()',
   },
   opt = {
+    -- background = 'light',
     diffopt = 'internal,filler,closeoff,algorithm:patience',
     cc = '+1',
     conceallevel = 2,

@@ -43,4 +43,17 @@ M.ifilename = function(no)
   return i(no, vim.fn.expand '%:t:r')
 end
 
+M.edit = function()
+  local ft = vim.bo.filetype
+
+  if ft == 'javascriptreact' then
+    ft = 'javascript'
+  elseif ft == 'typescript' then
+    ft = 'javascript'
+  elseif ft == 'typescriptreact' then
+    ft = 'javascript'
+  end
+  vim.cmd { cmd = 'edit', args = { ft } }
+end
+
 return M

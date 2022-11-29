@@ -89,18 +89,9 @@ function M.extend()
         },
       },
     },
-    g = keys {
-      desc = 'trevj (splitjoin)',
-      prev = b {
-        'splitjoin',
-        function()
-          require('trevj').format_at_cursor()
-        end,
-      },
-      next = b {
-        desc = 'treesj',
-        '<cmd>TSJToggle<cr>',
-      },
+    g = b {
+      desc = 'treesj',
+      '<cmd>TSJToggle<cr>',
     },
     l = b {
       desc = 'longnose',

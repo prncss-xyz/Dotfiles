@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+sudo dracut --force /efi/EFI/BOOT/BOOTX64.EFI "$(ls /lib/modules)"

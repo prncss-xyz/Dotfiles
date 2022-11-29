@@ -112,7 +112,7 @@ function M.extend()
     --   end,
     -- },
     ['<m-q>'] = b { desc = 'close window', 'q', cmd = true },
-    ['<m-w>'] = b { desc = 'close buffer', require('utils.bbye').close },
+    ['<m-w>'] = b { desc = 'close buffer', MiniBufremove.unshow },
     ['<m-u>'] = b {
       desc = 'pick special window',
       function()
@@ -130,8 +130,8 @@ function M.extend()
       require('utils.windows').focus_any,
     },
     [alt(d.left)] = b {
+      desc = 'window right',
       lazy_req('utils.wrap_win', 'left'),
-      desc = 'window left',
     },
     [alt(d.down)] = b {
       lazy_req('utils.wrap_win', 'down'),
@@ -139,8 +139,8 @@ function M.extend()
     },
     [alt(d.up)] = b { lazy_req('utils.wrap_win', 'up'), desc = 'up' },
     [alt(d.right)] = b {
-      lazy_req('utils.wrap_win', 'right'),
       desc = 'window right',
+      lazy_req('utils.wrap_win', 'right'),
     },
   }
 end

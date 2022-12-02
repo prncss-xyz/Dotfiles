@@ -16,7 +16,7 @@ function M.config()
       end
     end,
     bdelete = function()
-      MiniBufremove.unshow()
+      require('bufdelete').bufdelete(0, true)
     end,
   }
 end

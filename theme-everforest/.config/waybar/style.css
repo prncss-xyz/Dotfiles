@@ -1,0 +1,58 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: Montserrat;
+  font-size: 13px;
+  min-height: 0;
+  color: #d3c6aa;
+}
+
+window#waybar {
+  background: #7fbbb3;
+  opacity: 0.9;
+  color: #d3c6aa;
+}
+
+#window {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 1px;
+}
+
+#workspaces button {
+  padding-top: 1px;
+  padding-bottom: 0px;
+  padding-left: 3px;
+  padding-right: 3px;
+  background: transparent;
+  color: #d3c6aa;
+}
+
+#mode {
+  padding-top: 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #83c092;
+  color: #d3c6aa;
+}
+
+#clock {
+  padding-top: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+/* not themed the battery yet */
+
+#temperature,
+#battery,
+#cpu,
+#memory {
+  padding-top: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background: #7fbbb3;
+}
+#battery.discharging {
+  background: #83c092;
+}

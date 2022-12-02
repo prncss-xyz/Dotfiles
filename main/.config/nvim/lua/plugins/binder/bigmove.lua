@@ -139,15 +139,19 @@ function M.extend()
       },
     },
 
-    r = b {
+    e = b { desc = 'buf 1', lazy_req('buffstory', 'open', 1) },
+    r = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
+    t = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
+    y = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
+    k = b {
       desc = 'harpoon terminal 1',
       lazy_req('harpoon.term', 'gotoTerminal', 1),
     },
-    t = b {
+    l = b {
       desc = 'harpoon terminal 2',
       lazy_req('harpoon.term', 'gotoTerminal', 2),
     },
-    y = b {
+    [';'] = b {
       desc = 'harpoon terminal 3',
       lazy_req('harpoon.term', 'gotoTerminal', 3),
     },
@@ -159,10 +163,6 @@ function M.extend()
       desc = 'harpoon file 4',
       lazy_req('harpoon.ui', 'nav_file', 4),
     },
-    j = b { desc = 'buf 1', lazy_req('buffstory', 'open', 1) },
-    k = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
-    l = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
-    [';'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
     a = b {
       desc = 'test file',
       function()
@@ -194,16 +194,13 @@ function M.extend()
     },
     c = b {
       desc = 'snippets',
-      require('utils.snippets').edit,
+      lazy_req('utils.snippets', 'edit'),
+      -- require('utils.snippets').edit,
     },
     d = keys {
       desc = 'unimpaired directory',
       prev = b { '<Plug>(unimpaired-directory-previous)' },
       next = b { '<Plug>(unimpaired-directory-next)' },
-    },
-    e = b {
-      desc = 'follow filename',
-      'gf',
     },
     f = keys {
       desc = 'quickfix/trouble/tree',
@@ -260,6 +257,10 @@ function M.extend()
       function()
         require('buffstory').last()
       end,
+    },
+    n = b {
+      desc = 'follow filename',
+      'gf',
     },
     s = b {
       desc = 'snapshot file',

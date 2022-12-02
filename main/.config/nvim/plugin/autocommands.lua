@@ -49,14 +49,11 @@ vim.api.nvim_create_autocmd(
       if not vim.bo.modifiable then
         return
       end
+      if not vim.bo.modified then
+        return
+      end
       local fname = vim.api.nvim_buf_get_name(0)
       if vim.fn.isdirectory(fname) == 1 then
-        return
-      end
-      if vim.fn.filereadable(fname) == 0 then
-        return
-      end
-      if not vim.bo.modified then
         return
       end
       vim.cmd 'silent :w!'

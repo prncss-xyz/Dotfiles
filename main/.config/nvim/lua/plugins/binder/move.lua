@@ -169,6 +169,10 @@ function M.extend()
       next = b { '`]', desc = 'begin of last mod', modes = 'nxo' },
     },
     o = b { '`.', desc = 'last change' },
+    s = b {
+      desc = 'definition',
+      lazy_req('telescope.builtin', 'lsp_definitions'),
+    },
     r = np {
       desc = 'reference',
       prev = function()

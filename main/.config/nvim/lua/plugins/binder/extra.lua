@@ -1,7 +1,6 @@
 local M = {}
 
 function M.extend()
-  -- local d = require('plugins.binder.parameters').d
   local utils = require 'plugins.binder.utils'
   local repeatable = utils.repeatable
   local binder = require 'binder'
@@ -162,19 +161,11 @@ function M.extend()
       },
       x = b { desc = 'signature help', vim.lsp.buf.signature_help },
     },
-    -- e = keys {
-    --   prev = b { desc = 'reset editor', require('utils').reset_editor },
-    --   next = b {
-    --     desc = 'current in new editor',
-    --     require('utils').edit_current,
-    --   },
-    -- },
     e = keys {
       desc = 'help',
       redup = b {
         desc = 'tags',
         -- tab | horizontal | vertical
-
         function()
           require('telescope.builtin').help_tags {
             -- FIXME: not working
@@ -249,7 +240,6 @@ function M.extend()
       x = b {
         desc = 'delete file',
         require('khutulun').delete,
-        -- lazy_req('genghis', 'trashFile', { trashLocation = 'your path' }),
       },
     },
     g = keys {
@@ -352,10 +342,16 @@ function M.extend()
       c = keys {
         desc = 'commit',
         prev = b {
+          desc = 'popup',
           lazy_req('neogit', 'open', { 'commit' }), -- split, vsplit
         },
         next = b {
+          desc = 'commit',
           require('utils.git').commit,
+        },
+        a = b {
+          desc = 'ammend',
+          require('utils.git').ammend,
         },
       },
       d = keys {
@@ -396,15 +392,18 @@ function M.extend()
         desc = 'rebase',
         lazy_req('neogit', 'open', { 'rebase' }), -- split, vsplit
       },
-      -- TODO: confirm
-      -- s = b {
-      --   desc = 'stage buffer',
-      --   '<cmd>Gitsigns stage_buffer<cr>',
-      -- },
-      -- x = b {
-      --   desc = 'stage buffer',
-      --   '<cmd>Gitsigns reset_buffer<cr>',
-      -- },
+      s = b {
+        desc = 'stage buffer',
+        '<cmd>Gitsigns stage_buffer<cr>',
+      },
+      x = b {
+        desc = 'reset buffer',
+        function()
+          require('utils.confirm').confirm('Reset buffer (y/n)?', function()
+            vim.cmd { cmd = 'Gitsigns', args = { 'reset_buffer' } }
+          end, true)
+        end,
+      },
       z = b {
         desc = 'stash',
         lazy_req('neogit', 'open', { 'stash' }), -- split, vsplit
@@ -499,12 +498,31 @@ function M.extend()
     },
     m = keys {
       desc = 'toggle',
+      b = b {
+        desc = 'background color',
+        function()
+          local theme = vim.api.nvim_exec('colorscheme', true)
+          if theme == 'material' then
+            require('material.functions').find_style()
+            return
+          end
+          if vim.o.background == 'light' then
+            vim.o.background = 'dark'
+            return
+          end
+          vim.o.background = 'light'
+        end,
+      },
+      c = b {
+        desc = 'cursor conceal',
+        require('utils.vim').toggle_conceal_cursor,
+      },
       f = b {
-        desc = 'fold toggle (markdown)',
+        desc = 'fold (markdown)',
         '<cmd>FoldToggle<cr>',
       },
       m = b {
-        desc = 'toggle foldsigns',
+        desc = 'foldsigns',
         function()
           if vim.wo.foldcolumn == '1' then
             vim.wo.foldcolumn = '0'
@@ -514,12 +532,12 @@ function M.extend()
         end,
       },
       s = b {
-        desc = 'toggle conceal',
+        desc = 'conceal',
         require('utils.vim').toggle_conceal,
       },
       t = b {
-        desc = 'toggle cursor conceal',
-        require('utils.vim').toggle_conceal_cursor,
+        desc = 'theme',
+        lazy_req('telescope.builtin', 'colorscheme'),
       },
     },
     n = keys {
@@ -620,6 +638,7 @@ function M.extend()
         require('utils.browser').browse_dev,
       },
     },
+    -- could merge with macroscope
     q = keys {
       desc = 'marco',
       prev = b {
@@ -666,12 +685,24 @@ function M.extend()
       desc = 'neotest',
       redup = b {
         desc = 'run nearest',
-        lazy_req('neotest', 'run.run'),
+        function()
+          if vim.bo.filetype == 'lua' then
+            require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
+          else
+            vim.cmd.update()
+            require('neotest').run.run()
+          end
+        end,
       },
       f = b {
         desc = 'run file',
         function()
-          require('neotest').run.run { vim.fn.expand '%' }
+          if vim.bo.filetype == 'lua' then
+            require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
+          else
+            vim.cmd.update()
+            require('neotest').run.run { vim.fn.expand '%' }
+          end
         end,
       },
       x = b {
@@ -694,6 +725,7 @@ function M.extend()
       -- require("neotest").run.attach()
     },
     u = keys {
+      -- could merge with window
       prev = b { desc = 'scroll top', lazy_req('neoscroll', 'zt', 250) },
       next = b { desc = 'scroll bottom', lazy_req('neoscroll', 'zb', 250) },
       c = b { desc = 'scroll middle', lazy_req('neoscroll', 'zz', 250) },
@@ -701,7 +733,6 @@ function M.extend()
     v = b { desc = 'reselect', 'gv' },
     w = keys {
       desc = 'windows',
-      -- TODO: zoom
       prev = b { lazy_req('split', 'close'), desc = 'close' },
       e = b {
         desc = 'swap',
@@ -871,21 +902,6 @@ function M.extend()
       end,
       modes = 'nx',
     },
-    -- z = keys {
-    --   desc = 'spell',
-    --   b = b { '<cmd>setlocal spell spelllang=en_us,fr,cjk<cr>', 'en fr' },
-    --   e = b { '<cmd>setlocal spell spelllang=en_us,cjk<cr>', 'en' },
-    --   f = b { '<cmd>setlocal spell spelllang=fr,cjk<cr>', 'fr' },
-    --   y = b { '<cmd>zg', 'add to spellfile<cr>' },
-    --   x = b { '<cmd>setlocal nospell<cr>', 'none' },
-    -- },
-    -- o = b {
-    --   desc = 'open current external',
-    --   require('utils').open_current,
-    -- },
-    -- t = b { desc = 'new terminal', require('utils').term },
-    -- could merge with neo-tree
-    --
   }
 end
 

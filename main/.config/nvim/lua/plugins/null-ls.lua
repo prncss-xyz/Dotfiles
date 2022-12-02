@@ -25,7 +25,7 @@ function M.config()
           'html',
           'json',
           'yaml',
-          'markdown', -- slow
+          'markdown',
           'scss',
           'toml',
         },

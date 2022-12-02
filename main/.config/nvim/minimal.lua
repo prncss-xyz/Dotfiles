@@ -25,7 +25,7 @@ end
 _G.load_config = function()
   -- ADD INIT.LUA SETTINGS THAT ARE _NECESSARY_ FOR REPRODUCING THE ISSUE
   local render = function(f)
-    f.add { '...............' }
+    -- f.add { '...............' }
   end
 
   require('tabline_framework').setup { render = render }

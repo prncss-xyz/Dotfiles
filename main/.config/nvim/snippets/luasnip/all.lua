@@ -172,17 +172,30 @@ local env = {
   javascript = 'node',
 }
 
+local function chmod_x()
+  local filename = vim.fn.expand '%'
+  local perm = vim.fn.getfperm(filename)
+  perm = perm:gsub('r(.)%-', 'r%1x') -- add x to every group that has r
+  vim.fn.setfperm(filename, perm)
+  vim.cmd { cmd = 'filetype', args = { 'detect' } }
+end
+
 table.insert(
   M,
-  s({
-    trig = 'shebang',
-  }, {
+  s('shebang', {
     d(1, function()
-      require('khutulun').chmod_x()
+      chmod_x()
       return sn(1, { t '#!/usr/bin/env ', i(1, env[vim.bo.filetype] or 'env') })
     end, {}),
     t { '', '' },
     i(0, ''),
+  }, {
+    callbacks = {
+      -- index `-1` means the callback is on the snippet as a whole
+      [-1] = {
+        [events.leave] = chmod_x,
+      },
+    },
   })
 )
 

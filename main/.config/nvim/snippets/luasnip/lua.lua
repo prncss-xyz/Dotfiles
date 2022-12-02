@@ -1,7 +1,5 @@
 ---@diagnostic disable: undefined-global
 
-local preferred_quote = require('parameters').preferred_quote
-
 local M = {
   s('k', {
     i(1, 'name'),
@@ -18,7 +16,7 @@ local M = {
     i(2, '-- TODO:'),
     t { '', 'end' },
   }),
-  s('f', {
+  s('s', {
     t 'function ',
     i(1),
     t '(',
@@ -77,17 +75,142 @@ table.insert(
   )
 )
 
--- cheat:
+table.insert(
+  M,
+  s(
+    'repeat until',
+    fmt(
+      [[
+        repeat
+          []
+        until []
+      ]],
+      {
+        i(1, '-- TODO:'),
+        i(2, 'false'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
 
 table.insert(
   M,
   s(
-    'cht: iterate characters in string',
+    'for',
     fmt(
       [[
-    for [] in str:gmatch '.' do
-      []
-    end]],
+        for [] in [] do
+         []
+        end
+      ]],
+      {
+        i(1, 'v'),
+        i(2, 'iterator'),
+        i(3, '-- TODO:'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'for pairs',
+    fmt(
+      [[
+        for [], [] in pairs([]) do
+          []
+        end
+      ]],
+      {
+        i(1, 'k'),
+        i(2, 'v'),
+        i(3, 'table_'), -- to makes sure lsp flags an undefined variable, and not unintentionnaly use builtin table
+        i(4, '-- TODO:'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'for ipairs',
+    fmt(
+      [[
+        for [], [] in ipairs([]) do
+          []
+        end
+      ]],
+      {
+        i(1, 'i'),
+        i(2, 'v'),
+        i(3, 'list'),
+        i(4, '-- TODO:'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'for line',
+    fmt(
+      [[
+        f = io.open([])
+        while true do
+          local line = f:read()
+          if line == nil then 
+            break 
+          end
+          []
+        end
+      ]],
+      {
+        i(1, 'filepath'),
+        i(2, '-- TODO:'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'forc',
+    fmt(
+      [[
+        for [] = [], []  do
+          []
+        end
+      ]],
+      {
+        i(1, 'i'),
+        i(2, '1'),
+        i(3, '10'),
+        i(4, '-- TODO:'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'for char',
+    fmt(
+      [[
+        for [] in str:gmatch '.' do
+         []
+        end
+      ]],
       {
         i(1, 'char'),
         i(2, '-- TODO:'),
@@ -105,7 +228,7 @@ table.insert(
     'describe',
     fmt(
       [[
-        describe("[]", function())
+        describe("[]", function()
           []
         end)
       ]],
@@ -121,7 +244,7 @@ table.insert(
     'it',
     fmt(
       [[
-        it("[]", function())
+        it("[]", function()
           []
         end)
       ]],
@@ -137,7 +260,7 @@ table.insert(
     'test',
     fmt(
       [[
-        describe("[]", function())
+        describe("[]", function()
           it("[]", function())
             []
           end)
@@ -155,7 +278,7 @@ table.insert(
     'same',
     fmt(
       'assert.are.same([], [])',
-      { i(1, 'passed'), i(2, 'expected') },
+      { i(1, 'expected'), i(2, 'passed') },
       { delimiters = '[]' }
     )
   )

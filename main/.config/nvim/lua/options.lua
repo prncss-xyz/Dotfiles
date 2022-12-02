@@ -28,6 +28,7 @@ deep_merge(vim, {
     tabstop = indent,
   },
   o = {
+    background = 'light',
     compatible = false,
     autoindent = true,
     autoread = true,
@@ -69,6 +70,15 @@ deep_merge(vim, {
     title = true,
   },
   g = {
+    gruvbox_material_background = 'soft', -- for ligth
+    -- gruvbox_material_background = 'hard', -- for dark
+    gruvbox_better_performance = 1,
+    solarized_italics = 1,
+    -- material_style = 'darker',
+    -- material_style = 'lighter',
+    material_style = 'oceanic',
+    -- material_style = 'palenight',
+    -- material_style = 'deep ocean',
     -- autosave = 1,
   },
   wo = {
@@ -80,7 +90,6 @@ deep_merge(vim, {
     -- foldexpr = 'My_foldexpr()',
   },
   opt = {
-    -- background = 'light',
     diffopt = 'internal,filler,closeoff,algorithm:patience',
     cc = '+1',
     conceallevel = 2,

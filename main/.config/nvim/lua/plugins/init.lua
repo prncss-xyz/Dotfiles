@@ -44,9 +44,7 @@ return require('packer').startup {
     use 'wbthomason/packer.nvim'
     use {
       'nvim-lua/plenary.nvim',
-      -- https://github.com/nvim-neotest/neotest-plenary/issues/3
-      -- not working
-      -- module = 'plenary',
+      module = 'plenary',
     }
     use {
       'kevinhwang91/promise-async',
@@ -156,7 +154,7 @@ return require('packer').startup {
       'RRethy/vim-illuminate',
       setup = setup 'illuminate',
       config = config 'illuminate',
-      event = 'BufEnter',
+      event = 'ColorScheme',
     }
     use {
       'rmagatti/goto-preview',
@@ -257,6 +255,7 @@ return require('packer').startup {
     use {
       'nvim-neotest/neotest-plenary',
       module = 'neotest-plenary',
+      disable = true,
     }
     use {
       'marilari88/neotest-vitest',
@@ -379,10 +378,37 @@ return require('packer').startup {
     }
 
     -- Themes
-    use 'rafamadriz/neon'
-    use 'ishan9299/nvim-solarized-lua'
-    use 'sainnhe/gruvbox-material'
-    use { 'rose-pine/neovim', as = 'rose-pine' }
+    use { 'rafamadriz/neon', module = 'neon' }
+    use { 'ishan9299/nvim-solarized-lua', module = 'solarized' }
+    use { 'sainnhe/gruvbox-material', event = 'ColorSchemePre' }
+    use { 'sainnhe/everforest', event = 'ColorSchemePre' }
+    use { 'rose-pine/neovim', as = 'rose-pine', module = 'rose-pine' }
+    use { 'rockerBOO/boo-colorscheme-nvim', disable = true }
+    use {
+      'marko-cerovac/material.nvim',
+      module = 'material',
+      config = default_config('material', {
+        lualine_style = 'stealth',
+        plugins = {
+          'dap',
+          'gitsigns',
+          'hop',
+          'indent-blankline',
+          'neogit',
+          'nvim-cmp',
+          'nvim-web-devicons',
+          'telescope',
+          'trouble',
+        },
+      }),
+    }
+    use {
+      local_repo 'klint.nvim',
+      config = config 'klint',
+      rocks = 'lustache',
+      module = 'klint',
+      cmd = 'KlintExport',
+    }
 
     -- apparance
     use {
@@ -782,9 +808,8 @@ return require('packer').startup {
     -- Various
     use { 'dstein64/vim-startuptime' }
     use {
-      'echasnovski/mini.bufremove',
-      config = default_config 'mini.bufremove',
-      -- MiniBufremove.unshow()
+      'famiu/bufdelete.nvim',
+      module = 'bufdelete',
     }
     use {
       -- 'chrisgrieser/nvim-genghis',

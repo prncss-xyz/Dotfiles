@@ -11,20 +11,22 @@ local p = require('luasnip.extras').partial
 local l = require('luasnip.extras').lambda
 local fmt = require('luasnip.extras.fmt').fmt
 
--- TODO: explore selection
-
 local templates_dir = vim.env.HOME .. '/.config/nvim/snippets/templum'
 
+--- get filepath's title part
+---@return string
 local function title()
-  local pat = vim.split(vim.fn.expand('%:p:h', nil, nil), '/')
-  pat = pat[#pat]
-  return pat
+  return vim.fn.expand '%:t:r'
 end
 
+--- get current year
+---@return string
 local function year()
   return os.date '%Y'
 end
 
+--- get user name from git config
+---@return string
 local function git_name()
   local res
   local Job = require('plenary').job
@@ -46,6 +48,8 @@ local function li(n, cb, ...)
   end, {})
 end
 
+--- create litteral snippet from file content (from templates_dir)
+---@param filename string
 local function from_file_raw(filename)
   return {
     d(1, function()
@@ -79,41 +83,22 @@ local function module(pattern)
   return filename:match(pattern)
 end
 
-local function quoted_filename()
-  local source = vim.fn.expand '%:t'
-  source = string.gsub(source, '(.test.)', '.')
-  return string.format('%q', './' .. source)
-end
-
-local function raw_filename()
-  local source = vim.fn.expand '%:t'
-  source = string.gsub(source, '(.test.tsx)', '')
-  return source
-end
-
-local function chmod_x()
+local function module_lua()
+  local pattern = '(.+)_spec.lua$'
   local filename = vim.fn.expand '%'
-  local perm = vim.fn.getfperm(filename)
-  local res = ''
-  local r
-  for j = 1, perm:len() do
-    local char = perm:sub(j, j)
-    if j % 3 == 1 then
-      r = char == 'r'
-    end
-    if j % 3 == 0 and r then
-      char = 'x'
-    end
-    res = res .. char
-  end
-  vim.fn.setfperm(filename, res)
+  filename = filename:match '^lua/(.+)$' or filename
+  filename = filename:match(pattern)
+  filename = filename:gsub('/', '.')
+  return filename
 end
+
+local chmod_x = require('khutulun').chmod_x
 
 local function from_buf_title()
   return d(1, function()
     --[[ local title = vim.b.title or 'title' ]]
-    local title = 'title' --TODO: get note title
-    return sn(1, i(1, title), {})
+    local res = 'title' --TODO: get note title
+    return sn(1, i(1, res), {})
   end, {}, {})
 end
 
@@ -148,7 +133,7 @@ return {
         t 'local ',
         i(1, 'M'),
         t " = require '",
-        p(module, '(.+)_spec.lua$'),
+        p(module_lua),
         t { "'", '', '' },
         i(2, '-- tests'),
       },

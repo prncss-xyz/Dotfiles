@@ -86,11 +86,6 @@ function M.extend()
         end,
       },
     },
-    ['<cr>'] = b {
-      require('plugins.binder.actions').cr,
-      expr = true,
-      modes = 'i',
-    },
     [d.right] = b { 'l', 'right', modes = 'nxo' },
     [d.left] = b { 'h', 'left', modes = 'nxo' },
     [d.up] = b { 'k', 'up', modes = 'nxo' },
@@ -112,7 +107,10 @@ function M.extend()
     --   end,
     -- },
     ['<m-q>'] = b { desc = 'close window', 'q', cmd = true },
-    ['<m-w>'] = b { desc = 'close buffer', MiniBufremove.unshow },
+    ['<m-w>'] = b {
+      desc = 'close buffer',
+      lazy_req('bufdelete', 'bufdelete', 0, true),
+    },
     ['<m-u>'] = b {
       desc = 'pick special window',
       function()

@@ -1,0 +1,14 @@
+font=Montserrat sans 10
+background-color=#5699af
+text-color=#c5cdd9
+border-color=#5699af
+border-radius=3
+
+[urgency=low]
+border-color=#5699af
+
+[urgency=normal]
+border-color=#5699af
+
+[urgency=high]
+border-color=#4db5bd

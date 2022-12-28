@@ -1,49 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
-name="${1-rose-pine}"
-export DEST="$DOTFILES/_template"
-echo "creating $DOTFILES/_template"
-
-mkdir -p "$DEST-new"
-
-# dir dir/name.ext dir/name.ext.esh
-step() {
-	mkdir -p "$DEST-new/$1"
-  SRC="$HOME/.config/stow/theming/$3/$2"
-  if [ -e "$SRC" ]; then # skip broken links
-    envsubst < "$SRC" > "$DEST-new/$2"
-  fi
-}
-export -f step
-
-source "$HOME/.config/stow/theming/generated/$name.sh"
-export HOSTNAME="${HOSTNAME-$hostname}"
-
-export text="$foreground"
-export accent="$color6"
-export primary="$color12"
-export font="Montserrat"
-export gtk_theme="Adwaita"
-
-# passing these vars unexpended
-export WOBSOCK='$WOBSOCK'
-export terminal='$terminal'
-
-source "$HOME/.config/stow/theming/extra/$name.sh"
-
-fd -H --type f --type l --base-directory ~/.config/stow/theming/skeleton -x sh -c 'step {//} {} skeleton'
-if [ -d "$HOME/.config/stow/theming/specific/$name" ]; then
-	fd -H --type f --type l --base-directory "$HOME/.config/stow/theming/specific/$name" -x sh -c "step {//} {} specific/$name"
-fi
-
-stow -D _template
-rm -rf "$DEST"-old
-if [ -d "$DEST" ]; then
-  mv "$DEST" "$DEST"-old
-fi
-mv "$DEST"-new "$DEST"
-stow _template
-
+stow -D "theme-$(cat ~/.theme_name)"
+stow "theme-$1"
 ~/Dotfiles/main/.local/bin/setbg-sway

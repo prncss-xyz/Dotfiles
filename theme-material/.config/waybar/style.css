@@ -4,13 +4,13 @@
   font-family: Montserrat;
   font-size: 13px;
   min-height: 0;
-  color: #f2e9e1;
+  color: #000000;
 }
 
 window#waybar {
-  background: #56949f;
+  background: #82aaff;
   opacity: 0.9;
-  color: #f2e9e1;
+  color: #000000;
 }
 
 #window {
@@ -32,7 +32,7 @@ window#waybar {
   padding-top: 1px;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: #d7827e;
+  background-color: #71c6e7;
   color: #b0bec5;
 }
 
@@ -51,8 +51,8 @@ window#waybar {
   padding-top: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  background: #56949f;
+  background: #82aaff;
 }
 #battery.discharging {
-  background: #d7827e;
+  background: #71c6e7;
 }

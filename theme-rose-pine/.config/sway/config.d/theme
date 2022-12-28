@@ -1,16 +1,16 @@
 default_border pixel 3
 # class                 border background text indicator child_border
-client.focused         	#f2e9e1	#f2e9e1 #575279 #286983 #56949f
-client.unfocused       	#f2e9e1	#f2e9e1 #575279 #56949f #f2e9e1
-client.focused_inactive	#f2e9e1	#f2e9e1 #575279 #56949f #f2e9e1
-client.urgent       		#f2e9e1	#f2e9e1 #575279 #56949f #f2e9e1
-client.placeholder	    #f2e9e1	#f2e9e1 #575279 #56949f #f2e9e1
+client.focused         	#26233a	#26233a #e0def4 #31748f #9ccfd8
+client.unfocused       	#26233a	#26233a #e0def4 #9ccfd8 #26233a
+client.focused_inactive	#26233a	#26233a #e0def4 #9ccfd8 #26233a
+client.urgent       		#26233a	#26233a #e0def4 #9ccfd8 #26233a
+client.placeholder	    #26233a	#26233a #e0def4 #9ccfd8 #26233a
 
-client.background       #$f2e9e1
+client.background       #$26233a
 
 exec_always {
   gsettings set org.gnome.desktop.interface gtk-theme  'Rose-pine'
   gsettings set org.gnome.desktop.interface font-name 'Montserrat'
 }
 
-exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --border-color;#aa575279 --bar-color #aa575279 --background-color '#55f2e9e1
+exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --border-color;#aae0def4 --bar-color #aae0def4 --background-color '#5526233a

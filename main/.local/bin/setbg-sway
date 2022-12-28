@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
-THEME=$(cat "$HOME/.config/stow/theme-name")
-FILE=$(fd -e jpg -e png . ~/Media/Pictures/Wallpapers/$THEME|shuf -n1) 
-echo "output * bg \"$FILE\" fill" > ~/.config/sway/config.d/bg
+THEME=$(cat ~/.theme_name)
+DIR=~/Media/Pictures/Wallpapers/"$THEME"
+if [ ! -d "$DIR" ]; then
+	DIR=~/Media/Pictures/Wallpapers/
+fi
+FILE=$(fd -e jpg -e png . "$DIR" | shuf -n1)
+echo "output * bg \"$FILE\" fill" >~/.config/sway/config.d/bg

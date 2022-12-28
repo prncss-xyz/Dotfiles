@@ -1,14 +1,14 @@
 font=Montserrat sans 10
-background-color=#56949f
+background-color=#82aaff
 text-color=#b0bec5
-border-color=#56949f
+border-color=#82aaff
 border-radius=3
 
 [urgency=low]
-border-color=#56949f
+border-color=#82aaff
 
 [urgency=normal]
-border-color=#56949f
+border-color=#82aaff
 
 [urgency=high]
-border-color=#b4637a
+border-color=#dc6068

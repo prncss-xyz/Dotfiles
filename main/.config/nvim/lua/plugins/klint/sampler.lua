@@ -17,16 +17,16 @@ M.contents = [[
       <body>
         <h1>{{name}}</h1>
         <div class="main">
-          <div style="background-color: "#{{background}}">background</div>
-          <div style="background-color: "#{{foreground}}">foreground</div>
-          <div style="background-color: "#{{selection_background}}">
+          <div style="background-color: #{{background}}">background</div>
+          <div style="background-color: #{{foreground}}">foreground</div>
+          <div style="background-color: #{{selection_background}}">
             selection_background
           </div>
-          <div style="background-color: "#{{selection_foreground}}">
+          <div style="background-color: #{{selection_foreground}}">
             selection_foreground
           </div>
           {{#term}}
-          <div style="background-color: "#{{value}}">term{{index}}</div>
+          <div style="background-color: #{{value}}">term{{index}}</div>
           {{/term}}
         </div>
       </body>

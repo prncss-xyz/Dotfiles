@@ -14,7 +14,6 @@ M.contents = [[
     window#waybar {
       background: #{{primary}};
       opacity: 0.9;
-      color: #{{background}};
     }
 
     #window {

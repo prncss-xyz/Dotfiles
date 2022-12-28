@@ -138,6 +138,7 @@ vim.api.nvim_create_autocmd({ 'CursorHold' }, {
   group = group,
   callback = require('plugins.zk.utils').update_title_void,
 })
+
 -- Without wrapping in an autocommand, you don't see the status line while telescope
 -- the classical way of creating an augroup and clearing it does not seem to work, hence the `once` variable
 vim.api.nvim_create_autocmd('VimEnter', {
@@ -145,33 +146,24 @@ vim.api.nvim_create_autocmd('VimEnter', {
   group = group,
   callback = function()
     vim.schedule(function()
-      fetch_git_branch_plenary()
-      if #vim.v.argv > 1 then
-      elseif vim.fn.getcwd() == os.getenv 'HOME' then
-        -- TODO: make safe on bootstraping
-        -- FIX: mysterious A input
-        require('telescope').extensions.repo.list {}
-      else
-        local prefix = vim.fn.getcwd() .. '/'
-        for _, file in ipairs(vim.v.oldfiles) do
-          if
-            vim.startswith(file, prefix) and vim.fn.filereadable(file) == 1
-          then
-            vim.cmd('edit ' .. file)
-            return
-          end
+      -- we wrap it to avoid error messages on bootsrapping
+      local succ, errormsg = pcall(function()
+        fetch_git_branch_plenary()
+        if #vim.v.argv > 1 then
+        elseif vim.fn.getcwd() == os.getenv 'HOME' then
+          require('telescope').extensions.repo.list {}
+        else
+          require('utils.open_project').open_project { cwd = vim.fn.getcwd() }
         end
-        require('telescope.builtin').find_files {
-          find_command = {
-            'rg',
-            '--files',
-            '--hidden',
-            '-g',
-            '!.git',
-          },
-        }
+        -- TODO: force statusline refresh
+      end)
+      -- TODO: log error if not bootsrapping
+      if not succ and true then
+        vim.notify(
+          'Could not create directory: ' .. errormsg,
+          vim.log.levels.ERROR
+        )
       end
-      -- TODO: force statusline refresh
     end)
   end,
 })

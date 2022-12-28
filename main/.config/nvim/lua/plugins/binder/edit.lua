@@ -50,6 +50,7 @@ function M.extend()
       },
     },
     d = keys {
+      desc = 'dial',
       -- b { '<Plug>(dial-increment-additional)', modes = 'x' },
       -- b { '<Plug>(dial-decrement-additional)', modes = 'x' },
       -- prev = modes {
@@ -61,10 +62,18 @@ function M.extend()
       --   x = b { require('plugins.dial').utils.increment_x },
       -- },
       prev = modes {
-        n = b { lazy_req('longnose', 'exec', 'replace', 'subline', 'descend') },
+        n = b {
+          function()
+            require('flies2.operations.descend'):exec()
+          end,
+        },
       },
       next = modes {
-        n = b { lazy_req('longnose', 'exec', 'replace', 'subline', 'ascend') },
+        n = b {
+          function()
+            require('flies2.operations.ascend'):exec()
+          end,
+        },
       },
     },
     e = b { desc = 'swap', '<Plug>(flies-swap)', modes = 'nx' },
@@ -211,26 +220,40 @@ function M.extend()
         },
       },
     },
+    w = b {
+      desc = 'open-close',
+      function()
+        require('flies2.operations.open_close'):exec()
+      end,
+    },
     x = b {
       desc = 'explode',
       '<Plug>(flies-explode)',
       modes = 'nx',
     },
+    y = b { desc = 'wrap', '<Plug>(flies-wrap)', modes = 'nx' },
+    z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },
     ['<tab>'] = modes {
       nx = keys {
         prev = b { '<<' },
         next = b { '>>' },
       },
     },
-    y = b { desc = 'wrap', '<Plug>(flies-wrap)', modes = 'nx' },
-    z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },
     ['<space>'] = modes {
       n = b { vim.lsp.buf.code_action },
       x = b { ":'<,'>lua vim.lsp.buf.range_code_action()<cr>" },
     },
     ['<cr>'] = keys {
-      prev = b { '<Plug>(unimpaired-blank-up)' },
-      next = b { '<Plug>(unimpaired-blank-down)' },
+      prev = b {
+        function()
+          require('utils.blank_line').blank_line(false)
+        end,
+      },
+      next = b {
+        function()
+          require('utils.blank_line').blank_line(true)
+        end,
+      },
     },
   }
 end

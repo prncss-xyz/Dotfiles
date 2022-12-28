@@ -1,1 +1,1 @@
-vim.colorscheme("material")
+vim.cmd{cmd ='colorscheme', args={"material"}}

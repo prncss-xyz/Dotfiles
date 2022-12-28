@@ -17,7 +17,7 @@ alias o xdg-open
 alias t 'exa --icons --git --tree'
 alias y 'yt-dlp -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 abbr yx 'yt-dlp -x'
-abbr ze 'zk-bib eat -o'
+abbr ze 'zk-bib eat --yes'
 
 update_cwd_osc # this is needed beacause aur package sets TERM to 'foot-extra' and not 'foot'
 
@@ -32,9 +32,9 @@ zoxide init fish | source
 
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'mamba init' !!
-set -gx MAMBA_EXE "/usr/bin/micromamba"
-set -gx MAMBA_ROOT_PREFIX "/home/prncss/micromamba"
-eval "/usr/bin/micromamba" shell hook --shell fish --prefix "/home/prncss/micromamba" | source
+set -gx MAMBA_EXE /usr/bin/micromamba
+set -gx MAMBA_ROOT_PREFIX /home/prncss/micromamba
+eval /usr/bin/micromamba shell hook --shell fish --prefix /home/prncss/micromamba | source
 eval (direnv hook fish)
 # <<< mamba initialize <<<
 complete -c cht -xa '(cht :list)'

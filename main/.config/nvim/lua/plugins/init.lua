@@ -45,6 +45,10 @@ return require('packer').startup {
     use {
       'nvim-lua/plenary.nvim',
       module = 'plenary',
+      cmd = {
+        'PlenaryBustedFile',
+        'PlenaryBustedDirectory',
+      },
     }
     use {
       'kevinhwang91/promise-async',
@@ -75,6 +79,11 @@ return require('packer').startup {
       module = 'flies',
       module_pattern = 'flies.*',
       event = 'BufReadPost',
+    }
+    use {
+      local_repo 'flies2.nvim',
+      config = config 'flies2',
+      module = 'flies2',
     }
     use { 'mfussenegger/nvim-ts-hint-textobject', module = 'tsht' }
     use {
@@ -126,6 +135,7 @@ return require('packer').startup {
       'simrat39/inlay-hints.nvim',
       module = 'inlay-hints',
       config = default_config 'inlay-hints',
+      disable = true,
     }
     use {
       'jose-elias-alvarez/null-ls.nvim',
@@ -154,7 +164,7 @@ return require('packer').startup {
       'RRethy/vim-illuminate',
       setup = setup 'illuminate',
       config = config 'illuminate',
-      event = 'ColorScheme',
+      event = 'Cursorhold',
     }
     use {
       'rmagatti/goto-preview',
@@ -209,6 +219,7 @@ return require('packer').startup {
       'windwp/nvim-autopairs',
       config = config 'nvim-autopairs',
       event = 'InsertEnter',
+      disable = false,
     }
     use {
       'L3MON4D3/LuaSnip',
@@ -239,7 +250,10 @@ return require('packer').startup {
         require('dapui').setup()
       end,
     }
-    use { 'jbyuki/one-small-step-for-vimkind', module = 'osv' }
+    use {
+      'jbyuki/one-small-step-for-vimkind',
+      module = 'osv',
+    }
     use {
       'mxsdev/nvim-dap-vscode-js',
       -- module = 'dap-vscode-js',
@@ -251,11 +265,11 @@ return require('packer').startup {
       'microsoft/vscode-js-debug',
       opt = true,
       run = 'npm install --legacy-peer-deps && npm run compile',
+      disable = true,
     }
     use {
       'nvim-neotest/neotest-plenary',
       module = 'neotest-plenary',
-      disable = true,
     }
     use {
       'marilari88/neotest-vitest',
@@ -434,7 +448,37 @@ return require('packer').startup {
       after = 'neoscroll.nvim',
       config = function() end,
     }
-    use { 'mvllow/modes.nvim', config = default_config 'modes' }
+    use { 'mvllow/modes.nvim', config = default_config 'modes', disable = true }
+    use {
+      'nvim-zh/colorful-winsep.nvim',
+      config = function()
+        require('colorful-winsep').setup()
+      end,
+      event = 'BufReadPost',
+      disable = true,
+    }
+    use {
+      'lukas-reineke/indent-blankline.nvim',
+      event = 'bufreadpre',
+      config = config 'indent-blankline',
+    }
+    use {
+      'lukas-reineke/headlines.nvim',
+      event = 'bufreadpre',
+      config = default_config 'headlines',
+    }
+    use {
+      'folke/twilight.nvim',
+      config = default_config 'twilight',
+      module = 'twilight',
+      cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
+    }
+    use {
+      'levouh/tint.nvim',
+      config = default_config 'tint',
+      event = 'ColorSchemePre',
+      disable = true,
+    }
 
     -- UI
     use {
@@ -445,8 +489,7 @@ return require('packer').startup {
     }
     use {
       'masukomi/vim-markdown-folding',
-      ft = 'markdown',
-      cmd = { 'FoldToggle' },
+      disable = true,
     }
     use {
       local_repo 'buffstory.nvim',
@@ -482,24 +525,6 @@ return require('packer').startup {
       module = 'window-picker',
     }
     use {
-      'nvim-zh/colorful-winsep.nvim',
-      config = function()
-        require('colorful-winsep').setup()
-      end,
-      event = 'BufReadPost',
-      disable = true,
-    }
-    use {
-      'lukas-reineke/indent-blankline.nvim',
-      event = 'bufreadpre',
-      config = config 'indent-blankline',
-    }
-    use {
-      'lukas-reineke/headlines.nvim',
-      event = 'bufreadpre',
-      config = default_config 'headlines',
-    }
-    use {
       'folke/trouble.nvim',
       module = 'trouble',
       module_pattern = 'trouble.*',
@@ -521,21 +546,10 @@ return require('packer').startup {
       config = config 'zen-mode',
     }
     use {
-      'folke/twilight.nvim',
-      config = default_config 'twilight',
-      module = 'twilight',
-      cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
-    }
-    use {
       'smjonas/inc-rename.nvim',
       config = default_config 'inc_rename',
       cmd = { 'IncRename' },
       disable = true,
-    }
-    use {
-      'levouh/tint.nvim',
-      config = default_config 'tint',
-      event = 'ColorSchemePre',
     }
     use {
       'rcarriga/nvim-notify',
@@ -594,7 +608,7 @@ return require('packer').startup {
       config = function()
         require('marks').setup {
           default_mappings = false,
-          refresh_interval = 9,
+          refresh_interval = 0,
         }
         -- https://github.com/chentoast/marks.nvim/issues/40
         vim.api.nvim_create_autocmd('cursorhold', {
@@ -612,6 +626,7 @@ return require('packer').startup {
       'abecodes/tabout.nvim',
       event = 'InsertEnter',
       config = config 'tabout',
+      disable = true,
     }
 
     -- Telescope
@@ -643,7 +658,8 @@ return require('packer').startup {
       module = 'telescope._extensions.project',
     }
     use {
-      'cljoly/telescope-repo.nvim',
+      -- 'cljoly/telescope-repo.nvim',
+      local_repo 'telescope-repo.nvim',
       module = 'telescope._extensions.repo',
     }
     use {
@@ -797,6 +813,12 @@ return require('packer').startup {
     use {
       'ahmedkhalf/project.nvim',
       config = config 'project',
+      event = 'BufReadPost',
+      disable = true,
+    }
+    use {
+      'notjedi/nvim-rooter.lua',
+      config = default_config 'nvim-rooter',
       event = 'BufReadPost',
     }
     use {

@@ -8,7 +8,7 @@ local theme_name = {
 local nvim = {
   path = '.config/nvim/plugin/theme.lua',
   contents = [[
-    vim.colorscheme("{{name}}")
+    vim.cmd{cmd ='colorscheme', args={"{{name}}"}}
   ]],
 }
 
@@ -45,7 +45,7 @@ function M.config()
       ['rose-pine'] = {
         text = eval 'term08',
         accent = eval 'term14',
-        primary = eval 'color12',
+        primary = eval 'term12',
         gtk_theme = 'Rose-pine',
       },
     },

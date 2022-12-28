@@ -8,9 +8,6 @@ function M.extend()
   local util = require 'plugins.binder.utils'
   local np = util.np
   local lazy_req = util.lazy_req
-  require('key-menu').set('n', 'zb')
-  require('key-menu').set('n', 'zz')
-  require('key-menu').set('n', 'zp')
   return keys {
     redup = keys {
       desc = 'telescope',
@@ -92,14 +89,20 @@ function M.extend()
           require('telescope.builtin').git_status()
         end,
       },
-      -- FIXME:
       k = b {
         desc = 'node modules',
-        lazy_req('telescope', 'extensions.my.node_modules'),
+        lazy_req('telescope', 'extensions.my.modules'),
       },
       m = b {
         desc = 'plugins',
-        lazy_req('telescope', 'extensions.my.installed_plugins'),
+        function()
+          require('telescope').extensions.repo.list {
+            prompt_title = 'nvim plugins',
+            cwd = '/prncss/home/.local/share/nvim/',
+            search_dirs = { '~/.local/share/nvim/site/pack' },
+          }
+        end,
+        -- lazy_req('telescope', 'extensions.my.installed_plugins'),
       },
       n = b {
         desc = 'notes',

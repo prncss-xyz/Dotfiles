@@ -3,13 +3,12 @@ local telescope = require 'telescope'
 local exports = {}
 
 for _, name in ipairs {
-  'gitignore',
   'md_help',
-  'move',
+  -- 'move',
   'installed_plugins',
-  'modules',
-  'project_directory',
-  'projects',
+  'node_modules',
+  -- 'project_directory',
+  -- 'projects',
   'uniduck',
   'zk_notes',
 } do

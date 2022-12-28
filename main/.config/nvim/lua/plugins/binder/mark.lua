@@ -12,9 +12,6 @@ function M.extend()
   local util = require 'plugins.binder.utils'
   local np = util.np
   local lazy_req = util.lazy_req
-  require('key-menu').set('n', 'zb')
-  require('key-menu').set('n', 'zz')
-  require('key-menu').set('n', 'zp')
   return keys {
     b = keys {
       -- prev = b { '<Plug>(Marks-next-bookmark)' },

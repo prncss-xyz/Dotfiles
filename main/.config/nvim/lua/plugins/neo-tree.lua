@@ -1,27 +1,12 @@
 local M = {}
 
-local function new_file(fname)
-  if
-    (fname:match '/%.local/bin/' or fname:match '^%.local/bin/')
-    and not fname:match '%.local/bin/.+%.'
-  then
-    os.execute(string.format('chmod +x %q', fname))
-  end
-  -- when new file belongs to an active stow package, stow it
-  local dots = os.getenv 'DOTFILES'
-  if vim.fn.getcwd() == dots then
-    local stow_package = fname:match('^(.-)/', #dots + 2)
-    if
-      require('utils.std').file_exists(
-        string.format(
-          '%s/.config/stow/active/%s',
-          os.getenv 'HOME',
-          stow_package
-        )
-      )
-    then
-      os.execute(string.format('stow %q', stow_package))
-    end
+local khutulun = require 'khutulun'
+
+local function file_cmd(cb)
+  return function(state)
+    local node = state.tree:get_node()
+    local path = node:get_id()
+    cb(path)
   end
 end
 
@@ -61,14 +46,6 @@ function M.config()
     window = {
       width = require('parameters').pane_width,
     },
-    -- zk = {
-    --   follow_current_file = true,
-    --   window = {
-    --     mappings = {
-    --       n = 'change_query',
-    --     },
-    --   },
-    -- },
     filesystem = {
       follow_current_file = true,
       hijack_netrw_behavior = 'open_default',
@@ -78,33 +55,42 @@ function M.config()
       },
       window = {
         mappings = {
-          ['oo'] = 'system_open',
-          ['oh'] = 'open_split',
-          ['os'] = 'open_vsplit',
-          ['ow'] = 'open_with_window_picker',
-          ['i'] = 'run_command',
+          a = false,
+          e = 'create',
+          gh = 'set_root',
+          gp = 'prev_git_modified',
+          gn = 'next_git_modified',
+          h = 'show_help',
+          i = 'run_command',
+          oo = 'system_open',
+          oh = 'open_split',
+          os = 'open_vsplit',
+          ow = 'open_with_window_picker',
+          q = false,
+          v = 'move',
+          yl = 'yank_filename',
+          yy = 'yank_filepath',
+          x = 'delete',
           ['<tab>'] = 'preview',
           [';'] = 'open',
           ['é'] = 'fuzzy_finder',
           ['.'] = 'toggle_hidden',
-          ['gh'] = 'set_root',
-          ['gp'] = 'prev_git_modified',
-          ['gn'] = 'next_git_modified',
-          ['h'] = 'show_help',
-          ['q'] = false,
         },
       },
       commands = {
-        system_open = function(state)
-          local node = state.tree:get_node()
-          local path = node:get_id()
+        move = file_cmd(khutulun.move),
+        duplicate = file_cmd(khutulun.duplicate),
+        create = file_cmd(khutulun.create),
+        delete = file_cmd(khutulun.delete),
+        rename = file_cmd(khutulun.rename),
+        yank_filepath = file_cmd(khutulun.yank_filepath),
+        yank_filename = file_cmd(khutulun.yank_filename),
+        system_open = file_cmd(function(path)
           vim.api.nvim_command('silent !xdg-open ' .. path)
-        end,
-        run_command = function(state)
-          local node = state.tree:get_node()
-          local path = node:get_id()
+        end),
+        run_command = file_cmd(function(path)
           vim.api.nvim_input(': ' .. path .. '<Home>')
-        end,
+        end),
         preview = function(state)
           local node = state.tree:get_node()
           if require('neo-tree.utils').is_expandable(node) then

@@ -1,1 +1,1 @@
-vim.colorscheme("everforest")
+vim.cmd{cmd ='colorscheme', args={"everforest"}}

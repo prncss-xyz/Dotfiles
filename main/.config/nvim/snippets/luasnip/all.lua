@@ -1,6 +1,7 @@
 ---@diagnostic disable: undefined-global
 
 local preferred_quote = require('parameters').preferred_quote
+local pair = require 'utils.snippets.pair'
 
 local M = {
   s('date', p(os.date, '%x')),
@@ -42,7 +43,7 @@ table.insert(
   })
 )
 
-if true then
+if false then
   table.insert(
     M,
     s('b', {
@@ -172,13 +173,7 @@ local env = {
   javascript = 'node',
 }
 
-local function chmod_x()
-  local filename = vim.fn.expand '%'
-  local perm = vim.fn.getfperm(filename)
-  perm = perm:gsub('r(.)%-', 'r%1x') -- add x to every group that has r
-  vim.fn.setfperm(filename, perm)
-  vim.cmd { cmd = 'filetype', args = { 'detect' } }
-end
+table.insert(M, pair.pair('left_pair_test', 'right_pair_test', pair.char_count_smaller)) --FIX: 
 
 table.insert(
   M,
@@ -193,7 +188,9 @@ table.insert(
     callbacks = {
       -- index `-1` means the callback is on the snippet as a whole
       [-1] = {
-        [events.leave] = chmod_x,
+        [events.leave] = function()
+          require('khutulun').chmod_x()
+        end,
       },
     },
   })

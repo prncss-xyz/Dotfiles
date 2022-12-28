@@ -1,1 +1,1 @@
-vim.colorscheme("solarized-flat")
+vim.cmd{cmd ='colorscheme', args={"solarized-flat"}}

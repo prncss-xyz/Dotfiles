@@ -1,6 +1,7 @@
 local M = {}
 
 function M.extend()
+  local d = require('plugins.binder.parameters').d
   local utils = require 'plugins.binder.utils'
   local repeatable = utils.repeatable
   local binder = require 'binder'
@@ -54,31 +55,6 @@ function M.extend()
         },
       },
       c = repeatable { desc = 'continue', lazy_req('dap', 'continue') },
-      i = repeatable { desc = 'step into', lazy_req('dap', 'step_into') },
-      s = b {
-        desc = 'LaunchOSV',
-        lazy_req('plugins.osv', 'launch'),
-      },
-      o = keys {
-        prev = repeatable { desc = 'step out', lazy_req('dap', 'step_out') },
-        next = repeatable {
-          desc = 'step over',
-          lazy_req('dap', 'step_over'),
-        },
-      },
-      w = b {
-        desc = 'ui',
-        lazy_req('utils.windows', 'show_ui', 'dap', lazy_req('dapui', 'open')),
-      },
-      x = keys {
-        prev = b { desc = 'disconnect', lazy_req('dap', 'disconnect') },
-        next = b { desc = 'terminate', lazy_req('dap', 'terminate') },
-      },
-      ['.'] = b { desc = 'run last', lazy_req('dap', 'run_last') },
-      k = b { desc = 'up', lazy_req('dap', 'up') },
-      j = b { desc = 'down', lazy_req('dap', 'down') },
-      l = b { desc = 'launch', lazy_req('plugins.dap', 'launch') },
-      r = b { desc = 'repl open', lazy_req('dap', 'repl.open') },
       h = keys {
         prev = b {
           "<cmd>lua require'dap.ui.variables'.hover()<cr>",
@@ -89,33 +65,67 @@ function M.extend()
           desc = 'widgets',
         },
       },
+      i = repeatable { desc = 'step into', lazy_req('dap', 'step_into') },
+      -- l = b { desc = 'launch', lazy_req('dap', 'launch') },
+      l = b { desc = 'launch', lazy_req('plugins.dap', 'launch') },
+      o = keys {
+        prev = repeatable { desc = 'step out', lazy_req('dap', 'step_out') },
+        next = repeatable {
+          desc = 'step over',
+          lazy_req('dap', 'step_over'),
+        },
+      },
+      r = b { desc = 'repl open', lazy_req('dap', 'repl.open') },
+      s = b {
+        desc = 'OSV run this',
+        lazy_req('plugins.osv', 'run_this'),
+      },
+      t = keys {
+        c = b {
+          "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
+          desc = 'commands',
+        },
+        [','] = b {
+          "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
+          desc = 'configurations',
+        },
+        b = b {
+          "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
+          desc = 'list breakpoints',
+        },
+        v = b {
+          "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
+          desc = 'dap variables',
+        },
+        f = b {
+          "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
+          desc = 'dap frames',
+        },
+      },
       v = b {
         "<cmd>lua require'dap.ui.variables'.visual_hover()<cr>",
         desc = 'visual hover',
       },
+      w = b {
+        desc = 'ui',
+        function()
+          require('utils.windows').show_ui('dap', function()
+            require('nvim-dap-virtual-text').enable()
+            require('gitsigns').toggle_current_line_blame(false)
+            require('dapui').open()
+          end)
+        end,
+      },
+      x = keys {
+        prev = b { desc = 'disconnect', lazy_req('dap', 'disconnect') },
+        next = b { desc = 'terminate', lazy_req('dap', 'terminate') },
+      },
+      ['.'] = b { desc = 'run last', lazy_req('dap', 'run_last') },
+      [d.up] = b { desc = 'up', lazy_req('dap', 'up') },
+      [d.down] = b { desc = 'down', lazy_req('dap', 'down') },
       ['?'] = b {
         "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
         desc = 'variables scopes',
-      },
-      tc = b {
-        "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
-        desc = 'commands',
-      },
-      ['t,'] = b {
-        "<cmd>lua require'telescope'.extensions.dap.configurations{}<cr>",
-        desc = 'configurations',
-      },
-      tb = b {
-        "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<cr>",
-        desc = 'list breakpoints',
-      },
-      tv = b {
-        "<cmd>lua require'telescope'.extensions.dap.variables{}<cr>",
-        desc = 'dap variables',
-      },
-      tf = b {
-        "<cmd>lua require'telescope'.extensions.dap.frames{}<cr>",
-        desc = 'dap frames',
       },
       ['<cr>'] = repeatable {
         desc = 'run to cursor',
@@ -242,7 +252,7 @@ function M.extend()
         require('khutulun').delete,
       },
     },
-    g = keys {
+    G = keys {
       desc = 'runner',
       redup = b {
         desc = 'dash run',
@@ -278,7 +288,7 @@ function M.extend()
         lazy_req('dash', 'toggle_breakpoint'),
       },
     },
-    G = keys {
+    g = keys {
       desc = 'sniprun',
       redup = modes {
         desc = 'run',
@@ -350,8 +360,8 @@ function M.extend()
           require('utils.git').commit,
         },
         a = b {
-          desc = 'ammend',
-          require('utils.git').ammend,
+          desc = 'amend',
+          require('utils.git').amend,
         },
       },
       d = keys {
@@ -560,8 +570,12 @@ function M.extend()
         require('plugins.zk.utils').remove_asset,
       },
       r = b {
-        desc = 'index',
+        desc = 'refresh, index',
         lazy_req('zk', 'index'),
+      },
+      s = b {
+        desc = 'put sdr',
+        require('plugins.zk.utils').put_sdr,
       },
       l = keys {
         prev = b {
@@ -671,23 +685,16 @@ function M.extend()
         },
       },
     },
-    s = keys {
-      prev = b {
-        desc = 'projects (directory)',
-        lazy_req('telescope', 'extensions.my.project_directory'),
-      },
-      next = b {
-        desc = 'projects',
-        lazy_req('telescope', 'extensions.my.projects'),
-      },
-    },
     t = keys {
       desc = 'neotest',
       redup = b {
         desc = 'run nearest',
         function()
-          if vim.bo.filetype == 'lua' then
-            require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
+          if false and vim.bo.filetype == 'lua' then
+            require('plenary.test_harness').test_directory(
+              vim.fn.expand '%:p',
+              { minimal_init = 'tests_init.lua' }
+            )
           else
             vim.cmd.update()
             require('neotest').run.run()
@@ -697,7 +704,7 @@ function M.extend()
       f = b {
         desc = 'run file',
         function()
-          if vim.bo.filetype == 'lua' then
+          if false and vim.bo.filetype == 'lua' then
             require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
           else
             vim.cmd.update()
@@ -788,11 +795,18 @@ function M.extend()
       },
     },
     x = keys {
-      -- Just to test if same results as code actions
-      desc = 'refactoring telescope',
-      function()
-        require('telescope').extensions.refactoring.refactors()
-      end,
+      redup = b {
+        desc = 'tester',
+        function()
+          require('flies2.operations.select').exec()
+        end,
+      },
+      r = b {
+        desc = 'refactoring telescope',
+        function()
+          require('telescope').extensions.refactoring.refactors()
+        end,
+      },
     },
     y = keys {
       desc = 'search',

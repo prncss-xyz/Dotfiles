@@ -45,15 +45,35 @@ end
 local actions = require 'telescope.actions'
 local state = require 'telescope.actions.state'
 
+local function create_dir(new_dir)
+  if vim.fn.isdirectory(new_dir) == 0 then
+    local success, errormsg = pcall(vim.fn.mkdir, new_dir, 'p')
+    if success then
+      vim.notify(string.format('Created directory %q', new_dir))
+    else
+      vim.notify('Could not create directory: ' .. errormsg, log_error)
+      return false
+    end
+  end
+  return true
+end
+
+local function ensure_dir(target)
+  local new_dir = vim.fn.fnamemodify(target, ':h')
+  return create_dir(new_dir)
+end
+
 -- TODO: intercept telescope relative path
 local function edit()
-  local raw = state.get_current_line()
+  local filepath = state.get_current_line()
   local bufnr = vim.api.nvim_win_get_buf(0)
   actions.close(bufnr)
-  if not raw then
+  if not filepath then
     return
   end
-  vim.cmd('edit ' .. raw)
+  if ensure_dir(filepath) then
+    vim.cmd.edit(filepath)
+  end
 end
 
 function M.config()
@@ -91,7 +111,7 @@ function M.config()
           ['qv'] = actions.file_vsplit,
           ['qd'] = function(prompt_bufnr)
             local selection =
-            require('telescope.actions.state').get_selected_entry()
+              require('telescope.actions.state').get_selected_entry()
             local dir = vim.fn.fnamemodify(selection.path, ':p:h')
             require('telescope.actions').close(prompt_bufnr)
             -- Depending on what you want put `cd`, `lcd`, `tcd`
@@ -120,6 +140,7 @@ function M.config()
       },
       repo = {
         list = {
+          project_files = require('utils.open_project').open_project,
           fd_opts = {
             '--no-ignore-vcs',
             '--exclude',

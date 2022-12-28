@@ -4,13 +4,13 @@
   font-family: Montserrat;
   font-size: 13px;
   min-height: 0;
-  color: #839496;
+  color: #eee8d5;
 }
 
 window#waybar {
-  background: #839496;
+  background: #657b83;
   opacity: 0.9;
-  color: #839496;
+  color: #eee8d5;
 }
 
 #window {
@@ -25,7 +25,7 @@ window#waybar {
   padding-left: 3px;
   padding-right: 3px;
   background: transparent;
-  color: #839496;
+  color: #657b83;
 }
 
 #mode {
@@ -33,7 +33,7 @@ window#waybar {
   padding-left: 5px;
   padding-right: 5px;
   background-color: #2aa198;
-  color: #839496;
+  color: #657b83;
 }
 
 #clock {
@@ -51,7 +51,7 @@ window#waybar {
   padding-top: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  background: #839496;
+  background: #657b83;
 }
 #battery.discharging {
   background: #2aa198;

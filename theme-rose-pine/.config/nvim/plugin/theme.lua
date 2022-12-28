@@ -1,1 +1,1 @@
-vim.colorscheme("rose-pine")
+vim.cmd{cmd ='colorscheme', args={"rose-pine"}}

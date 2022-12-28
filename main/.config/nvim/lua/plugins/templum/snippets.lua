@@ -86,7 +86,7 @@ end
 local function module_lua()
   local pattern = '(.+)_spec.lua$'
   local filename = vim.fn.expand '%'
-  filename = filename:match '^lua/(.+)$' or filename
+  filename = filename:match 'lua/(.+)$' or filename
   filename = filename:match(pattern)
   filename = filename:gsub('/', '.')
   return filename
@@ -130,12 +130,10 @@ return {
     {
       '_spec%.lua$',
       {
-        t 'local ',
-        i(1, 'M'),
-        t " = require '",
+        t "local M = require '",
         p(module_lua),
         t { "'", '', '' },
-        i(2, '-- tests'),
+        i(1, '-- TODO:'),
       },
     },
     {

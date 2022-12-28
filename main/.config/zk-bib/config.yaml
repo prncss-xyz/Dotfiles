@@ -1,5 +1,7 @@
-tags: [inbox]
+tags: [w/backlog/0]
 noteDir: sources
+exportDir: Books
+exportRm: false
 removeTitle:
   words:
     - the
@@ -12,10 +14,19 @@ removeTitle:
   prefixes:
     - d'
     - l'
-  characters: '"*/:<>?\|'
+  characters: '"*/:<>?\|@'
   accents: false
 export:
-  w/backlog/0: epubs/backlog 0
+  w/backlog/0: .
+importTags:
+  completed: [w/completed, review]
+  stable: [w/stable]
+  broken: [w/broken]
+  backlog1: [w/backlog/1]
+  pending: [w/pending]
+  halted: [w/halted]
+rmTags:
+  - w
 toHTML:
   name: zk-web
   args:

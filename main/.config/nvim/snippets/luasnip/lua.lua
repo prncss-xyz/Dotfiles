@@ -1,4 +1,5 @@
 ---@diagnostic disable: undefined-global
+--
 
 local M = {
   s('k', {
@@ -42,16 +43,61 @@ local M = {
       ),
     }),
   }),
-  s('elseif', {
-    c(1, {
-      sn(
-        1,
-        { t 'elseif ', i(1, 'true'), t { ' then', '\t' }, i(2, '-- TODO:') }
-      ),
-      sn(1, { t { 'else', '\t' }, i(1, '-- TODO:') }),
-    }),
-  }),
 }
+
+table.insert(
+  M,
+  s(
+    'if',
+    fmt(
+      [[
+        if [] then
+          []
+        end
+      ]],
+      {
+        i(1, 'false'),
+        i(2, '-- TODO:'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'elseif',
+    fmt(
+      [[
+        elseif [] then
+          []
+      ]],
+      {
+        i(1, 'false'),
+        i(2, '-- TODO:'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'else',
+    fmt(
+      [[
+        else
+          []
+      ]],
+      {
+        i(1, '-- TODO:'),
+      },
+      { delimiters = '[]' }
+    )
+  )
+)
 
 table.insert(
   M,
@@ -220,7 +266,47 @@ table.insert(
   )
 )
 
--- tests:
+-- busted:
+
+for _, name in ipairs {
+  'setup',
+  'teardown',
+  'lazy_setup',
+  'lazy_teardown',
+  'strict_setup',
+  'strict_teardown',
+  'before_each',
+  'after_each',
+  'finally',
+} do
+  table.insert(
+    M,
+    s(
+      name,
+      fmt(
+        [[
+        [](function()
+          []
+        end)
+      ]],
+        { t(name), i(1, '-- TODO:') },
+        { delimiters = '[]' }
+      )
+    )
+  )
+end
+
+table.insert(
+  M,
+  s(
+    'pending',
+    fmt(
+      [[pending("[]") --TODO:]],
+      { i(1, 'description') },
+      { delimiters = '[]' }
+    )
+  )
+)
 
 table.insert(
   M,
@@ -272,13 +358,83 @@ table.insert(
   )
 )
 
+-- busted: assertions
+for _, name in ipairs { 'same', 'equals' } do
+  table.insert(
+    M,
+    s(
+      name,
+      fmt(
+        'assert.are.[]([], [])',
+        { t(name), i(1, 'expected'), i(2, 'passed') },
+        { delimiters = '[]' }
+      )
+    )
+  )
+  table.insert(
+    M,
+    s(
+      'not ' .. name,
+      fmt(
+        'assert.are_not.[]([], [])',
+        { t(name), i(1, 'expected'), i(2, 'passed') },
+        { delimiters = '[]' }
+      )
+    )
+  )
+end
+
+for _, name in ipairs { 'truthy', 'falsy', 'not_true', 'not_false' } do
+  table.insert(
+    M,
+    s(
+      name,
+      fmt(
+        'assert.is.[]([])',
+        { t(name), i(2, 'passed') },
+        { delimiters = '[]' }
+      )
+    )
+  )
+end
+
+for _, name in ipairs { 'is_true', 'is_false' } do
+  table.insert(
+    M,
+    s(
+      name,
+      fmt('assert.[]([])', { t(name), i(1, 'passed') }, { delimiters = '[]' })
+    )
+  )
+end
+
 table.insert(
   M,
   s(
-    'same',
+    'has_error',
     fmt(
-      'assert.are.same([], [])',
-      { i(1, 'expected'), i(2, 'passed') },
+      [[
+        assert.has_error(function()
+          []
+        end)
+      ]],
+      { i(1, '-- TODO:') },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'has_no.errors',
+    fmt(
+      [[
+        assert.has_no.errors(function()
+          []
+        end)
+      ]],
+      { i(1, '-- TODO:') },
       { delimiters = '[]' }
     )
   )

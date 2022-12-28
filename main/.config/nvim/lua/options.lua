@@ -59,7 +59,7 @@ deep_merge(vim, {
     tabstop = indent,
     termguicolors = true,
     updatetime = 300,
-    undofile = false,
+    undofile = true,
     -- timeoutlen = 300,
     wildignorecase = true,
     wildoptions = 'pum',
@@ -70,6 +70,7 @@ deep_merge(vim, {
     title = true,
   },
   g = {
+    ['conjure#extract#tree_sitter#enabled'] = true,
     gruvbox_material_background = 'soft', -- for ligth
     -- gruvbox_material_background = 'hard', -- for dark
     gruvbox_better_performance = 1,

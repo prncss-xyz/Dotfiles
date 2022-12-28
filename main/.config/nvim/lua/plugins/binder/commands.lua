@@ -5,8 +5,9 @@ M = {}
 function M.setup()
   local command = require('legendary').command
 
+  -- FIX:
   for _, v in ipairs {
-    'Dump',
+    'lua=',
     'PutText',
   } do
     command { ':' .. v .. ' ', unfinished = true }

@@ -2,7 +2,9 @@ local M = {}
 
 local std = require 'utils.std'
 
--- see also: https://github.com/rgroli/other.nvim 
+-- see also: https://github.com/rgroli/other.nvim
+
+-- TODO: patterns based on filetype
 
 local config = {
   alternatives = {
@@ -47,6 +49,24 @@ local config = {
         {
           '.+%.(.+)$',
           require('parameters').vim_conf .. '/queries/%1/textobjects.scm',
+        },
+      },
+    },
+    snippets = {
+      create = true,
+      patterns = {
+        {
+          '.+%.(.+)$',
+          function(ext)
+            if ext == 'jsx' or ext == 'ts' or ext == 'tsx' then
+              ext = 'js'
+            end
+            return string.format(
+              '%s/snippets/luasnip/%s.lua',
+              require('parameters').vim_conf,
+              ext
+            )
+          end,
         },
       },
     },

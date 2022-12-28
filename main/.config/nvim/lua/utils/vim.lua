@@ -1,5 +1,9 @@
 local M = {}
 
+function M.log_error(msg)
+  vim.nofify(msg, vim.log.levels.ERROR)
+end
+
 function M.toggle_conceal()
   if vim.o.conceallevel > 0 then
     vim.o.conceallevel = 0
@@ -84,12 +88,7 @@ function M.get_range_text(s, e)
     return lines
   else
     local line =
-      vim.api.nvim_buf_get_lines(
-        0,
-        start_row,
-        start_row + 1,
-        false
-      )[1]
+      vim.api.nvim_buf_get_lines(0, start_row, start_row + 1, false)[1]
     -- If line is nil then the line is empty
     return line and { string.sub(line, start_col, end_col) } or {}
   end

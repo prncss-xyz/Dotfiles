@@ -36,6 +36,13 @@ function M.show_ui(keep, cb)
             vim.cmd 'NeoTreeClose'
           elseif ft == 'aerial' then
             vim.cmd 'AerialCLose'
+          elseif vim.startswith(ft, 'dap-') or vim.startswith(ft, 'dapui_') then
+            require('dapui').close()
+            vim.cmd 'DapVirtualTextDisable'
+            require('nvim-dap-virtual-text').disable()
+            require('gitsigns').toggle_current_line_blame(true)
+          elseif ft == 'undotree' or ft == 'diff' then
+            vim.cmd 'UndotreeToggle'
           else
             -- vim.notify('unknown command for buftype ' .. bt)
             -- vim.notify('unknown command for filetype ' .. ft)

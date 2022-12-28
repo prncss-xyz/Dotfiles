@@ -26,7 +26,7 @@ M.contents = [[
             selection_foreground
           </div>
           {{#term}}
-          <div style="background-color: "#{{value}}"">term{{index}}</div>
+          <div style="background-color: "#{{value}}">term{{index}}</div>
           {{/term}}
         </div>
       </body>

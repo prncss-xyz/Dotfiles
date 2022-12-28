@@ -94,34 +94,34 @@ function M.config()
       completions = {
         completeFunctionCalls = true,
       },
-      javascript = {
-        inlayHints = {
-          includeInlayEnumMemberValueHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayParameterNameHints = 'all', -- 'none' | 'literals' | 'all';
-          includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayVariableTypeHints = true,
-        },
-      },
-      typescript = {
-        inlayHints = {
-          includeInlayEnumMemberValueHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayParameterNameHints = 'all', -- 'none' | 'literals' | 'all';
-          includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayVariableTypeHints = true,
-        },
-      },
+      -- javascript = {
+      --   inlayHints = {
+      --     includeInlayEnumMemberValueHints = true,
+      --     includeInlayFunctionLikeReturnTypeHints = true,
+      --     includeInlayFunctionParameterTypeHints = true,
+      --     includeInlayParameterNameHints = 'all', -- 'none' | 'literals' | 'all';
+      --     includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+      --     includeInlayPropertyDeclarationTypeHints = true,
+      --     includeInlayVariableTypeHints = true,
+      --   },
+      -- },
+      -- typescript = {
+      --   inlayHints = {
+      --     includeInlayEnumMemberValueHints = true,
+      --     includeInlayFunctionLikeReturnTypeHints = true,
+      --     includeInlayFunctionParameterTypeHints = true,
+      --     includeInlayParameterNameHints = 'all', -- 'none' | 'literals' | 'all';
+      --     includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+      --     includeInlayPropertyDeclarationTypeHints = true,
+      --     includeInlayVariableTypeHints = true,
+      --   },
+      -- },
     },
     capabilities = capabilities,
     on_attach = function(client, bufnr)
       noformat_on_attach(client, bufnr)
       -- FIXME: is it working?
-      require('inlay-hints').on_attach(client, bufnr)
+      -- require('inlay-hints').on_attach(client, bufnr)
     end,
     flags = flags,
   }
@@ -140,7 +140,7 @@ function M.config()
     capabilities = capabilities,
     on_attach = function(client, bufnr)
       noformat_on_attach(client, bufnr)
-      require('inlay-hints').on_attach(client, bufnr)
+      -- require('inlay-hints').on_attach(client, bufnr)
     end,
     flags = flags,
     cmd = { 'lua-language-server' },
@@ -153,7 +153,6 @@ function M.config()
           globals = {
             -- nvim
             'vim',
-            'dump',
             -- packer.nvim
             'use',
             -- xplr
@@ -163,6 +162,16 @@ function M.config()
             'it',
             'describe',
             'assert',
+            'pending',
+            'setup',
+            'teardown',
+            'lazy_setup',
+            'lazy_teardown',
+            'strict_setup',
+            'strict_teardown',
+            'before_each',
+            'after_each',
+            'finally',
           },
         },
         runtime = {

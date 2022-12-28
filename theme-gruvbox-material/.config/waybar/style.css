@@ -4,13 +4,13 @@
   font-family: Montserrat;
   font-size: 13px;
   min-height: 0;
-  color: #d4be98;
+  color: #000000;
 }
 
 window#waybar {
   background: #82aaff;
   opacity: 0.9;
-  color: #d4be98;
+  color: #000000;
 }
 
 #window {

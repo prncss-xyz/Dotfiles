@@ -8,13 +8,13 @@ M.contents = [[
       font-family: {{font.name}};
       font-size: {{font.size.2}}px;
       min-height: 0;
-      color: #{{foreground}};
+      color: #{{background}};
     }
 
     window#waybar {
       background: #{{primary}};
       opacity: 0.9;
-      color: #{{text}};
+      color: #{{background}};
     }
 
     #window {

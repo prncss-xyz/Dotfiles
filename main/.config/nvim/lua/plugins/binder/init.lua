@@ -79,9 +79,6 @@ function M.config()
   require('key-menu').set('n', 'h')
   require('key-menu').set('n', 'm')
   require('key-menu').set('n', 'o')
-  require('key-menu').set('n', 'q')
-  require('key-menu').set('n', 'qj')
-  require('key-menu').set('n', 'qt')
   require('key-menu').set('n', 'z')
 end
 

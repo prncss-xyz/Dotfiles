@@ -99,58 +99,138 @@ function M.open_asset()
   local zk_dir = vim.fn.getenv 'ZK_NOTEBOOK_DIR'
   local dir = zk_dir .. '/sources'
   local f = vim.fn.expand '%:p'
-  if is_subdir(f, dir) then
-    local id = f:sub(dir:len() + 2)
-    require('plenary.job')
-      :new({
-        command = 'zk-bib',
-        args = { 'asset', id },
-        on_exit = function(j, return_val)
-          if return_val == 0 then
-            local path = zk_dir .. '/' .. j:result()[1]
-            require('plenary.job')
-              :new({
-                command = 'xdg-open',
-                args = { path },
-              })
-              :start()
-          end
-        end,
-      })
-      :start()
+  if not is_subdir(f, dir) then
+    return
   end
+  local id = f:sub(dir:len() + 2)
+  require('plenary.job')
+    :new({
+      command = 'zk-bib',
+      args = { 'asset', id },
+      on_exit = function(j, return_val)
+        if return_val == 0 then
+          local path = zk_dir .. '/' .. j:result()[1]
+          require('plenary.job')
+            :new({
+              command = 'xdg-open',
+              args = { path },
+            })
+            :start()
+        end
+      end,
+    })
+    :start()
+end
+
+function M.put_sdr()
+  local zk_dir = vim.fn.getenv 'ZK_NOTEBOOK_DIR'
+  local dir = zk_dir .. '/sources'
+  local f = vim.fn.expand '%:p'
+  local res
+  if not is_subdir(f, dir) then
+    return
+  end
+  local config
+  require('plenary.job')
+    :new({
+      command = 'zk-bib',
+      args = { 'config' },
+      on_exit = function(j, return_val)
+        if return_val == 0 then
+          config = j:result()[1]
+        end
+      end,
+    })
+    :sync()
+  config = vim.json.decode(config)
+  local exportDir = config.exportDir
+  local id = f:sub(dir:len() + 2)
+  require('plenary.job')
+    :new({
+      command = 'zk-bib',
+      args = { 'asset', id },
+      on_exit = function(j, return_val)
+        if return_val == 0 then
+          res = j:result()[1]
+        end
+      end,
+    })
+    :sync()
+  if not res then
+    print 'no asset here'
+    return
+  end
+  local ext = vim.fn.fnamemodify(res, ':e')
+  local post = string.format('metadata.%s.lua', ext)
+  res = vim.fn.fnamemodify(res, ':t:r')
+  res = string.format('%s.sdr', res)
+  local stem
+  require('plenary.job')
+    :new({
+      command = 'fd',
+      args = { '--absolute-path', res, exportDir },
+      cwd = vim.env.HOME,
+      on_exit = function(j, return_val)
+        if return_val == 0 then
+          stem = j:result()[1]
+        end
+      end,
+    })
+    :sync()
+  if not stem then
+    print 'cannot find .sdr file'
+    return
+  end
+  local path = stem .. post
+  local contents
+  require('plenary.job')
+    :new({
+      command = 'sdr-fetch.lua',
+      args = { path },
+      on_exit = function(j, return_val)
+        if return_val == 0 then
+          contents = j:result()
+        end
+      end,
+    })
+    :sync()
+  vim.api.nvim_put(contents, 'l', true, true)
 end
 
 function M.remove_asset()
   local zk_dir = vim.fn.getenv 'ZK_NOTEBOOK_DIR'
   local dir = zk_dir .. '/sources'
   local f = vim.fn.expand '%:p'
-  if is_subdir(f, dir) then
-    local id = f:sub(dir:len() + 2)
-    require('plenary.job')
-      :new({
-        command = 'zk-bib',
-        args = { 'asset', id },
-        on_exit = function(j, return_val)
-          if return_val == 0 then
-            local path = zk_dir .. '/' .. j:result()[1]
-            vim.ui.input(
-              string.format('Do you really want to remove %q? (y/N)', path),
-              function(res)
-                if res == 'y' then
-                  os.remove(path)
-                  vim.notify(string.format('File %q deleted', path))
-                end
-              end
-            )
-          end
-        end,
-      })
-      :start()
+  if not is_subdir(f, dir) then
+    return
   end
+  local id = f:sub(dir:len() + 2)
+  require('plenary.job')
+    :new({
+      command = 'zk-bib',
+      args = { 'asset', id },
+      on_exit = function(j, return_val)
+        if return_val == 0 then
+          local path = zk_dir .. '/' .. j:result()[1]
+          vim.ui.input(
+            string.format('Do you really want to remove %q? (y/N)', path),
+            function(res)
+              if res == 'y' then
+                os.remove(path)
+                vim.notify(string.format('File %q deleted', path))
+              end
+            end
+          )
+        end
+      end,
+    })
+    :start()
 end
 
 function M.setup_autocommit()
+  if true then
+    return
+  end
   -- Autocommit zettelkasten on every write
   -- if you are using an autocommand to save, make sure it uses
   -- `nested = true` option for this autocommand to be triggered

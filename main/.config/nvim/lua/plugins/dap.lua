@@ -1,5 +1,7 @@
 local M = {}
 
+local log_error = require('utils.vim').log_error
+
 function M.config()
   local dap = require 'dap'
   vim.fn.sign_define(
@@ -11,67 +13,76 @@ function M.config()
     { text = '', texthl = 'DiagnosticHint', linehl = '', numhl = '' }
   )
 
-  -- https://github.com/jbyuki/one-small-step-for-vimkind
-  dap.configurations.lua = {
-    {
-      type = 'nlua',
-      request = 'attach',
-      name = 'Attach to running Neovim instance',
-      host = function()
-        local value = vim.fn.input 'Host [127.0.0.1]: '
-        if value ~= '' then
-          return value
-        end
-        return '127.0.0.1'
-      end,
-      port = function()
-        local val = tonumber(vim.fn.input 'Port: ')
-        assert(val, 'Please provide a port number')
-        return val
-      end,
-    },
-  }
-  dap.adapters.nlua = function(callback, config)
-    callback { type = 'server', host = config.host, port = config.port }
+  local dap, dapui = require 'dap', require 'dapui'
+  dap.listeners.after.event_initialized['dapui_config'] = function()
+    dapui.open()
+    require('nvim-dap-virtual-text').enable()
+    require 'gitsigns'
+    require('gitsigns').toggle_current_line_blame(false)
+  end
+  dap.listeners.before.event_terminated['dapui_config'] = function()
+    dapui.close()
+    require('nvim-dap-virtual-text').disable()
+    require('gitsigns').toggle_current_line_blame(true)
+  end
+  dap.listeners.before.event_exited['dapui_config'] = function()
+    dapui.close()
+    require('nvim-dap-virtual-text').disable()
+    require('gitsigns').toggle_current_line_blame(true)
   end
 
-  -- https://github.com/mxsdev/nvim-dap-vscode-js
-  for _, language in ipairs { 'typescript', 'javascript' } do
-    require('dap').configurations[language] = {
+  -- https://github.com/jbyuki/one-small-step-for-vimkind
+  if false then
+    dap.configurations.lua = {
       {
-        type = 'pwa-node',
-        request = 'launch',
-        name = 'Launch file',
-        program = '${file}',
-        cwd = '${workspaceFolder}',
-      },
-      {
-        type = 'pwa-node',
+        type = 'nlua',
         request = 'attach',
-        name = 'Attach',
-        processId = require('dap.utils').pick_process,
-        cwd = '${workspaceFolder}',
+        name = 'Attach to running Neovim instance',
       },
     }
+
+    dap.adapters.nlua = function(callback, config)
+      callback {
+        type = 'server',
+        host = config.host or '127.0.0.2',
+        port = config.port or 8086,
+      }
+    end
+  else
+    dap.configurations.lua = {
+      {
+        type = 'nlua',
+        request = 'attach',
+        name = 'Attach to running Neovim instance',
+        host = function()
+          local value = vim.fn.input 'Host [127.0.0.1]: '
+          if value ~= '' then
+            return value
+          end
+          return '127.0.0.1'
+        end,
+        port = function()
+          local val = tonumber(vim.fn.input 'Port: ')
+          assert(val, 'Please provide a port number')
+          return val
+        end,
+      },
+    }
+    dap.adapters.nlua = function(callback, config)
+      callback { type = 'server', host = config.host, port = config.port }
+    end
   end
 end
 
 function M.launch()
   local filetype = vim.bo.filetype
-  local filename = vim.fn.expand '%'
   if filetype == 'lua' then
-    -- require('osv').launch()
+    -- require('osv').launch { port = 8086 }
     require('osv').run_this()
     return
+  else
+    log_error 'unsupported filetype'
   end
-
-  if filetype == 'javascript' then
-    if vim.endswith(filename, '.test.js') then
-      require('neotest').run.run { strategy = 'dap' }
-      return
-    end
-  end
-  print('no launcher for filetype ' .. filetype)
 end
 
 return M

@@ -1,1 +1,1 @@
-vim.colorscheme("neon")
+vim.cmd{cmd ='colorscheme', args={"neon"}}

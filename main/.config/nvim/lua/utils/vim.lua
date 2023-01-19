@@ -1,7 +1,7 @@
 local M = {}
 
 function M.log_error(msg)
-  vim.nofify(msg, vim.log.levels.ERROR)
+  vim.notify(msg, vim.log.levels.ERROR)
 end
 
 function M.toggle_conceal()

@@ -5,20 +5,33 @@ local url
 function M.config()
   require('flies2').setup {
     queries = {
+      a = require('flies2.flies._ts'):new { name = 'argument', context = true },
       b = require 'flies2.flies.brackets',
       c = require 'flies2.flies.char',
       e = require 'flies2.flies.buffer',
-      q = require 'flies2.flies.quote',
-      t = require 'flies2.flies.tags',
+      i = require('flies2.flies._ts'):new { name = 'conditional' },
+      j = require('flies2.flies._ts'):new { name = 'block' },
+      k = require('flies2.flies._ts'):new { name = 'call' },
+      l = require('flies2.flies._ts'):new { name = 'loop' },
+      Q = require 'flies2.flies.quote',
+      q = require('flies2.flies._ts'):new {
+        name = 'string',
+        no_tree = require 'flies2.flies.quote',
+      },
+      s = require('flies2.flies._ts'):new { name = 'function' },
+      t = require('flies2.flies._ts'):new { name = 'tag' },
       v = require 'flies2.flies.variable_segment',
       w = require 'flies2.flies.word',
       [' '] = require 'flies2.flies.bigword',
       ['<cr>'] = require 'flies2.flies.line',
+      ['*'] = require('flies2.flies._ts'):new { name = 'comment' },
+      ['é'] = require 'flies2.flies.search',
     },
+    x = require('flies2.flies._ts'):new { name = 'class' },
     axis = {
       n = 'forward',
       p = 'backward',
-      h = 'hop',
+      h = 'hint',
     },
     domains = {
       o = 'outer',

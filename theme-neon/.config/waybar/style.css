@@ -2,7 +2,7 @@
   border: none;
   border-radius: 0;
   font-family: Montserrat;
-  font-size: 13px;
+  font-size: 26px;
   min-height: 0;
   color: #363a49;
 }
@@ -10,7 +10,6 @@
 window#waybar {
   background: #5699af;
   opacity: 0.9;
-  color: #363a49;
 }
 
 #window {

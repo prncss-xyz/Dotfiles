@@ -15,6 +15,8 @@ M.contents = [[
   exec_always {
     gsettings set org.gnome.desktop.interface gtk-theme  '{{gtk_theme}}'
     gsettings set org.gnome.desktop.interface font-name '{{font.name}}'
+    gsettings set org.gnome.desktop.interface text-scaling-factor 2
+    gsettings set org.gnome.desktop.interface cursor-size 36 # FIXME: not working
   }
 
   exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --border-color;#aa{{foreground}} --bar-color #aa{{foreground}} --background-color '#55{{background}}

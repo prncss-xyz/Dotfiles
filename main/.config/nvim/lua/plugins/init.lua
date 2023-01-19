@@ -265,19 +265,21 @@ return require('packer').startup {
       'microsoft/vscode-js-debug',
       opt = true,
       run = 'npm install --legacy-peer-deps && npm run compile',
-      disable = true,
+      tag = 'v1.*',
+      disable = false,
     }
     use {
       'nvim-neotest/neotest-plenary',
       module = 'neotest-plenary',
     }
     use {
-      'marilari88/neotest-vitest',
+      'marilari89/neotest-vitest',
       module = 'neotest-vitest',
     }
     use {
       'haydenmeade/neotest-jest',
       module = 'neotest-jest',
+      disable = true,
     }
     use {
       'nvim-neotest/neotest',

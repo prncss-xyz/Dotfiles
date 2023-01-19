@@ -11,6 +11,8 @@ local config = {
     test = {
       create = true,
       patterns = {
+        { '(.+)/__tests__/(.+)', '%1/%2' },
+        { '(.+)/(.+)', '%1/__tests__/%2' },
         { '(.+)%_spec(%.[%w%d]+)$', '%1%2' },
         { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
         { '(.+)%.ts', '%1.test.tsx' },
@@ -81,6 +83,7 @@ local config = {
 }
 
 local function edit(file)
+  -- require('khutulun').create(file)
   vim.cmd { cmd = 'edit', args = { file } }
 end
 

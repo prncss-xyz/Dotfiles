@@ -11,6 +11,8 @@ client.background       #$363a49
 exec_always {
   gsettings set org.gnome.desktop.interface gtk-theme  'Adwaita'
   gsettings set org.gnome.desktop.interface font-name 'Montserrat'
+  gsettings set org.gnome.desktop.interface text-scaling-factor 2
+  gsettings set org.gnome.desktop.interface cursor-size 36
 }
 
 exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --border-color;#aac5cdd9 --bar-color #aac5cdd9 --background-color '#55363a49

@@ -2,8 +2,6 @@ local M = {}
 
 function M.open_project(opts)
   local dirpath = opts.cwd
-  print(' dirpath:', vim.inspect(dirpath)) -- __AUTO_GENERATED_PRINT_VAR__
-
   if not vim.endswith(dirpath, '/') then
     dirpath = dirpath .. '/'
   end

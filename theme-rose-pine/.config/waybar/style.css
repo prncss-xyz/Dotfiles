@@ -2,15 +2,14 @@
   border: none;
   border-radius: 0;
   font-family: Montserrat;
-  font-size: 13px;
+  font-size: 26px;
   min-height: 0;
-  color: #26233a;
+  color: #f2e9e1;
 }
 
 window#waybar {
-  background: #9ccfd8;
+  background: #56949f;
   opacity: 0.9;
-  color: #26233a;
 }
 
 #window {
@@ -25,15 +24,15 @@ window#waybar {
   padding-left: 3px;
   padding-right: 3px;
   background: transparent;
-  color: #e0def4;
+  color: #575279;
 }
 
 #mode {
   padding-top: 1px;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: #ebbcba;
-  color: #908caa;
+  background-color: #d7827e;
+  color: #797593;
 }
 
 #clock {
@@ -51,8 +50,8 @@ window#waybar {
   padding-top: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  background: #9ccfd8;
+  background: #56949f;
 }
 #battery.discharging {
-  background: #ebbcba;
+  background: #d7827e;
 }

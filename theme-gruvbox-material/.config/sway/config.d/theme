@@ -1,16 +1,17 @@
 default_border pixel 3
 # class                 border background text indicator child_border
-client.focused         	#665c54	#665c54 #d4be98 #a9b665 #7daea3
-client.unfocused       	#665c54	#665c54 #d4be98 #7daea3 #665c54
-client.focused_inactive	#665c54	#665c54 #d4be98 #7daea3 #665c54
-client.urgent       		#665c54	#665c54 #d4be98 #7daea3 #665c54
-client.placeholder	    #665c54	#665c54 #d4be98 #7daea3 #665c54
+client.focused         	#000000	#000000 #d4be98 #abcf76 #6e98eb
+client.unfocused       	#000000	#000000 #d4be98 #6e98eb #000000
+client.focused_inactive	#000000	#000000 #d4be98 #6e98eb #000000
+client.urgent       		#000000	#000000 #d4be98 #6e98eb #000000
+client.placeholder	    #000000	#000000 #d4be98 #6e98eb #000000
 
-client.background       #$665c54
+client.background       #$000000
 
 exec_always {
   gsettings set org.gnome.desktop.interface gtk-theme  'Adwaita'
   gsettings set org.gnome.desktop.interface font-name 'Montserrat'
+  gsettings set org.gnome.desktop.interface text-scaling-factor 2
 }
 
-exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --border-color;#aad4be98 --bar-color #aad4be98 --background-color '#55665c54
+exec mkfifo $WOBSOCK && tail -f $WOBSOCK | wob --border-color;#aad4be98 --bar-color #aad4be98 --background-color '#55000000

@@ -231,7 +231,19 @@ function M.extend()
       '<Plug>(flies-explode)',
       modes = 'nx',
     },
-    y = b { desc = 'wrap', '<Plug>(flies-wrap)', modes = 'nx' },
+    y = modes {
+      desc = 'wrap',
+      n = b {
+        function()
+          require('flies2.operations.wrap').exec 'n'
+        end,
+      },
+      x = b {
+        function()
+          require('flies2.operations.wrap').exec 'x'
+        end,
+      },
+    },
     z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },
     ['<tab>'] = modes {
       nx = keys {

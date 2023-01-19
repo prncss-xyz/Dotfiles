@@ -1,4 +1,5 @@
-output * scale 2
+# output * scale 2
+# seat * xcursor_theme Adwaita 36
 
 # if not, gtk waits 20 seconds for dbus connection
 # https://github.com/swaywm/sway/issues/5732

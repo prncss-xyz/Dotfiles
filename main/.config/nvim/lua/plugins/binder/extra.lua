@@ -794,20 +794,51 @@ function M.extend()
         desc = 'vertical 85',
       },
     },
-    x = keys {
-      redup = b {
-        desc = 'tester',
+    -- x = keys {
+    --   desc = 'tester',
+    --   n = b {
+    --     function ()
+    --       require "flies2.operations.move_again".next()
+    --     end
+    --   },
+    --   p = b {
+    --     function ()
+    --       require "flies2.operations.move_again".prev()
+    --     end
+    --   },
+    --   x = b {
+    --     function()
+    --       require('flies2.operations.move').exec()
+    --     end,
+    --   },
+    -- },
+    x = modes {
+      desc = 'tester',
+      n = b {
         function()
-          require('flies2.operations.select').exec()
+          require('flies2.operations.wrap').exec('n')
         end,
       },
-      r = b {
-        desc = 'refactoring telescope',
+      x = b {
         function()
-          require('telescope').extensions.refactoring.refactors()
+          require('flies2.operations.wrap').exec 'x'
         end,
       },
     },
+    -- x = keys {
+    --   redup = b {
+    --     desc = 'tester',
+    --     function()
+    --       require('flies2.operations.select').exec()
+    --     end,
+    --   },
+    --   r = b {
+    --     desc = 'refactoring telescope',
+    --     function()
+    --       require('telescope').extensions.refactoring.refactors()
+    --     end,
+    --   },
+    -- },
     y = keys {
       desc = 'search',
       arch = map_search(

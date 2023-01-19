@@ -38,7 +38,7 @@ function M.config()
         font = {
           name = 'Montserrat',
           style = 'sans',
-          size = { 10, 13 },
+          size = { 20, 26 },
         },
         gtk_theme = 'Adwaita',
       },

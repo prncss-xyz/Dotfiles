@@ -2,6 +2,7 @@ node_modules
 __pycache__
 qmk_firmware
 *.log
+*.db
 .cache
 dist
 lib

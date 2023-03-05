@@ -1,8 +1,10 @@
 ---@diagnostic disable: undefined-global
 
-local same = require('utils.snippets').same
+local M = {}
 
-local preferred_quote = require('parameters').preferred_quote
+local same = require('my.utils.snippets').same
+
+local preferred_quote = require('my.parameters').preferred_quote
 
 local function concat(t1, t2)
   for i = 1, #t2 do
@@ -10,8 +12,6 @@ local function concat(t1, t2)
   end
   return t1
 end
-
-local M = {}
 
 --  TODO: case, try, class, default, else, extends, import, with
 
@@ -80,7 +80,7 @@ table.insert(
       function []([]) {
         []
       }
-    ]] ,
+    ]],
       { i(1, 'name'), i(2, '_params'), i(3, '// TODO:') },
       { delimiters = '[]' }
     )
@@ -206,7 +206,7 @@ table.insert(
       ([]) => {
         return []
       }
-    ]] ,
+    ]],
       { i(1, '_params'), i(2, '0') },
       { delimiters = '[]' }
     )
@@ -222,7 +222,7 @@ table.insert(
       async ([]) => {
         return []
       }
-    ]] ,
+    ]],
       { i(1, '_params'), i(2, '0') },
       { delimiters = '[]' }
     )

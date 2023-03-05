@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-global
 
-local preferred_quote = require('parameters').preferred_quote
-local pair = require 'utils.snippets.pair'
+local preferred_quote = require('my.parameters').preferred_quote
+local pair = require 'my.utils.snippets.pair'
 
 local M = {
   s('date', p(os.date, '%x')),
@@ -75,6 +75,7 @@ if false then
   )
 end
 
+--FIX: avoid adding comment inside comment
 -- https://github.com/L3MON4D3/LuaSnip/wiki/Cool-Snippets
 ---@param ctype integer 1 for `line`-comment and 2 for `block`-comment
 local get_cstring = function(ctype)
@@ -173,7 +174,10 @@ local env = {
   javascript = 'node',
 }
 
-table.insert(M, pair.pair('left_pair_test', 'right_pair_test', pair.char_count_smaller)) --FIX: 
+table.insert(
+  M,
+  pair.pair('left_pair_test', 'right_pair_test', pair.char_count_smaller)
+) --FIX:
 
 table.insert(
   M,

@@ -34,32 +34,34 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
-vim.api.nvim_create_autocmd(
-  { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
-  {
-    pattern = '*?', -- do not match buffers with no name
-    group = group,
-    callback = function()
-      if not vim.api.nvim_buf_is_valid(0) then
-        return
-      end
-      if vim.bo.buftype ~= '' then
-        return
-      end
-      if not vim.bo.modifiable then
-        return
-      end
-      if not vim.bo.modified then
-        return
-      end
-      local fname = vim.api.nvim_buf_get_name(0)
-      if vim.fn.isdirectory(fname) == 1 then
-        return
-      end
-      vim.cmd 'silent :w!'
-    end,
-  }
-)
+if true then
+  vim.api.nvim_create_autocmd(
+    { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
+    {
+      pattern = '*?', -- do not match buffers with no name
+      group = group,
+      callback = function()
+        if not vim.api.nvim_buf_is_valid(0) then
+          return
+        end
+        if vim.bo.buftype ~= '' then
+          return
+        end
+        if not vim.bo.modifiable then
+          return
+        end
+        if not vim.bo.modified then
+          return
+        end
+        local fname = vim.api.nvim_buf_get_name(0)
+        if vim.fn.isdirectory(fname) == 1 then
+          return
+        end
+        vim.cmd 'silent :w!'
+      end,
+    }
+  )
+end
 
 local pass_prefix = '/dev/shm/pass.'
 if vim.fn.expand('%:h', nil, nil):sub(1, pass_prefix:len()) == pass_prefix then
@@ -127,17 +129,18 @@ local function fetch_git_branch_plenary()
     :start()
 end
 
-vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost' }, {
-  pattern = '*.md',
-  group = group,
-  callback = require('plugins.zk.utils').update_title,
-})
-
-vim.api.nvim_create_autocmd({ 'CursorHold' }, {
-  pattern = '*.md',
-  group = group,
-  callback = require('plugins.zk.utils').update_title_void,
-})
+if false then
+  vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost' }, {
+    pattern = '*.md',
+    group = group,
+    callback = require('my.config.zk.utils').update_title,
+  })
+  vim.api.nvim_create_autocmd({ 'CursorHold' }, {
+    pattern = '*.md',
+    group = group,
+    callback = require('my.config.zk.utils').update_title_void,
+  })
+end
 
 -- Without wrapping in an autocommand, you don't see the status line while telescope
 -- the classical way of creating an augroup and clearing it does not seem to work, hence the `once` variable
@@ -151,9 +154,9 @@ vim.api.nvim_create_autocmd('VimEnter', {
         fetch_git_branch_plenary()
         if #vim.v.argv > 1 then
         elseif vim.fn.getcwd() == os.getenv 'HOME' then
-          require('telescope').extensions.repo.list {}
+          -- require('telescope').extensions.repo.list {}
         else
-          require('utils.open_project').open_project { cwd = vim.fn.getcwd() }
+          require('my.utils.open_project').open_project { cwd = vim.fn.getcwd() }
         end
         -- TODO: force statusline refresh
       end)

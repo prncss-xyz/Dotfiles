@@ -1,0 +1,10 @@
+shift + cmd - s : yabai -m space --focus 1
+shift + cmd - d : yabai -m space --focus 2
+shift + cmd - f : yabai -m space --focus 3
+
+shift + cmd - j : yabai -m window --focus north
+shift + cmd - k : yabai -m window --focus south
+shift + cmd - l : yabai -m window --focus west
+shift + cmd - 0x29 : yabai -m window --focus east
+
+shift + cmd - m : yabai -m window --toggle zoom-fullscreen

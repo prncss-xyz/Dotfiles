@@ -2,7 +2,7 @@
 
 local M = {}
 
-local preferred_quote = require('parameters').preferred_quote
+local preferred_quote = require('my.parameters').preferred_quote
 
 local function quote(str)
   return quote_char .. str .. quote_char
@@ -65,18 +65,14 @@ table.insert(
   M,
   s(
     'useState',
-    fmt(
-      'const [{}, {}] = useState{}({}); ',
-      {
-        i(1, 'name'),
-        f(function(args)
-          return 'set' .. args[1][1]:gsub('^%l', string.upper)
-        end, 1),
-        i(3, ''),
-        i(2, 'default'),
-      },
-      { delimiters = '{}' }
-    )
+    fmt('const [{}, {}] = useState{}({}); ', {
+      i(1, 'name'),
+      f(function(args)
+        return 'set' .. args[1][1]:gsub('^%l', string.upper)
+      end, 1),
+      i(3, ''),
+      i(2, 'default'),
+    }, { delimiters = '{}' })
   )
 )
 

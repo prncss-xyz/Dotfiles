@@ -31,7 +31,7 @@ return function(opts)
             actions.close(prompt_bufnr)
             local source = vim.fn.expand '%:.'
             local target = dir .. '/' .. vim.fn.expand '%:t'
-            require('utils.buffers').mv(source, target)
+            require('my.utils.buffers').mv(source, target)
           end
         end)
         return true

@@ -67,42 +67,44 @@ local function show_note_picker(notes, options)
     end
   end
 
-  pickers.new(options, {
-    finder = finders.new_table {
-      results = notes,
-      entry_maker = create_note_entry_maker(options),
-    },
-    sorter = sorters.get_fuzzy_file(),
-    previewer = make_note_previewer(),
-    attach_mappings = function(prompt_bufnr, map)
-      map('i', '<c-cr>', new_note_action)
-      map('i', '<c-f>', function(prompt_bufnr_)
-        current_dir_action(options.prompt_prefix, prompt_bufnr_)
-      end)
-      actions.select_default:replace(function()
-        if options.multi_select then
-          local selection = {}
-          action_utils.map_selections(prompt_bufnr, function(entry, _)
-            table.insert(selection, entry.value)
-          end)
-          if vim.tbl_isempty(selection) then
-            local entry = action_state.get_selected_entry()
-            if not entry then
-              actions.close(prompt_bufnr)
-              return false
+  pickers
+    .new(options, {
+      finder = finders.new_table {
+        results = notes,
+        entry_maker = create_note_entry_maker(options),
+      },
+      sorter = sorters.get_fuzzy_file(),
+      previewer = make_note_previewer(),
+      attach_mappings = function(prompt_bufnr, map)
+        map('i', '<c-cr>', new_note_action)
+        map('i', '<c-f>', function(prompt_bufnr_)
+          current_dir_action(options.prompt_prefix, prompt_bufnr_)
+        end)
+        actions.select_default:replace(function()
+          if options.multi_select then
+            local selection = {}
+            action_utils.map_selections(prompt_bufnr, function(entry, _)
+              table.insert(selection, entry.value)
+            end)
+            if vim.tbl_isempty(selection) then
+              local entry = action_state.get_selected_entry()
+              if not entry then
+                actions.close(prompt_bufnr)
+                return false
+              end
+              selection = { entry.value }
             end
-            selection = { entry.value }
+            actions.close(prompt_bufnr)
+            cb(selection)
+          else
+            actions.close(prompt_bufnr)
+            cb(action_state.get_selected_entry().value)
           end
-          actions.close(prompt_bufnr)
-          cb(selection)
-        else
-          actions.close(prompt_bufnr)
-          cb(action_state.get_selected_entry().value)
-        end
-      end)
-      return true
-    end,
-  }):find()
+        end)
+        return true
+      end,
+    })
+    :find()
 end
 
 return function(options)

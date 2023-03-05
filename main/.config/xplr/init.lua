@@ -150,7 +150,7 @@ require('xpm').setup {
 }
 
 -- local plugins
-require('icons').setup()
+-- require('icons').setup()
 -- local modules.utils = require 'utils'
 
 local function deep_merge(t1, t2)

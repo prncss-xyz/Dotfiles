@@ -4,6 +4,7 @@
 
 export GPG_TTY=$(tty)
 gpg-connect-agent updatestartuptty /bye >/dev/null
+export PIPI=CACA
 
 # Workaround gdm overriding PATH
 # this is a workaround for gdm messing with PATH
@@ -24,3 +25,5 @@ PS1='[\u@\h \W]\$ '
 if [[ $(ps --no-header --pid=$PPID --format=cmd) != "fish" ]]; then
 	exec fish
 fi
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

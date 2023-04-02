@@ -78,7 +78,10 @@ function M.extend()
       r = b { desc = 'repl open', lazy_req('dap', 'repl.open') },
       s = b {
         desc = 'OSV run this',
-        lazy_req('my.config.osv', 'run_this'),
+        function()
+          require 'osv'.run_this()
+          --[[ require('my.config.osv').launch() ]]
+        end,
       },
       t = keys {
         c = b {
@@ -728,7 +731,7 @@ function M.extend()
       f = b {
         desc = 'run file',
         function()
-          if false and vim.bo.filetype == 'lua' then
+          if true and vim.bo.filetype == 'lua' then
             require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
           else
             vim.cmd.update()

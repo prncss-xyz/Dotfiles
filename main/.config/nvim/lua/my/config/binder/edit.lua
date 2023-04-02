@@ -7,6 +7,8 @@ function M.extend()
   local b = binder.b
   local lazy_req = require('my.config.binder.utils').lazy_req
 
+  vim.keymap.set('n', '<plug>(substitute-operatior)', require('substitute').operator, { noremap = true })
+
   return keys {
     a = b {
       desc = 'reindent',
@@ -68,9 +70,13 @@ function M.extend()
         },
       },
     },
-    e = b { desc = 'swap', function()
-      require('flies2.operations.swap').exec 'n'
-    end, modes = 'nx' },
+    e = b {
+      desc = 'swap',
+      function()
+        require('flies2.operations.swap').exec 'n'
+      end,
+      modes = 'nx',
+    },
     f = keys {
       desc = 'debug print',
       prev = b {
@@ -137,11 +143,19 @@ function M.extend()
       next = modes {
         desc = 'substitute',
         n = b {
-          ":lua require'substitute'.operator<cr><Plug>(comment_toggle_blockwise)<plug>(flies-select)",
-          noremap = false,
+          function()
+            require('flies2.operations.act').exec(
+              {},
+              {},
+
+   "v:lua.require'substitute'.operator_callback"
+            )
+          end,
         },
         x = b {
-          lazy_req('substitute', 'visual'),
+          function()
+            require('substitute').visual()
+          end,
         },
       },
     },
@@ -167,7 +181,7 @@ function M.extend()
             {},
             require('substitute').exchange
           )
-        end
+        end,
       },
       next = modes {
         n = b {
@@ -244,16 +258,15 @@ function M.extend()
       desc = 'substitute',
       n = b {
         function()
-          require('flies2.operations.subtitute').exec 'n'
-        end
+          require('flies2.operations.substitute').exec 'n'
+        end,
       },
       x = b {
         function()
-          require('flies2.operations.subtitute').exec 'x'
-        end
-      }
+          require('flies2.operations.substitute').exec 'x'
+        end,
+      },
     },
-    z = b { desc = 'substitute', '<Plug>(flies-substitute)', modes = 'nx' },
     ['<tab>'] = modes {
       nx = keys {
         prev = b { '<<' },

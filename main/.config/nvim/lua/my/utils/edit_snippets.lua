@@ -14,7 +14,7 @@ return function()
   if false then
     return require('luasnip.loaders.from_lua').edit_snippet_files()
   end
-  local vim_conf = require('parameters').vim_conf
+  local vim_conf = require('my.parameters').vim_conf
   local snip_dir = vim_conf .. '/snippets'
   local languages = {}
   local ft = vim.bo.filetype

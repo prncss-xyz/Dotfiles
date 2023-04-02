@@ -6,7 +6,7 @@ function M.config()
       default = 'split',
       split = {
         direction = 'leftabove',
-        size = require 'parameters'.pane_width
+        size = require 'my.parameters'.pane_width
       }
     }
   }

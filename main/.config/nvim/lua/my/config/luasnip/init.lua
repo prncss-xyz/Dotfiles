@@ -11,7 +11,7 @@ function M.config()
     --   pair = require 'my.utils.snippets.pair',
     -- },
   }
-  if false then
+  if true then
     ls.filetype_extend('javascriptreact', { 'javascript' })
     ls.filetype_extend('typescript', { 'javascript' })
     ls.filetype_extend('typescriptreact', {

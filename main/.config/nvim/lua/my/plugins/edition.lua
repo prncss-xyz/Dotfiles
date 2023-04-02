@@ -30,10 +30,28 @@ return {
     module = 'spectre',
   },
   {
+    'gbprod/substitute.nvim',
+    config = {
+      range = {
+        prefix = false,
+        prompt_current_text = false,
+        confirm = false,
+        complete_word = false,
+        motion1 = false,
+        motion2 = false,
+        suffix = '',
+      },
+      exchange = {
+        motion = false,
+      },
+    },
+  },
+  {
     'AckslD/nvim-FeMaco.lua',
     cmd = 'FeMaco',
     name = 'femaco',
     opts = {},
+    enable = false,
   },
 
   -- completion
@@ -65,12 +83,6 @@ return {
   },
 
   -- navigation
-  {
-    'haya14busa/vim-asterisk',
-    init = function()
-      vim.g['asterisk#keeppos'] = 1
-    end,
-  },
   {
     'chentoast/marks.nvim',
     event = 'BufReadPost',

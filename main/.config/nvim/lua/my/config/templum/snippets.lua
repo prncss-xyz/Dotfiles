@@ -13,10 +13,18 @@ local fmt = require('luasnip.extras.fmt').fmt
 
 local templates_dir = vim.env.HOME .. '/.config/nvim/snippets/templum'
 
+local function id(...)
+  return ...
+end
+
 --- get filepath's title part
 ---@return string
-local function title()
-  return vim.fn.expand '%:t:r'
+local function title(cb)
+  local name = vim.fn.expand '%:t:r'
+  if cb then
+    return cb(name)
+  end
+  return name
 end
 
 --- get current year

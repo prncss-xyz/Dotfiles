@@ -1,7 +1,12 @@
 local M = {}
 
 function M.format(bufnr)
+  if vim.bo.filetype == 'go' then
+    require('go.format').goimport()
+    return
+  end
   vim.lsp.buf.format {
+    async = false,
     filter = function(client)
       if client.name == 'null-ls' then
         return true

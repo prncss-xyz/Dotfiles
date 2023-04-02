@@ -313,4 +313,21 @@ table.insert(
   )
 )
 
+table.insert(
+  M,
+  s(
+    'const style',
+    fmt(
+      [[
+
+        export const [] = style({
+          []
+        });
+      ]],
+      { i(1, 'className'), i(2, '// TODO:')},
+      { delimiters = '[]' }
+    )
+  )
+)
+
 return M

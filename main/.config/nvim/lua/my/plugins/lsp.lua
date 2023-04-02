@@ -50,16 +50,14 @@ return {
     ft = 'lua',
     config = function()
       require('neodev').setup {
-        --[[
-        override = function(root_dir, library)
-          if
-            require('neodev.util').has_file(root_dir, '/home/prncss/Dotfiles/')
-          then
-            library.enabled = true
-            library.plugins = true
-          end
-        end,
-        --]]
+        -- override = function(root_dir, library)
+        --   if
+        --     require('neodev.util').has_file(root_dir, '/home/prncss/Dotfiles/')
+        --   then
+        --     library.enabled = true
+        --     library.plugins = true
+        --   end
+        -- end,
       }
       require('lspconfig').lua_ls.setup {
         capabilities = require('my.utils.lsp').get_cmp_capabilities(),
@@ -160,10 +158,12 @@ return {
       require('lspconfig').gopls.setup(cfg)
       local go_null = require 'go.null_ls'
       local null_ls = require 'null-ls'
-      null_ls.register(go_null.gotest())
+      --[[ null_ls.register(go_null.gotest()) ]]
+      -- makes null_ls works forever
       null_ls.register(go_null.gotest_action())
-      null_ls.register(go_null.golangci_lint())
+      -- null_ls.register(go_null.golangci_lint())
     end,
+    enable = true,
   },
   {
     'nanotee/sqls.nvim',
@@ -181,7 +181,7 @@ return {
     'mickael-menu/zk-nvim',
     ft = 'markdown',
     name = 'zk',
-    config = require 'my.config.zk'.config,
+    config = require('my.config.zk').config,
     cmd = {
       'ZkIndex',
       'ZkNew',

@@ -15,7 +15,7 @@ local nvim = {
 function M.config()
   local eval = require('klint').eval
   require('klint').setup {
-    basepath = require('parameters').dotfiles .. '/theme-{{name}}',
+    basepath = require('my.parameters').dotfiles .. '/theme-{{name}}',
     templates = {
       theme_name,
       nvim,

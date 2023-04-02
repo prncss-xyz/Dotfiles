@@ -84,9 +84,20 @@ function M.extend()
         end,
       },
     },
-    c = keys {
-      prev = b { actions.asterisk_gz, desc = 'current word start' },
-      next = b { actions.asterisk_z, desc = 'current word' },
+    c = modes {
+      desc = 'asterisk',
+      n = b {
+        function()
+          require('flies2.flies.search').set_search(true)
+          vim.cmd 'normal! *N'
+        end,
+      },
+      x = b {
+        function()
+          require('flies2.flies.search').set_search(true)
+          vim.cmd 'normal! *'
+        end,
+      },
     },
     d = np {
       desc = 'diagnostic',
@@ -136,7 +147,12 @@ function M.extend()
       },
       h = b {
         desc = 'hunks',
-        lazy_req('my.utils.windows', 'show_ui', 'Trouble', 'Gitsigns setqflist'),
+        lazy_req(
+          'my.utils.windows',
+          'show_ui',
+          'Trouble',
+          'Gitsigns setqflist'
+        ),
       },
       u = b {
         desc = 'undo tree',
@@ -151,12 +167,12 @@ function M.extend()
     h = np {
       desc = 'hunk',
       prev = function()
-        print('www')
-         require 'gitsigns'.prev_hunk()
+        print 'www'
+        require('gitsigns').prev_hunk()
       end,
       next = function()
-        print('aaa')
-         require 'gitsigns'.next_hunk()
+        print 'aaa'
+        require('gitsigns').next_hunk()
       end,
     },
     l = b { '`', desc = 'mark <char>' },
@@ -201,11 +217,9 @@ function M.extend()
       n = np {
         desc = 'page',
         prev = function()
-          print 'up'
           require('neoscroll').scroll(-0.9, true, 250)
         end,
         next = function()
-          print 'down'
           require('neoscroll').scroll(0.9, true, 250)
         end,
       },
@@ -225,6 +239,19 @@ function M.extend()
     v = keys {
       prev = b { '`<', modes = 'nxo', desc = 'selection start' },
       next = b { '`>', modes = 'nxo', desc = 'selection end' },
+    },
+    w = keys {
+      desc = 'jump',
+      prev = b {
+        function()
+          require('my.utils.jump').prev()
+        end,
+      },
+      next = b {
+        function()
+          require('my.utils.jump').next()
+        end,
+      },
     },
     [';'] = np {
       prev = 'g,',

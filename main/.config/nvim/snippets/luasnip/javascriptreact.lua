@@ -64,6 +64,14 @@ table.insert(
 table.insert(
   M,
   s(
+    'className',
+    fmt('className={[]} ', { i(1, 'className') }, { delimiters = '[]' })
+  )
+)
+
+table.insert(
+  M,
+  s(
     'useState',
     fmt('const [{}, {}] = useState{}({}); ', {
       i(1, 'name'),

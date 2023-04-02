@@ -3,7 +3,6 @@ local M = {}
 local log_error = require('my.utils.vim').log_error
 
 function M.config()
-  local dap = require 'dap'
   vim.fn.sign_define(
     'DapBreakpoint',
     { text = 'ﱣ', texthl = 'DiagnosticError', linehl = '', numhl = '' }
@@ -12,8 +11,9 @@ function M.config()
     'DapStopped',
     { text = '', texthl = 'DiagnosticHint', linehl = '', numhl = '' }
   )
+  local dap = require 'dap'
+  local dapui = require 'dapui'
 
-  local dap, dapui = require 'dap', require 'dapui'
   dap.listeners.after.event_initialized['dapui_config'] = function()
     dapui.open()
     require('nvim-dap-virtual-text').enable()
@@ -32,7 +32,7 @@ function M.config()
   end
 
   -- https://github.com/jbyuki/one-small-step-for-vimkind
-  if false then
+  if true then
     dap.configurations.lua = {
       {
         type = 'nlua',

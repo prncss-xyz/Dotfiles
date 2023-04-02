@@ -16,12 +16,13 @@ function M.extend()
     -- c = b { '"_c', modes = 'nx' },
     c = modes {
       n = b {
-        -- '"_c<plug>(flies-select)'
         function()
-          -- FIXME:
-          require('flies2.operations.act').exec({}, '"_c', false)
+          require('flies2.operations.act').exec(
+            { around = 'never' },
+            nil,
+            '"_c'
+          )
         end,
-        -- lazy_req('flies2.operations.act', 'op', '"_c', { domain = 'inner' }),
       },
       x = b { '"_c' },
     },
@@ -29,7 +30,14 @@ function M.extend()
     cc = b { '<nop>', modes = 'n' },
     D = b { '<nop>', modes = 'nx' },
     d = modes {
-      n = b { lazy_req('flies2.actions', 'op', '"_d', { domain = 'outer' }) },
+      n = b {
+        function()
+          require('flies2.operations.act').exec({
+            domain = 'outer',
+            around = 'always',
+          }, nil, '"_d', false)
+        end,
+      },
       -- n = b { '"_d<plug>(flies-select)' },
       x = b { '"_d' },
     },
@@ -77,14 +85,24 @@ function M.extend()
     w = b { 'b', 'previous word ', modes = 'nxo' },
     x = modes {
       n = b {
-        -- '"d<plug>(flies-select)',
-        lazy_req('flies2.actions', 'op', 'd', { domain = 'inner' }),
+        function()
+          require('flies2.operations.act').exec({
+            around = 'always',
+          }, nil, 'd')
+        end,
       },
       x = b { 'd' },
     },
     xx = b { 'dd' },
     yy = b { 'yy', modes = 'n' },
-    y = b { 'y', modes = 'nx' },
+    y = modes {
+      n = b {
+        function()
+          require('flies2.operations.act').exec({ around = 'always' }, nil, 'y')
+        end,
+      },
+      x = b { 'y' },
+    },
     ['<space>'] = modes {
       desc = 'legendary find',
       n = b {
@@ -106,7 +124,12 @@ function M.extend()
     [d.left] = b { 'h', 'left', modes = 'nxo' },
     [d.up] = b { 'k', 'up', modes = 'nxo' },
     [d.down] = b { 'j', 'down', modes = 'nxo' },
-    [d.search] = b { '/', modes = 'nxo' },
+    [d.search] = b {
+      function()
+        require('flies2.flies.search').search(true)
+      end,
+      modes = 'nxo',
+    },
     ['<c-q>'] = b { 'quitall!', desc = 'quit', cmd = true },
     ['<c-v>'] = b { '"+P', modes = 'nv' },
     -- also: require("luasnip.extras.select_choice")

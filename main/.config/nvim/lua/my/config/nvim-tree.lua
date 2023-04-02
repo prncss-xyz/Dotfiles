@@ -83,7 +83,7 @@ M.config = function()
       highlight_opened_files = 'name',
     },
     view = {
-      width = require('parameters').pane_width,
+      width = require('my.parameters').pane_width,
       mappings = { custom_only = true },
     },
     filters = {

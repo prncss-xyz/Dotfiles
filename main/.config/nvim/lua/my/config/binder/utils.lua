@@ -61,18 +61,19 @@ function M.normal(keys)
 end
 
 function M.plug(name)
-  local keys = '<Plug>' .. name
-  vim.api.nvim_feedkeys(M.t(keys), 'm', true)
+  print(' name:', vim.inspect(name)) -- __AUTO_GENERATED_PRINT_VAR__
+  local keys = '<plug>' .. name
+  vim.api.nvim_feedkeys(M.t(keys), 'm', false)
 end
 
 function M.np(t)
   local prev, next_ = t.prev, t.next
-  local fp =  function()
-    require 'flies2.operations.move_again'.recompose2(prev, next_, false)
+  local fp = function()
+    require('flies2.operations.move_again').recompose2(prev, next_, false)
   end
   local fn = function()
-    require 'flies2.operations.move_again'.recompose2(prev, next_, true)
-  end 
+    require('flies2.operations.move_again').recompose2(prev, next_, true)
+  end
   t.prev = require('binder').b { fp }
   t.next = require('binder').b { fn }
   return require('binder').keys(t)

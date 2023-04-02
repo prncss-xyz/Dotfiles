@@ -7,17 +7,12 @@ function M.config()
   local capabilities = require 'my.utils.lsp'.get_cmp_capabilities()
   local flags = require 'my.utils.lsp'.flags
   local lspconfig = require 'lspconfig'
-
-  lspconfig.bashls.setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-    flags = flags,
-  }
   for _, lsp in ipairs {
     'bashls',
     'html',
     'yamlls',
     'graphql',
+    'gopls',
   } do
     lspconfig[lsp].setup {
       on_attach = on_attach,

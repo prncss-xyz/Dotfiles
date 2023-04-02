@@ -4,26 +4,36 @@ local url
 
 function M.config()
   require('flies2').setup {
+    hlslens = true,
+    op = {
+      wrap = {
+        chars = require 'my.config.flies2.chars',
+      },
+    },
     queries = {
       b = require 'flies2.flies.brackets',
       c = require 'flies2.flies.char',
       e = require 'flies2.flies.buffer',
-      i = require('flies2.flies._ts'):new { name = 'conditional' },
-      j = require('flies2.flies._ts'):new { name = 'block' },
-      k = require('flies2.flies._ts'):new { name = 'call' },
-      l = require('flies2.flies._ts'):new { name = 'loop' },
+      i = require('flies2.flies._ts'):new { names = 'conditional' },
+      j = require('flies2.flies._ts'):new { names = 'block' },
+      k = require('flies2.flies._ts'):new { names = 'call' },
+      l = require('flies2.flies._ts'):new { names = 'loop' },
       o = require('flies2.flies._ts'):new {
-        name = 'argument',
-        context = true,
+        names = 'argument',
         solid = true,
       },
       q = require 'flies2.flies.quote',
       Q = require('flies2.flies._ts'):new {
-        name = 'string',
+        names = 'string',
         no_tree = require 'flies2.flies.quote',
       },
-      s = require('flies2.flies._ts'):new { name = 'function' },
-      t = require('flies2.flies._ts'):new { name = 'tag' },
+      s = require('flies2.flies._ts'):new {
+        names = { 'function', 'section' },
+        op = {
+          wrap = { snip = true },
+        },
+      },
+      t = require('flies2.flies._ts'):new { names = 'tag' },
       v = require 'flies2.flies.variable_segment',
       w = require 'flies2.flies.word',
       ['<'] = require('flies2.flies.brackets'):new {
@@ -33,10 +43,10 @@ function M.config()
       [' '] = require 'flies2.flies.bigword',
       ['.'] = require 'flies2.flies.dot_segment',
       ['<cr>'] = require 'flies2.flies.line',
-      ['*'] = require('flies2.flies._ts'):new { name = 'comment' },
+      ['*'] = require('flies2.flies._ts'):new { names = 'comment' },
       ['é'] = require 'flies2.flies.search',
     },
-    x = require('flies2.flies._ts'):new { name = 'class' },
+    x = require('flies2.flies._ts'):new { names = 'class' },
     axis = {
       n = 'forward',
       p = 'backward',

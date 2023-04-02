@@ -5,7 +5,7 @@ local M = {}
 local cfg = {
   position = 'left',
   height = 10,
-  width = require('parameters').pane_width,
+  width = require('my.parameters').pane_width,
 }
 
 local buf, win, prev_win

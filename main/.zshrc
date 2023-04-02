@@ -10,7 +10,7 @@ then
   export MAMBA_ROOT_PREFIX=$HOME/micromamba
 
   # uniduck
-    export UNIDUCK_DIR=$HOME/Media/uniduck
+  export UNIDUCK_DIR=$HOME/Media/uniduck
 
   # gpg
   gpg-connect-agent --quiet /bye >/dev/null 2>/dev/null
@@ -50,40 +50,41 @@ fi
 
 [[ ! -o interactive ]] && return
 
-if [[ 0 -eq 0 ]]
+if [[ 0 -eq 1 ]]
 then
+  echo 'fish'
+  exec fish && return
+fi
 
-  echo 'zsh'
-# oh-my-zsh
+if [[ Darwin -eq $(uname -s) ]]
+then
+  source /opt/homebrew/share/antigen/antigen.zsh
+else
+  echo "TODO"
+fi
 
-# git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-# git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-# git clone https://github.com/olets/zsh-abbr.git  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-abbr
-# abbr pn='pnpm'
-# abbr mh="man -H"
-# abbr yx="yt-dlp -x"
-# abbr ze="zk-bib eat --yes"
+ZSH_DOTENV_FILE='.env.local'
 
-export ZSH="$HOME/.oh-my-zsh"
-plugins=(   
-  docker
-  docker-compose
-  dotenv
-  gh
-  git 
-  man
-  node
-  pass
-  ripgrep
-  sudo
-  web-search
-  zoxide
+antigen use oh-my-zsh
+antigen bundle docker
+antigen bundle docker-compose
+antigen bundle dotenv
+# antigen bundle gh # FIX:
+antigen bundle git 
+antigen bundle man
+antigen bundle node
+antigen bundle pass
+antigen bundle ripgrep
+antigen bundle sudo
+antigen bundle web-search
+antigen bundle zoxide
 
-  zsh-abbr
-  zsh-autosuggestions
-  zsh-syntax-highlighting 
-)
-source $ZSH/oh-my-zsh.sh
+antigen bundle hlissner/zsh-autopair
+antigen bundle olets/zsh-abbr@main
+antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen apply
+
 eval "$(starship init zsh)"
 
 # tabtab source for packages
@@ -125,7 +126,3 @@ __my-zi() {
 }
 zle -N __my-zi
 bindkey '\ez' __my-zi
-
-else
-exec fish
-fi

@@ -11,18 +11,20 @@ local config = {
     test = {
       create = true,
       patterns = {
-        { '(.+)/__tests__/(.+)', '%1/%2' },
-        { '(.+)/(.+)', '%1/__tests__/%2' },
         { '(.+)%_spec(%.[%w%d]+)$', '%1%2' },
+        { '(.+)%_test(%.[%w%d]+)$', '%1%2' },
         { '(.+)%.test(%.[%w%d]+)$', '%1%2' },
         { '(.+)%.ts', '%1.test.tsx' },
         { '(.+)%.test.tsx', '%1.ts' },
         { '(.+)%.tsx', '%1.test.ts' },
         { '(.+)%.test.ts', '%1.tsx' },
         { '(.+)%.lua$', '%1_spec.lua' },
+        { '(.+)%.go$', '%1_test.go' },
         { '(.+) %- extra%.md$', '%1.md' },
         { '(.+)%.md$', '%1 - extra.md' },
         { '(.+)(%.[%w%d]+)$', '%1.test%2' },
+        { '(.+)/__tests__/(.+)', '%1/%2' },
+        { '(.+)/(.+)', '%1/__tests__/%2' },
       },
     },
     snapshot = {
@@ -35,8 +37,8 @@ local config = {
     css = {
       create = true,
       patterns = {
-        { '(.+)%.tsx', '%1.css.tsx' },
-        { '(.+)%.css.tsx', '%1.tsx' },
+        { '(.+)%.tsx', '%1.css.ts' },
+        { '(.+)%.css.ts', '%1.tsx' },
       },
     },
     playground = {
@@ -50,7 +52,7 @@ local config = {
       patterns = {
         {
           '.+%.(.+)$',
-          require('parameters').vim_conf .. '/queries/%1/textobjects.scm',
+          require('my.parameters').vim_conf .. '/queries/%1/textobjects.scm',
         },
       },
     },
@@ -65,7 +67,7 @@ local config = {
             end
             return string.format(
               '%s/snippets/luasnip/%s.lua',
-              require('parameters').vim_conf,
+              require('my.parameters').vim_conf,
               ext
             )
           end,

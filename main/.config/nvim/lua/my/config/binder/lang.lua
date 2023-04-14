@@ -15,38 +15,58 @@ function M.setup()
     },
     c = keys {
       ['<m-e>'] = b { '<c-f>' },
-      ['<tab>'] = b { require('my.config.binder.actions').menu_next },
-      ['<s-tab>'] = b { require('my.config.binder.actions').menu_previous },
+      ['<tab>'] = b { 'req', 'my.config.binder.actions', 'menu_next' },
+      ['<s-tab>'] = b { 'req', 'my.config.binder.actions', 'menu_previous' },
     },
     is = keys {
-      ['<c-n>'] = b { require('my.config.binder.actions').menu_next },
-      ['<c-p>'] = b { require('my.config.binder.actions').menu_previous },
+      ['<c-n>'] = b { 'req', 'my.config.binder.actions', 'menu_next' },
+      ['<c-p>'] = b { 'req', 'my.config.binder.actions', 'menu_previous' },
       ['<c-space>'] = b { '<space><left>' },
       ['<c-z>'] = b { lazy_req('my.config.cmp', 'my.utils.toggle') },
       ['<s-tab>'] = b {
-        require('my.config.binder.actions').jump_previous,
+        function()
+          require('luasnip').jump(-1)
+        end,
         desc = 'prev insert point',
       },
       ['<tab>'] = b {
-        require('my.config.binder.actions').jump_next,
+        function()
+          require('luasnip').jump(1)
+        end,
         desc = 'next insert point',
       },
       ['<c-v>'] = b { '<c-r><c-o>+' },
-      -- ['<c-v>'] = b { '<c-r>+' },
-      ['<c-r>'] = b {
-        '<c-r>"',
-      },
+      --FIX: not working in s mode
+      ['<c-r>'] = b { '<c-r><c-o>"' },
     },
     isc = keys {
-      ['<c-a>'] = b { lazy_req('readline', 'beginning_of_line') },
-      ['<c-f>'] = b { lazy_req('my.utils.cmp', 'confirm') },
-      ['<c-e>'] = b { lazy_req('readline', 'end_of_line') },
-      ['<m-f>'] = b { lazy_req('readline', 'forward_word') },
-      ['<c-k>'] = b { lazy_req('readline', 'kill_line') },
-      ['<c-u>'] = b { lazy_req('readline', 'backward_kill_line') },
-      ['<c-w>'] = b { lazy_req('readline', 'backward_kill_word') },
-      ['<m-b>'] = b { lazy_req('readline', 'backward_word') },
-      ['<m-d>'] = b { lazy_req('readline', 'kill_word') },
+      ['<c-a>'] = b { 'req', 'readline', 'beginning_of_line' },
+      ['<c-b>'] = b { 'req', 'my.utils.moves', 'bwd', true },
+      ['<c-f>'] = b {
+        function()
+          print(
+            '#function#if require:',
+            vim.inspect(require('tabnine.state').completions_cache)
+          )
+          if require('tabnine.state').completions_cache then
+            local completion = require 'tabnine.completion'
+            vim.schedule(completion.accept)
+          else
+            require('my.utils.moves').fwd(true)
+          end
+        end,
+      },
+      ['<c-g>'] = b { 'req', 'my.utils.cmp', 'confirm' },
+      ['<c-e>'] = b { 'req', 'readline', 'end_of_line' },
+      ['<m-f>'] = b { 'req', 'readline', 'forward_word' },
+      ['<c-k>'] = b { 'req', 'readline', 'kill_line' },
+      ['<c-u>'] = b { 'req', 'readline', 'backward_kill_line' },
+      ['<c-w>'] = b { 'req', 'readline', 'backward_kill_word' },
+      ['<m-b>'] = b { 'req', 'readline', 'backward_word' },
+      ['<m-d>'] = b { 'req', 'readline', 'kill_word' },
+    },
+    nx = keys {
+      ['<c-b>'] = b { 'req', 'my.utils.moves', 'bwd', false },
     },
     ni = keys {
       ['<c-s>'] = b {

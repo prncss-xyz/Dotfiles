@@ -3,46 +3,53 @@ local M = {}
 -- `null_ls` uses its own configuration file
 
 function M.config()
-  local on_attach = require 'my.utils.lsp'.on_attach
-  local capabilities = require 'my.utils.lsp'.get_cmp_capabilities()
-  local flags = require 'my.utils.lsp'.flags
+  local capabilities = require('my.utils.lsp').get_cmp_capabilities()
+  local flags = require('my.utils.lsp').flags
   local lspconfig = require 'lspconfig'
   for _, lsp in ipairs {
     'bashls',
+    'cssls',
     'html',
-    'yamlls',
     'graphql',
-    'gopls',
+    'eslint',
   } do
     lspconfig[lsp].setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-      flags = flags,
+      -- on_attach = on_attach,
+      -- capabilities = capabilities,
+      -- flags = flags,
     }
   end
   -- graphql, needs graphqlrc: https://the-guild.dev/graphql/config/docs
-  do
-    local capabilities_ = vim.lsp.protocol.make_client_capabilities()
-    capabilities.textDocument.completion.completionItem.snippetSupport = true
-    lspconfig.cssls.setup {
-      settings = {},
-      on_attach = on_attach,
-      capabilities = capabilities_,
-      flags = flags,
-    }
-  end
+  --
+  local lazy_table = require('my.utils.lazy').table
 
-
-  lspconfig.eslint.setup {
-    settings = {
-      packageManager = 'pnpm',
-    },
+  lspconfig.yamlls.setup {
+    settings = lazy_table(function()
+      return {
+        yaml = {
+          schemas = require('schemastore').yaml.schemas(),
+        },
+      }
+    end),
   }
+  if false then
+    --FIX: schemas seems to disable jsonls
+    lspconfig.jsonls.setup {
+      settings = lazy_table(function()
+        return {
+          json = { schemas = require('schemastore').json.schemas() },
+          validate = { enable = true },
+        }
+      end),
+    }
+  else
+    lspconfig.jsonls.setup {}
+  end
 
   -- FIXME: emmet is always the first completion match, making it a nuisance
   if false then
     lspconfig.emmet_ls.setup {
-      capabilities = capabilities,
+      -- capabilities = capabilities,
       filetypes = { 'html', 'css', 'typescriptreact', 'javascriptreact' },
     }
   end

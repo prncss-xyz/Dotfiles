@@ -7,43 +7,8 @@ function M.extend()
   local b = binder.b
   local lazy_req = require('my.config.binder.utils').lazy_req
 
-  vim.keymap.set('n', '<plug>(substitute-operatior)', require('substitute').operator, { noremap = true })
-
   return keys {
-    a = b {
-      desc = 'reindent',
-      '=',
-      modes = 'nx',
-    },
-    b = b { 'gi', 'last insert point' },
-    --[[
-    o = function()
-      require('Comment.api').locked.insert_linewise_below()
-    end,
-    po = function()
-      require('Comment.api').locked.insert_linewise_above()
-    end,
-    pp = function()
-      require('Comment.api').locked.insert_linewise_eol()
-    end,
-    ]]
-    c = keys {
-      prev = modes {
-        n = b {
-          '<plug>(comment_toggle_blockwise)<plug>(flies-select)',
-          noremap = false,
-        },
-        x = b { '<plug>(comment_toggle_blockwise_visual)' },
-      },
-      next = modes {
-        n = b {
-          '<plug>(comment_toggle_linewise)<plug>(flies-select)',
-          noremap = false,
-        },
-        x = b { '<plug>(comment_toggle_linewise_visual)' },
-      },
-    },
-    d = keys {
+    a = keys {
       desc = 'dial',
       -- b { '<Plug>(dial-increment-additional)', modes = 'x' },
       -- b { '<Plug>(dial-decrement-additional)', modes = 'x' },
@@ -58,22 +23,58 @@ function M.extend()
       prev = modes {
         n = b {
           function()
-            require('flies2.operations.descend'):exec()
+            require('flies.operations.descend'):exec()
           end,
         },
       },
       next = modes {
         n = b {
           function()
-            require('flies2.operations.ascend'):exec()
+            require('flies.operations.ascend'):exec()
           end,
         },
       },
     },
+    b = b { 'gi', 'last insert point' },
+    c = modes {
+      n = b {
+        'req',
+        'flies.operations.act',
+        'exec',
+        {
+          around = 'always',
+        },
+        nil,
+        'c',
+      },
+      x = b { 'c' },
+    },
+    d = modes {
+      n = b {
+        function()
+          require('flies.operations.act').exec({
+            domain = 'outer',
+            around = 'always',
+          }, nil, 'd')
+        end,
+      },
+      x = b { 'd' },
+    },
+    --[[
+    o = function()
+      require('Comment.api').locked.insert_linewise_below()
+    end,
+    po = function()
+      require('Comment.api').locked.insert_linewise_above()
+    end,
+    pp = function()
+      require('Comment.api').locked.insert_linewise_eol()
+    end,
+    ]]
     e = b {
       desc = 'swap',
       function()
-        require('flies2.operations.swap').exec 'n'
+        require('flies.operations.swap').exec 'n'
       end,
       modes = 'nx',
     },
@@ -101,6 +102,46 @@ function M.extend()
     g = b {
       desc = 'treesj',
       '<cmd>TSJToggle<cr>',
+    },
+    i = b {
+      'i<space><left>',
+    },
+    j = modes {
+      --FIX: currently not working
+      desc = 'refactoring',
+      x = b {
+        function()
+          require('telescope').extensions.refactoring.refactors()
+        end,
+      },
+    },
+    k = keys {
+      prev = modes {
+        n = b {
+          function()
+            require('flies.operations.act').exec(
+              { domain = 'inner', around = 'never' },
+              nil,
+              '<plug>(comment_toggle_blockwise)'
+            )
+          end,
+          noremap = false,
+        },
+        x = b { '<plug>(comment_toggle_blockwise_visual)' },
+      },
+      next = modes {
+        n = b {
+          function()
+            require('flies.operations.act').exec(
+              { domain = 'outer', around = 'never' },
+              nil,
+              '<plug>(comment_toggle_linewise)'
+            )
+          end,
+          noremap = false,
+        },
+        x = b { '<plug>(comment_toggle_linewise_visual)' },
+      },
     },
     l = b {
       desc = 'longnose',
@@ -139,26 +180,6 @@ function M.extend()
       prev = b { 'O' },
       next = b { 'o' },
     },
-    q = keys {
-      next = modes {
-        desc = 'substitute',
-        n = b {
-          function()
-            require('flies2.operations.act').exec(
-              {},
-              {},
-
-   "v:lua.require'substitute'.operator_callback"
-            )
-          end,
-        },
-        x = b {
-          function()
-            require('substitute').visual()
-          end,
-        },
-      },
-    },
     r = keys {
       prev = b { 'R' },
       next = b { 'r' },
@@ -171,33 +192,10 @@ function M.extend()
     --   expr = true
     -- },
     s = b { vim.lsp.buf.rename, 'rename' },
-    t = keys {
-      desc = 'exchange',
-      prev = b {
-        desc = 'cancel',
-        function()
-          require('flies2.operations.act').exec(
-            {},
-            {},
-            require('substitute').exchange
-          )
-        end,
-      },
-      next = modes {
-        n = b {
-          -- lazy_req('substitute', 'operator'),
-          function()
-            require('flies2.actions').op(
-              "<cmd>lua require('substitute.exchange').operator()<cr>",
-              -- lazy_req('substitute.exchange', 'operator'),
-              { domain = 'inner' }
-            )
-          end,
-        },
-        x = b {
-          lazy_req('substitute.exchange', 'visual'),
-        },
-      },
+    t = b {
+      desc = 'reindent',
+      '=',
+      modes = 'nx',
     },
     u = keys {
       -- [p(p 'u')] = {
@@ -231,13 +229,13 @@ function M.extend()
     w = b {
       desc = 'open-close',
       function()
-        require('flies2.operations.open_close'):exec()
+        require('flies.operations.open_close'):exec()
       end,
     },
     x = b {
       desc = 'explode',
       function()
-        require('flies2.operations.explode').exec 'n'
+        require('flies.operations.explode').exec 'n'
       end,
       modes = 'nx',
     },
@@ -245,12 +243,12 @@ function M.extend()
       desc = 'wrap',
       n = b {
         function()
-          require('flies2.operations.wrap').exec 'n'
+          require('flies.operations.wrap').exec 'n'
         end,
       },
       x = b {
         function()
-          require('flies2.operations.wrap').exec 'x'
+          require('flies.operations.wrap').exec 'x'
         end,
       },
     },
@@ -258,12 +256,12 @@ function M.extend()
       desc = 'substitute',
       n = b {
         function()
-          require('flies2.operations.substitute').exec 'n'
+          require('flies.operations.substitute').exec 'n'
         end,
       },
       x = b {
         function()
-          require('flies2.operations.substitute').exec 'x'
+          require('flies.operations.substitute').exec 'x'
         end,
       },
     },
@@ -275,7 +273,7 @@ function M.extend()
     },
     ['<space>'] = modes {
       n = b { vim.lsp.buf.code_action },
-      x = b { ":'<,'>lua vim.lsp.buf.range_code_action()<cr>" },
+      x = b { ":'<,'>lua vim.lsp.buf.code_action()<cr>" },
     },
     ['<cr>'] = keys {
       prev = b {

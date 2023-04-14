@@ -83,16 +83,44 @@ function M.config()
   local util = require 'my.config.binder.utils'
   local lazy_req = util.lazy_req
   local actions = require 'telescope.actions'
-  telescope.setup {}
-  if false then
-    return
-  end
   telescope.setup {
     defaults = {
       buffer_previewer_maker = buffer_preview_maker,
       mappings = {
-        i = {},
-        n = {},
+        i = {
+          ['<c-f>'] = current_dir_action,
+          ['<c-cr>'] = edit,
+          ['<c-a>'] = lazy_req('readline', 'beginning_of_line'),
+          -- ['<c-f>'] = lazy_req('my.config.cmp', 'my.utils.confirm'),
+          -- ['<c-q>'] = false, -- TODO: close
+          ['<c-e>'] = lazy_req('readline', 'end_of_line'),
+          ['<m-f>'] = lazy_req('readline', 'forward_word'),
+          ['<c-k>'] = lazy_req('readline', 'kill_line'),
+          ['<c-u>'] = lazy_req('readline', 'backward_kill_line'),
+          ['<c-w>'] = lazy_req('readline', 'backward_kill_word'),
+          ['<m-b>'] = lazy_req('readline', 'backward_word'),
+          ['<m-d>'] = lazy_req('readline', 'kill_word'),
+          ['<c-t>'] = function(...)
+            require('trouble.providers.telescope').open_with_trouble(...)
+            require('my.utils.windows').show_ui('Trouble', 'Trouble')
+          end,
+        },
+        n = {
+          ['qt'] = function(...)
+            require('trouble.providers.telescope').open_with_trouble(...)
+            require('my.utils.windows').show_ui('Trouble', 'Trouble')
+          end,
+          ['qh'] = actions.file_split,
+          ['qv'] = actions.file_vsplit,
+          ['qd'] = function(prompt_bufnr)
+            local selection =
+              require('telescope.actions.state').get_selected_entry()
+            local dir = vim.fn.fnamemodify(selection.path, ':p:h')
+            require('telescope.actions').close(prompt_bufnr)
+            -- Depending on what you want put `cd`, `lcd`, `tcd`
+            vim.cmd(string.format('silent lcd %s', dir))
+          end,
+        },
       },
       vimgrep_arguments = {
         'rg',
@@ -141,48 +169,9 @@ function M.config()
   }
 
   require('telescope').load_extension 'fzf'
-  pcall(function()
+  if false then
     require('telescope').load_extension 'noice'
-  end)
-  pcall(function()
-    require('telescope').load_extension 'refactoring'
-  end)
-end
-
-local function t()
-  local i = {
-    ['<c-f>'] = current_dir_action,
-    ['<c-cr>'] = edit,
-    ['<c-a>'] = lazy_req('readline', 'beginning_of_line'),
-    -- ['<c-f>'] = lazy_req('my.config.cmp', 'my.utils.confirm'),
-    -- ['<c-q>'] = false, -- TODO: close
-    ['<c-e>'] = lazy_req('readline', 'end_of_line'),
-    ['<m-f>'] = lazy_req('readline', 'forward_word'),
-    ['<c-k>'] = lazy_req('readline', 'kill_line'),
-    ['<c-u>'] = lazy_req('readline', 'backward_kill_line'),
-    ['<c-w>'] = lazy_req('readline', 'backward_kill_word'),
-    ['<m-b>'] = lazy_req('readline', 'backward_word'),
-    ['<m-d>'] = lazy_req('readline', 'kill_word'),
-    ['<c-t>'] = function(...)
-      require('trouble.providers.telescope').open_with_trouble(...)
-      require('my.utils.windows').show_ui('Trouble', 'Trouble')
-    end,
-  }
-  local n = {
-    ['qt'] = function(...)
-      require('trouble.providers.telescope').open_with_trouble(...)
-      require('my.utils.windows').show_ui('Trouble', 'Trouble')
-    end,
-    ['qh'] = actions.file_split,
-    ['qv'] = actions.file_vsplit,
-    ['qd'] = function(prompt_bufnr)
-      local selection = require('telescope.actions.state').get_selected_entry()
-      local dir = vim.fn.fnamemodify(selection.path, ':p:h')
-      require('telescope.actions').close(prompt_bufnr)
-      -- Depending on what you want put `cd`, `lcd`, `tcd`
-      vim.cmd(string.format('silent lcd %s', dir))
-    end,
-  }
+  end
 end
 
 return M

@@ -48,13 +48,10 @@ then
   export XPLR_BOOKMARK_FILE=$HOME/Personal/xplr-bookmarks
 fi
 
-[[ ! -o interactive ]] && return
+export OPENAI_API_KEY=$(pass show openai.com/princesse@princesse.xyz|tail -1)
+export GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1)
 
-if [[ 0 -eq 1 ]]
-then
-  echo 'fish'
-  exec fish && return
-fi
+[[ ! -o interactive ]] && return
 
 if [[ Darwin -eq $(uname -s) ]]
 then
@@ -96,7 +93,6 @@ alias d=zi
 # alias e='exec $VISUAL'
 alias e=nvr_do
 alias f=fsearch-ext
-alias gh='GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1) /opt/homebrew/bin/gh '
 alias gca='git add --all; git commit --allow-empty-message -m ""'
 alias mkdir='mkdir -p'
 alias n=nvim
@@ -107,8 +103,6 @@ alias t='exa --icons --git --tree'
 alias y='yt-dlp -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 alias x='cd "$(xplr --print-pwd-as-result)"'
 # alias o=xdg-open
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 __my-exa() {
   echo
@@ -126,3 +120,8 @@ __my-zi() {
 }
 zle -N __my-zi
 bindkey '\ez' __my-zi
+
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export MCFLY_FUZZY=2
+eval "$(mcfly init zsh)"

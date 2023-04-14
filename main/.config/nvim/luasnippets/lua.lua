@@ -266,6 +266,40 @@ table.insert(
   )
 )
 
+-- luasnip:
+table.insert(
+  M,
+  s(
+    'snippet',
+    fmt(
+      [[
+        table.insert(
+          M,
+          s(
+            '<>',
+            fmt(
+              <>
+                <>
+              <>,
+              {<>},
+              { delimiters = '<>' }
+            )
+          )
+        )
+      ]],
+      {
+        i(1, 'trigger'),
+        t '[[',
+        i(3, '-- TODO:'),
+        t ']]',
+        i(4, ''),
+        i(2, '[]'),
+      },
+      { delimiters = '<>' }
+    )
+  )
+)
+
 -- busted:
 
 for _, name in ipairs {
@@ -436,6 +470,34 @@ table.insert(
       ]],
       { i(1, '-- TODO:') },
       { delimiters = '[]' }
+    )
+  )
+)
+
+-- cheat:
+
+table.insert(
+  M,
+  s(
+    'iterate over characters of string',
+    fmt(
+      [[        
+        for {} = {}, #{} do
+          local {} = {}:sub({}, {})
+          {}
+        end
+      ]],
+      {
+        i(1, 'i'),
+        i(2, '1'),
+        i(3, 'str'),
+        i(4, 'char'),
+        same(3),
+        same(1),
+        same(1),
+        i(4, '--TODO:'),
+      },
+      { delimiters = '{}' }
     )
   )
 )

@@ -5,13 +5,13 @@ local utils = require 'my.config.binder.utils'
 function M.asterisk_z()
   utils.plug '(asterisk-z*)'
   -- vim.fn.feedkeys(t '<plug>(asterisk-z*)')
-  require('flies2.flies.search').set_search(true)
+  require('flies.flies.search').set_search(true)
   require('hlslens').start()
 end
 
 function M.asterisk_gz()
   utils.plug '(asterisk_gz*)'
-  require('flies2.flies.search').set_search(true)
+  require('flies.flies.search').set_search(true)
   require('hlslens').start()
 end
 
@@ -37,8 +37,7 @@ M.jump_previous = utils.first_cb(
   function()
     print 'previous'
   end,
-  utils.lazy_req('luasnip', 'jump', -1),
-  utils.lazy_req('my.utils.simple_tabout', 'tab', false)
+  utils.lazy_req('luasnip', 'jump', -1)
   -- my.utils.lazy_req('tabout', 'taboutBack')
   -- util.lazy_req('tabout', 'taboutBackMulti')
 )
@@ -47,8 +46,7 @@ M.jump_next = utils.first_cb(
   function()
     print 'next'
   end,
-  utils.lazy_req('luasnip', 'jump', 1),
-  utils.lazy_req('my.utils.simple_tabout', 'tab', true)
+  utils.lazy_req('luasnip', 'jump', 1)
   -- my.utils.lazy_req('tabout', 'tabout')
   -- util.lazy_req('tabout', 'taboutMulti')
 )

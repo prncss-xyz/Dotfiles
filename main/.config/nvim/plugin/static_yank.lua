@@ -5,13 +5,13 @@ local cursor
 vim.api.nvim_create_autocmd('VimEnter', {
   pattern = '*',
   callback = function()
-    cursor = vim.fn.getpos '.'
+    cursor = vim.api.nvim_win_get_cursor(0)
   end,
 })
 vim.api.nvim_create_autocmd('CursorMoved', {
   pattern = '*',
   callback = function()
-    cursor = vim.fn.getpos '.'
+    cursor = vim.api.nvim_win_get_cursor(0)
   end,
 })
 
@@ -19,7 +19,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
   callback = function()
     if vim.fn.eval('v:event').operator == 'y' then
-      vim.fn.setpos('.', cursor)
+      vim.api.nvim_win_set_cursor(0, cursor)
     end
   end,
 })

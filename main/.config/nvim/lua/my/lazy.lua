@@ -25,14 +25,14 @@ require('lazy').setup {
   defaults = { lazy = true },
   install = {
     -- colorscheme = { 'rose-pine' },
-    colorscheme = { 'gruvbox' },
+    -- colorscheme = { 'gruvbox' },
   },
   performance = {
     rtp = {
       reset = true,
       disabled_plugins = {
         'gzip',
-        -- "matchit",
+        'matchit',
         -- "matchparen",
         'netrwPlugin',
         'rplugin',

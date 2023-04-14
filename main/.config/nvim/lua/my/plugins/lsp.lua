@@ -25,6 +25,7 @@ return {
     },
     dependencies = { 'williamboman/mason.nvim' },
     event = 'VimEnter',
+    enabled = false,
   },
   {
     'williamboman/mason-lspconfig.nvim',
@@ -41,9 +42,24 @@ return {
     dependencies = { 'williamboman/mason-lspconfig.nvim' },
   },
   {
+    'jay-babu/mason-null-ls.nvim',
+    dependencies = {
+      'williamboman/mason.nvim',
+      'jose-elias-alvarez/null-ls.nvim',
+    },
+    config = function()
+      require('mason-null-ls').setup {
+        ensure_installed = nil,
+        automatic_installation = true,
+        automatic_setup = false,
+      }
+    end,
+  },
+  {
     'jose-elias-alvarez/null-ls.nvim',
-    event = 'BufReadPost',
+    event = { 'BufReadPre', 'BufNewFile' },
     config = require('my.config.null-ls').config,
+    dependencies = { 'jay-babu/mason-null-ls.nvim' },
   },
   {
     'folke/neodev.nvim',
@@ -61,10 +77,6 @@ return {
       }
       require('lspconfig').lua_ls.setup {
         capabilities = require('my.utils.lsp').get_cmp_capabilities(),
-        on_attach = function(client, bufnr)
-          require('my.utils.lsp').on_attach(client, bufnr)
-          -- require('inlay-hints').on_attach(client, bufnr)
-        end,
         flags = require('my.utils.lsp').flags,
         cmd = { 'lua-language-server' },
         settings = {
@@ -113,17 +125,6 @@ return {
   },
   {
     'b0o/schemastore.nvim',
-    ft = 'json',
-    config = function()
-      require('lspconfig').jsonls.setup {
-        settings = {
-          json = { schemas = require('schemastore').json.schemas() },
-        },
-        on_attach = require('my.utils.lsp').on_attach,
-        capabilities = require('my.utils.lsp').get_cmp_capabilities(),
-        flags = require('my.utils.lsp').flags,
-      }
-    end,
   },
   {
     'jose-elias-alvarez/typescript.nvim',
@@ -163,7 +164,6 @@ return {
       null_ls.register(go_null.gotest_action())
       -- null_ls.register(go_null.golangci_lint())
     end,
-    enable = true,
   },
   {
     'nanotee/sqls.nvim',
@@ -205,10 +205,6 @@ return {
     },
   },
   {
-    'ThePrimeagen/refactoring.nvim',
-    opts = {},
-  },
-  {
     'RRethy/vim-illuminate',
     config = function()
       -- Are also used by vim-illuminate.
@@ -221,21 +217,23 @@ return {
       local diff_add = utils.extract_nvim_hl 'DiffAdd'
       local diff_change = utils.extract_nvim_hl 'DiffChange'
       local diagnostic_warn = utils.extract_nvim_hl 'DiagnosticWarn'
-      vim.api.nvim_set_hl(
-        0,
-        'LspReferenceWrite',
-        { bg = diff_add.fg, fg = diagnostic_warn.fg }
-      )
-      vim.api.nvim_set_hl(
-        0,
-        'LspReferenceRead',
-        { bg = diff_change.fg, fg = diagnostic_warn.fg }
-      )
-      vim.api.nvim_set_hl(
-        0,
-        'LspReferenceText',
-        { bg = diff_change.fg, fg = diagnostic_warn.fg }
-      )
+      if false then
+        vim.api.nvim_set_hl(
+          0,
+          'IlluminatedWordText',
+          { bg = diff_add.fg, fg = diagnostic_warn.fg }
+        )
+        vim.api.nvim_set_hl(
+          0,
+          'IlluminatedWordRead',
+          { bg = diff_change.fg, fg = diagnostic_warn.fg }
+        )
+        vim.api.nvim_set_hl(
+          0,
+          'IlluminatedWordWrite',
+          { bg = diff_change.fg, fg = diagnostic_warn.fg }
+        )
+      end
       require('illuminate').configure {
         providers = {
           'lsp',
@@ -245,6 +243,6 @@ return {
         delay = 0,
       }
     end,
-    event = 'CursorHold',
+    event = 'VeryLazy',
   },
 }

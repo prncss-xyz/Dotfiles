@@ -1,6 +1,8 @@
 local M = {}
 
 function M.format(bufnr)
+  -- https://github.com/L3MON4D3/LuaSnip/issues/129
+  vim.cmd 'LuaSnipUnlinkCurrent'
   if vim.bo.filetype == 'go' then
     require('go.format').goimport()
     return
@@ -16,8 +18,6 @@ function M.format(bufnr)
     bufnr = bufnr,
   }
 end
-
-function M.on_attach(client, _) end
 
 function M.get_cmp_capabilities()
   -- local capabilities = vim.lsp.protocol.make_client_capabilities()

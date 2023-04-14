@@ -2,7 +2,7 @@
 
 local M = {}
 
-local same = require('my.utils.snippets').same
+-- local same = require('my.utils.snippets').same
 
 local preferred_quote = require('my.parameters').preferred_quote
 

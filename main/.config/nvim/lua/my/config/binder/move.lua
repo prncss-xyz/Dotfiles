@@ -6,7 +6,6 @@ function M.extend()
   local modes = binder.modes
   local b = binder.b
   local utils = require 'my.config.binder.utils'
-  local actions = require 'my.config.binder.actions'
   local np = utils.np
   local lazy_req = utils.lazy_req
 
@@ -88,13 +87,13 @@ function M.extend()
       desc = 'asterisk',
       n = b {
         function()
-          require('flies2.flies.search').set_search(true)
+          require('flies.flies.search').set_search(true)
           vim.cmd 'normal! *N'
         end,
       },
       x = b {
         function()
-          require('flies2.flies.search').set_search(true)
+          require('flies.flies.search').set_search(true)
           vim.cmd 'normal! *'
         end,
       },
@@ -264,12 +263,12 @@ function M.extend()
       desc = 'search',
       prev = b {
         function()
-          require('flies2.flies.search').search(false)
+          require('flies.flies.search').search(false)
         end,
       },
       next = b {
         function()
-          require('flies2.flies.search').search(true)
+          require('flies.flies.search').search(true)
         end,
       },
     },

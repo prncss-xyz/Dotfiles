@@ -34,34 +34,32 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
-if true then
-  vim.api.nvim_create_autocmd(
-    { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
-    {
-      pattern = '*?', -- do not match buffers with no name
-      group = group,
-      callback = function()
-        if not vim.api.nvim_buf_is_valid(0) then
-          return
-        end
-        if vim.bo.buftype ~= '' then
-          return
-        end
-        if not vim.bo.modifiable then
-          return
-        end
-        if not vim.bo.modified then
-          return
-        end
-        local fname = vim.api.nvim_buf_get_name(0)
-        if vim.fn.isdirectory(fname) == 1 then
-          return
-        end
-        vim.cmd 'silent :w!'
-      end,
-    }
-  )
-end
+vim.api.nvim_create_autocmd(
+  { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
+  {
+    pattern = '*?', -- do not match buffers with no name
+    group = group,
+    callback = function()
+      if not vim.api.nvim_buf_is_valid(0) then
+        return
+      end
+      if vim.bo.buftype ~= '' then
+        return
+      end
+      if not vim.bo.modifiable then
+        return
+      end
+      if not vim.bo.modified then
+        return
+      end
+      local fname = vim.api.nvim_buf_get_name(0)
+      if vim.fn.isdirectory(fname) == 1 then
+        return
+      end
+      vim.cmd 'silent :w!'
+    end,
+  }
+)
 
 local pass_prefix = '/dev/shm/pass.'
 if vim.fn.expand('%:h', nil, nil):sub(1, pass_prefix:len()) == pass_prefix then
@@ -149,23 +147,13 @@ vim.api.nvim_create_autocmd('VimEnter', {
   group = group,
   callback = function()
     vim.schedule(function()
-      -- we wrap it to avoid error messages on bootsrapping
-      local succ, errormsg = pcall(function()
-        fetch_git_branch_plenary()
-        if #vim.v.argv > 1 then
-        elseif vim.fn.getcwd() == os.getenv 'HOME' then
-          -- require('telescope').extensions.repo.list {}
-        else
-          require('my.utils.open_project').open_project { cwd = vim.fn.getcwd() }
-        end
-        -- TODO: force statusline refresh
-      end)
-      -- TODO: log error if not bootsrapping
-      if not succ and true then
-        vim.notify(
-          'Could not create directory: ' .. errormsg,
-          vim.log.levels.ERROR
-        )
+      fetch_git_branch_plenary()
+      if not vim.fn.expand then
+      elseif vim.fn.getcwd() == os.getenv 'HOME' then
+        -- FIX: needs to fix dir change for this to be useful
+        --[[ require('telescope').extensions.repo.list {} ]]
+      else
+        require('my.utils.open_project').open_project { cwd = vim.fn.getcwd() }
       end
     end)
   end,

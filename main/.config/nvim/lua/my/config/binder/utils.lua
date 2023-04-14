@@ -1,9 +1,5 @@
 local M = {}
 
-function M.repeatable(t)
-  return require('binder').b(t)
-end
-
 function M.alt(str)
   return string.format('<a-%s>', str)
 end
@@ -69,10 +65,10 @@ end
 function M.np(t)
   local prev, next_ = t.prev, t.next
   local fp = function()
-    require('flies2.operations.move_again').recompose2(prev, next_, false)
+    require('flies.operations.move_again').recompose2(prev, next_, false)
   end
   local fn = function()
-    require('flies2.operations.move_again').recompose2(prev, next_, true)
+    require('flies.operations.move_again').recompose2(prev, next_, true)
   end
   t.prev = require('binder').b { fp }
   t.next = require('binder').b { fn }

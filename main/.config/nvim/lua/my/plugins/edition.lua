@@ -1,7 +1,7 @@
 return {
   {
-    dir = require('my.utils').local_repo 'flies2.nvim',
-    config = require('my.config.flies2').config,
+    dir = require('my.utils').local_repo 'flies.nvim',
+    config = require('my.config.flies').config,
     keys = { '<plug>(flies-select)' },
   },
   { 'linty-org/readline.nvim' },
@@ -24,34 +24,58 @@ return {
     },
   },
   {
+    'chrisgrieser/nvim-alt-substitute',
+    opts = true,
+    -- lazy-loading with `cmd =` does not work well with incremental preview
+    event = 'CmdlineEnter',
+  },
+  {
+    'IndianBoy42/fuzzy_slash.nvim',
+    dependencies = {
+      {
+        'IndianBoy42/fuzzy.nvim',
+        dependencies = {
+          { 'nvim-telescope/telescope-fzf-native.nvim' },
+        },
+      },
+    },
+    opts = {
+      word_pattern = '[^%s%!%"%#%$%%%&%\'%(%)%*%+%,%-%.%/%:%;%<%=%>%?%@%[%\\%]%^%`%{%|%}%~]+',
+      register_nN_repeat = function(nN)
+        -- called after a fuzzy search with a tuple of functions that are effectively `n, N`
+        local n, N = unpack(nN)
+        -- Dynamically map this to n, N
+        -- Left as an exercise to the reader
+      end,
+    },
+
+    -- cmd = { 'Fz', 'FzNext', 'FzPrev' },
+    event = 'CmdlineEnter',
+  },
+  {
     'nvim-pack/nvim-spectre',
     config = require('my.config.nvim-spectre').config,
     name = 'spectre',
     module = 'spectre',
   },
   {
-    'gbprod/substitute.nvim',
-    config = {
-      range = {
-        prefix = false,
-        prompt_current_text = false,
-        confirm = false,
-        complete_word = false,
-        motion1 = false,
-        motion2 = false,
-        suffix = '',
-      },
-      exchange = {
-        motion = false,
-      },
-    },
-  },
-  {
     'AckslD/nvim-FeMaco.lua',
     cmd = 'FeMaco',
     name = 'femaco',
     opts = {},
-    enable = false,
+    enabled = false,
+  },
+  {
+    'ThePrimeagen/refactoring.nvim',
+    dependencies = {
+      { 'nvim-lua/plenary.nvim' },
+      { 'nvim-treesitter/nvim-treesitter' },
+    },
+    opts = {},
+    config = function(_, opts)
+      require('refactoring').setup(opts)
+      require('telescope').load_extension 'refactoring'
+    end,
   },
 
   -- completion
@@ -61,7 +85,6 @@ return {
   },
   {
     'hrsh7th/nvim-cmp',
-    -- event = { 'InsertEnter' },
     event = { 'InsertEnter', 'CmdlineEnter' },
     config = require('my.config.cmp').config,
     dependencies = {
@@ -102,5 +125,47 @@ return {
     'phaazon/hop.nvim',
     module = 'hop',
     config = require('my.config.hop').config,
+  },
+  {
+    'jackMort/ChatGPT.nvim',
+    opts = {
+      openai_params = {},
+    },
+    dependencies = {
+      'MunifTanjim/nui.nvim',
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+    },
+    cmd = {
+      'ChatGPT',
+      'ChatGPTActAs',
+      'ChatGPTEditWithInstructions',
+      'ChatGPTRun',
+      'ChatGPTRunCustomCodeAction',
+    },
+  },
+  {
+    'codota/tabnine-nvim',
+    build = './dl_binaries.sh',
+    opts = {
+      disable_auto_comment = false,
+      -- accept_keymap = '<plug>(nop)',
+      accept_keymap = '<c-y>',
+      dismiss_keymap = '<c-e>',
+      debounce_ms = 800,
+      suggestion_color = { gui = '#808080', cterm = 244 },
+      exclude_filetypes = { 'TelescopePrompt' },
+    },
+    name = 'tabnine',
+    config = true,
+    cmd = {
+      'TabnineHub',
+      'TabnineHubUrl',
+      'TabnineStatus',
+      'TabnineDisable',
+      'TabnineEnable',
+      'TabnineToggle',
+    },
+    event = 'InsertEnter',
   },
 }

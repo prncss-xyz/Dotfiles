@@ -3,7 +3,6 @@ local M = {}
 function M.extend()
   local d = require('my.config.binder.parameters').d
   local utils = require 'my.config.binder.utils'
-  local repeatable = utils.repeatable
   local binder = require 'binder'
   local keys = binder.keys
   local modes = binder.modes
@@ -54,7 +53,7 @@ function M.extend()
           lazy_req('dap', 'toggle_breakpoint'),
         },
       },
-      c = repeatable { desc = 'continue', lazy_req('dap', 'continue') },
+      c = b { desc = 'continue', lazy_req('dap', 'continue') },
       h = keys {
         prev = b {
           "<cmd>lua require'dap.ui.variables'.hover()<cr>",
@@ -65,12 +64,12 @@ function M.extend()
           desc = 'widgets',
         },
       },
-      i = repeatable { desc = 'step into', lazy_req('dap', 'step_into') },
+      i = b { desc = 'step into', lazy_req('dap', 'step_into') },
       -- l = b { desc = 'launch', lazy_req('dap', 'launch') },
       l = b { desc = 'launch', lazy_req('my.config.dap', 'launch') },
       o = keys {
-        prev = repeatable { desc = 'step out', lazy_req('dap', 'step_out') },
-        next = repeatable {
+        prev = b { desc = 'step out', lazy_req('dap', 'step_out') },
+        next = b {
           desc = 'step over',
           lazy_req('dap', 'step_over'),
         },
@@ -79,7 +78,7 @@ function M.extend()
       s = b {
         desc = 'OSV run this',
         function()
-          require 'osv'.run_this()
+          require('osv').run_this()
           --[[ require('my.config.osv').launch() ]]
         end,
       },
@@ -130,9 +129,24 @@ function M.extend()
         "<cmd>lua require'dap.ui.variables'.scopes()<cr>",
         desc = 'variables scopes',
       },
-      ['<cr>'] = repeatable {
+      ['<cr>'] = b {
         desc = 'run to cursor',
         lazy_req('dap', 'run_to_cursor'),
+      },
+    },
+    b = keys {
+      desc = 'snippets',
+      r = b {
+        desc = 'reload',
+        function()
+          require('my.config.luasnip').load()
+        end,
+      },
+      redup = b {
+        desc = 'edit',
+        function()
+          require('luasnip.loaders').edit_snippet_files()
+        end,
       },
     },
     c = b {
@@ -299,7 +313,7 @@ function M.extend()
       },
       s = b {
         desc = 'dash step',
-        repeatable { lazy_req('dash', 'step') },
+        b { lazy_req('dash', 'step') },
       },
       v = modes {
         desc = 'dash inspect',
@@ -308,7 +322,7 @@ function M.extend()
       },
       c = b {
         desc = 'dash continue',
-        repeatable { lazy_req('dash', 'continue') },
+        b { lazy_req('dash', 'continue') },
       },
       p = b {
         desc = 'dash toggle breakpoit',
@@ -825,17 +839,17 @@ function M.extend()
     --   desc = 'tester',
     --   n = b {
     --     function ()
-    --       require "flies2.operations.move_again".next()
+    --       require "flies.operations.move_again".next()
     --     end
     --   },
     --   p = b {
     --     function ()
-    --       require "flies2.operations.move_again".prev()
+    --       require "flies.operations.move_again".prev()
     --     end
     --   },
     --   x = b {
     --     function()
-    --       require('flies2.operations.move').exec()
+    --       require('flies.operations.move').exec()
     --     end,
     --   },
     -- },
@@ -843,12 +857,12 @@ function M.extend()
       desc = 'tester',
       n = b {
         function()
-          require('flies2.operations.wrap').exec 'n'
+          require('flies.operations.wrap').exec 'n'
         end,
       },
       x = b {
         function()
-          require('flies2.operations.wrap').exec 'x'
+          require('flies.operations.wrap').exec 'x'
         end,
       },
     },
@@ -856,7 +870,7 @@ function M.extend()
     --   redup = b {
     --     desc = 'tester',
     --     function()
-    --       require('flies2.operations.select').exec()
+    --       require('flies.operations.select').exec()
     --     end,
     --   },
     --   r = b {

@@ -32,6 +32,7 @@ function M.config()
       { name = 'cmp_overseer' },
       { name = 'calc' },
       { name = 'luasnip' },
+      { name = 'tabnine' },
       { name = 'npm', keyword_length = 4 },
       { name = 'nvim_lua' },
       { name = 'nvim_lsp' },

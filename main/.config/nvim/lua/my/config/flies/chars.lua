@@ -14,7 +14,7 @@ local l = require('luasnip.extras').lambda
 local r = ls.restore_node
 local fmt = require('luasnip.extras.fmt').fmt
 
-local capture = require('flies2.utils.buffers').snip_capture
+local capture = require('flies.utils.buffers').snip_capture
 
 M.b = {
   left = '(',
@@ -30,6 +30,21 @@ M.i = {
           if ([]) {
             []
           }
+        ]],
+        {
+          i(1, 'true'),
+          capture 'contents',
+        },
+        { delimiters = '[]' }
+      )
+    ),
+    lua = s(
+      '',
+      fmt(
+        [[
+          if [] then
+            []
+          end
         ]],
         {
           i(1, 'true'),
@@ -64,6 +79,21 @@ M.l = {
         { delimiters = '[]' }
       )
     ),
+    lua = s(
+      '',
+      fmt(
+        [[
+          while [] do
+            []
+          end
+        ]],
+        {
+          i(1, 'true'),
+          capture 'contents',
+        },
+        { delimiters = '[]' }
+      )
+    ),
   },
 }
 
@@ -81,6 +111,22 @@ M.s = {
           function []([]) {
             []
           }
+        ]],
+        {
+          i(1, 'name'),
+          i(2, ''),
+          capture 'contents',
+        },
+        { delimiters = '[]' }
+      )
+    ),
+    lua = s(
+      '',
+      fmt(
+        [[
+          function []([])
+            []
+          end
         ]],
         {
           i(1, 'name'),

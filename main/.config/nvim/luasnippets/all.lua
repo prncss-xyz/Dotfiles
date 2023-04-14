@@ -1,7 +1,6 @@
 ---@diagnostic disable: undefined-global
 
 local preferred_quote = require('my.parameters').preferred_quote
-local pair = require 'my.utils.snippets.pair'
 
 local M = {
   s('date', p(os.date, '%x')),
@@ -18,13 +17,6 @@ table.insert(
         r(1, 'tag'),
         t ' ',
         r(2, 'attrs'),
-        t ' />',
-      }),
-      sn(nil, {
-        t '<',
-        r(1, 'tag'),
-        t ' ',
-        r(2, 'attrs'),
         t ' >',
         r(3, 'children'),
         t '</',
@@ -32,6 +24,13 @@ table.insert(
           return args[1][1]
         end, { 1 }),
         t '>',
+      }),
+      sn(nil, {
+        t '<',
+        r(1, 'tag'),
+        t ' ',
+        r(2, 'attrs'),
+        t ' />',
       }),
     }),
   }, {
@@ -176,11 +175,6 @@ local env = {
 
 table.insert(
   M,
-  pair.pair('left_pair_test', 'right_pair_test', pair.char_count_smaller)
-) --FIX:
-
-table.insert(
-  M,
   s('shebang', {
     d(1, function()
       chmod_x()
@@ -197,6 +191,19 @@ table.insert(
         end,
       },
     },
+  })
+)
+
+--FIX: not working
+local conds_expand = require 'luasnip.extras.conditions.expand'
+table.insert(
+  M,
+  s('cond_bol', {
+    t 'will only expand at the beginning of the line',
+  }, {
+    condition = function()
+      return false
+    end,
   })
 )
 

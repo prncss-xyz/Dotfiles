@@ -11,7 +11,6 @@ function M.config()
   local b = binder.b
   local modes = binder.modes
   local util = require 'my.config.binder.utils'
-  local repeatable = util.repeatable
   local lazy = util.lazy
   local lazy_req = util.lazy_req
 
@@ -65,7 +64,7 @@ function M.config()
       next = b { '<nop>' },
     },
   })
-  require('my.config.binder.commands').setup()
+  --  require('my.config.binder.commands').setup()
   require('my.config.binder.lang').setup()
   binder.extend_with 'basic'
   binder.extend_with 'edit'

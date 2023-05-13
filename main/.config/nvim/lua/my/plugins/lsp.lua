@@ -10,24 +10,6 @@ return {
     },
   },
   {
-    'WhoIsSethDaniel/mason-tool-installer.nvim',
-    opts = {
-      ensure_installed = {
-        'stylua',
-        'shfmt',
-        'shellcheck',
-        'prettierd',
-        'golangci-lint',
-        'golines',
-        'revive',
-      },
-      auto_update = true,
-    },
-    dependencies = { 'williamboman/mason.nvim' },
-    event = 'VimEnter',
-    enabled = false,
-  },
-  {
     'williamboman/mason-lspconfig.nvim',
     opts = {
       automatic_installation = true,
@@ -40,6 +22,7 @@ return {
     event = 'BufReadPost',
     config = require('my.config.lsp').config,
     dependencies = { 'williamboman/mason-lspconfig.nvim' },
+    cmd = { 'LspInfo' },
   },
   {
     'jay-babu/mason-null-ls.nvim',
@@ -66,6 +49,7 @@ return {
     ft = 'lua',
     config = function()
       require('neodev').setup {
+        library = { plugins = { 'neotest' }, types = true },
         -- override = function(root_dir, library)
         --   if
         --     require('neodev.util').has_file(root_dir, '/home/prncss/Dotfiles/')
@@ -148,22 +132,82 @@ return {
         require 'typescript.extensions.null-ls.code-actions'
       )
     end,
+    enabled = false,
+  },
+  {
+    'yioneko/nvim-vtsls',
+    ft = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
+    config = function()
+      require('lspconfig').vtsls.setup {}
+      require('lspconfig').lua_ls.setup(require('vtsls').lspconfig)
+    end,
+    cmd = { 'VtsExec', 'VtsRename' },
   },
   {
     'ray-x/go.nvim',
+    -- needed for GoDebug but I'm using 'leoluz/nvim-dap-go' instead
+    -- dependencies = { 'ray-x/guihua.lua' },
     ft = { 'go', 'gomod' },
-    name = 'go',
-    config = function()
-      require('go').setup { lsp_cfg = false }
-      local cfg = require('go.lsp').config()
-      require('lspconfig').gopls.setup(cfg)
-      local go_null = require 'go.null_ls'
+    opts = {
+      lsp_cfg = true,
+      lsp_keymaps = false,
+      icons = false,
+      dap_debug_keymap = false,
+      dap_debug_gui = false,
+      trouble = true,
+      luasnip = true,
+    },
+    config = function(_, opts)
+      require('go').setup(opts)
       local null_ls = require 'null-ls'
-      --[[ null_ls.register(go_null.gotest()) ]]
-      -- makes null_ls works forever
-      null_ls.register(go_null.gotest_action())
-      -- null_ls.register(go_null.golangci_lint())
+      local gotest_codeaction = require('go.null_ls').gotest_action()
+      null_ls.register(gotest_codeaction)
+      -- those trigger a forever spin in Noice
+      if false then
+        local gotest = require('go.null_ls').gotest()
+        null_ls.register(gotest)
+        local golangci_lint = require('go.null_ls').golangci_lint()
+        null_ls.register(golangci_lint)
+      end
     end,
+    build = ':lua require("go.install").update_all_sync()',
+    cmd = {
+      -- Note: auto fill struct also supported by gopls lsp-action
+      'GoFillStruct',
+      'GoFillSwitch',
+      'GoIfErr',
+      'GoFixPlurals',
+      'GoImpl', -- generate method stubs for implementing an interface
+      'Gomvp', -- Rename module name
+      -- tests code actions
+      -- lint
+      'GoMake',
+      'GoBuild',
+      'GoGenerate',
+      'GoRun',
+      'GoStop',
+      'GoGet',
+      'GoVet',
+      'GoCoverage',
+      'GoDoc',
+      'GoPkgOutline',
+      'GoAddTag',
+      'GoRmTag',
+      'GoClearTag',
+      'GoMockGen',
+      'GoCmt',
+      'GoModInit',
+      'GoModTidy',
+      'GoModVendor',
+      'GoCodeLenAct',
+      'GoToggleInlay',
+      'GoJson2Struct',
+      'GoGenReturn',
+      'GoVulnCheck',
+      'Goenum',
+      'GoNew',
+      'Ginkgo',
+    },
   },
   {
     'nanotee/sqls.nvim',
@@ -181,7 +225,29 @@ return {
     'mickael-menu/zk-nvim',
     ft = 'markdown',
     name = 'zk',
-    config = require('my.config.zk').config,
+    opts = {
+      layout = {
+        default_direction = 'left',
+        min_width = require('my.parameters').pane_width,
+      },
+      backends = {
+        'treesitter',
+        'lsp',
+        'markdown',
+      },
+      filter_kind = false,
+      -- filter_kind = {
+      --   'Class',
+      --   'Constructor',
+      --   'Enum',
+      --   'Function',
+      --   'Interface',
+      --   'Module',
+      --   'Method',
+      --   'Struct',
+      -- },
+      -- To see all available values, see :help SymbolKind
+    },
     cmd = {
       'ZkIndex',
       'ZkNew',
@@ -195,13 +261,65 @@ return {
       'ZkTags',
     },
   },
+
+  {
+    'mrcjkb/haskell-tools.nvim',
+    opts = {
+      tools = {
+        hoogle = {
+          -- mode = 'browser',
+        },
+      },
+    },
+    config = function(_, opts)
+      require('haskell-tools').start_or_attach(opts)
+      require('telescope').load_extension 'ht'
+    end,
+    branch = '1.x.x',
+    ft = 'haskell',
+  },
+  {
+    'luc-tielen/telescope_hoogle',
+    dependencies = {
+      'mrcjkb/haskell-tools',
+      'nvim-telescope/telescope.nvim',
+    },
+    config = function()
+      require('telescope').load_extension 'hoogle'
+    end,
+    enabled = false,
+  },
   {
     'stevearc/aerial.nvim',
-    config = require('my.config.aerial').config,
+    opts = {
+      layout = {
+        default_direction = 'left',
+        min_width = require('my.parameters').pane_width,
+      },
+      backends = {
+        'treesitter',
+        'lsp',
+        'markdown',
+      },
+      filter_kind = false,
+      -- filter_kind = {
+      --   'Class',
+      --   'Constructor',
+      --   'Enum',
+      --   'Function',
+      --   'Interface',
+      --   'Module',
+      --   'Method',
+      --   'Struct',
+      -- },
+      -- To see all available values, see :help SymbolKind
+    },
     cmd = {
       'AerialOpen',
       'AerialClose',
       'AerialInfo',
+      'AerialNext',
+      'AerialPrev',
     },
   },
   {
@@ -244,5 +362,12 @@ return {
       }
     end,
     event = 'VeryLazy',
+  },
+  {
+    'ahmedkhalf/project.nvim',
+    event = 'VimEnter',
+    name = 'project_nvim',
+    opts = {},
+    enabled = false,
   },
 }

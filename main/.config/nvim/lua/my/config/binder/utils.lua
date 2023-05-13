@@ -57,9 +57,17 @@ function M.normal(keys)
 end
 
 function M.plug(name)
-  print(' name:', vim.inspect(name)) -- __AUTO_GENERATED_PRINT_VAR__
   local keys = '<plug>' .. name
   vim.api.nvim_feedkeys(M.t(keys), 'm', false)
+end
+
+function M.np_(t)
+  local prev, next_ = t.prev, t.next
+  return require('binder').keys {
+    desc = t.desc,
+    prev = require('binder').b { 'np', prev, next_, false },
+    next = require('binder').b { 'np', prev, next_, true },
+  }
 end
 
 function M.np(t)

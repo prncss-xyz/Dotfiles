@@ -51,7 +51,21 @@ return {
   },
   {
     'ThePrimeagen/harpoon',
-    config = require('my.config.harpoon').config,
+    opts = {
+      global_settings = {
+        save_on_toggle = true,
+        enter_on_sendcmd = true,
+      },
+      projects = {
+        ['$DOTFILES'] = {
+          term = {
+            cmds = {
+              'ls',
+            },
+          },
+        },
+      },
+    },
   },
   {
     'famiu/bufdelete.nvim',

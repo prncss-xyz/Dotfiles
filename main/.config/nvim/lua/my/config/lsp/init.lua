@@ -12,6 +12,8 @@ function M.config()
     'html',
     'graphql',
     'eslint',
+    'julials',
+    'prismals',
   } do
     lspconfig[lsp].setup {
       -- on_attach = on_attach,

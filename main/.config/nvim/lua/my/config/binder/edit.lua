@@ -265,6 +265,11 @@ function M.extend()
         end,
       },
     },
+    [','] = b {
+      desc = 'lsp codelens eval',
+      'vim',
+      'lsp.codelens.run',
+    },
     ['<tab>'] = modes {
       nx = keys {
         prev = b { '<<' },

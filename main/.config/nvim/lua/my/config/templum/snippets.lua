@@ -235,6 +235,7 @@ return {
     },
   },
   filename = {
+    ['hie.yaml'] = from_file_raw 'hie.yaml',
     ['log.lua'] = from_file_raw 'log.lua',
     ['.busted'] = from_file_raw '.busted',
     ['stylua.toml'] = from_file_fmt 'stylua.toml',

@@ -72,7 +72,7 @@ function M.split_right(size)
   local file = vim.fn.expand('%', nil, nil)
   Split({
     relative = 'editor',
-    position = 'left',
+    position = 'right',
     size = size,
   }):mount()
   vim.cmd('e ' .. file)

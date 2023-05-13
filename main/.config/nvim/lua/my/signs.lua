@@ -14,3 +14,11 @@ vim.fn.sign_define(
   'DiagnosticSignInfo',
   { text = ' ', texthl = 'diagnosticvirtualtextInfo' }
 )
+vim.fn.sign_define(
+  'DapBreakpoint',
+  { text = 'ﱣ', texthl = 'DiagnosticError', linehl = '', numhl = '' }
+)
+vim.fn.sign_define(
+  'DapStopped',
+  { text = '', texthl = 'DiagnosticHint', linehl = '', numhl = '' }
+)

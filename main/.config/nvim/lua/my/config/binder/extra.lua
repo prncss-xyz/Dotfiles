@@ -78,8 +78,12 @@ function M.extend()
       s = b {
         desc = 'OSV run this',
         function()
-          require('osv').run_this()
+          if vim.bo.filetype == 'lua' then
+            require('osv').run_this()
           --[[ require('my.config.osv').launch() ]]
+          elseif vim.bo.filetype == 'haskell' then
+            require('haskell-tools').dap.discover_configurations(0)
+          end
         end,
       },
       t = keys {
@@ -230,6 +234,12 @@ function M.extend()
         desc = 'uniduck',
         lazy_req('telescope', 'extensions.my.uniduck'),
       },
+      h = b {
+        desc = 'hoogle search signature',
+        'req',
+        'haskell-tools',
+        'hoogle.hoogle_signature',
+      },
     },
     f = keys {
       d = b {
@@ -325,54 +335,8 @@ function M.extend()
         b { lazy_req('dash', 'continue') },
       },
       p = b {
-        desc = 'dash toggle breakpoit',
+        desc = 'dash toggle breakpoint',
         lazy_req('dash', 'toggle_breakpoint'),
-      },
-    },
-    G = keys {
-      desc = 'sniprun',
-      redup = modes {
-        desc = 'run',
-        n = b {
-          function()
-            require('sniprun').run()
-          end,
-        },
-        x = b {
-          function()
-            require('sniprun').run 'v'
-          end,
-        },
-      },
-      c = b {
-        desc = 'clear repl',
-        function()
-          require('sniprun').clear_repl()
-        end,
-      },
-      i = b {
-        desc = 'info',
-        function()
-          require('sniprun').info()
-        end,
-      },
-      l = b {
-        desc = 'live toggle',
-        function()
-          require('sniprun.live_mode').toggle()
-        end,
-      },
-      p = b {
-        desc = 'close all',
-        function()
-          require('sniprun.display').close_all()
-        end,
-      },
-      x = b {
-        desc = 'reset',
-        function()
-          require('sniprun').reset()
-        end,
       },
     },
     h = keys {
@@ -474,30 +438,51 @@ function M.extend()
       -- most notably non-async functions that use await and unreachable code.
       a = b {
         desc = 'fix all',
-        lazy_req('typescript', 'actions.fixAll'),
+        'req',
+        'vtsls',
+        'commands.fix_all',
+        -- lazy_req('typescript', 'actions.fixAll'),
       },
       o = b {
         desc = 'organize imports',
-        lazy_req('typescript', 'actions.organizeImports'),
+        'req',
+        'vtsls',
+        'commands.oraanize_imports',
+        -- lazy_req('typescript', 'actions.organizeImports'),
       },
       s = b {
         desc = 'go to source definition',
-        function()
-          require('typescript').goToSourceDefinition()
-        end,
+        'req',
+        'vtsls',
+        'commands.goto_source_definition',
       },
       -- operates with full paths: .renameFile(source, target)
       v = b {
         desc = 'rename file',
-        '<cmd>TypescriptRenameFile<cr>',
+        'req',
+        'vtsls',
+        'commands.rename_file',
+        -- '<cmd>TypescriptRenameFile<cr>',
       },
       y = b {
         desc = 'add missing imports',
-        lazy_req('typescript', 'actions.addMissingImports'),
+        'req',
+        'vtsls',
+        'commands.add_missing_imports',
+        -- lazy_req('typescript', 'actions.addMissingImports'),
       },
       x = b {
         desc = 'remove unused',
-        lazy_req('typescript', 'actions.removeUnused'),
+        'req',
+        'vtsls',
+        'commands.remove_unused_imports',
+        -- lazy_req('typescript', 'actions.removeUnused'),
+      },
+      z = b {
+        desc = 'haskell eval all',
+        'req',
+        'haskell-tools',
+        'lsp.buf_eval_all',
       },
     },
     k = keys {
@@ -703,7 +688,63 @@ function M.extend()
       next = b { desc = 'play', '@' }, -- @@ play again
       -- ['.'] = b { desc = 'play last', '@@' },
     },
-    r = modes {
+    r = keys {
+      desc = 'repl',
+      redup = modes {
+        desc = 'repl send',
+        n = b {
+          function()
+            require('flies.operations.act').exec(
+              { domain = 'outer', around = 'never' },
+              nil,
+              require('iron.core').visual_send
+            )
+          end,
+        },
+        x = b {
+          'req',
+          'iron.core',
+          'visual_send',
+        },
+      },
+      c = b {
+        desc = 'interrupt',
+        function()
+          require('iron.core').send(nil, string.char(3))
+        end,
+      },
+      d = b {
+        desc = 'cr',
+        function()
+          require('iron.core').send(nil, string.char(13))
+        end,
+      },
+      h = b {
+        desc = 'live eval',
+        'req',
+        'haskell-tools',
+        'lsp.buf_eval_all',
+      },
+      l = b {
+        desc = 'cr',
+        function()
+          require('iron.core').send(nil, string.char(12))
+        end,
+      },
+      q = b {
+        desc = 'close',
+        'req',
+        'iron.core',
+        'close_repl',
+      },
+      --[[
+        send_mark = {{'n'}, core.send_mark},
+        mark_visual = {{'v'}, core.mark_visual},
+        remove_mark = {{'n'}, marks.drop_last},
+        clear_hl = {{'v'}, marks.clear_hl},
+      --]]
+    },
+    s = modes {
       desc = 'spectre',
       n = keys {
         next = b {
@@ -728,7 +769,7 @@ function M.extend()
     },
     t = keys {
       desc = 'neotest',
-      redup = b {
+      T = b {
         desc = 'run nearest',
         function()
           if false and vim.bo.filetype == 'lua' then
@@ -742,14 +783,30 @@ function M.extend()
           end
         end,
       },
-      f = b {
-        desc = 'run file',
+      redup = b {
+        desc = 'run',
         function()
           if true and vim.bo.filetype == 'lua' then
             require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
           else
-            vim.cmd.update()
-            require('neotest').run.run { vim.fn.expand '%' }
+            require('my.utils.relative_files').test_current_file()
+            -- vim.cmd.update()
+            -- require('neotest').run.run { vim.fn.expand '%' }
+          end
+        end,
+      },
+      w = b {
+        dest = 'toggle watch',
+        function()
+          require 'neotest'
+          if vim.g.watch_test then
+            print 'not watching tests..'
+            vim.g.watch_test = false
+            require('neotest').summary.close()
+          else
+            print 'watching tests..'
+            vim.g.watch_test = true
+            require('neotest').summary.open()
           end
         end,
       },
@@ -831,7 +888,7 @@ function M.extend()
         next = b { require('my.utils.windows').zoom },
       },
       [';'] = b {
-        utils.lazy(require('my.utils.windows').split_right, 85),
+        utils.lazy(require('my.utils.windows').split_right, 100),
         desc = 'vertical 85',
       },
     },

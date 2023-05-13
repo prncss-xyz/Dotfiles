@@ -15,7 +15,21 @@ return {
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
     },
-    config = require('my.config.comment').config,
+    opts = {
+      mappings = {
+        basic = false,
+        extra = false,
+      },
+    },
+    config = function(_, opts)
+      local ft = require 'Comment.ft'
+      ft.set('sway', '#%s')
+      opts.pre_hook = require(
+        'ts_context_commentstring.integrations.comment_nvim'
+      ).create_pre_hook()
+      require('Comment').setup(opts)
+    end,
+
     keys = {
       '<plug>(comment_toggle_blockwise)',
       '<plug>(comment_toggle_blockwise_visual)',
@@ -42,14 +56,10 @@ return {
     opts = {
       word_pattern = '[^%s%!%"%#%$%%%&%\'%(%)%*%+%,%-%.%/%:%;%<%=%>%?%@%[%\\%]%^%`%{%|%}%~]+',
       register_nN_repeat = function(nN)
-        -- called after a fuzzy search with a tuple of functions that are effectively `n, N`
-        local n, N = unpack(nN)
-        -- Dynamically map this to n, N
-        -- Left as an exercise to the reader
+        require('my.utils.fuzzy_slash').register_nN_repeat(nN)
       end,
     },
-
-    -- cmd = { 'Fz', 'FzNext', 'FzPrev' },
+    cmd = { 'Fz', 'FzNext', 'FzPrev', 'FzPattern', 'FzClear' },
     event = 'CmdlineEnter',
   },
   {
@@ -82,6 +92,7 @@ return {
   {
     'L3MON4D3/LuaSnip',
     config = require('my.config.luasnip').config,
+    cmd = 'LuaSnipUnlinkCurrent',
   },
   {
     'hrsh7th/nvim-cmp',
@@ -98,6 +109,7 @@ return {
       'dmitmel/cmp-cmdline-history',
       'hrsh7th/cmp-nvim-lsp',
     },
+    commit = '1cad30fcffa282c0a9199c524c821eadc24bf939',
   },
   {
     'windwp/nvim-autopairs',
@@ -124,7 +136,11 @@ return {
   {
     'phaazon/hop.nvim',
     module = 'hop',
-    config = require('my.config.hop').config,
+    opts = {
+      jump_on_sole_occurrence = true,
+      keys = 'asdfjkl;ghqweruiopzxcvm,étybn',
+      -- . does not work
+    },
   },
   {
     'jackMort/ChatGPT.nvim',
@@ -167,5 +183,6 @@ return {
       'TabnineToggle',
     },
     event = 'InsertEnter',
+    enabled = true,
   },
 }

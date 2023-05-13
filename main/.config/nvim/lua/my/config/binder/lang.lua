@@ -44,10 +44,6 @@ function M.setup()
       ['<c-b>'] = b { 'req', 'my.utils.moves', 'bwd', true },
       ['<c-f>'] = b {
         function()
-          print(
-            '#function#if require:',
-            vim.inspect(require('tabnine.state').completions_cache)
-          )
           if require('tabnine.state').completions_cache then
             local completion = require 'tabnine.completion'
             vim.schedule(completion.accept)

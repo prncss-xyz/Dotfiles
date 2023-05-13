@@ -1,4 +1,4 @@
-version = '0.20.0'
+version = '0.21.0'
 
 -- override builtin modes to get rid of deep_merge
 -- fzm: project root or current dir, unless in downloads (by mimetype then)
@@ -260,6 +260,7 @@ xplr.config.modes.builtin.delete.key_bindings.on_key = {
   },
 }
 
+
 -- TODO: bash to lua
 deep_merge(xplr, {
   config = {
@@ -424,15 +425,15 @@ deep_merge(xplr, {
                   'PopMode',
                 },
               },
-              p = {
-                help = 'mtp mount',
-                messages = {
-                  'PopMode',
-                  {
-                    BashExec = [[mtpmount]],
-                  },
-                },
-              },
+              -- p = {
+              --   help = 'mtp mount',
+              --   messages = {
+              --     'PopMode',
+              --     {
+              --       BashExec = [[mtpmount]],
+              --     },
+              --   },
+              -- },
               q = {
                 help = 'quit mode',
                 messages = {

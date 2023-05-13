@@ -13,6 +13,16 @@ function M.extend()
   local np = util.np
   local lazy_req = util.lazy_req
   return keys {
+    d = b {
+      desc = 'repl send',
+      function()
+        require('flies.operations.act').exec(
+          { domain = 'outer', around = 'never' },
+          nil,
+          require('iron.core').visual_send
+        )
+      end,
+    },
     b = keys {
       -- prev = b { '<Plug>(Marks-next-bookmark)' },
       -- next = b {

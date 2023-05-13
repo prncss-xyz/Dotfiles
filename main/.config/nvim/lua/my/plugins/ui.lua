@@ -2,19 +2,74 @@ return {
   {
     'nvim-lualine/lualine.nvim',
     event = 'VeryLazy',
-    config = require('my.config.lualine').config,
+    opts = {
+      options = {
+        component_separators = { left = '', right = '' },
+        section_separators = { left = '', right = '' },
+        always_divide_middle = false,
+        globalstatus = true,
+      },
+      sections = {
+        lualine_a = { require 'my.utils.uiline.file' },
+        lualine_b = { require 'my.utils.uiline.aerial' },
+        lualine_c = {},
+        lualine_x = { require 'my.utils.uiline.overseer' },
+        -- lualine_x = { 'overseer' },
+        lualine_y = { require 'my.utils.uiline.coordinates' },
+        lualine_z = {},
+      },
+    },
     dependencies = 'MunifTanjim/nui.nvim',
   },
   {
     'kyazdani42/nvim-web-devicons',
     opts = { default = true },
   },
+  {
+    's1n7ax/nvim-window-picker',
+    config = function()
+      require('window-picker').setup {
+        selection_chars = require('my.config.binder.parameters').selection_chars:upper(),
+      }
+    end,
+  },
   -- git
   {
     'lewis6991/gitsigns.nvim',
     event = 'VeryLazy',
     dependencies = { 'nvim-lua/plenary.nvim' },
-    config = require('my.config.gitsigns').config,
+    opts = {
+      watch_gitdir = {
+        interval = 100,
+      },
+      sign_priority = 5,
+      status_formatter = nil, -- Use default
+      signs = {
+        add = { hl = 'DiffAdd', text = '▌', numhl = 'GitSignsAddNr' },
+        change = { hl = 'DiffChange', text = '▌', numhl = 'GitSignsChangeNr' },
+        delete = { hl = 'DiffDelete', text = '▌', numhl = 'GitSignsDeleteNr' },
+        topdelete = {
+          hl = 'DiffDelete',
+          text = '‾',
+          numhl = 'GitSignsDeleteNr',
+        },
+        changedelete = {
+          hl = 'DiffChange',
+          text = '~',
+          numhl = 'GitSignsChangeNr',
+        },
+      },
+      numhl = false,
+      keymaps = {},
+      current_line_blame = true,
+      current_line_blame_opts = {
+        virt_text = true,
+        virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+        delay = 1000,
+        ignore_whitespace = false,
+      },
+      word_diff = false,
+    },
   },
   {
     'kevinhwang91/nvim-hlslens',
@@ -39,12 +94,21 @@ return {
   {
     'lukas-reineke/indent-blankline.nvim',
     event = 'BufReadPost',
-    config = require('my.config.indent-blankline').config,
+    opts = {
+      show_current_context = false,
+      char = ' ',
+      buftype_exclude = { 'terminal', 'help', 'nofile' },
+      filetype_exclude = { 'help', 'packer' },
+      char_highlight_list = { 'CursorLine', 'Function' },
+      space_char_highlight_list = { 'CursorLine', 'Function' },
+      space_char_blankline_highlight_list = { 'CursorLine', 'Function' },
+    },
   },
   {
     'lukas-reineke/headlines.nvim',
     opts = {},
     ft = { 'markdown', 'orgmode', 'neorg' },
+    enabled = false,
   },
   {
     'folke/twilight.nvim',
@@ -62,7 +126,11 @@ return {
   },
   {
     'stevearc/dressing.nvim',
-    config = require('my.config.dressing').config,
+    opts = {
+      input = {
+        prefer_width = 70,
+      },
+    },
     event = 'VeryLazy',
   },
   {
@@ -103,7 +171,7 @@ return {
         long_message_to_split = true, -- long messages will be sent to a split
         inc_rename = false, -- enables an input dialog for inc-rename.nvim
         lsp_doc_border = false, -- add a border to hover docs and signature help
-    },
+      },
     },
   },
   {
@@ -121,15 +189,55 @@ return {
 
   -- Runners
   {
-    'michaelb/sniprun',
-    build = 'bash ./install.sh',
-    enabled = false,
-    module = 'sniprun',
-    conif = {
-      selected_interpreters = {
-        'Python3_jupyter',
-      },
+    'Vigemus/iron.nvim',
+    cmd = {
+      'IronRepl',
+      'IronRestart',
+      'IronFocus',
+      'IronHide',
     },
+    config = function()
+      -- not serializalbe
+      require('iron.core').setup {
+        config = {
+          scratch_repl = true,
+          repl_definition = {
+            sh = {
+              command = { 'zsh' },
+            },
+            lua = {
+              command = { 'lua' },
+            },
+            javascript = {
+              command = { 'node' },
+            },
+            javascriptreact = {
+              command = { 'node' },
+            },
+            typescript = {
+              command = { 'node' },
+            },
+            typescriptreact = {
+              command = { 'node' },
+            },
+            go = {
+              command = { 'yaegi' },
+            },
+            haskell = {
+              command = function(meta)
+                local file = vim.api.nvim_buf_get_name(meta.current_bufnr)
+                return require('haskell-tools').repl.mk_repl_cmd(file)
+              end,
+            },
+          },
+          repl_open_cmd = require('iron.view').right(100),
+        },
+        highlight = {
+          italic = true,
+        },
+        ignore_blank_lines = true,
+      }
+    end,
   },
   {
     'jbyuki/dash.nvim',

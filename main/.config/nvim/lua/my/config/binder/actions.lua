@@ -33,24 +33,6 @@ function M.menu_next()
   end
 end
 
-M.jump_previous = utils.first_cb(
-  function()
-    print 'previous'
-  end,
-  utils.lazy_req('luasnip', 'jump', -1)
-  -- my.utils.lazy_req('tabout', 'taboutBack')
-  -- util.lazy_req('tabout', 'taboutBackMulti')
-)
-
-M.jump_next = utils.first_cb(
-  function()
-    print 'next'
-  end,
-  utils.lazy_req('luasnip', 'jump', 1)
-  -- my.utils.lazy_req('tabout', 'tabout')
-  -- util.lazy_req('tabout', 'taboutMulti')
-)
-
 function M.hop12()
   local char = vim.fn.nr2char(vim.fn.getchar())
   if char == utils.t '<esc>' then

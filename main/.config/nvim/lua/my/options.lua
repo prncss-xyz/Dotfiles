@@ -51,6 +51,7 @@ deep_merge(vim, {
     title = true,
   },
   g = {
+    cursorhold_updatetime = 100, -- https://github.com/antoinemadec/FixCursorHold.nvim
     ['conjure#extract#tree_sitter#enabled'] = true,
     gruvbox_material_background = 'soft', -- for ligth
     -- gruvbox_material_background = 'hard', -- for dark

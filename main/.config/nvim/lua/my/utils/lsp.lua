@@ -3,10 +3,6 @@ local M = {}
 function M.format(bufnr)
   -- https://github.com/L3MON4D3/LuaSnip/issues/129
   vim.cmd 'LuaSnipUnlinkCurrent'
-  if vim.bo.filetype == 'go' then
-    require('go.format').goimport()
-    return
-  end
   vim.lsp.buf.format {
     async = false,
     filter = function(client)

@@ -6,6 +6,47 @@ local std = require 'my.utils.std'
 
 -- TODO: patterns based on filetype
 
+function M.test_file(file)
+  for _, pattern in ipairs {
+    { '(.+)%_spec(%.[%w%d]+)$' },
+    { '(.+)%_test(%.[%w%d]+)$' },
+    { '(.+)%.test(%.[%w%d]+)$' },
+    { '(.+)%.test.tsx' },
+    { '(.+)%.test.ts' },
+    { '(.+)/__tests__/(.+)' },
+  } do
+    if file:match(pattern[1]) then
+      vim.cmd.update(file)
+      require('neotest').run.run(file)
+      return
+    end
+  end
+  for _, pattern in ipairs {
+    { '(.+)%.ts', '%1.test.tsx' },
+    { '(.+)%.tsx', '%1.test.ts' },
+    { '(.+)%.lua$', '%1_spec.lua' },
+    { '(.+)%.go$', '%1_test.go' },
+    { '(.+)(%.[%w%d]+)$', '%1.test%2' },
+    { '(.+)/(.+)', '%1/__tests__/%2' },
+  } do
+    if file:match(pattern[1]) then
+      local target = file:gsub(pattern[1], pattern[2])
+      if std.file_exists(target) then
+        vim.cmd.edit(target)
+        vim.cmd.update(target)
+        require('neotest').run.run(target)
+        vim.cmd.edit(file)
+        return
+      end
+    end
+  end
+end
+
+function M.test_current_file()
+  local file = vim.api.nvim_buf_get_name(0)
+  M.test_file(file)
+end
+
 local config = {
   alternatives = {
     test = {

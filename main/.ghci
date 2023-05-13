@@ -1,0 +1,1 @@
+:def ho \x -> return $ ":!hoogle " ++ x

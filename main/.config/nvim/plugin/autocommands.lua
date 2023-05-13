@@ -56,7 +56,14 @@ vim.api.nvim_create_autocmd(
       if vim.fn.isdirectory(fname) == 1 then
         return
       end
-      vim.cmd 'silent :w!'
+      if require('my.utils.std').file_exists(fname) then
+        vim.cmd 'update'
+      else
+        vim.cmd 'silent :w!'
+      end
+      if vim.g.watch_test then
+        require('my.utils.relative_files').test_current_file()
+      end
     end,
   }
 )

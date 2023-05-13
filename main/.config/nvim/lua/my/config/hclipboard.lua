@@ -3,7 +3,6 @@ local M = {}
 local i = 0
 
 function M.config()
-  print 'starting'
   -- require('hclipboard').start()
   require('hclipboard').setup {
     should_bypass_cb = function(regname, ev)

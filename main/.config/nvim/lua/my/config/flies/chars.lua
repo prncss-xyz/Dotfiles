@@ -148,7 +148,6 @@ M.t = {
         capture 'contents',
         f(function(args)
           local text = args[1][1] or ''
-          print('function text:', vim.inspect(text)) -- __AUTO_GENERATED_PRINT_VAR__
           return text:match '%w+'
         end, 1),
       }, { delimiters = '[]' })

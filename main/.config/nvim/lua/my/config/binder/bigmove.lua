@@ -27,15 +27,13 @@ function M.extend()
       e = b {
         desc = 'files (workspace)',
         function()
-          if true then
+          if false then
             require('telescope.builtin').find_files {
               prompt_title = 'files (project)',
               find_command = {
                 'rg',
                 '--files',
                 '--hidden',
-                '-g',
-                '!.git',
               },
             }
             return
@@ -52,8 +50,6 @@ function M.extend()
             find_command = {
               'fd',
               '--hidden',
-              '--exclude',
-              '.git',
               '--type',
               'f',
               '--strip-cwd-prefix',
@@ -70,8 +66,6 @@ function M.extend()
             find_command = {
               'fd',
               '--hidden',
-              '--exclude',
-              '.git',
               '--type',
               'f',
               '--strip-cwd-prefix',
@@ -81,7 +75,9 @@ function M.extend()
       },
       g = b {
         desc = 'recent buffer',
-        lazy_req('buffstory', 'select'),
+        'req',
+        'buffstory',
+        'select',
       },
       h = b {
         desc = 'git status',
@@ -155,8 +151,10 @@ function M.extend()
       lazy_req('harpoon.term', 'gotoTerminal', 2),
     },
     [';'] = b {
-      desc = 'harpoon terminal 3',
-      lazy_req('harpoon.term', 'gotoTerminal', 3),
+      desc = 'repl terminal',
+      'vim',
+      'cmd',
+      'IronFocus',
     },
     -- update "main/.config/nvim/lua/plugins/neo-tree.lua"
     u = b { desc = 'harpoon file 1', lazy_req('harpoon.ui', 'nav_file', 1) },
@@ -228,11 +226,21 @@ function M.extend()
       g = b { require('my.utils.windows').show_ui_last, desc = 'last ui' },
       h = b {
         desc = 'neo-tree git',
-        lazy_req('my.utils.windows', 'show_ui', 'neo-tree', 'Neotree git_status'),
+        lazy_req(
+          'my.utils.windows',
+          'show_ui',
+          'neo-tree',
+          'Neotree git_status'
+        ),
       },
       n = b {
         desc = 'zk',
-        lazy_req('my.utils.windows', 'show_ui', 'neo-tree', 'Neotree source=neo-tree-zk'),
+        lazy_req(
+          'my.utils.windows',
+          'show_ui',
+          'neo-tree',
+          'Neotree source=neo-tree-zk'
+        ),
       },
       l = b {
         desk = 'bookmarks',

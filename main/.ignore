@@ -1,3 +1,9 @@
 .cache/
 Trash/
+*-lock.json
+*.lock
+src/gql/
+.git/
+dist-newstyle/
+.stack-work
 # /.*

@@ -1,6 +1,8 @@
 if [[ Darwin -eq $(uname -s) ]]
 then
-  export PATH=$HOME/.local/bin:/usr/bin/vendor_perl:$HOME/.pnpm-global-bin:$HOME/.cargo/bin:$HOME.luarocks/bin:$PATH:$HOME/.local/share/gem/ruby/3.0.0
+  export PATH=$HOME/.local/bin:/usr/bin/vendor_perl:$HOME/go/bin:$HOME/.pnpm-global-bin:$HOME/.cargo/bin:$HOME.luarocks/bin:$PATH:$HOME/.local/share/gem/ruby/3.0.0:$PATH:$HOME/.
+  export PATH=$HOME/.cabal/bin:$PATH
+  export PATH=$HOME/homebrew/bin:$PATH
   export PATH=$HOME/bin:/usr/local/bin:$PATH
   export DOTFILES=$HOME/Dotfiles
   export PROJECTS=$HOME/Projects

@@ -7,6 +7,7 @@ function M.extend()
   local b = binder.b
   local utils = require 'my.config.binder.utils'
   local np = utils.np
+  local np_ = utils.np_
   local lazy_req = utils.lazy_req
 
   local d = require('my.config.binder.parameters').d
@@ -15,23 +16,28 @@ function M.extend()
     redup = keys {
       a = b {
         desc = 'current buffer fuzzy find',
-        lazy_req(
-          'telescope.builtin',
-          'current_buffer_fuzzy_find',
-          { bufnr = 0 }
-        ),
+        'req',
+        'telescope.builtin',
+        'current_buffer_fuzzy_find',
+        { bufnr = 0 },
       },
       j = b {
         desc = 'jumplist',
-        lazy_req('telescope.builtin', 'jumplist'),
+        'req',
+        'telescope.builtin',
+        'jumplist',
       },
       l = b {
         desc = 'marks',
-        lazy_req('telescope.builtin', 'marks'),
+        'req',
+        'telescope.builtin',
+        'marks',
       },
       r = b {
         desc = 'register',
-        lazy_req('telescope.builtin', 'register'),
+        'req',
+        'telescope.builtin',
+        'register',
       },
       s = b {
         desc = 'aerial symbols',
@@ -83,6 +89,23 @@ function M.extend()
         end,
       },
     },
+    -- b = modes {
+    --   nx = keys {
+    --     desc = 'aerial symbol',
+    --     prev = b {
+    --       cmd = 'np',
+    --       { 'vim', 'AerialPrev' },
+    --       { 'vim', 'AerialNext' },
+    --       false,
+    --     },
+    --     next = b {
+    --       cmd = 'np',
+    --       { 'vim', 'AerialPrev' },
+    --       { 'vim', 'AerialNext' },
+    --       true,
+    --     },
+    --   },
+    -- },
     c = modes {
       desc = 'asterisk',
       n = b {
@@ -98,11 +121,33 @@ function M.extend()
         end,
       },
     },
-    d = np {
+    d = np_ {
       desc = 'diagnostic',
-      prev = vim.diagnostic.goto_prev,
-      next = vim.diagnostic.goto_next,
+      prev = {
+        'vim',
+        'diagnostic.goto_prev',
+      },
+      next = {
+        'vim',
+        'diagnostic.goto_next',
+      },
     },
+    -- d = np_ {
+    --   desc = 'diagnostic',
+    --   prev = {
+    --     cmd = 'vim',
+    --     fn_path = 'diagnostic.goto_prev',
+    --   },
+    --   next = {
+    --     cmd = 'vim',
+    --     fn_path = 'diagnostic.goto_next',
+    --   },
+    -- },
+    -- d = np {
+    --   desc = 'diagnostic',
+    --   prev = vim.diagnostic.goto_prev,
+    --   next = vim.diagnostic.goto_next,
+    -- },
     e = keys {
       desc = 'peek',
       redup = b {
@@ -166,11 +211,9 @@ function M.extend()
     h = np {
       desc = 'hunk',
       prev = function()
-        print 'www'
         require('gitsigns').prev_hunk()
       end,
       next = function()
-        print 'aaa'
         require('gitsigns').next_hunk()
       end,
     },

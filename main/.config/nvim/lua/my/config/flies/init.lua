@@ -34,7 +34,7 @@ function M.config()
       o = require('flies.flies._ts_'):new {
         names = 'argument',
         nested = false,
-        many = true,
+        many = false,
       },
       p = 'backward',
       q = require 'flies.flies.quote',

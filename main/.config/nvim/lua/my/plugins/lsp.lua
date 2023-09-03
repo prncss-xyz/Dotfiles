@@ -20,29 +20,137 @@ return {
     'neovim/nvim-lspconfig',
     name = 'lspconfig',
     event = 'BufReadPost',
-    config = require('my.config.lsp').config,
+    config = function()
+      for _, lsp in ipairs {
+        'bashls',
+        'cssls',
+        'html',
+        'graphql',
+        'eslint',
+        'julials',
+        'prismals',
+        'golangci_lint_ls',
+        -- "emmet_ls"
+      } do
+        require('lspconfig')[lsp].setup {
+          capabilities = require('my.utils.lsp').get_cmp_capabilities(),
+          flags = require('my.utils.lsp').flags,
+        }
+      end
+    end,
     dependencies = { 'williamboman/mason-lspconfig.nvim' },
     cmd = { 'LspInfo' },
   },
+  -- https://github.com/mason-org/mason-registry/
   {
-    'jay-babu/mason-null-ls.nvim',
-    dependencies = {
-      'williamboman/mason.nvim',
-      'jose-elias-alvarez/null-ls.nvim',
+    'WhoIsSethDaniel/mason-tool-installer.nvim',
+    opts = {
+      ensure_installed = {
+        'prettierd',
+        'stylua',
+        'shfmt',
+        'golines',
+        'fourmolu',
+        'luacheck',
+        'shellcheck',
+        'yamllint',
+      },
+      auto_update = true,
     },
-    config = function()
-      require('mason-null-ls').setup {
-        ensure_installed = nil,
-        automatic_installation = true,
-        automatic_setup = false,
-      }
-    end,
+    cmd = { 'MasonToolsInstall', 'MasonToolsUpdate' },
   },
   {
-    'jose-elias-alvarez/null-ls.nvim',
-    event = { 'BufReadPre', 'BufNewFile' },
-    config = require('my.config.null-ls').config,
-    dependencies = { 'jay-babu/mason-null-ls.nvim' },
+    'stevearc/conform.nvim',
+    opts = {
+      formatters_by_ft = {
+        go = { 'my_golines' },
+        sh = { 'shfmt' },
+        lua = { 'stylua' },
+        javascript = { 'prettierd' },
+        javascriptreact = { 'prettierd' },
+        typescript = { 'prettierd' },
+        typescriptreact = { 'prettierd' },
+        vue = { 'prettierd' },
+        css = { 'prettierd' },
+        scss = { 'prettierd' },
+        less = { 'prettierd' },
+        html = { 'prettierd' },
+        json = { 'prettierd' },
+        jsonc = { 'prettierd' },
+        yaml = { 'prettierd' },
+        mdx = { 'prettierd' },
+        graphql = { 'prettierd' },
+        handlebars = { 'prettierd' },
+        toml = { 'prettierd' },
+        haskell = { 'fourmolu' },
+        -- markdown = { 'prettierd' }, -- bug thats kills last lines
+      },
+      formatters = {
+        fourmolu = {
+          command = 'fourmolu',
+          args = { '--stdin-input-file', '$FILENAME' },
+          stdin = true,
+        },
+        my_golines = {
+          command = 'golines',
+          stdin = true,
+          args = {
+            '--max-len=100',
+            '--base-formatter=gofumpt',
+          },
+        },
+      },
+    },
+  },
+  {
+    'mfussenegger/nvim-lint',
+    ft = {
+      'lua',
+      'lua',
+      'sh',
+      'yaml',
+    },
+    opts = {
+      linters_by_ft = {
+        lua = { 'luacheck' },
+        sh = { 'shellcheck' },
+        yaml = { 'yamllint' },
+      },
+      linters = {},
+    },
+    config = function(_, opts)
+      local uv = vim.uv or vim.loop
+      local lint = require 'lint'
+      lint.linters_by_ft = opts.linters_by_ft
+      for k, v in pairs(opts.linters) do
+        lint.linters[k] = v
+      end
+      local timer = assert(uv.new_timer())
+      local DEBOUNCE_MS = 500
+      local aug = vim.api.nvim_create_augroup('Lint', { clear = true })
+      vim.api.nvim_create_autocmd(
+        { 'BufWritePost', 'TextChanged', 'InsertLeave' },
+        {
+          group = aug,
+          callback = function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            timer:stop()
+            timer:start(
+              DEBOUNCE_MS,
+              0,
+              vim.schedule_wrap(function()
+                if vim.api.nvim_buf_is_valid(bufnr) then
+                  vim.api.nvim_buf_call(bufnr, function()
+                    lint.try_lint(nil, { ignore_errors = true })
+                  end)
+                end
+              end)
+            )
+          end,
+        }
+      )
+      lint.try_lint(nil, { ignore_errors = true })
+    end,
   },
   {
     'folke/neodev.nvim',
@@ -109,30 +217,26 @@ return {
   },
   {
     'b0o/schemastore.nvim',
-  },
-  {
-    'jose-elias-alvarez/typescript.nvim',
-    ft = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
     config = function()
-      require('typescript').setup {
-        flags = require('my.utils.lsp').flags,
-        disable_commands = false,
-        debug = false,
+      require('lspconfig').jsonls.setup {
         settings = {
-          completions = {
-            completeFunctionCalls = true,
+          capabilities = require('my.utils.lsp').get_cmp_capabilities(),
+          json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
           },
         },
-        capabilities = require('my.utils.lsp').get_cmp_capabilities(),
-        on_attach = function(client, bufnr)
-          require('my.utils.lsp').on_attach(client, bufnr)
-        end,
       }
-      require('null-ls').register(
-        require 'typescript.extensions.null-ls.code-actions'
-      )
+      require('lspconfig').yamlls.setup {
+        capabilities = require('my.utils.lsp').get_cmp_capabilities_no_fold(),
+        settings = {
+          yaml = {
+            schemas = require('schemastore').yaml.schemas(),
+          },
+        },
+      }
     end,
-    enabled = false,
+    ft = { 'json', 'yaml' },
   },
   {
     'yioneko/nvim-vtsls',
@@ -142,6 +246,21 @@ return {
       require('lspconfig').lua_ls.setup(require('vtsls').lspconfig)
     end,
     cmd = { 'VtsExec', 'VtsRename' },
+    enabled = false,
+  },
+  {
+    'pmizio/typescript-tools.nvim',
+    ft = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
+    cmd = {
+      'TSToolsOrganizeImports',
+      'TSToolsSortImports',
+      'TSToolsRemoveUnusedImports',
+      'TSToolsRemoveUnused',
+      'TSToolsAddMissingImports',
+      'TSToolsFixAll',
+      'TSToolsGoToSourceDefinition',
+    },
+    opts = {},
   },
   {
     'ray-x/go.nvim',
@@ -159,16 +278,6 @@ return {
     },
     config = function(_, opts)
       require('go').setup(opts)
-      local null_ls = require 'null-ls'
-      local gotest_codeaction = require('go.null_ls').gotest_action()
-      null_ls.register(gotest_codeaction)
-      -- those trigger a forever spin in Noice
-      if false then
-        local gotest = require('go.null_ls').gotest()
-        null_ls.register(gotest)
-        local golangci_lint = require('go.null_ls').golangci_lint()
-        null_ls.register(golangci_lint)
-      end
     end,
     build = ':lua require("go.install").update_all_sync()',
     cmd = {
@@ -186,6 +295,8 @@ return {
       'GoGenerate',
       'GoRun',
       'GoStop',
+      'GoTest',
+      'GoTestSum',
       'GoGet',
       'GoVet',
       'GoCoverage',
@@ -226,27 +337,17 @@ return {
     ft = 'markdown',
     name = 'zk',
     opts = {
-      layout = {
-        default_direction = 'left',
-        min_width = require('my.parameters').pane_width,
+      picker = 'telescope',
+      lsp = {
+        config = {
+          cmd = { 'zk', 'lsp' },
+          name = 'zk',
+        },
       },
-      backends = {
-        'treesitter',
-        'lsp',
-        'markdown',
+      auto_attach = {
+        enabled = true,
+        filetypes = { 'markdown' },
       },
-      filter_kind = false,
-      -- filter_kind = {
-      --   'Class',
-      --   'Constructor',
-      --   'Enum',
-      --   'Function',
-      --   'Interface',
-      --   'Module',
-      --   'Method',
-      --   'Struct',
-      -- },
-      -- To see all available values, see :help SymbolKind
     },
     cmd = {
       'ZkIndex',
@@ -261,7 +362,6 @@ return {
       'ZkTags',
     },
   },
-
   {
     'mrcjkb/haskell-tools.nvim',
     opts = {
@@ -324,42 +424,8 @@ return {
   },
   {
     'RRethy/vim-illuminate',
-    config = function()
-      -- Are also used by vim-illuminate.
-      -- The defaults option (CursorLine) was quite unreadable.
-      -- Actual settings cause issue when cursor it at the beginning or end.
-      -- `vim.cmd 'highlight! link LspReferenceText String'`
-      -- for Neon colorscheme:
-      -- vim.cmd 'highlight! LspReferenceText guibg=#4db5bd guifg=#ecee7b'
-      local utils = require 'my.utils'
-      local diff_add = utils.extract_nvim_hl 'DiffAdd'
-      local diff_change = utils.extract_nvim_hl 'DiffChange'
-      local diagnostic_warn = utils.extract_nvim_hl 'DiagnosticWarn'
-      if false then
-        vim.api.nvim_set_hl(
-          0,
-          'IlluminatedWordText',
-          { bg = diff_add.fg, fg = diagnostic_warn.fg }
-        )
-        vim.api.nvim_set_hl(
-          0,
-          'IlluminatedWordRead',
-          { bg = diff_change.fg, fg = diagnostic_warn.fg }
-        )
-        vim.api.nvim_set_hl(
-          0,
-          'IlluminatedWordWrite',
-          { bg = diff_change.fg, fg = diagnostic_warn.fg }
-        )
-      end
-      require('illuminate').configure {
-        providers = {
-          'lsp',
-          'treesitter',
-          'regex',
-        },
-        delay = 0,
-      }
+    config = function(_, opts)
+      require('illuminate').configure(opts)
     end,
     event = 'VeryLazy',
   },

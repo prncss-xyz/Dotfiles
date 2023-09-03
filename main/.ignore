@@ -3,6 +3,7 @@ Trash/
 *-lock.json
 *.lock
 src/gql/
+__generated__/
 .git/
 dist-newstyle/
 .stack-work

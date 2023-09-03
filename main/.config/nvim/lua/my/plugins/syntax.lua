@@ -5,8 +5,31 @@ return {
     event = 'VeryLazy',
   },
   {
-    'mrjones2014/nvim-ts-rainbow',
-    event = 'VeryLazy',
+    'HiPhish/rainbow-delimiters.nvim',
+    config = function()
+      local rainbow_delimiters = require 'rainbow-delimiters'
+      vim.g.rainbow_delimiters = {
+        strategy = {
+          [''] = rainbow_delimiters.strategy['global'],
+          vim = rainbow_delimiters.strategy['local'],
+        },
+        query = {
+          [''] = 'rainbow-delimiters',
+          lua = 'rainbow-blocks',
+          -- tsx = 'rainbow-delimiters-react',
+        },
+        highlight = {
+          'RainbowDelimiterRed',
+          'RainbowDelimiterYellow',
+          'RainbowDelimiterBlue',
+          'RainbowDelimiterOrange',
+          'RainbowDelimiterGreen',
+          'RainbowDelimiterViolet',
+          'RainbowDelimiterCyan',
+        },
+      }
+    end,
+    event = 'ColorScheme',
   },
   {
     'JoosepAlviste/nvim-ts-context-commentstring',
@@ -16,7 +39,7 @@ return {
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     config = require('my.config.nvim-treesitter').config,
-    event = 'ColorSchemePre'
+    event = 'ColorSchemePre',
   },
   { 'mfussenegger/nvim-ts-hint-textobject' },
   {

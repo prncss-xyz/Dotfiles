@@ -22,7 +22,7 @@ function M.setup()
       ['<c-n>'] = b { 'req', 'my.config.binder.actions', 'menu_next' },
       ['<c-p>'] = b { 'req', 'my.config.binder.actions', 'menu_previous' },
       ['<c-space>'] = b { '<space><left>' },
-      ['<c-z>'] = b { lazy_req('my.config.cmp', 'my.utils.toggle') },
+      ['<c-e>'] = b { 'req', 'my.utils.cmp', 'toggle' },
       ['<s-tab>'] = b {
         function()
           require('luasnip').jump(-1)

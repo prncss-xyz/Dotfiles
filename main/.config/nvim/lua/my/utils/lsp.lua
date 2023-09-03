@@ -3,16 +3,27 @@ local M = {}
 function M.format(bufnr)
   -- https://github.com/L3MON4D3/LuaSnip/issues/129
   vim.cmd 'LuaSnipUnlinkCurrent'
-  vim.lsp.buf.format {
-    async = false,
-    filter = function(client)
-      if client.name == 'null-ls' then
-        return true
-      end
-      return false
-    end,
-    bufnr = bufnr,
-  }
+
+  if false then
+    vim.lsp.buf.format {
+      async = false,
+      filter = function(client)
+        if --[[ client.name == 'null-ls' or ]]
+          client.name == 'prismals'
+        then
+          return true
+        end
+        return false
+      end,
+      bufnr = bufnr,
+    }
+  end
+  if true then
+    require('conform').format {
+      async = false,
+      buf = bufnr,
+    }
+  end
 end
 
 function M.get_cmp_capabilities()
@@ -26,9 +37,20 @@ function M.get_cmp_capabilities()
   return res
 end
 
+function M.get_cmp_capabilities_no_fold()
+  -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+  local res = require('cmp_nvim_lsp').default_capabilities()
+  res.textDocument.completion.completionItem.snippetSupport = true
+  res.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true,
+  }
+  return res
+end
+
 M.flags = {
-  debounce_text_changes = 200,
-  allow_incremental_sync = true,
+  -- debounce_text_changes = 200,
+  -- allow_incremental_sync = true,
 }
 
 function M.start_client(name)

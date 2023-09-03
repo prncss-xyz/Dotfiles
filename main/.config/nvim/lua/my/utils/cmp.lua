@@ -1,6 +1,6 @@
-local U = {}
+local M = {}
 
-function U.toggle()
+function M.toggle()
   local cmp = require 'cmp'
   if cmp.visible() then
     cmp.close()
@@ -18,7 +18,7 @@ end
 --   vim.fn.feedkeys(require('utils').t '<up>', '')
 -- end
 
-function U.confirm()
+function M.confirm()
   local cmp = require 'cmp'
   if cmp.visible() then
     cmp.confirm {
@@ -29,4 +29,4 @@ function U.confirm()
   end
 end
 
-return U
+return M

@@ -24,6 +24,11 @@ function M.extend()
         desc = 'repo',
         lazy_req('telescope', 'extensions.repo.list'),
       },
+      d = b {
+        desc = 'diagnostics',
+        lazy_req('telescope.builtin', 'diagnostics'),
+      },
+
       e = b {
         desc = 'files (workspace)',
         function()

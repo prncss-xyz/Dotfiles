@@ -106,15 +106,6 @@ function M.extend()
     i = b {
       'i<space><left>',
     },
-    j = modes {
-      --FIX: currently not working
-      desc = 'refactoring',
-      x = b {
-        function()
-          require('telescope').extensions.refactoring.refactors()
-        end,
-      },
-    },
     k = keys {
       prev = modes {
         n = b {
@@ -179,6 +170,21 @@ function M.extend()
     o = keys {
       prev = b { 'O' },
       next = b { 'o' },
+    },
+    -- q = modes {
+    --   desc = 'refactoring',
+    --   x = b {
+    --     function()
+    --       require('telescope').extensions.refactoring.refactors()
+    --     end,
+    --   },
+    -- },
+    q = b {
+      desc = 'refactoring',
+      function()
+        require('refactoring').select_refactor()
+      end,
+      modes = 'nx',
     },
     r = keys {
       prev = b { 'R' },
@@ -277,8 +283,7 @@ function M.extend()
       },
     },
     ['<space>'] = modes {
-      n = b { vim.lsp.buf.code_action },
-      x = b { ":'<,'>lua vim.lsp.buf.code_action()<cr>" },
+      nx = b { vim.lsp.buf.code_action },
     },
     ['<cr>'] = keys {
       prev = b {

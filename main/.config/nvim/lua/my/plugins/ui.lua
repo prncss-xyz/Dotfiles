@@ -38,6 +38,7 @@ return {
     'lewis6991/gitsigns.nvim',
     event = 'VeryLazy',
     dependencies = { 'nvim-lua/plenary.nvim' },
+    cmd = "Gitsigns",
     opts = {
       watch_gitdir = {
         interval = 100,
@@ -60,7 +61,6 @@ return {
         },
       },
       numhl = false,
-      keymaps = {},
       current_line_blame = true,
       current_line_blame_opts = {
         virt_text = true,
@@ -140,7 +140,24 @@ return {
   {
     'folke/todo-comments.nvim',
     event = 'VeryLazy',
-    config = require('my.config.todo-comments').config,
+    opts = {
+      keywords = {
+        TODO = {
+          icon = ' ',
+          color = 'info',
+          alt = {
+            'BUILD',
+            'CI',
+            'DOCS',
+            'FEAT',
+            'REFACT',
+            'STYLE',
+            'TEST',
+            'QUESTION',
+          },
+        },
+      },
+    },
     cmd = {
       'TodoTrouble',
       'TodoTelescope',
@@ -179,12 +196,6 @@ return {
     opts = {
       mappings = {},
     },
-  },
-  {
-    -- FIXME:
-    'edluffy/specs.nvim',
-    opts = {},
-    dependencies = { 'neoscroll.nvim' },
   },
 
   -- Runners

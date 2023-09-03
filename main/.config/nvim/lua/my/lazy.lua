@@ -23,10 +23,6 @@ require('lazy').setup {
     { import = 'my.plugins' },
   },
   defaults = { lazy = true },
-  install = {
-    -- colorscheme = { 'rose-pine' },
-    -- colorscheme = { 'gruvbox' },
-  },
   performance = {
     rtp = {
       reset = true,

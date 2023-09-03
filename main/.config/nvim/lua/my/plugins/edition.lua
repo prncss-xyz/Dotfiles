@@ -38,6 +38,7 @@ return {
     },
   },
   {
+    -- :S
     'chrisgrieser/nvim-alt-substitute',
     opts = true,
     -- lazy-loading with `cmd =` does not work well with incremental preview
@@ -167,10 +168,11 @@ return {
       disable_auto_comment = false,
       -- accept_keymap = '<plug>(nop)',
       accept_keymap = '<c-y>',
-      dismiss_keymap = '<c-e>',
+      dismiss_keymap = '<plug>(nop)',
+      -- dismiss_keymap = '<c-e>',
       debounce_ms = 800,
       suggestion_color = { gui = '#808080', cterm = 244 },
-      exclude_filetypes = { 'TelescopePrompt' },
+      exclude_filetypes = { 'TelescopePrompt', 'markdown' },
     },
     name = 'tabnine',
     config = true,

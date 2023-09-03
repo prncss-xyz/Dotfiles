@@ -1,7 +1,5 @@
 local telescope = require 'telescope'
 
-
-
 local exports = {}
 
 for _, name in ipairs {

@@ -3,7 +3,7 @@ local M = {}
 function M.init()
   if false then
     require('grammar-guard').init()
-    lspconfig.grammar_guard.setup {
+    require('lspconfig').grammar_guard.setup {
       cmd = { '/usr/bin/ltex-ls' },
       settings = {
         ltex = {

@@ -341,7 +341,37 @@ function M.extend()
     },
     h = keys {
       desc = 'git',
-      redup = b {
+      redup = keys {
+        desc = 'hunk',
+        d = b {
+          desc = 'diff this',
+          lazy_req('gitsigns', 'diffthis'),
+        },
+        e = b {
+          desc = 'preview hunk',
+          lazy_req('gitsigns', 'preview_hunk'),
+        },
+        s = keys {
+          prev = b {
+            desc = 'stage',
+            lazy_req('gitsigns', 'undo_stage_hunk'),
+          },
+          next = b {
+            desc = 'stage',
+            lazy_req('gitsigns', 'stage_hunk'),
+          },
+        },
+        v = b {
+          desc = 'select',
+          cmd = "':<C-U>Gitsigns select_hunk<CR>'",
+        },
+
+        x = b {
+          desc = 'reset',
+          lazy_req('gitsigns', 'reset_hunk'),
+        },
+      },
+      a = b {
         desc = 'neogit',
         lazy_req('my.utils.windows', 'show_ui', 'Neogit', 'Neogit'),
       },
@@ -409,13 +439,14 @@ function M.extend()
       },
       s = b {
         desc = 'stage buffer',
-        '<cmd>Gitsigns stage_buffer<cr>',
+        lazy_req('gitsigns', 'stage_buffer'),
+        -- '<cmd>Gitsigns stage_buffer<cr>',
       },
       x = b {
         desc = 'reset buffer',
         function()
           require('my.utils.confirm').confirm('Reset buffer (y/n)?', function()
-            vim.cmd { cmd = 'Gitsigns', args = { 'reset_buffer' } }
+            require('gitsigns').reset_buffer()
           end, true)
         end,
       },
@@ -525,7 +556,7 @@ function M.extend()
         desc = 'marco',
         lazy_req('telescope', 'extensions.macroscope.default'),
       },
-      r = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.+') },
+      r = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.plus') },
       f = b { desc = 'clip', lazy_req('telescope', 'extensions.neoclip.f') },
       y = b {
         desc = 'yank',

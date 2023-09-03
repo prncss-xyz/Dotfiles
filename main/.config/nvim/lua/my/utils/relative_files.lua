@@ -22,8 +22,8 @@ function M.test_file(file)
     end
   end
   for _, pattern in ipairs {
-    { '(.+)%.ts', '%1.test.tsx' },
     { '(.+)%.tsx', '%1.test.ts' },
+    { '(.+)%.ts', '%1.test.ts' },
     { '(.+)%.lua$', '%1_spec.lua' },
     { '(.+)%.go$', '%1_test.go' },
     { '(.+)(%.[%w%d]+)$', '%1.test%2' },

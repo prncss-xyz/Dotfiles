@@ -10,10 +10,6 @@ function M.config()
     },
   }
   require('nvim-treesitter.configs').setup {
-    rainbow = {
-      enable = true,
-      extended_mode = true,
-    },
     autotag = {
       enable = true,
     },
@@ -48,28 +44,12 @@ function M.config()
       use_languagetree = true,
       additional_vim_regex_highlighting = { 'markdown' },
     },
-    incremental_selection = {
-      enable = false,
-    },
     indent = {
       enable = true,
     },
     context_commentstring = {
       enable = true,
       enable_autocommand = false,
-    },
-    textobjects = {
-      select = {
-        enable = true,
-        lookahead = true,
-      },
-      move = {
-        enable = true,
-        set_jumps = true,
-      },
-      swap = {
-        enable = true,
-      },
     },
   }
 

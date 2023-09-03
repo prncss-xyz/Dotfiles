@@ -156,7 +156,7 @@ table.insert(
 table.insert(
   M,
   s(
-    '.filter',
+    'dot filter',
     fmt(
       '.filter(([]) => [])',
       { i(1, 'identifier'), i(2, 'true') },
@@ -168,7 +168,7 @@ table.insert(
 table.insert(
   M,
   s(
-    '.map',
+    'dot map',
     fmt(
       '.map(([]) => [][])',
       { i(1, 'identifier'), same(1), i(0) },

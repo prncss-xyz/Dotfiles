@@ -13,6 +13,13 @@ return {
     end,
   },
   {
+    'AckslD/nvim-neoclip.lua',
+    config = function()
+      require('telescope').load_extension 'neoclip'
+      require('telescope').load_extension 'macroscope'
+    end,
+  },
+  {
     dir = require('my.utils').local_repo 'telescope-repo.nvim',
     config = function()
       require('telescope').load_extension 'repo'
@@ -29,5 +36,10 @@ return {
       'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope-fzf-native.nvim',
     },
+  },
+  {
+    'wintermute-cell/gitignore.nvim',
+    dependencies = 'nvim-telescope/telescope.nvim',
+    cmd = 'Gitignore',
   },
 }

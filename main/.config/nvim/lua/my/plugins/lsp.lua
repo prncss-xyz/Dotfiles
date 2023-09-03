@@ -364,19 +364,14 @@ return {
   },
   {
     'mrcjkb/haskell-tools.nvim',
-    opts = {
-      tools = {
-        hoogle = {
-          -- mode = 'browser',
-        },
-      },
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim', -- Optional
     },
-    config = function(_, opts)
-      require('haskell-tools').start_or_attach(opts)
-      require('telescope').load_extension 'ht'
+    branch = '2.x.x', -- Recommended
+    init = function() -- Optional, see Advanced configuration
     end,
-    branch = '1.x.x',
-    ft = 'haskell',
+    ft = { 'haskell', 'lhaskell', 'cabal', 'cabalproject' },
   },
   {
     'luc-tielen/telescope_hoogle',

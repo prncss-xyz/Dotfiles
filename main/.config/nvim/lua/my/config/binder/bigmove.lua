@@ -28,8 +28,16 @@ function M.extend()
         desc = 'diagnostics',
         lazy_req('telescope.builtin', 'diagnostics'),
       },
-
       e = b {
+        desc = 'files (smart-open)',
+        function()
+          require('telescope').extensions.smart_open.smart_open {
+            cwd_only = false,
+            filename_first = false,
+          }
+        end,
+      },
+      E = b {
         desc = 'files (workspace)',
         function()
           if false then

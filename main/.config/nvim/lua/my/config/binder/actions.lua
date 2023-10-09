@@ -16,20 +16,40 @@ function M.asterisk_gz()
 end
 
 function M.menu_previous()
+  local types = require 'cmp.types'
   local cmp = require 'cmp'
   if cmp.visible() then
-    cmp.select_prev_item()
+    cmp.select_prev_item { behavior = types.cmp.SelectBehavior.Select }
   else
     utils.keys '<up>'
   end
 end
 
 function M.menu_next()
+  local types = require 'cmp.types'
   local cmp = require 'cmp'
   if cmp.visible() then
-    cmp.select_next_item()
+    cmp.select_next_item { behavior = types.cmp.SelectBehavior.Select }
   else
     utils.keys '<down>'
+  end
+end
+
+function M.menu_previous_c()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    cmp.select_prev_item()
+  else
+    cmp.complete()
+  end
+end
+
+function M.menu_next_c()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    pcall(cmp.select_next_item)
+  else
+    cmp.complete()
   end
 end
 

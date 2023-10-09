@@ -28,6 +28,7 @@ deep_merge(vim, {
     -- shortmess = vim.o.shortmess .. 'c',
     shortmess = 'IFc',
     showmode = false,
+    showtabline = 2,
     sidescrolloff = 5,
     scrolloff = 5,
     smartcase = true,
@@ -84,7 +85,9 @@ deep_merge(vim, {
     paste = false,
     secure = true, -- disable autocmd etc for project local vimrc files
     sessionoptions = 'curdir,folds,tabpages,winsize',
-    spell = false,
+    splitkeep = 'screen',
+    spell = true,
+    spelllang = 'en_us,fr_ca',
     spelloptions = 'camel',
     -- textwidth = 100,
     titlestring = '%{v:lua.my_title()}', -- defined in `globals.lua`

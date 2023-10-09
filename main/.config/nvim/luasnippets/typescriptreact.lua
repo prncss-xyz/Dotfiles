@@ -2,12 +2,6 @@
 
 local M = {}
 
-local preferred_quote = require('my.parameters').preferred_quote
-
-local function quote(str)
-  return quote_char .. str .. quote_char
-end
-
 table.insert(
   M,
   s(

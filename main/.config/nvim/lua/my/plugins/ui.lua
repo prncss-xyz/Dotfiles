@@ -1,3 +1,74 @@
+-- indent-blankline
+local ibl_highlight = {
+  'CursorColumn',
+  'Whitespace',
+}
+
+-- tabline framework
+local function hl(name)
+  local succ, res = pcall(require('my.utils').extract_nvim_hl, name)
+  if succ then
+    return res
+  end
+end
+
+local render = function(f)
+  local default = hl 'lualine_b_normal'
+  local active = hl 'lualine_a_normal'
+  local buffstory = require 'buffstory'
+  if default then
+    f.set_colors(default)
+  end
+  local function format_buf(info)
+    if info.current and active then
+      f.set_fg(active.fg)
+      f.set_bg(active.bg)
+    end
+    f.add ' '
+    f.add(f.icon(info.filename))
+    f.add ' '
+
+    local succ, title = pcall(vim.api.nvim_buf_get_var, info.buf, 'title')
+    f.add(succ and title or info.filename)
+    f.add ' '
+  end
+  f.make_bufs(format_buf, buffstory.display_list)
+end
+
+-- ufo
+local ftMap = {
+  vim = 'indent',
+  markdown = 'treesitter', -- markdown folds handled by 'masukomi/vim-markdown-folding'
+  NeogitCommitMessage = '',
+}
+local function handler(virtText, lnum, endLnum, width, truncate)
+  local newVirtText = {}
+  local suffix = ('  %d '):format(endLnum - lnum)
+  local sufWidth = vim.fn.strdisplaywidth(suffix)
+  local targetWidth = width - sufWidth
+  local curWidth = 0
+  for _, chunk in ipairs(virtText) do
+    local chunkText = chunk[1]
+    local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+    if targetWidth > curWidth + chunkWidth then
+      table.insert(newVirtText, chunk)
+    else
+      chunkText = truncate(chunkText, targetWidth - curWidth)
+      local hlGroup = chunk[2]
+      table.insert(newVirtText, { chunkText, hlGroup })
+      chunkWidth = vim.fn.strdisplaywidth(chunkText)
+      -- str width returned from truncate() may less than 2rd argument, need padding
+      if curWidth + chunkWidth < targetWidth then
+        suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
+      end
+      break
+    end
+    curWidth = curWidth + chunkWidth
+  end
+  table.insert(newVirtText, { suffix, 'MoreMsg' })
+  return newVirtText
+end
+
 return {
   {
     'nvim-lualine/lualine.nvim',
@@ -27,18 +98,16 @@ return {
   },
   {
     's1n7ax/nvim-window-picker',
-    config = function()
-      require('window-picker').setup {
-        selection_chars = require('my.config.binder.parameters').selection_chars:upper(),
-      }
-    end,
+    opts = {
+      selection_chars = require('my.config.binder.parameters').selection_chars:upper(),
+    },
   },
   -- git
   {
     'lewis6991/gitsigns.nvim',
     event = 'VeryLazy',
     dependencies = { 'nvim-lua/plenary.nvim' },
-    cmd = "Gitsigns",
+    cmd = 'Gitsigns',
     opts = {
       watch_gitdir = {
         interval = 100,
@@ -93,15 +162,17 @@ return {
   },
   {
     'lukas-reineke/indent-blankline.nvim',
+    name = 'ibl',
     event = 'BufReadPost',
     opts = {
-      show_current_context = false,
-      char = ' ',
-      buftype_exclude = { 'terminal', 'help', 'nofile' },
-      filetype_exclude = { 'help', 'packer' },
-      char_highlight_list = { 'CursorLine', 'Function' },
-      space_char_highlight_list = { 'CursorLine', 'Function' },
-      space_char_blankline_highlight_list = { 'CursorLine', 'Function' },
+      indent = { highlight = ibl_highlight, char = ' ' },
+      whitespace = {
+        highlight = ibl_highlight,
+      },
+      exclude = {
+        filetypes = { 'help', 'packer' },
+        buftypes = { 'terminal', 'help', 'nofile' },
+      },
     },
   },
   {
@@ -121,7 +192,8 @@ return {
   },
   {
     'rafcamlet/tabline-framework.nvim',
-    config = require('my.config.tabline-framework').config,
+    -- requires vim.o.showtabline = 2 -- always show tabline
+    opts = { render = render },
     event = 'VeryLazy',
   },
   {
@@ -135,7 +207,29 @@ return {
   },
   {
     'folke/trouble.nvim',
-    config = require('my.config.trouble').config,
+    opts = {
+      position = 'left',
+      width = require('my.parameters').pane_width,
+      use_diagnostic_signs = true,
+      action_keys = {
+        close = {},
+        refresh = 'r',
+        jump = '<cr>',
+        cancel = '<c-c>',
+        open_split = '<c-x>',
+        open_vsplit = '<c-v>',
+        jump_close = 'o',
+        toggle_fold = 'z',
+        close_folds = {},
+        hover = 'h',
+        open_folds = {},
+        toggle_mode = 'm', -- toggle between "workspace" and "document" diagnostics mode
+        toggle_preview = 'l', -- toggle auto_preview
+        preview = 'p', -- preview the diagnostic location
+        next = require('my.config.binder.parameters').d.down,
+        previous = require('my.config.binder.parameters').d.up,
+      },
+    },
   },
   {
     'folke/todo-comments.nvim',
@@ -166,7 +260,40 @@ return {
   {
     'folke/zen-mode.nvim',
     cmd = { 'ZenMode' },
-    config = require('my.config.zen-mode').config,
+    opts = function()
+      local current_line_blame
+      return {
+        window = {
+          height = 1,
+          width = 81,
+        },
+        plugins = {
+          options = {
+            ruler = true,
+            showcmd = false,
+          },
+          gitsigns = { enabled = true },
+          twilight = { enabled = false },
+        },
+        on_open = function()
+          current_line_blame =
+            require('gitsigns').toggle_current_line_blame(false)
+          local Job = require('plenary').job
+          Job:new({ command = 'wtype', args = { '-M', 'ctrl', '--', '+++++' } })
+            :sync()
+          Job:new({ command = 'swaymsg', args = { 'fullscreen', 'enable' } })
+            :sync()
+        end,
+        on_close = function()
+          require('gitsigns').toggle_current_line_blame(current_line_blame)
+          local Job = require('plenary').job
+          Job:new({ command = 'wtype', args = { '-M', 'ctrl', '--', '-----' } })
+            :sync()
+          Job:new({ command = 'swaymsg', args = { 'fullscreen', 'disable' } })
+            :sync()
+        end,
+      }
+    end,
   },
   {
     'folke/noice.nvim',
@@ -184,7 +311,7 @@ return {
       -- you can enable a preset for easier configuration
       presets = {
         bottom_search = false, -- use a classic bottom cmdline for search
-        command_palette = true, -- position the cmdline and popupmenu together
+        command_palette = false, -- position the cmdline and popupmenu together
         long_message_to_split = true, -- long messages will be sent to a split
         inc_rename = false, -- enables an input dialog for inc-rename.nvim
         lsp_doc_border = false, -- add a border to hover docs and signature help
@@ -197,68 +324,22 @@ return {
       mappings = {},
     },
   },
-
-  -- Runners
   {
-    'Vigemus/iron.nvim',
-    cmd = {
-      'IronRepl',
-      'IronRestart',
-      'IronFocus',
-      'IronHide',
-    },
-    config = function()
-      -- not serializalbe
-      require('iron.core').setup {
-        config = {
-          scratch_repl = true,
-          repl_definition = {
-            sh = {
-              command = { 'zsh' },
-            },
-            lua = {
-              command = { 'lua' },
-            },
-            javascript = {
-              command = { 'node' },
-            },
-            javascriptreact = {
-              command = { 'node' },
-            },
-            typescript = {
-              command = { 'node' },
-            },
-            typescriptreact = {
-              command = { 'node' },
-            },
-            go = {
-              command = { 'yaegi' },
-            },
-            haskell = {
-              command = function(meta)
-                local file = vim.api.nvim_buf_get_name(meta.current_bufnr)
-                return require('haskell-tools').repl.mk_repl_cmd(file)
-              end,
-            },
-          },
-          repl_open_cmd = require('iron.view').right(100),
-        },
-        highlight = {
-          italic = true,
-        },
-        ignore_blank_lines = true,
-      }
-    end,
+    'folke/edgy.nvim',
+    event = 'VeryLazy',
+    opts = {},
+    enabled = false,
   },
-  {
-    'jbyuki/dash.nvim',
-    cmd = { 'DashRun', 'DashConnect', 'DashDebug' },
-  },
-
   -- Folding
   {
     'kevinhwang91/nvim-ufo',
-    config = require('my.config.nvim-ufo').config,
+    opts = {
+      fold_virt_text_handler = handler,
+      provider_selector = function(_, filetype)
+        return ftMap[filetype]
+      end,
+    },
+    name = 'ufo',
     event = 'VeryLazy',
     dependencies = {
       'kevinhwang91/promise-async',

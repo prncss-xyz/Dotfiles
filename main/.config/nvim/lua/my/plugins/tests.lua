@@ -1,17 +1,5 @@
 return {
   {
-
-    'jay-babu/mason-nvim-dap.nvim',
-    dependencies = {
-      'williamboman/mason.nvim',
-      'leoluz/nvim-dap-go',
-    },
-    opts = {
-      ensure_installed = { 'go-debug-adapter' },
-      automatic_installation = true,
-    },
-  },
-  {
     'nvim-neotest/neotest',
     dependencies = {
       'nvim-lua/plenary.nvim',
@@ -52,30 +40,5 @@ return {
       }
     end,
     lazy = false,
-  },
-  {
-    'mfussenegger/nvim-dap',
-    name = 'dap',
-    config = require('my.config.dap').config,
-    dependencies = {
-      'theHamsta/nvim-dap-virtual-text',
-      'jay-babu/mason-nvim-dap.nvim',
-      'leoluz/nvim-dap-go',
-    },
-  },
-  {
-    'rcarriga/nvim-dap-ui',
-    dependencies = { 'mfussenegger/nvim-dap' },
-    name = 'dapui',
-    opts = {},
-  },
-  {
-    'jbyuki/one-small-step-for-vimkind',
-    dependencies = { 'mfussenegger/nvim-dap' },
-    name = 'osv',
-  },
-  {
-    'leoluz/nvim-dap-go',
-    opts = {},
   },
 }

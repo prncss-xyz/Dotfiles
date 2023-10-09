@@ -1,9 +1,4 @@
 return {
-  {
-    dir = require('my.utils').local_repo 'flies.nvim',
-    config = require('my.config.flies').config,
-    keys = { '<plug>(flies-select)' },
-  },
   { 'linty-org/readline.nvim' },
   {
     'Wansmer/treesj',
@@ -15,18 +10,20 @@ return {
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
     },
-    opts = {
-      mappings = {
-        basic = false,
-        extra = false,
-      },
-    },
+    opts = function()
+      return {
+        mappings = {
+          basic = false,
+          extra = false,
+        },
+        pre_hook = require(
+          'ts_context_commentstring.integrations.comment_nvim'
+        ).create_pre_hook(),
+      }
+    end,
     config = function(_, opts)
       local ft = require 'Comment.ft'
       ft.set('sway', '#%s')
-      opts.pre_hook = require(
-        'ts_context_commentstring.integrations.comment_nvim'
-      ).create_pre_hook()
       require('Comment').setup(opts)
     end,
 
@@ -65,9 +62,16 @@ return {
   },
   {
     'nvim-pack/nvim-spectre',
-    config = require('my.config.nvim-spectre').config,
-    name = 'spectre',
-    module = 'spectre',
+    opts = {
+      mapping = {
+        ['run_replace'] = {
+          map = ',R',
+          cmd = "<cmd>lua require('spectre.actions').run_replace()<CR>",
+          desc = 'replace all',
+        },
+      },
+      name = 'spectre',
+    },
   },
   {
     'AckslD/nvim-FeMaco.lua',
@@ -88,45 +92,16 @@ return {
       require('telescope').load_extension 'refactoring'
     end,
   },
-
-  -- completion
-  {
-    'L3MON4D3/LuaSnip',
-    config = require('my.config.luasnip').config,
-    cmd = 'LuaSnipUnlinkCurrent',
-  },
-  {
-    'hrsh7th/nvim-cmp',
-    event = { 'InsertEnter', 'CmdlineEnter' },
-    config = require('my.config.cmp').config,
-    dependencies = {
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-      'hrsh7th/cmp-calc',
-      'hrsh7th/cmp-buffer',
-      'hrsh7th/cmp-path',
-      'hrsh7th/cmp-nvim-lua',
-      'hrsh7th/cmp-cmdline',
-      'dmitmel/cmp-cmdline-history',
-      'hrsh7th/cmp-nvim-lsp',
-    },
-    commit = '1cad30fcffa282c0a9199c524c821eadc24bf939',
-  },
-  {
-    'windwp/nvim-autopairs',
-    config = require('my.config.nvim-autopairs').config,
-    event = 'InsertEnter',
-  },
-
   -- navigation
   {
     'chentoast/marks.nvim',
     event = 'BufReadPost',
-    config = function()
-      require('marks').setup {
-        default_mappings = false,
-        refresh_interval = 0,
-      }
+    opts = {
+      default_mappings = false,
+      refresh_interval = 0,
+    },
+    config = function(_, opts)
+      require('marks').setup(opts)
       -- https://github.com/chentoast/marks.nvim/issues/40
       vim.api.nvim_create_autocmd('cursorhold', {
         pattern = '*',
@@ -160,31 +135,5 @@ return {
       'ChatGPTRun',
       'ChatGPTRunCustomCodeAction',
     },
-  },
-  {
-    'codota/tabnine-nvim',
-    build = './dl_binaries.sh',
-    opts = {
-      disable_auto_comment = false,
-      -- accept_keymap = '<plug>(nop)',
-      accept_keymap = '<c-y>',
-      dismiss_keymap = '<plug>(nop)',
-      -- dismiss_keymap = '<c-e>',
-      debounce_ms = 800,
-      suggestion_color = { gui = '#808080', cterm = 244 },
-      exclude_filetypes = { 'TelescopePrompt', 'markdown' },
-    },
-    name = 'tabnine',
-    config = true,
-    cmd = {
-      'TabnineHub',
-      'TabnineHubUrl',
-      'TabnineStatus',
-      'TabnineDisable',
-      'TabnineEnable',
-      'TabnineToggle',
-    },
-    event = 'InsertEnter',
-    enabled = true,
   },
 }

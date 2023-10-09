@@ -8,6 +8,7 @@ function M.info()
   dump(context)
 end
 
+
 function M.show_ui(keep, cb)
   if type(keep) == 'string' then
     keep = { keep }
@@ -40,13 +41,13 @@ function M.show_ui(keep, cb)
             require('dapui').close()
             vim.cmd 'DapVirtualTextDisable'
             require('nvim-dap-virtual-text').disable()
-            require('gitsigns').toggle_current_line_blame(true)
-          elseif ft == 'undotree' or ft == 'diff' then
-            vim.cmd 'UndotreeToggle'
+            -- require('gitsigns').toggle_current_line_blame(true)
+          elseif ft == 'Trouble' then
+            vim.cmd 'TroubleClose'
           else
-            -- vim.notify('unknown command for buftype ' .. bt)
-            -- vim.notify('unknown command for filetype ' .. ft)
-            -- vim.api.nvim_win_close(win, false)
+            vim.notify('unknown command for buftype ' .. bt)
+            vim.notify('unknown command for filetype ' .. ft)
+            vim.api.nvim_win_close(win, false)
           end
         end
       end
@@ -69,7 +70,7 @@ end
 
 function M.split_right(size)
   local Split = require 'nui.split'
-  local file = vim.fn.expand('%', nil, nil)
+  local file = vim.fn.expand '%'
   Split({
     relative = 'editor',
     position = 'right',
@@ -93,7 +94,7 @@ local group = vim.api.nvim_create_augroup('My_win', {})
 local last_special
 local last_regular
 
-function is_regular(win)
+local function is_regular(win)
   local bufnr = vim.api.nvim_win_get_buf(win)
   local buftype = vim.api.nvim_buf_get_option(bufnr, 'buftype')
   return buftype == ''
@@ -122,7 +123,7 @@ vim.api.nvim_create_autocmd('WinLeave', {
   end,
 })
 
-function cycle(period, i0, i)
+local function cycle(period, i0, i)
   local res = i + i0 - 1
   if res > period then
     return res - period
@@ -199,7 +200,7 @@ function M.pick_same_buftype() end
 
 function M.pick(plain)
   plain = not not plain
-  function filter(windows_id)
+  local function filter(windows_id)
     return vim.tbl_filter(function(win)
       local buf = vim.api.nvim_win_get_buf(win)
       local buftype = vim.api.nvim_buf_get_option(buf, 'buftype')
@@ -278,6 +279,9 @@ function M.winpick_swap()
   end
 end
 
+-- Window identifier of current zoom (for `zoom()`)
+local zoom_winid = nil
+
 --- Zoom in and out of a buffer, making it full screen in a floating window
 ---
 --- This function is useful when working with multiple windows but temporarily
@@ -287,10 +291,6 @@ end
 ---@param buf_id number Buffer identifier (see |bufnr()|) to be zoomed.
 ---   Default: 0 for current.
 ---@param config table Optional config for window (as for |nvim_open_win()|).
-
--- Window identifier of current zoom (for `zoom()`)
-local zoom_winid = nil
-
 function M.zoom(buf_id, config)
   if zoom_winid and vim.api.nvim_win_is_valid(zoom_winid) then
     vim.api.nvim_win_close(zoom_winid, true)

@@ -5,8 +5,6 @@ function M.setup()
   local keys = binder.keys
   local b = binder.b
   local modes = binder.modes
-  local util = require 'my.config.binder.utils'
-  local lazy_req = util.lazy_req
   binder.bind(modes {
     t = keys {
       ['<s-esc>'] = b {
@@ -15,8 +13,8 @@ function M.setup()
     },
     c = keys {
       ['<m-e>'] = b { '<c-f>' },
-      ['<tab>'] = b { 'req', 'my.config.binder.actions', 'menu_next' },
-      ['<s-tab>'] = b { 'req', 'my.config.binder.actions', 'menu_previous' },
+      ['<tab>'] = b { 'req', 'my.config.binder.actions', 'menu_next_c' },
+      ['<s-tab>'] = b { 'req', 'my.config.binder.actions', 'menu_previous_c' },
     },
     is = keys {
       ['<c-n>'] = b { 'req', 'my.config.binder.actions', 'menu_next' },
@@ -44,12 +42,7 @@ function M.setup()
       ['<c-b>'] = b { 'req', 'my.utils.moves', 'bwd', true },
       ['<c-f>'] = b {
         function()
-          if require('tabnine.state').completions_cache then
-            local completion = require 'tabnine.completion'
-            vim.schedule(completion.accept)
-          else
-            require('my.utils.moves').fwd(true)
-          end
+          require('my.utils.moves').fwd(true)
         end,
       },
       ['<c-g>'] = b { 'req', 'my.utils.cmp', 'confirm' },

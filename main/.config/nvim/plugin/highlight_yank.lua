@@ -1,3 +1,5 @@
+local group = vim.api.nvim_create_augroup('MyStaticYank', {})
+
 -- https://github.com/gbprod/yanky.nvim/blob/main/lua/yanky/highlight.lua
 
 local timer = 200

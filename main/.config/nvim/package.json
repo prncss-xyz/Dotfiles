@@ -1,0 +1,39 @@
+{
+  "name": "my-snippets",
+  "engines": {
+    "vscode": "^1.11.0"
+  },
+  "contributes": {
+    "snippets": [
+      {
+        "language": [
+          "all"
+        ],
+        "path": "./luasnippets/all.json"
+      },
+      {
+        "language": "css",
+        "path": "./luasnippets/css.json"
+      },
+      {
+        "language": [
+          "gitcommit",
+          "NeogitCommitMessage"
+        ],
+        "path": "./luasnippets/gitcommit.json"
+      },
+      {
+        "language": "html",
+        "path": "./luasnippets/html.json"
+      },
+      {
+        "language": "markdown",
+        "path": "./luasnippets/markdown.json"
+      },
+      {
+        "language": "sql",
+        "path": "./luasnippets/sql"
+      }
+    ]
+  }
+}

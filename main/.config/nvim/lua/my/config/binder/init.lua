@@ -9,10 +9,6 @@ function M.config()
   }
   local keys = binder.keys
   local b = binder.b
-  local modes = binder.modes
-  local util = require 'my.config.binder.utils'
-  local lazy = util.lazy
-  local lazy_req = util.lazy_req
 
   for char in ("#$%&'*_,-0?@]^_`DEFHIMNPpQVx~+?f"):gmatch '.' do
     vim.keymap.set('n', 'g' .. char, '<nop>', {})

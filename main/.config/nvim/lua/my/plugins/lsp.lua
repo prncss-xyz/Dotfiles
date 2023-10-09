@@ -16,6 +16,7 @@ return {
     },
     dependencies = { 'williamboman/mason.nvim' },
   },
+  -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
   {
     'neovim/nvim-lspconfig',
     name = 'lspconfig',
@@ -30,7 +31,7 @@ return {
         'julials',
         'prismals',
         'golangci_lint_ls',
-        -- "emmet_ls"
+        -- 'emmet_language_server',
       } do
         require('lspconfig')[lsp].setup {
           capabilities = require('my.utils.lsp').get_cmp_capabilities(),
@@ -106,7 +107,6 @@ return {
     'mfussenegger/nvim-lint',
     ft = {
       'lua',
-      'lua',
       'sh',
       'yaml',
     },
@@ -116,22 +116,21 @@ return {
         sh = { 'shellcheck' },
         yaml = { 'yamllint' },
       },
-      linters = {},
     },
     config = function(_, opts)
-      local uv = vim.uv or vim.loop
       local lint = require 'lint'
-      lint.linters_by_ft = opts.linters_by_ft
-      for k, v in pairs(opts.linters) do
+      lint.linters_by_ft = opts.linters_by_ft or {}
+      for k, v in pairs(opts.linters or {}) do
         lint.linters[k] = v
       end
+      local uv = vim.uv or vim.loop
       local timer = assert(uv.new_timer())
-      local DEBOUNCE_MS = 500
-      local aug = vim.api.nvim_create_augroup('Lint', { clear = true })
+      local DEBOUNCE_MS = opts.debounce_ms or 500
+      local group = vim.api.nvim_create_augroup('Lint', { clear = true })
       vim.api.nvim_create_autocmd(
         { 'BufWritePost', 'TextChanged', 'InsertLeave' },
         {
-          group = aug,
+          group = group,
           callback = function()
             local bufnr = vim.api.nvim_get_current_buf()
             timer:stop()
@@ -155,19 +154,11 @@ return {
   {
     'folke/neodev.nvim',
     ft = 'lua',
-    config = function()
-      require('neodev').setup {
+    opts = {
+      neodev = {
         library = { plugins = { 'neotest' }, types = true },
-        -- override = function(root_dir, library)
-        --   if
-        --     require('neodev.util').has_file(root_dir, '/home/prncss/Dotfiles/')
-        --   then
-        --     library.enabled = true
-        --     library.plugins = true
-        --   end
-        -- end,
-      }
-      require('lspconfig').lua_ls.setup {
+      },
+      lua_ls = {
         capabilities = require('my.utils.lsp').get_cmp_capabilities(),
         flags = require('my.utils.lsp').flags,
         cmd = { 'lua-language-server' },
@@ -212,15 +203,19 @@ return {
             },
           },
         },
-      }
+      },
+    },
+    config = function(_, opts)
+      require('neodev').setup(opts.neodev)
+      require('lspconfig').lua_ls.setup(opts.lua_ls)
     end,
   },
   {
     'b0o/schemastore.nvim',
     config = function()
       require('lspconfig').jsonls.setup {
+        capabilities = require('my.utils.lsp').get_cmp_capabilities(),
         settings = {
-          capabilities = require('my.utils.lsp').get_cmp_capabilities(),
           json = {
             schemas = require('schemastore').json.schemas(),
             validate = { enable = true },
@@ -231,6 +226,13 @@ return {
         capabilities = require('my.utils.lsp').get_cmp_capabilities_no_fold(),
         settings = {
           yaml = {
+            schemaStore = {
+              -- You must disable built-in schemaStore support if you want to use
+              -- this plugin and its advanced options like `ignore`.
+              enable = false,
+              -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+              url = '',
+            },
             schemas = require('schemastore').yaml.schemas(),
           },
         },
@@ -241,9 +243,10 @@ return {
   {
     'yioneko/nvim-vtsls',
     ft = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
-    config = function()
-      require('lspconfig').vtsls.setup {}
-      require('lspconfig').lua_ls.setup(require('vtsls').lspconfig)
+    opts = {},
+    config = function(_, opts)
+      require('lspconfig.configs').vtsls = require('vtsls').lspconfig -- set default server config, optional but recommended
+      require('lspconfig').vtsls.setup(opts)
     end,
     cmd = { 'VtsExec', 'VtsRename' },
     enabled = false,
@@ -268,7 +271,18 @@ return {
     -- dependencies = { 'ray-x/guihua.lua' },
     ft = { 'go', 'gomod' },
     opts = {
-      lsp_cfg = true,
+      lsp_cfg = {
+        settings = {
+          gopls = {
+            experimentalPostfixCompletions = true,
+            analyses = {
+              unusedparams = true,
+              shadow = true,
+            },
+            staticcheck = true,
+          },
+        },
+      },
       lsp_keymaps = false,
       icons = false,
       dap_debug_keymap = false,
@@ -276,9 +290,6 @@ return {
       trouble = true,
       luasnip = true,
     },
-    config = function(_, opts)
-      require('go').setup(opts)
-    end,
     build = ':lua require("go.install").update_all_sync()',
     cmd = {
       -- Note: auto fill struct also supported by gopls lsp-action
@@ -323,13 +334,14 @@ return {
   {
     'nanotee/sqls.nvim',
     ft = 'sql',
-    config = function()
-      require('lspconfig').sqls.setup {
-        on_attach = function(client, bufnr)
-          require('my.utils.lsp').on_attach(client, bufnr)
-          require('sqls').on_attach(client, bufnr)
-        end,
-      }
+    opts = {
+      on_attach = function(client, bufnr)
+        require('my.utils.lsp').on_attach(client, bufnr)
+        require('sqls').on_attach(client, bufnr)
+      end,
+    },
+    config = function(_, opts)
+      require('lspconfig').sqls.setup(opts)
     end,
   },
   {
@@ -374,17 +386,6 @@ return {
     ft = { 'haskell', 'lhaskell', 'cabal', 'cabalproject' },
   },
   {
-    'luc-tielen/telescope_hoogle',
-    dependencies = {
-      'mrcjkb/haskell-tools',
-      'nvim-telescope/telescope.nvim',
-    },
-    config = function()
-      require('telescope').load_extension 'hoogle'
-    end,
-    enabled = false,
-  },
-  {
     'stevearc/aerial.nvim',
     opts = {
       layout = {
@@ -397,17 +398,6 @@ return {
         'markdown',
       },
       filter_kind = false,
-      -- filter_kind = {
-      --   'Class',
-      --   'Constructor',
-      --   'Enum',
-      --   'Function',
-      --   'Interface',
-      --   'Module',
-      --   'Method',
-      --   'Struct',
-      -- },
-      -- To see all available values, see :help SymbolKind
     },
     cmd = {
       'AerialOpen',
@@ -428,7 +418,9 @@ return {
     'ahmedkhalf/project.nvim',
     event = 'VimEnter',
     name = 'project_nvim',
-    opts = {},
+    opts = {
+      detection_method = { 'lsp', 'pattern' },
+    },
     enabled = false,
   },
 }

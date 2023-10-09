@@ -14,18 +14,6 @@ if vim.fn.has 'gui' == 0 then
   })
 end
 
--- Adds '-' on next line when editing a list
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'markdown' },
-  group = group,
-  callback = function()
-    vim.cmd [[
-      setlocal formatoptions+=r
-      setlocal comments-=fb:- comments+=:-
-    ]]
-  end,
-})
-
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'gitcommit', 'gitrebase', 'gitconfig', 'NeogitCommitMessage' },
   group = group,
@@ -34,42 +22,9 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
-vim.api.nvim_create_autocmd(
-  { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },
-  {
-    pattern = '*?', -- do not match buffers with no name
-    group = group,
-    callback = function()
-      if not vim.api.nvim_buf_is_valid(0) then
-        return
-      end
-      if vim.bo.buftype ~= '' then
-        return
-      end
-      if not vim.bo.modifiable then
-        return
-      end
-      if not vim.bo.modified then
-        return
-      end
-      local fname = vim.api.nvim_buf_get_name(0)
-      if vim.fn.isdirectory(fname) == 1 then
-        return
-      end
-      if require('my.utils.std').file_exists(fname) then
-        vim.cmd 'update'
-      else
-        vim.cmd 'silent :w!'
-      end
-      if vim.g.watch_test then
-        require('my.utils.relative_files').test_current_file()
-      end
-    end,
-  }
-)
 
 local pass_prefix = '/dev/shm/pass.'
-if vim.fn.expand('%:h', nil, nil):sub(1, pass_prefix:len()) == pass_prefix then
+if vim.fn.expand('%:h'):sub(1, pass_prefix:len()) == pass_prefix then
   vim.g.secret = true
 else
   -- without this, deleted marks do not get removed on exit

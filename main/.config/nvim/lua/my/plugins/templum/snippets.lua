@@ -11,7 +11,8 @@ local p = require('luasnip.extras').partial
 local l = require('luasnip.extras').lambda
 local fmt = require('luasnip.extras.fmt').fmt
 
-local templates_dir = vim.env.HOME .. '/.config/nvim/snippets/templum'
+local templates_dir = vim.env.HOME
+  .. '/.config/nvim/lua/my/plugins/templum/litterals'
 
 local function id(...)
   return ...
@@ -28,7 +29,7 @@ local function title(cb)
 end
 
 --- get current year
----@return string
+---@return string|osdate
 local function year()
   return os.date '%Y'
 end
@@ -59,10 +60,10 @@ end
 --- create litteral snippet from file content (from templates_dir)
 ---@param filename string
 local function from_file_raw(filename)
+  filename = templates_dir .. '/' .. filename
   return {
     d(1, function()
       local res = {}
-      filename = templates_dir .. '/' .. filename
       for line in io.lines(filename) do
         table.insert(res, line)
       end

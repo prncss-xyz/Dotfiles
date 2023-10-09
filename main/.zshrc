@@ -108,6 +108,22 @@ alias y='yt-dlp -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 alias x='cd "$(xplr --print-pwd-as-result)"'
 # alias o=xdg-open
 
+export TIMELOG="$ZK_NOTEBOOK_DIR/time.ledger"
+alias clock-in='echo i $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'
+alias clock-out='echo o $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'
+alias wasted='ledger -f ${TIMELOG} bal -b $(date -dlast-monday +%m/%d) --depth 2'
+alias clock-status='[[ $(tail -1 ${TIMELOG} | cut -c 1) == "i" ]] && { echo "Clocked IN to $(tail -1 ${TIMELOG} | cut -d " " -f 4)"; } || { echo "Clocked OUT"; }' 
+function _clock_in ()
+{
+    local cur prev
+    _get_comp_words_by_ref -n : cur
+
+    local words="$(cut -d ' ' -s -f 4 ${TIMELOG} | sed '/^$/d' | sort | uniq)"
+    COMPREPLY=($(compgen -W "${words}" -- ${cur}))
+    __ltrim_colon_completions "${cur}"
+}
+complete -F _clock_in clock-in
+
 __my-exa() {
   echo
   exa --icons --git

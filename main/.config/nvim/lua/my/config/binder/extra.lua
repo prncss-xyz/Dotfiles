@@ -76,14 +76,9 @@ function M.extend()
       },
       r = b { desc = 'repl open', lazy_req('dap', 'repl.open') },
       s = b {
-        desc = 'OSV run this',
+        desc = 'dap launch',
         function()
-          if vim.bo.filetype == 'lua' then
-            require('osv').run_this()
-          --[[ require('my.config.osv').launch() ]]
-          elseif vim.bo.filetype == 'haskell' then
-            require('haskell-tools').dap.discover_configurations(0)
-          end
+          require('my.utils.dap').launch()
         end,
       },
       t = keys {
@@ -923,6 +918,15 @@ function M.extend()
         desc = 'vertical 85',
       },
     },
+    X = b {
+      desc = 'telescope undo',
+      function()
+        require('telescope').extensions.undo.undo()
+      end,
+      -- ["<cr>"] = require("telescope-undo.actions").yank_additions,
+      -- ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
+      -- ["<C-cr>"] = require("telescope-undo.actions").restore,
+    },
     -- x = keys {
     --   desc = 'tester',
     --   n = b {
@@ -941,19 +945,19 @@ function M.extend()
     --     end,
     --   },
     -- },
-    x = modes {
-      desc = 'tester',
-      n = b {
-        function()
-          require('flies.operations.wrap').exec 'n'
-        end,
-      },
-      x = b {
-        function()
-          require('flies.operations.wrap').exec 'x'
-        end,
-      },
-    },
+    -- x = modes {
+    --   desc = 'tester',
+    --   n = b {
+    --     function()
+    --       require('flies.operations.wrap').exec 'n'
+    --     end,
+    --   },
+    --   x = b {
+    --     function()
+    --       require('flies.operations.wrap').exec 'x'
+    --     end,
+    --   },
+    -- },
     -- x = keys {
     --   redup = b {
     --     desc = 'tester',
@@ -1072,7 +1076,7 @@ function M.extend()
     [' '] = b {
       desc = 'command',
       function()
-        my.utils.keys ':'
+        require('my.utils').keys ':'
       end,
       modes = 'nx',
     },

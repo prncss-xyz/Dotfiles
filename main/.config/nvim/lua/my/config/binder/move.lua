@@ -198,15 +198,6 @@ function M.extend()
           'Gitsigns setqflist'
         ),
       },
-      u = b {
-        desc = 'undo tree',
-        lazy_req(
-          'my.utils.windows',
-          'show_ui',
-          { 'undotree', 'diff' },
-          'UndotreeToggle'
-        ),
-      },
     },
     h = np {
       desc = 'hunk',

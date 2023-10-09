@@ -1,5 +1,8 @@
-local branches = {}
+function _G.dump(...)
+  print(vim.inspect(...))
+end
 
+local branches = {}
 function _G.my_title()
   local dir = vim.fn.getcwd()
   local home = vim.env.HOME

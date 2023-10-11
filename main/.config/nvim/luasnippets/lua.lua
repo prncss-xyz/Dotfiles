@@ -102,7 +102,7 @@ table.insert(
 table.insert(
   M,
   s(
-    'local',
+    'local assignement',
     fmt('local [] = []', {
       i(1, 'name'),
       i(2, '0'),
@@ -118,6 +118,25 @@ table.insert(
       i(1, 'name'),
       i(2, 'module'),
     }, { delimiters = '[]' })
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'local function',
+    fmt(
+      [[
+      local function []() 
+        [] 
+      end
+      ]],
+      {
+        i(1, 'name'),
+        i(2, '--TODO:'),
+      },
+      { delimiters = '[]' }
+    )
   )
 )
 

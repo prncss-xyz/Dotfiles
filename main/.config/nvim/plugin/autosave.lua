@@ -1,4 +1,4 @@
-local group = vim.api.nvim_create_augroup('MyAutoSave', {})
+local group = vim.api.nvim_create_augroup('MyAutoSave', { clear = true })
 
 vim.api.nvim_create_autocmd(
   { 'TabLeave', 'FocusLost', 'BufLeave', 'VimLeavePre' },

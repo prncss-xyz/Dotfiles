@@ -2,7 +2,10 @@ return {
   { 'linty-org/readline.nvim' },
   {
     'Wansmer/treesj',
-    opts = {},
+    opts = {
+      use_default_keymaps = false,
+      notify = false,
+    },
     cmd = { 'TSJToggle', 'TSJSplit', 'TSJJoin' },
   },
   {

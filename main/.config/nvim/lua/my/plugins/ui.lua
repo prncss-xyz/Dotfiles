@@ -100,6 +100,14 @@ return {
     's1n7ax/nvim-window-picker',
     opts = {
       selection_chars = require('my.config.binder.parameters').selection_chars:upper(),
+      show_prompt = false,
+      filter_rules = {
+        include_current_win = true,
+        bo = {
+          filetype = {},
+          buftype = {},
+        },
+      },
     },
   },
   -- git
@@ -230,6 +238,7 @@ return {
         previous = require('my.config.binder.parameters').d.up,
       },
     },
+    cmd = { 'Trouble', 'TroubleClose', 'TroubleToggle', 'TroubleRefresh' },
   },
   {
     'folke/todo-comments.nvim',

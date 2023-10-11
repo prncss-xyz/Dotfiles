@@ -4,9 +4,7 @@ function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
-  local modes = binder.modes
   local util = require 'my.config.binder.utils'
-  local np = util.np
   local lazy_req = util.lazy_req
   return keys {
     redup = keys {
@@ -99,9 +97,13 @@ function M.extend()
         end,
       },
       k = b {
-        desc = 'node modules',
-        lazy_req('telescope', 'extensions.my.modules'),
+        desc = 'terminal',
+        '<cmd>TermSelect<cr>',
       },
+      -- k = b {
+      --   desc = 'node modules',
+      --   lazy_req('telescope', 'extensions.my.modules'),
+      -- },
       m = b {
         desc = 'plugins',
         function()
@@ -144,7 +146,7 @@ function M.extend()
           function()
             require('telescope.builtin').live_grep {
               prompt_title = 'live grep (local)',
-              search_dirs = { vim.fn.expand('%:h', nil, nil) },
+              search_dirs = { vim.fn.expand '%:h' },
             }
           end,
         },
@@ -156,18 +158,27 @@ function M.extend()
     t = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
     y = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
     k = b {
-      desc = 'harpoon terminal 1',
-      lazy_req('harpoon.term', 'gotoTerminal', 1),
+      desc = 'terminal 1',
+      lazy_req('my.utils.terminal', 'terminal', '1'),
     },
     l = b {
-      desc = 'harpoon terminal 2',
-      lazy_req('harpoon.term', 'gotoTerminal', 2),
+      desc = 'terminal 2',
+      lazy_req('my.utils.terminal', 'terminal', '2'),
     },
+    -- [';'] = b {
+    --   desc = 'terminal repl',
+    --   lazy_req('my.utils.terminal', 'repl'),
+    -- },
+    -- k = b {
+    --   desc = 'harpoon terminal 1',
+    --   lazy_req('harpoon.term', 'gotoTerminal', 1),
+    -- },
     [';'] = b {
       desc = 'repl terminal',
-      'vim',
-      'cmd',
-      'IronFocus',
+      'req',
+      'my.utils.ui_toggle',
+      'activate',
+      'iron',
     },
     -- update "main/.config/nvim/lua/plugins/neo-tree.lua"
     u = b { desc = 'harpoon file 1', lazy_req('harpoon.ui', 'nav_file', 1) },
@@ -220,61 +231,63 @@ function M.extend()
       desc = 'quickfix/trouble/tree',
       b = b {
         desc = 'buffers',
-        lazy_req('my.utils.windows', 'show_ui', 'neo-tree', 'Neotree buffers'),
+        lazy_req(
+          'my.utils.ui_toggle',
+          'activate',
+          'neo_tree',
+          'Neotree buffers'
+        ),
       },
       d = b {
         desc = 'diagnostics',
         lazy_req(
-          'my.utils.windows',
-          'show_ui',
-          'Trouble',
+          'my.utils.ui_toggle',
+          'activate',
+          'trouble',
           'Trouble workspace_diagnostics'
         ),
       },
       f = b {
         desc = 'neo-tree',
-        lazy_req('my.utils.windows', 'show_ui', 'neo-tree', 'Neotree'),
+        lazy_req('my.utils.ui_toggle', 'activate', 'neo_tree', 'Neotree'),
       },
-      -- FIXME:
-      g = b { require('my.utils.windows').show_ui_last, desc = 'last ui' },
       h = b {
         desc = 'neo-tree git',
         lazy_req(
-          'my.utils.windows',
-          'show_ui',
-          'neo-tree',
+          'my.utils.ui_toggle',
+          'activate',
+          'neo_tree',
           'Neotree git_status'
         ),
       },
       n = b {
         desc = 'zk',
         lazy_req(
-          'my.utils.windows',
-          'show_ui',
-          'neo-tree',
+          'my.utils.ui_toggle',
+          'activate',
+          'neo_tree',
           'Neotree source=neo-tree-zk'
         ),
       },
       l = b {
         desk = 'bookmarks',
-        function()
+        lazy_req('my.utils.ui_toggle', 'activate', 'trouble', function()
           require('marks').bookmark_state:all_to_list 'quickfixlist'
-          require('my.utils.windows').show_ui('Trouble', 'Trouble quickfix')
-        end,
+          vim.cmd 'Trouble quickfix'
+        end),
       },
       r = b {
         desc = 'trouble references',
         lazy_req(
-          'my.utils.windows',
-          'show_ui',
-          'Trouble',
+          'my.utils.ui_toggle',
+          'activate',
+          'trouble',
           'Trouble lsp_references'
         ),
       },
       w = b {
-        lazy_req('my.utils.windows', 'show_ui', 'Trouble', 'TodoTrouble'),
+        lazy_req('my.utils.ui_toggle', 'activate', 'trouble', 'TodoTrouble'),
       },
-      x = b { require('my.utils.windows').show_ui, desc = 'close ui' },
     },
     g = b {
       desc = 'last buffer',

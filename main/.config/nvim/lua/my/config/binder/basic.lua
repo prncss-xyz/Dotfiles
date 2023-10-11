@@ -2,8 +2,6 @@ local M = {}
 
 function M.extend()
   local d = require('my.config.binder.parameters').d
-  local util = require 'my.config.binder.utils'
-  local alt = util.alt
   local binder = require 'binder'
   local keys = binder.keys
   local modes = binder.modes
@@ -17,29 +15,37 @@ function M.extend()
       'flies.operations.move',
       'exec',
       'n',
-      { domain = 'outer' },
+      {
+        domain = 'outer',
+        external = true,
+      },
     },
     C = b { '<nop>', modes = 'nx' },
     -- c = b { '"_c', modes = 'nx' },
     c = modes {
       n = b {
-        function()
-          require('flies.operations.act').exec({ around = 'never' }, nil, '"_c')
-        end,
+        'req',
+        'flies.operations.act',
+        'exec',
+        { around = 'never' },
+        false,
+        '"_c',
       },
       x = b { '"_c' },
     },
     D = b { '<nop>', modes = 'nx' },
     d = modes {
       n = b {
-        function()
-          require('flies.operations.act').exec({
-            domain = 'outer',
-            around = 'always',
-          }, nil, '"_d', false)
-        end,
+        'req',
+        'flies.operations.act',
+        'exec',
+        {
+          domain = 'outer',
+          around = 'always',
+        },
+        false,
+        '"_d',
       },
-      -- n = b { '"_d<plug>(flies-select)' },
       x = b { '"_d' },
     },
     e = modes {
@@ -52,7 +58,7 @@ function M.extend()
         'flies.operations.move',
         'exec',
         'n',
-        { axis = 'forward', domain = 'outer' },
+        { axis = 'forward', move = 'left', domain = 'outer' },
       },
       o = b {
         'req',
@@ -73,6 +79,7 @@ function M.extend()
     n = modes {
       nx = b { lazy_req('flies.operations.move_again', 'next') },
     },
+    O = b { require('my.utils.windows').info },
     -- O = b { '<nop>', modes = 'nx' },
     -- o = b { '<nop>', modes = 'nx' },
     p = modes {
@@ -204,9 +211,9 @@ function M.extend()
     --   modes = 'nxo',
     -- },
     [d.search] = b {
-      "req",
-      "my.utils.fuzzy_slash",
-      "fz",
+      'req',
+      'my.utils.fuzzy_slash',
+      'fz',
       -- ':Fz ',
       modes = 'nx',
     },
@@ -217,64 +224,61 @@ function M.extend()
     -- ['<m-s>'] = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
     -- ['<m-d>'] = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
     -- ['<m-f>'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
-    ['<m-p>'] = b {
-      desc = 'window back',
-      'vim',
-      'cmd',
-      'wincmd p',
-      modes = 'nxt',
-    },
     ['<m-t>'] = b {
       desc = 'last buffer',
       'req',
       'buffstory',
       'last',
-      modes = 'nxt',
+      modes = 'nxti',
     },
-    ['<m-q>'] = b { desc = 'close window', 'keys', ':q<cr>', modes = 'n' },
-    -- ['<m-k>'] = b { desc = 'hover', vim.lsp.buf.hover },
-    ['<m-l>'] = b {
-      desc = 'prev window',
-      'vim',
-      'cmd',
-      'wincmd W',
-      modes = 'n',
-    },
-    ['<m-;>'] = b {
-      desc = 'next window',
-      'vim',
-      'cmd',
-      'wincmd w',
-      modes = 'n',
-    },
+    -- FIXME:
     ['<m-w>'] = b {
+      desc = 'close window',
+      'req',
+      'my.utils.windows',
+      'close',
+      modes = 'nxti',
+    },
+    -- ['<m-k>'] = b { desc = 'hover', vim.lsp.buf.hover },
+    ['<m-q>'] = b {
       desc = 'close buffer',
       'req',
       'bufdelete',
       'bufdelete',
       0,
       true,
+      modes = 'nxti',
+    },
+
+    ['<m-j>'] = b {
+      desc = 'focus keyed',
+      'req',
+      'my.utils.ui_toggle',
+      'focus_keyed',
+      modes = 'nxti',
+    },
+    ['<m-k>'] = b {
+      desc = 'toggle unkeyed',
+      'req',
+      'my.utils.ui_toggle',
+      'toggle_unkeyed',
+      modes = 'nxti',
+    },
+    ['<m-l>'] = b {
+      desc = 'pick window',
+      modes = 'nxti',
+      'req',
+      'my.utils.windows',
+      'winpick',
     },
     ['<m-u>'] = b {
-      desc = 'pick special window',
-      'req',
-      'my.utils.windows',
-      'cycle_focus_within_buftype',
-      false,
-    },
-    ['<m-i>'] = b {
-      desc = 'pick plain window',
-      'req',
-      'my.utils.windows',
-      'cycle_focus_within_buftype',
-      true,
-    },
-    ['<m-o>'] = b {
       desc = 'pick window',
+      modes = 'nxti',
       'req',
-      'my.utils.windows',
-      'focus_any',
+      'my.utils.terminal',
+      'toggle',
     },
+    --[[
     [alt(d.left)] = b {
       desc = 'window right',
       'req',
@@ -294,6 +298,7 @@ function M.extend()
       'my.utils.wrap_win',
       'right',
     },
+    ]]
   }
 end
 

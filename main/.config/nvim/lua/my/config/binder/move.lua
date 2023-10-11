@@ -179,22 +179,22 @@ function M.extend()
       d = b {
         desc = 'diagnostics',
         lazy_req(
-          'my.utils.windows',
-          'show_ui',
-          'Trouble',
+          'my.utils.ui_toggle',
+          'activate',
+          'trouble',
           'Trouble document_diagnostics'
         ),
       },
       s = b {
         desc = 'aerial symbols',
-        lazy_req('my.utils.windows', 'show_ui', 'aerial', 'AerialOpen'),
+        lazy_req('my.utils.ui_toggle', 'activate', 'aerial', 'AerialOpen'),
       },
       h = b {
         desc = 'hunks',
         lazy_req(
-          'my.utils.windows',
-          'show_ui',
-          'Trouble',
+          'my.utils.ui_toggle',
+          'activate',
+          'trouble',
           'Gitsigns setqflist'
         ),
       },

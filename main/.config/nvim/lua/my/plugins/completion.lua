@@ -48,11 +48,11 @@ return {
           },
         },
         sources = {
-          { name = 'codeium' },
-          { name = 'nvim_lsp_signature_help' },
-          { name = 'cmp_overseer' },
-          { name = 'calc' },
+          -- { name = 'codeium' },
           { name = 'luasnip' },
+          { name = 'nvim_lsp_signature_help' },
+          -- { name = 'cmp_overseer' },
+          { name = 'calc' },
           { name = 'npm', keyword_length = 4 },
           { name = 'nvim_lua' },
           { name = 'nvim_lsp' },
@@ -63,8 +63,7 @@ return {
             option = {
               keep_all_entries = false,
               enable_in_context = function()
-                return true
-                -- return require('cmp.config.context').in_treesitter_capture('spell')
+                return require('cmp.config.context').in_treesitter_capture 'spell'
               end,
             },
           },

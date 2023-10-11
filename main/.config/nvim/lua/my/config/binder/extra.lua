@@ -109,13 +109,11 @@ function M.extend()
       },
       w = b {
         desc = 'ui',
-        function()
-          require('my.utils.windows').show_ui('dap', function()
-            require('nvim-dap-virtual-text').enable()
-            require('gitsigns').toggle_current_line_blame(false)
-            require('dapui').open()
-          end)
-        end,
+        lazy_req('my.utils.ui_toggle', 'activate', 'dap', function()
+          require('nvim-dap-virtual-text').enable()
+          require('gitsigns').toggle_current_line_blame(false)
+          require('dapui').open()
+        end),
       },
       x = keys {
         prev = b { desc = 'disconnect', lazy_req('dap', 'disconnect') },
@@ -219,11 +217,9 @@ function M.extend()
       },
       w = b {
         desc = 'docs view',
-        function()
-          require('my.utils.windows').show_ui('docs-view', function()
-            require('my.utils.docs-view').reveal()
-          end)
-        end,
+        lazy_req('my.utils.ui_toggle', 'activate', 'docs-view', function()
+          require('my.utils.docs-view').reveal()
+        end),
       },
       y = b {
         desc = 'uniduck',
@@ -368,16 +364,13 @@ function M.extend()
       },
       a = b {
         desc = 'neogit',
-        lazy_req('my.utils.windows', 'show_ui', 'Neogit', 'Neogit'),
+        lazy_req('my.utils.ui_toggle', 'activate', 'neogit', 'Neogit'),
       },
       b = b {
         desc = 'branch',
-        lazy_req(
-          'my.utils.windows',
-          'show_ui',
-          'Neogit',
-          lazy_req('neogit', 'open', { 'branch' })
-        ),
+        lazy_req('my.utils.ui_toggle', 'activate', 'neogit', function()
+          require('neogit').open { 'branch' }
+        end),
       },
       c = keys {
         desc = 'commit',
@@ -398,14 +391,19 @@ function M.extend()
         desc = 'diffview',
         prev = b {
           desc = 'diffview',
-          lazy_req('my.utils.windows', 'show_ui', 'Diffview', 'DiffviewOpen'),
+          lazy_req(
+            'my.utils.ui_toggle',
+            'activate',
+            'diffview',
+            'DiffviewOpen'
+          ),
         },
         next = b {
           desc = 'diffview file history',
           lazy_req(
-            'my.utils.windows',
-            'show_ui',
-            'Diffview',
+            'my.utils.ui_toggle',
+            'activate',
+            'diffview',
             'DiffviewFileHistory'
           ),
         },
@@ -563,6 +561,7 @@ function M.extend()
       b = b {
         desc = 'background color',
         function()
+          -- FIXME:
           local theme = vim.api.nvim_exec('colorscheme', true)
           if theme == 'material' then
             require('material.functions').find_style()
@@ -696,8 +695,8 @@ function M.extend()
         ':OverseerRunCmd<cr>',
       },
       q = b {
-        desc = 'toggle',
-        ':OverseerToggle<cr>',
+        desc = 'open',
+        lazy_req('my.utils.ui_toggle', 'activate', 'overseer', 'OverseerOpen'),
       },
       y = b {
         desc = 'browse dev',
@@ -775,17 +774,23 @@ function M.extend()
       n = keys {
         next = b {
           desc = 'open',
-          lazy_req('spectre', 'open'),
+          lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
+            require('spectre').open()
+          end),
         },
         prev = b {
           desc = 'open file seach',
-          lazy_req('spectre', 'open_file_search'),
+          lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
+            require('spectre').open_file_search()
+          end),
         },
       },
       x = keys {
         next = b {
           desc = 'open visual',
-          lazy_req('spectre', 'open_visual'),
+          lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
+            require('spectre').open_visual()
+          end),
         },
         prev = b {
           desc = 'open visual select word',
@@ -865,9 +870,9 @@ function M.extend()
     w = keys {
       desc = 'windows',
       prev = b { lazy_req('split', 'close'), desc = 'close' },
-      e = b {
-        desc = 'swap',
-        require('my.utils.windows').winpick_swap,
+      f = b {
+        desc = 'split float',
+        lazy_req('my.utils.windows', 'split_float'),
       },
       h = b {
         desc = 'horizontal split equal',
@@ -881,16 +886,6 @@ function M.extend()
         n = b { lazy_req('split', 'open', {}, 'n') },
         x = b { lazy_req('split', 'open', {}, 'x') },
       },
-      n = keys {
-        prev = b {
-          desc = 'clone to',
-          require('my.utils.windows').winpick_clone_to,
-        },
-        next = b {
-          desc = 'clone from',
-          require('my.utils.windows').winpick_clone_from,
-        },
-      },
       q = b { desc = 'lsp', lazy_req('split', 'open_lsp'), modes = 'nx' },
       r = modes {
         desc = 'pop',
@@ -900,10 +895,6 @@ function M.extend()
       w = b {
         desc = 'external',
         require('my.utils.windows').split_external,
-      },
-      x = b {
-        desc = 'close',
-        require('my.utils.windows').winpick_close,
       },
       z = keys {
         prev = b {

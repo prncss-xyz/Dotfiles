@@ -87,7 +87,7 @@ deep_merge(vim, {
     sessionoptions = 'curdir,folds,tabpages,winsize',
     splitkeep = 'screen',
     spell = true,
-    spelllang = 'en_us,fr_ca',
+    spelllang = 'en_us,fr',
     spelloptions = 'camel',
     -- textwidth = 100,
     titlestring = '%{v:lua.my_title()}', -- defined in `globals.lua`

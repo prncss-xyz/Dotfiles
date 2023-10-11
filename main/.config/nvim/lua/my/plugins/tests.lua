@@ -7,7 +7,6 @@ return {
       'nvim-neotest/neotest-jest',
       'nvim-neotest/neotest-go',
       'mrcjkb/neotest-haskell',
-
       'nvim-treesitter/nvim-treesitter',
       'antoinemadec/FixCursorHold.nvim',
     },

@@ -1,53 +1,63 @@
 local M = {}
 
-local conf = {
-  neo_tree = {
-    test = 'neo-tree',
-    close = 'NeoTreeClose',
-    actions = {},
-  },
-  aerial = {
-    test = 'aerial',
-    close = 'AerialCLose',
-    actions = {},
-  },
-  dap = {
-    test = { 'dap-', 'dapui_' },
-    close = function()
-      require('dapui').close()
-      vim.cmd 'DapVirtualTextDisable'
-      require('nvim-dap-virtual-text').disable()
-      -- require('gitsigns').toggle_current_line_blame(true)
-    end,
-    actions = {},
-  },
-  trouble = {
-    test = 'Trouble',
-    close = 'TroubleClose',
-    actions = {},
-  },
-  spectre = nil,
-  overseer = nil,
+M.conf = {
+  keys = {},
 }
 
-local function key_from_win(win)
-  local buf = vim.api.nvim_win_get_buf(win)
-  local ft = vim.api.nvim_buf_get_option(buf, 'filetype')
-  for k, v in pairs(conf) do
-    local tests
-    local t = v.test
-    if type(t) == 'table' then
-      tests = t
-    else
-      tests = { t }
-    end
-    for _, test in ipairs(tests) do
-      if vim.startswith(ft, test) then
-        return k
-      end
+local function to_list(v)
+  if type(v) == 'table' then
+    return v
+  end
+  return { v }
+end
+
+local function test_ft(ft, v)
+  if v.ft == nil then
+    return true
+  end
+  for _, test in ipairs(to_list(v.ft)) do
+    if ft == test then
+      return true
     end
   end
-  vim.notify('unknown key for filetype ' .. ft)
+end
+
+local function test_bt(bt, v)
+  if v.bt == nil then
+    return true
+  end
+  for _, test in ipairs(to_list(v.bt)) do
+    if bt == test then
+      return true
+    end
+  end
+end
+
+local function test_cb(win, bt, ft, v)
+  if v.cb == nil then
+    return true
+  end
+  for _, test in ipairs(to_list(v.cb)) do
+    if test(win, bt, ft) then
+      return true
+    end
+  end
+end
+
+function M.key_from_win(win)
+  local buf = vim.api.nvim_win_get_buf(win)
+  local bt = vim.api.nvim_buf_get_option(buf, 'buftype')
+  local ft = vim.api.nvim_buf_get_option(buf, 'filetype')
+  for k, v in pairs(M.conf.keys) do
+    if
+      (v.bt or v.ft or v.cb)
+      and test_ft(ft, v)
+      and test_bt(bt, v)
+      and test_cb(win, ft, ft, v)
+    then
+      return k
+    end
+  end
 end
 
 local function act(value)
@@ -58,29 +68,138 @@ local function act(value)
   end
 end
 
-local old_key, old_action
+local last_key
+local last_keyed_win
+local last_unkeyed_win, last_last_unkeyed_win
+
+local function raise()
+  if last_key then
+    local opts = M.conf.keys[last_key]
+    local action = opts and opts.open
+    if action then
+      M.activate(last_key, action)
+    end
+  else
+    act(M.conf.default)
+  end
+end
+
+function M.clear(keep_key)
+  local empty = true
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local key = M.key_from_win(win)
+    if key and (not keep_key or key ~= keep_key) then
+      vim.api.nvim_win_close(win, false)
+      empty = false
+    end
+  end
+  if keep_key then
+    last_key = keep_key
+  end
+  return empty
+end
 
 function M.activate(key, action)
-  local res = {}
-  for _, win in ipairs(vim.api.nvim_list_wins()) do
-    local key_ = key_from_win(win)
-    if key_ then
-      res[key_] = true
-    end
-  end
-  for key_ in pairs(res) do
-    if key_ ~= key then
-      act(conf[key_].close)
-    end
-  end
-  vim.defer_fn(function()
-    act(conf[key].actions[action])
-  end, 0)
-  old_key, old_action = key, action
+  action = action or M.conf.keys[key].open
+  M.clear(key)
+  act(action)
 end
 
-function M.focus()
-  M.activate(old_key, old_action)
+function M.close(toggle)
+  local empty = M.clear()
+  if empty and toggle then
+    raise()
+  end
 end
+
+local function other(current, keyed)
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if win ~= current and (keyed == (not not M.key_from_win(win))) then
+      return win
+    end
+  end
+  return nil
+end
+
+local function try_prospect(current, prospect)
+  if
+    prospect
+    and prospect ~= current
+    and vim.api.nvim_win_is_valid(prospect)
+  then
+    return prospect
+  end
+end
+
+function M.toggle_unkeyed()
+  local target
+  local current = vim.api.nvim_get_current_win()
+  target = try_prospect(current, last_unkeyed_win)
+    or try_prospect(current, last_last_unkeyed_win)
+    or try_prospect(current, other(current, false))
+  if target then
+    vim.api.nvim_set_current_win(target)
+  end
+end
+
+function M.focus_keyed()
+  local target
+  local current_win = vim.api.nvim_get_current_win()
+  target = try_prospect(current_win, last_keyed_win)
+  if target then
+    vim.api.nvim_set_current_win(target)
+  else
+    M.close(true)
+  end
+end
+
+local function on_win_leave()
+  local current_win = vim.api.nvim_get_current_win()
+  local current_key = M.key_from_win(current_win)
+  if current_key then
+    last_keyed_win = current_win
+  elseif vim.api.nvim_buf_get_option(0, 'buftype') == '' then
+    last_last_unkeyed_win, last_unkeyed_win = last_unkeyed_win, current_win
+  end
+end
+
+function M.setup(opts)
+  M.conf = vim.tbl_extend('keep', opts, M.conf)
+  local group = vim.api.nvim_create_augroup('UiToggle', { clear = true })
+  vim.api.nvim_create_autocmd({ 'WinLeave' }, {
+    pattern = '*',
+    group = group,
+    callback = on_win_leave,
+  })
+end
+
+M.setup {
+  default = 'Neotree',
+  skip_buf = { 'terminal' },
+  keys = {
+    neo_tree = {
+      ft = 'neo-tree',
+      open = 'Neotree source=last',
+    },
+    trouble = {
+      ft = 'Trouble',
+      open = 'Trouble',
+    },
+    iron = {
+      ft = '',
+      bt = 'terminal',
+      open = 'IronFocus',
+    },
+  },
+}
+
+--[[
+  require('dapui').close()
+  vim.cmd 'DapVirtualTextDisable'
+  require('nvim-dap-virtual-text').disable()
+  require('gitsigns').toggle_current_line_blame(true)
+--]]
+--
+-- FIXME: Neotree then Trouble
 
 return M

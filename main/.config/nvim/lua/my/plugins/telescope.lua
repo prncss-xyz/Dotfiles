@@ -115,13 +115,13 @@ return {
             ['<m-d>'] = lazy_req('readline', 'kill_word'),
             ['<c-t>'] = function(...)
               require('trouble.providers.telescope').open_with_trouble(...)
-              require('my.utils.windows').show_ui('Trouble', 'Trouble')
+              require('my.utils.ui_toggle').activate('trouble', 'Trouble')
             end,
           },
           n = {
             ['qt'] = function(...)
               require('trouble.providers.telescope').open_with_trouble(...)
-              require('my.utils.windows').show_ui('Trouble', 'Trouble')
+              require('my.utils.ui_toggle').activate('trouble', 'Trouble')
             end,
             ['qh'] = actions.file_split,
             ['qv'] = actions.file_vsplit,

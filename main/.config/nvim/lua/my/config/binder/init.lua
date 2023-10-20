@@ -55,20 +55,23 @@ function M.config()
       register = 'extra',
       next = b { '<nop>' },
     },
+    t = keys {
+      register = 'telescope',
+      next = b { '<nop>' },
+    },
     z = keys {
       register = 'bigmove',
       next = b { '<nop>' },
     },
   })
-  --  require('my.config.binder.commands').setup()
   require('my.config.binder.lang').setup()
   binder.extend_with 'basic'
   binder.extend_with 'edit'
   binder.extend_with 'move'
   binder.extend_with 'bigmove'
+  binder.extend_with 'telescope'
   binder.extend_with 'extra'
   binder.extend_with 'mark'
-  require('my.config.binder.textobjects').setup()
 
   require('key-menu').set('n', 'g')
   require('key-menu').set('n', 'h')

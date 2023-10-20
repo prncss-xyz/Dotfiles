@@ -1,7 +1,16 @@
 local M = {}
 
+function M.delete()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local bt = vim.api.nvim_buf_get_option(bufnr, 'buftype')
+  if bt ~= '' then
+    return
+  end
+  require('bufdelete').bufdelete(0, true)
+end
+
 -- --FIX: not working
-function M.edit_newest()
+function M.edit_most_recent_file()
   local res
   local Job = require('plenary').job
   Job:new({

@@ -22,7 +22,6 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
-
 local pass_prefix = '/dev/shm/pass.'
 if vim.fn.expand('%:h'):sub(1, pass_prefix:len()) == pass_prefix then
   vim.g.secret = true

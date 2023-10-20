@@ -73,10 +73,10 @@ end
 function M.np(t)
   local prev, next_ = t.prev, t.next
   local fp = function()
-    require('flies.operations.move_again').recompose2(prev, next_, false)
+    require('flies.actions.move_again').recompose2(prev, next_, false)
   end
   local fn = function()
-    require('flies.operations.move_again').recompose2(prev, next_, true)
+    require('flies.actions.move_again').recompose2(prev, next_, true)
   end
   t.prev = require('binder').b { fp }
   t.next = require('binder').b { fn }

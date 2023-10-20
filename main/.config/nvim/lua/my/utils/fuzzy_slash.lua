@@ -25,7 +25,7 @@ end
 function M.register_nN_repeat(nN)
   -- called after a fuzzy search with a tuple of functions that are effectively `n, N`
   local next_, prev = unpack(nN)
-  require('flies.operations.move_again').register(function()
+  require('flies.actions.move_again').register(function()
     prev()
     clear_after()
   end, function()

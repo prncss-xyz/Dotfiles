@@ -29,4 +29,22 @@ function M.confirm()
   end
 end
 
+function M.menu_previous_c()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    cmp.select_prev_item()
+  else
+    cmp.complete()
+  end
+end
+
+function M.menu_next_c()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    pcall(cmp.select_next_item)
+  else
+    cmp.complete()
+  end
+end
+
 return M

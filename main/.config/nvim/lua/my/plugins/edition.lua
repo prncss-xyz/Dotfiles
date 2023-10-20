@@ -139,4 +139,30 @@ return {
       'ChatGPTRunCustomCodeAction',
     },
   },
+  {
+    'cshuaimin/ssr.nvim',
+    opts = {
+      close = 'q',
+      next_match = 'n',
+      prev_match = 'N',
+      replace_confirm = '<cr>',
+      replace_all = '<leader><cr>',
+    },
+  },
+  {
+    'gbprod/yanky.nvim',
+    opts = {
+      ring = {
+        storage = 'sqlite',
+      },
+      highlight = {
+        timer = 200,
+      },
+      system_clipboard = {
+        sync_with_ring = false,
+      },
+      dependencies = { 'kkharji/sqlite.lua' },
+    },
+    event = 'BufReadPost',
+  },
 }

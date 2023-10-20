@@ -65,19 +65,7 @@ function M.extend()
           end
         end,
       },
-      -- i = keys {
-      --   prev = b { desc = 'declaration', vim.lsp.buf.declaration },
-      --   next = b {
-      --     desc = 'implementations',
-      --     lazy_req('telescope.builtin', 'lsp_implementations'),
-      --   },
-      -- },
-      -- j = b {
-      --   desc = 'type definition',
-      --   lazy_req('telescope.builtin', 'lsp_type_definitions'),
-      -- },
     },
-    -- redup = b { '``', desc = 'before last jump' },
     b = modes {
       nx = np {
         desc = 'aerial symbol',
@@ -89,23 +77,6 @@ function M.extend()
         end,
       },
     },
-    -- b = modes {
-    --   nx = keys {
-    --     desc = 'aerial symbol',
-    --     prev = b {
-    --       cmd = 'np',
-    --       { 'vim', 'AerialPrev' },
-    --       { 'vim', 'AerialNext' },
-    --       false,
-    --     },
-    --     next = b {
-    --       cmd = 'np',
-    --       { 'vim', 'AerialPrev' },
-    --       { 'vim', 'AerialNext' },
-    --       true,
-    --     },
-    --   },
-    -- },
     c = modes {
       desc = 'asterisk',
       n = b {
@@ -132,22 +103,6 @@ function M.extend()
         'diagnostic.goto_next',
       },
     },
-    -- d = np_ {
-    --   desc = 'diagnostic',
-    --   prev = {
-    --     cmd = 'vim',
-    --     fn_path = 'diagnostic.goto_prev',
-    --   },
-    --   next = {
-    --     cmd = 'vim',
-    --     fn_path = 'diagnostic.goto_next',
-    --   },
-    -- },
-    -- d = np {
-    --   desc = 'diagnostic',
-    --   prev = vim.diagnostic.goto_prev,
-    --   next = vim.diagnostic.goto_next,
-    -- },
     e = keys {
       desc = 'peek',
       redup = b {
@@ -156,47 +111,52 @@ function M.extend()
       },
       h = b {
         desc = 'git',
-        lazy_req('gitsigns', 'blame_line', { full = true }),
+        'req',
+        'gitsigns',
+        'blame_line',
+        { full = true },
       },
-      k = b { desc = 'hover', vim.lsp.buf.hover },
-
-      l = b {
-        '<Plug>(Marks-preview)',
-      },
+      k = b { desc = 'hover', 'vim', 'lsp.buf.hover' },
+      l = b { '<Plug>(Marks-preview)' },
       r = b {
         desc = 'reference',
-        lazy_req('goto-preview', 'goto_preview_references'),
+        'req',
+        'goto-preview',
+        'goto_preview_references',
       },
       s = b {
         desc = 'definition',
-        lazy_req('goto-preview', 'goto_preview_definition'),
+        'req',
+        'goto-preview',
+        'goto_preview_definition',
       },
       t = b { 'UltestOutput', cmd = true },
-      x = b { desc = 'signature help', vim.lsp.buf.signature_help },
+      x = b { desc = 'signature help', 'vim', 'lsp.buf.signature_help' },
     },
     f = keys {
       desc = 'loclist/trouble',
       d = b {
         desc = 'diagnostics',
-        lazy_req(
-          'my.utils.ui_toggle',
-          'activate',
-          'trouble',
-          'Trouble document_diagnostics'
-        ),
+        'req',
+        'my.utils.ui_toggle',
+        'activate',
+        'trouble',
+        'Trouble document_diagnostics',
       },
       s = b {
         desc = 'aerial symbols',
-        lazy_req('my.utils.ui_toggle', 'activate', 'aerial', 'AerialOpen'),
+        'req',
+        'my.utils.ui_toggle',
+        'activate',
+        'aerial',
       },
       h = b {
         desc = 'hunks',
-        lazy_req(
-          'my.utils.ui_toggle',
-          'activate',
-          'trouble',
-          'Gitsigns setqflist'
-        ),
+        'req',
+        'my.utils.ui_toggle',
+        'activate',
+        'trouble',
+        'Gitsigns setqflist',
       },
     },
     h = np {

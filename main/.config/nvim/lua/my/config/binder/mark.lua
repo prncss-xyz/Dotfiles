@@ -8,44 +8,8 @@ function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
-  local modes = binder.modes
-  local util = require 'my.config.binder.utils'
-  local np = util.np
-  local lazy_req = util.lazy_req
   return keys {
-    d = b {
-      desc = 'repl send',
-      function()
-        require('flies.operations.act').exec(
-          { domain = 'outer', around = 'never' },
-          nil,
-          require('iron.core').visual_send
-        )
-      end,
-    },
     b = keys {
-      -- prev = b { '<Plug>(Marks-next-bookmark)' },
-      -- next = b {
-      --   function()
-      --     require('marks').bookmark_state:all_to_list 'quickfixlist'
-      --     require('telescope.builtin').quickfix()
-      --   end,
-      -- },
-      -- [a.mark] = {
-      --   ['pp' .. a.mark] = plug {
-      --     '(Marks-deletebuf)',
-      --     name = 'Deletes all marks in current buffer.',
-      --   },
-      --   ['p' .. a.mark] = plug {
-      --     '(Marks-deleteline)',
-      --     name = 'Deletes all marks on current line.',
-      --   },
-      -- },
-      -- a = require('utils').bookmark_next(0),
-      -- s = require('utils').bookmark_next(1),
-      -- d = require('utils').bookmark_next(2),
-      -- f = require('utils').bookmark_next(3),
-      -- b = plug '(Marks-prev-bookmark)',
       next = b {
         b = {
           '<cmd>rshada<cr><Plug>(Marks-delete-bookmark)<cmd>wshada!<cr>',
@@ -92,28 +56,6 @@ function M.extend()
       desc = 'toggle next available mark at cursor',
     },
   }
-
-  --[[
-        '<Plug>(Marks-next)',
-      pl = plug {
-        '(Marks-delete)',
-        desc = 'Delete a letter mark (will wait for input).',
-      },
-      l = plug {
-        '(Marks-set)',
-        desc = 'Sets a letter mark (will wait for input).',
-      },
-      prev = b {
-        '<Plug>(Marks-set)',
-      },
-      next = b {
-        function()
-          require('marks').mark_state:all_to_list 'quickfixlist'
-          require('telescope.builtin').quickfix()
-        end,
-      },
-        l = plug { '(Marks-prev)', name = 'Goes to previous mark in buffer.' },
-  --]]
 end
 
 return M

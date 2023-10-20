@@ -74,7 +74,7 @@ table.insert(
 table.insert(
   M,
   s(
-    's',
+    'h',
     fmt(
       [[
       function []([]) {

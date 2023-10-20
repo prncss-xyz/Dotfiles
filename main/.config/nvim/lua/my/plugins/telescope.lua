@@ -113,6 +113,7 @@ return {
             ['<c-w>'] = lazy_req('readline', 'backward_kill_word'),
             ['<m-b>'] = lazy_req('readline', 'backward_word'),
             ['<m-d>'] = lazy_req('readline', 'kill_word'),
+            ['<m-q>'] = false,
             ['<c-t>'] = function(...)
               require('trouble.providers.telescope').open_with_trouble(...)
               require('my.utils.ui_toggle').activate('trouble', 'Trouble')
@@ -189,6 +190,15 @@ return {
     config = function(_, opts)
       require('telescope').setup(opts)
       require 'telescope._extensions.fzf'
+      require('telescope').load_extension 'yank_history'
+      -- leave insertmode on exit
+      vim.api.nvim_create_autocmd({ 'BufLeave', 'BufWinLeave' }, {
+        callback = function(event)
+          if vim.bo[event.buf].filetype == 'TelescopePrompt' then
+            vim.api.nvim_exec2('silent! stopinsert!', {})
+          end
+        end,
+      })
     end,
     dependencies = {
       'nvim-lua/plenary.nvim',

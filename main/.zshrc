@@ -1,3 +1,4 @@
+export REACT_EDITOR=nvim # https://react-dev-inspector.zthxxx.me
 if [[ Darwin -eq $(uname -s) ]]
 then
   # export PNPM_HOME=$HOME/Library/pnpm
@@ -8,6 +9,7 @@ then
   export PATH=$HOME/bin:/usr/local/bin:$PATH
   export DOTFILES=$HOME/Dotfiles
   export PROJECTS=$HOME/Projects
+  export PORT=3000
 
   # micromamba
   # export MAMBA_EXE=/usr/bin/micromamba

@@ -13,12 +13,10 @@ function M.setup()
     },
     c = keys {
       ['<m-e>'] = b { '<c-f>' },
-      ['<tab>'] = b { 'req', 'my.config.binder.actions', 'menu_next_c' },
-      ['<s-tab>'] = b { 'req', 'my.config.binder.actions', 'menu_previous_c' },
+      ['<tab>'] = b { 'req', 'my.utils.cmp', 'menu_next_c' },
+      ['<s-tab>'] = b { 'req', 'my.utils.cmp', 'menu_previous_c' },
     },
     is = keys {
-      ['<c-n>'] = b { 'req', 'my.config.binder.actions', 'menu_next' },
-      ['<c-p>'] = b { 'req', 'my.config.binder.actions', 'menu_previous' },
       ['<c-space>'] = b { '<space><left>' },
       ['<c-e>'] = b { 'req', 'my.utils.cmp', 'toggle' },
       ['<s-tab>'] = b {

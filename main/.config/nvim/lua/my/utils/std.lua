@@ -150,18 +150,6 @@ function M.reverse(t)
   end
 end
 
--- http://lua-users.org/wiki/StringRecipes
-function M.encode_uri(str)
-  if str then
-    str = str:gsub('\n', '\r\n')
-    str = str:gsub('([^%w %-%_%.%~])', function(c)
-      return ('%%%02X'):format(string.byte(c))
-    end)
-    str = str:gsub(' ', '+')
-  end
-  return str
-end
-
 function M.file_exists(name)
   local f = io.open(name, 'r')
   if f ~= nil then

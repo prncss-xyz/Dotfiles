@@ -50,15 +50,15 @@ local function next_(pos, ofs)
 end
 
 function M.fwd(insert)
-  local buffers = require 'flies.utils.buffers'
-  local pos = buffers.get_cursor()
-  buffers.set_cursor(next_(pos, insert and 1 or 0))
+  local windows = require 'flies.utils.windows'
+  local pos = windows.get_cursor()
+  windows.set_cursor(next_(pos, insert and 1 or 0))
 end
 
 function M.bwd(insert)
-  local buffers = require 'flies.utils.buffers'
-  local pos = buffers.get_cursor()
-  buffers.set_cursor(prev(pos, insert and 1 or 0))
+  local windows = require 'flies.utils.windows'
+  local pos = windows.get_cursor()
+  windows.set_cursor(prev(pos, insert and 1 or 0))
 end
 
 return M

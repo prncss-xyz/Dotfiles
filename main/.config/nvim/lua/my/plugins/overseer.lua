@@ -2,7 +2,10 @@ return {
   {
     'stevearc/overseer.nvim',
     opts = {
-      strategy = 'toggleterm',
+      strategy = {
+        'toggleterm',
+        open_on_start = false,
+      },
     },
     config = function(_, opts)
       local overseer = require 'overseer'

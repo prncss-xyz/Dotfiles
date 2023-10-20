@@ -43,7 +43,6 @@ function M.test_file(file)
 end
 
 function M.test_current_file()
-  local file = vim.api.nvim_buf_get_name(0)
   M.test_file(file)
 end
 

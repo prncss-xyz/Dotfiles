@@ -102,7 +102,7 @@ M.q = {
   right = '"',
 }
 
-M.s = {
+M.h = {
   snip = {
     javascript = s(
       '',

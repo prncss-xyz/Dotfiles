@@ -1,41 +1,59 @@
-local function dapui_open()
-  local dapui = require 'dapui'
-  dapui.open()
-  require('nvim-dap-virtual-text').enable()
-  -- require 'gitsigns'
-  require('gitsigns').toggle_current_line_blame(false)
-end
-
-local function dapui_close()
-  local dapui = require 'dapui'
-  dapui.open()
-  require('nvim-dap-virtual-text').disable()
-  require('gitsigns').toggle_current_line_blame(true)
-end
-
 return {
-  {
-    'jay-babu/mason-nvim-dap.nvim',
-    dependencies = {
-      'williamboman/mason.nvim',
-      'leoluz/nvim-dap-go',
-    },
-    opts = {
-      ensure_installed = { 'go-debug-adapter' },
-      automatic_installation = true,
-    },
-  },
   {
     'mfussenegger/nvim-dap',
     name = 'dap',
+    config = function(_, _)
+      require 'dapui'
+    end,
+    dependencies = {
+      'rcarriga/nvim-dap-ui',
+      'theHamsta/nvim-dap-virtual-text',
+      {
+        'jay-babu/mason-nvim-dap.nvim',
+        dependencies = {
+          'williamboman/mason.nvim',
+        },
+        opts = {
+          automatic_installation = true,
+        },
+      },
+    },
+  },
+  {
+    'rcarriga/nvim-dap-ui',
+    dependencies = { 'mfussenegger/nvim-dap' },
+    name = 'dapui',
     opts = {},
-    config = function(_, opts)
-      local deep_merge = require('my.utils.std').deep_merge
+    config = function()
+      require('dapui').setup()
       local dap = require 'dap'
-      deep_merge(dap, opts)
+      local function dapui_open()
+        local dapui = require 'dapui'
+        dapui.open()
+        require('nvim-dap-virtual-text').enable()
+        -- require 'gitsigns'
+        require('gitsigns').toggle_current_line_blame(false)
+      end
+      local function dapui_close()
+        local dapui = require 'dapui'
+        dapui.open()
+        require('nvim-dap-virtual-text').disable()
+        require('gitsigns').toggle_current_line_blame(true)
+      end
+
       dap.listeners.after.event_initialized['dapui_config'] = dapui_open
       dap.listeners.before.event_terminated['dapui_config'] = dapui_close
       dap.listeners.before.event_exited['dapui_config'] = dapui_close
+    end,
+  },
+  {
+    'jbyuki/one-small-step-for-vimkind',
+    dependencies = { 'mfussenegger/nvim-dap' },
+    ft = 'lua',
+    name = 'osv',
+    opts = {},
+    config = function()
+      local dap = require 'dap'
       dap.configurations.lua = {
         {
           type = 'nlua',
@@ -51,23 +69,7 @@ return {
         }
       end
     end,
-    dependencies = {
-      'theHamsta/nvim-dap-virtual-text',
-      'jay-babu/mason-nvim-dap.nvim',
-      'leoluz/nvim-dap-go',
-    },
-  },
-  {
-    'rcarriga/nvim-dap-ui',
-    dependencies = { 'mfussenegger/nvim-dap' },
-    name = 'dapui',
-    opts = {},
-  },
-  {
-    'jbyuki/one-small-step-for-vimkind',
-    dependencies = { 'mfussenegger/nvim-dap' },
-    name = 'osv',
-    opts = {},
+    enabled = true,
   },
   {
     'leoluz/nvim-dap-go',
@@ -77,7 +79,6 @@ return {
   },
   {
     'mxsdev/nvim-dap-vscode-js',
-    opts = {},
     enabled = false,
   },
 }

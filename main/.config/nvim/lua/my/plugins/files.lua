@@ -9,7 +9,12 @@ end
 return {
   {
     'willothy/flatten.nvim',
-    config = {},
+    config = {
+      callbacks = {
+        nest_if_no_args = false,
+      },
+    },
+    enabled = false,
   },
   {
     'nvim-neo-tree/neo-tree.nvim',
@@ -22,16 +27,14 @@ return {
           'qf',
           'edgy',
         },
-        sources = {
-          'filesystem',
-          'buffers',
-          'git_status',
-          -- 'neo-tree-zk',
-          -- 'zk',
-         -- 'document_symbols',
-        },
-        enable_git_status = true,
-        enable_diagnostics = true,
+        -- sources = {
+        --   'filesystem',
+        --   'buffers',
+        --   'git_status',
+        --   -- 'neo-tree-zk',
+        --   -- 'zk',
+        --   -- 'document_symbols',
+        -- },
         default_component_configs = {
           indent = {
             indent_marker = ' ',
@@ -39,18 +42,9 @@ return {
           },
           modified = {
             symbol = '',
-            hightlight = 'NeoTreefileIcon',
           },
           name = {
             use_git_status_colors = false,
-            highlight = 'NeoTreeFileIcon',
-          },
-          git_status = {
-            symbols = {
-              -- Change type
-              added = '✚',
-              modified = '',
-            },
           },
         },
         close_if_last_window = true,
@@ -58,11 +52,13 @@ return {
           width = require('my.parameters').pane_width,
         },
         filesystem = {
-          follow_current_file = true,
+          follow_current_file = {
+            enabled = true,
+          },
           hijack_netrw_behavior = 'open_default',
           use_libuv_file_watcher = true,
           filtered_items = {
-            hide_dotfiles = false,
+            hide_dotfiles = true,
           },
           window = {
             mappings = {
@@ -157,19 +153,6 @@ return {
     cmd = { 'Neotree' },
     dependencies = { dir = require('my.utils').local_repo 'neo-tree-zk.nvim' },
   },
-  -- TODO: with flatten, we just need terminal buffer
-  {
-    'is0n/fm-nvim',
-    opts = {
-      ui = {
-        default = 'float',
-        split = {
-          direction = 'leftabove',
-        },
-      },
-    },
-    cmd = { 'Xplr' },
-  },
   {
     dir = require('my.utils').local_repo 'khutulun.nvim',
     -- 'chrisgrieser/nvim-genghis',
@@ -199,13 +182,13 @@ return {
         'hgcommit',
       },
     },
-    enable = false,
+    enabled = true,
   },
   {
     -- FIXME:
     'notjedi/nvim-rooter.lua',
     event = 'BufReadPost',
-    enable = false,
+    enabled = false,
   },
   {
     'ThePrimeagen/harpoon',

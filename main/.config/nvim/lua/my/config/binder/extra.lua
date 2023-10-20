@@ -7,37 +7,6 @@ function M.extend()
   local keys = binder.keys
   local modes = binder.modes
   local b = binder.b
-  local search_cword = require('my.utils.browser').search_cword
-  local search_visual = require('my.utils.browser').search_visual
-
-  local function map_search(base, desc)
-    return modes {
-      desc = desc,
-      n = b {
-        function()
-          search_cword(base)
-        end,
-      },
-      x = b {
-        function()
-          search_visual(base)
-        end,
-      },
-    }
-  end
-
-  local function devdocs(mode)
-    local base = 'https://devdocs.io/#q='
-    local ft = vim.bo.filetype
-    if ft ~= '' then
-      base = base .. ' ' .. ft .. ' '
-    end
-    if mode == 'n' then
-      search_cword(base)
-    else
-      search_visual(base)
-    end
-  end
 
   local lazy_req = require('my.config.binder.utils').lazy_req
   return keys {
@@ -66,7 +35,7 @@ function M.extend()
       },
       i = b { desc = 'step into', lazy_req('dap', 'step_into') },
       -- l = b { desc = 'launch', lazy_req('dap', 'launch') },
-      l = b { desc = 'launch', lazy_req('my.config.dap', 'launch') },
+      l = b { desc = 'launch', lazy_req('my.utils.dap', 'launch') },
       o = keys {
         prev = b { desc = 'step out', lazy_req('dap', 'step_out') },
         next = b {
@@ -75,12 +44,6 @@ function M.extend()
         },
       },
       r = b { desc = 'repl open', lazy_req('dap', 'repl.open') },
-      s = b {
-        desc = 'dap launch',
-        function()
-          require('my.utils.dap').launch()
-        end,
-      },
       t = keys {
         c = b {
           "<cmd>lua require'telescope'.extensions.dap.commands{}<cr>",
@@ -286,48 +249,93 @@ function M.extend()
         end,
       },
     },
+    -- g = keys {
+    --   desc = 'runner',
+    --   redup = modes {
+    --     n = b {
+    --       function()
+    --         require('dash').execute()
+    --       end,
+    --     },
+    --     x = b {
+    --       function()
+    --         require('dash').execute_visual()
+    --       end,
+    --     },
+    --   },
+    --   y = b {
+    --     desc = 'dash connect<cr>',
+    --     ':DashConnect<cr>',
+    --   },
+    --   m = b {
+    --     desc = 'carrot eval',
+    --     ':CarrotEval<cr>',
+    --   },
+    --   n = b {
+    --     desc = 'carrot new block',
+    --     ':CarrotNewBlock<cr>',
+    --   },
+    --   s = b {
+    --     desc = 'dash step',
+    --     b { lazy_req('dash', 'step') },
+    --   },
+    --   v = modes {
+    --     desc = 'dash inspect',
+    --     n = b { lazy_req('dash', 'inspect') },
+    --     v = b { lazy_req('dash', 'vinspect') },
+    --   },
+    --   c = b {
+    --     desc = 'dash continue',
+    --     b { lazy_req('dash', 'continue') },
+    --   },
+    --   p = b {
+    --     desc = 'dash toggle breakpoint',
+    --     lazy_req('dash', 'toggle_breakpoint'),
+    --   },
+    -- },
     g = keys {
-      desc = 'runner',
-      redup = modes {
-        n = b {
-          function()
-            require('dash').execute()
-          end,
-        },
-        x = b {
-          function()
-            require('dash').execute_visual()
-          end,
-        },
-      },
-      y = b {
-        desc = 'dash connect<cr>',
-        ':DashConnect<cr>',
-      },
-      m = b {
-        desc = 'carrot eval',
-        ':CarrotEval<cr>',
-      },
-      n = b {
-        desc = 'carrot new block',
-        ':CarrotNewBlock<cr>',
+      desc = 'runners',
+      redup = b {
+        desc = 'raise',
+        'req',
+        'my.utils.repl',
+        'focus',
       },
       s = b {
-        desc = 'dash step',
-        b { lazy_req('dash', 'step') },
+        desc = 'send',
+        'req',
+        'my.utils.repl',
+        'send',
+        modes = 'nx',
       },
-      v = modes {
-        desc = 'dash inspect',
-        n = b { lazy_req('dash', 'inspect') },
-        v = b { lazy_req('dash', 'vinspect') },
+      x = b {
+        desc = 'stop',
+        'req',
+        'my.utils.repl',
+        'stop',
+      },
+      d = b {
+        desc = 'lsp codelens eval',
+        'vim',
+        'lsp.codelens.run',
+      },
+      l = b {
+        desc = 'clear',
+        'req',
+        'my.utils.repl',
+        'clear',
       },
       c = b {
-        desc = 'dash continue',
-        b { lazy_req('dash', 'continue') },
+        desc = 'interrupt',
+        'req',
+        'my.utils.repl',
+        'interrupt',
       },
-      p = b {
-        desc = 'dash toggle breakpoint',
-        lazy_req('dash', 'toggle_breakpoint'),
+      ['<cr>'] = b {
+        desc = 'cr',
+        'req',
+        'my.utils.repl',
+        'cr',
       },
     },
     h = keys {
@@ -454,54 +462,15 @@ function M.extend()
     },
     i = b {
       desc = 'messages (noice)',
-      '<cmd>Noice<cr>',
+      lazy_req('my.utils.ui_toggle', 'activate', 'noice', 'Noice'),
+    },
+    I = b {
+      function()
+        require('flies.operations.inspect'):call()
+      end,
     },
     j = keys {
-      desc = 'typescript',
-      -- Despite the name, this command fixes a handful of specific issues,
-      -- most notably non-async functions that use await and unreachable code.
-      a = b {
-        desc = 'fix all',
-        'req',
-        'vtsls',
-        'commands.fix_all',
-        -- lazy_req('typescript', 'actions.fixAll'),
-      },
-      o = b {
-        desc = 'organize imports',
-        'req',
-        'vtsls',
-        'commands.oraanize_imports',
-        -- lazy_req('typescript', 'actions.organizeImports'),
-      },
-      s = b {
-        desc = 'go to source definition',
-        'req',
-        'vtsls',
-        'commands.goto_source_definition',
-      },
-      -- operates with full paths: .renameFile(source, target)
-      v = b {
-        desc = 'rename file',
-        'req',
-        'vtsls',
-        'commands.rename_file',
-        -- '<cmd>TypescriptRenameFile<cr>',
-      },
-      y = b {
-        desc = 'add missing imports',
-        'req',
-        'vtsls',
-        'commands.add_missing_imports',
-        -- lazy_req('typescript', 'actions.addMissingImports'),
-      },
-      x = b {
-        desc = 'remove unused',
-        'req',
-        'vtsls',
-        'commands.remove_unused_imports',
-        -- lazy_req('typescript', 'actions.removeUnused'),
-      },
+      desc = 'lsp',
       z = b {
         desc = 'haskell eval all',
         'req',
@@ -694,13 +663,9 @@ function M.extend()
         desc = 'run shell cmd',
         ':OverseerRunCmd<cr>',
       },
-      q = b {
+      z = b {
         desc = 'open',
-        lazy_req('my.utils.ui_toggle', 'activate', 'overseer', 'OverseerOpen'),
-      },
-      y = b {
-        desc = 'browse dev',
-        require('my.utils.browser').browse_dev,
+        lazy_req('my.utils.ui_toggle', 'activate', 'overseer'),
       },
     },
     -- could merge with macroscope
@@ -715,34 +680,33 @@ function M.extend()
     },
     r = keys {
       desc = 'repl',
-      redup = modes {
-        desc = 'repl send',
-        n = b {
-          function()
-            require('flies.operations.act').exec(
-              { domain = 'outer', around = 'never' },
-              nil,
-              require('iron.core').visual_send
-            )
-          end,
-        },
-        x = b {
-          'req',
-          'iron.core',
-          'visual_send',
-        },
+      redup = b {
+        desc = 'send',
+        'req',
+        'my.utils.repl',
+        'send',
+        modes = 'nx',
       },
       c = b {
         desc = 'interrupt',
-        function()
-          require('iron.core').send(nil, string.char(3))
-        end,
+        'req',
+        'my.utils.repl',
+        'interrupt',
+        modes = 'n',
       },
-      d = b {
-        desc = 'cr',
-        function()
-          require('iron.core').send(nil, string.char(13))
-        end,
+      f = b {
+        desc = 'focus',
+        'req',
+        'my.utils.repl',
+        'focus',
+        modes = 'n',
+      },
+      x = b {
+        desc = 'stop',
+        'req',
+        'my.utils.repl',
+        'stop',
+        modes = 'n',
       },
       h = b {
         desc = 'live eval',
@@ -751,50 +715,48 @@ function M.extend()
         'lsp.buf_eval_all',
       },
       l = b {
-        desc = 'cr',
-        function()
-          require('iron.core').send(nil, string.char(12))
-        end,
-      },
-      q = b {
-        desc = 'close',
+        desc = 'clear',
         'req',
-        'iron.core',
-        'close_repl',
+        'my.utils.repl',
+        'restart',
+        modes = 'n',
       },
-      --[[
-        send_mark = {{'n'}, core.send_mark},
-        mark_visual = {{'v'}, core.mark_visual},
-        remove_mark = {{'n'}, marks.drop_last},
-        clear_hl = {{'v'}, marks.clear_hl},
-      --]]
     },
-    s = modes {
-      desc = 'spectre',
-      n = keys {
-        next = b {
-          desc = 'open',
-          lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
-            require('spectre').open()
-          end),
-        },
-        prev = b {
-          desc = 'open file seach',
-          lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
-            require('spectre').open_file_search()
-          end),
-        },
+    s = keys {
+      desc = 'seek-replace',
+      redup = b {
+        desc = 'ssr',
+        'req',
+        'ssr',
+        'open',
+        modes = 'nx',
       },
-      x = keys {
-        next = b {
-          desc = 'open visual',
-          lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
-            require('spectre').open_visual()
-          end),
+      r = modes {
+        n = keys {
+          next = b {
+            desc = 'spectre open',
+            lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
+              require('spectre').open()
+            end),
+          },
+          prev = b {
+            desc = 'spectre open file seach',
+            lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
+              require('spectre').open_file_search()
+            end),
+          },
         },
-        prev = b {
-          desc = 'open visual select word',
-          lazy_req('spectre', 'open_visual', { select_word = true }),
+        x = keys {
+          next = b {
+            desc = 'spectre open visual',
+            lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
+              require('spectre').open_visual()
+            end),
+          },
+          prev = b {
+            desc = 'spectre open visual select word',
+            lazy_req('spectre', 'open_visual', { select_word = true }),
+          },
         },
       },
     },
@@ -817,13 +779,10 @@ function M.extend()
       redup = b {
         desc = 'run',
         function()
-          if true and vim.bo.filetype == 'lua' then
-            require('plenary.test_harness').test_directory(vim.fn.expand '%:p')
-          else
-            require('my.utils.relative_files').test_current_file()
-            -- vim.cmd.update()
-            -- require('neotest').run.run { vim.fn.expand '%' }
-          end
+          vim.cmd.update()
+          -- require('neotest').overseer.run {}
+          -- require('neotest').overseer.run { vim.fn.expand '%' }
+          require('neotest').run.run { vim.fn.expand '%' }
         end,
       },
       w = b {
@@ -922,17 +881,17 @@ function M.extend()
     --   desc = 'tester',
     --   n = b {
     --     function ()
-    --       require "flies.operations.move_again".next()
+    --       require "flies.actions.move_again".next()
     --     end
     --   },
     --   p = b {
     --     function ()
-    --       require "flies.operations.move_again".prev()
+    --       require "flies.actions.move_again".prev()
     --     end
     --   },
     --   x = b {
     --     function()
-    --       require('flies.operations.move').exec()
+    --       require('flies.actions.move').exec()
     --     end,
     --   },
     -- },
@@ -953,7 +912,7 @@ function M.extend()
     --   redup = b {
     --     desc = 'tester',
     --     function()
-    --       require('flies.operations.select').exec()
+    --       require('flies.actions.select').exec()
     --     end,
     --   },
     --   r = b {
@@ -964,76 +923,26 @@ function M.extend()
     --   },
     -- },
     y = keys {
-      desc = 'search',
-      arch = map_search(
-        'https://wiki.archlinux.org/index.php?search=',
-        'archlinux wiki'
-      ),
-      aur = map_search(
-        'https://aur.archlinux.org/packages/?K=',
-        'aur packages'
-      ),
-      ca = map_search(
-        'https://www.cairn.info/resultats_recherche.php?searchTerm=',
-        'cairn'
-      ),
-      cn = map_search('https://www.cnrtl.fr/definition/', 'cnrtl'),
-      ddg = map_search('https://duckduckgo.com/?q=', 'duckduckgo'),
-      dds = modes {
-        desc = 'devdocs',
-        n = b {
-          function()
-            devdocs 'n'
-          end,
-        },
-        x = b {
-          function()
-            devdocs 'x'
-          end,
-        },
+      desc = 'browse',
+      redup = b {
+        desc = 'search',
+        'req',
+        'my.utils.browser',
+        'search',
+        modes = 'nx',
       },
-      eru = map_search(
-        'https://www.erudit.org/fr/recherche/?funds=%C3%89rudit&funds=UNB&basic_search_term=',
-        'erudit'
-      ),
-      fr = map_search(
-        'https://pascal-francis.inist.fr/vibad/index.php?action=search&terms=',
-        'francis'
-      ),
-      gh = map_search('https://github.com/search?q=', 'github'),
-      go = map_search('https://google.ca/search?q=', 'google'),
-      lh = map_search('https://www.libhunt.com/search?query=', 'libhunt'),
-      mdn = map_search('https://developer.mozilla.org/en-US/search?q=', 'mdn'),
-      nell = map_search(
-        'https://nelligan.ville.montreal.qc.ca/search*frc/a?searchtype=Y&searcharg=',
-        'nelligan'
-      ),
-      npm = map_search('https://www.npmjs.com/search?q=', 'npm'),
-      o = b {
-        desc = 'open current cfile',
-        '<cmd>call jobstart(["xdg-open", expand("<cfile>")]<cr>, {"detach": v:true})<cr>',
-      },
-      pac = map_search('https://archlinux.org/packages/?q=', 'arch packages'),
-      sea = map_search('https://www.seriouseats.com/search?q=', 'seriouseats'),
-      sep = map_search(
-        'https://plato.stanford.edu/search/searcher.py?query=',
-        'sep'
-      ),
-      sp = map_search('https://www.persee.fr/search?ta=article&q=', 'persée'),
-      st = map_search(
-        'https://usito.usherbrooke.ca/d%C3%A9finitions/',
-        'usito'
-      ),
       u = b {
-        desc = 'browse current cfile',
-        require('my.utils.browser').browse_cfile,
+        desc = 'open',
+        'req',
+        'my.utils.browser',
+        'open',
       },
-      we = map_search('https://en.wikipedia.org/wiki/', 'wikipidia en'),
-      wf = map_search('https://fr.wikipedia.org/wiki/', 'wikipidia fr'),
-      y = map_search(
-        'https://www.youtube.com/results?search_query=',
-        'youtube'
-      ),
+      f = b {
+        desc = 'file',
+        'req',
+        'my.utils.browser',
+        'browse_file',
+      }
     },
     -- f = b { desc = 'xplr', require('utils').xplr_launch },
     z = keys {
@@ -1056,8 +965,11 @@ function M.extend()
         '<cmd>Femaco<cr>',
       },
       g = b {
-        desc = 'TSPlaygroundToggle',
-        '<cmd>TSPlaygroundToggle<cr>',
+        desc = 'TSPlayground',
+        'req',
+        'my.utils.ui_toggle',
+        'activate',
+        'tsplayground',
       },
       h = b {
         desc = 'TSHighlightCapturesUnderCursor',

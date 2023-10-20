@@ -1,58 +1,149 @@
 local M = {}
 
-local get_selection = require('my.utils.vim').get_selection
-
-local browser = os.getenv 'BROWSER'
-
-function M.browse(url)
-  require('plenary').job
-      :new({
-        command = browser,
-        args = { '--new-window', url },
-      })
-      :start()
-end
-
-function M.browse_dev()
-  require('plenary').job
-      :new({
-        command = 'browse_dev',
-        pwd = vim.fn.getenv 'PWD',
-      })
-      :start()
-end
-
-function M.search_cword(base)
-  local word = vim.fn.expand('<cword>', nil, nil)
-  local qs = require('my.utils.std').encode_uri(word)
-  M.browse(base .. qs)
-end
-
-function M.search_visual(base)
-  local word = table.concat(get_selection(), ' ')
-  local qs = require('my.utils.std').encode_uri(word)
-  M.browse(base .. qs)
-end
-
-function M.browse_cfile()
-  local word = vim.fn.expand '<cfile>'
-  if word:match '^[^/]+/[^/]+$' then
-    word = 'www.github.com/' .. word
+-- https://github.com/xiyaowong/link-visitor.nvim/blob/main/lua/link-visitor/utils.lua
+local function get_open_cmd()
+  local uname = vim.loop.os_uname()
+  local os = uname.sysname
+  if os == 'Darwin' then
+    return 'open'
   end
-  M.browse(word)
+  if
+    os:find 'Windows'
+    or (os == 'Linux' and uname.release:lower():find 'microsoft')
+  then
+    return 'cmd.exe /c start ""'
+  end
+  return 'xdg-open'
 end
 
-function M.man()
-  -- local file = require('io').open('/tmp/sway-mega-hotkeys', 'a')
-  -- file:write 'next browser'
-  -- file:close()
-  local word = vim.fn.expand '<cword>'
+-- http://lua-users.org/wiki/StringRecipes
+function M.encode_uri(str)
+  if str then
+    str = str:gsub('\n', '\r\n')
+    str = str:gsub('([^%w %-%_%.%~])', function(c)
+      return ('%%%02X'):format(string.byte(c))
+    end)
+    str = str:gsub(' ', '+')
+  end
+  return str
+end
+
+---@param base string
+---@param query {[string]: string}?
+local function get_url(base, query)
+  local query_str = base
+  if query then
+    local first = true
+    for key, value in pairs(query) do
+      local sep = first and '?' or '&'
+      local escaped = M.encode_uri(value)
+      first = false
+      query_str = query_str .. sep .. key .. '=' .. escaped
+    end
+  end
+  return query_str
+end
+
+---@param base string
+---@param query {[string]: string}?
+function M.visit(base, query)
   require('plenary').job
-      :new({
-        command = 'man',
-        args = { '-h', word },
-      })
-      :start()
+    :new({
+      command = get_open_cmd(),
+      args = { get_url(base, query) },
+    })
+    :start()
+end
+
+function M.open()
+  require('flies.ioperations._patterns')
+    .from_rules({
+      {
+        '[%w.-]+/[%w.-]+',
+        function(repo)
+          M.visit('https://github.com/' .. repo)
+        end,
+      },
+      {
+        'https?://[%w%d%%-+/.:@?&]+',
+        function(url)
+          M.visit(url)
+        end,
+      },
+    })
+    :exec()
+end
+
+local function query_bang(on_confirm)
+  vim.ui.input({
+    prompt = 'ddg !bang',
+  }, function(result)
+    local bang
+    if not result then
+      return
+    end
+    if result == '' then
+      bang = ''
+    else
+      bang = '!' .. result .. ' '
+    end
+    on_confirm(bang)
+  end)
+end
+
+function M.search()
+  local op = require('flies.operations._with_contents'):new {
+    cb = function(_, contents)
+      query_bang(function(bang)
+        M.visit('https://duckduckgo.com/', {
+          t = 'ffab',
+          q = bang .. table.concat(contents, '\n'),
+          ia = 'web',
+        })
+      end)
+    end,
+  }
+  op:call {}
+end
+
+local slug_pattern = '%[.+%]'
+
+local file_patterns = {
+  '^src/app/(.+)/page%.tsx$',
+  '^app/(.+)/page%.tsx$',
+}
+
+local function find_match(path)
+  for _, pattern in ipairs(file_patterns) do
+    local res = path:match(pattern)
+    if res then
+      return res
+    end
+  end
+end
+
+local function get_file_url(path, port)
+  local res = find_match(path) or ''
+  return 'http://localhost:' .. port .. '/' .. res
+end
+
+function M.browse_file(url)
+  url = url or get_file_url(vim.fn.expand '%:.', vim.env.PORT or '8080')
+  local slug = url:match(slug_pattern)
+  if slug then
+    vim.ui.input({
+      prompt = 'input slug ' .. slug .. ' in ' .. url,
+    }, function(result)
+      if not result or result == '' then
+        return
+      end
+      url =
+        string.gsub(url, require('flies.utils').pattern_escape(slug), result)
+      M.browse_file(url)
+    end)
+    return
+  end
+  M.visit(url)
 end
 
 return M

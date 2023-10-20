@@ -82,8 +82,8 @@ return {
       },
       sections = {
         lualine_a = { require 'my.utils.uiline.file' },
-        lualine_b = { require 'my.utils.uiline.aerial' },
-        lualine_c = {},
+        lualine_b = {},
+        lualine_c = { require 'my.utils.uiline.aerial' },
         lualine_x = { require 'my.utils.uiline.overseer' },
         -- lualine_x = { 'overseer' },
         lualine_y = { require 'my.utils.uiline.coordinates' },
@@ -353,5 +353,11 @@ return {
     dependencies = {
       'kevinhwang91/promise-async',
     },
+    init = function()
+      vim.o.foldcolumn = '0' -- '0' hidden, '1', visible
+      vim.o.foldlevel = 99
+      vim.o.foldlevelstart = 99
+      vim.o.foldenable = true
+    end,
   },
 }

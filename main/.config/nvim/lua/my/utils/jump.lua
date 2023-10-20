@@ -3,7 +3,7 @@ local M = {}
 -- move amongst jumplist position within current buffer,
 -- also includes initial cursor position to the list
 
-local register = require('flies.operations.move_again').register
+local register = require('flies.actions.move_again').register
 local jumps, index, len, pos
 
 local function go(fwd)

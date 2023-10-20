@@ -48,25 +48,26 @@ return {
           },
         },
         sources = {
-          -- { name = 'codeium' },
+          { name = 'codeium' },
           { name = 'luasnip' },
           { name = 'nvim_lsp_signature_help' },
-          -- { name = 'cmp_overseer' },
+          { name = 'cmp_overseer' },
           { name = 'calc' },
-          { name = 'npm', keyword_length = 4 },
+          -- { name = 'npm', keyword_length = 4 },
           { name = 'nvim_lua' },
           { name = 'nvim_lsp' },
           { name = 'path' },
           { name = 'buffer' },
-          {
-            name = 'spell',
-            option = {
-              keep_all_entries = false,
-              enable_in_context = function()
-                return require('cmp.config.context').in_treesitter_capture 'spell'
-              end,
-            },
-          },
+          -- {
+          --   name = 'spell',
+          --   option = {
+          --     keep_all_entries = false,
+          --     enable_in_context = function()
+          --       return true
+          --       -- return require('cmp.config.context').in_treesitter_capture 'spell'
+          --     end,
+          --   },
+          -- },
         },
       }
       for _, f in ipairs { 'gitcommit', 'NeogitCommitMessage' } do

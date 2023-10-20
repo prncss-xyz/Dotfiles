@@ -1,11 +1,13 @@
 return {
-  'nanotee/luv-vimdocs',
-  'milisims/nvim-luaref',
   {
     'williamboman/mason.nvim',
     opts = {},
     cmd = {
       'Mason',
+      'MasonUpdate',
+      'MasonInstall',
+      'MasonUninstall',
+      'MasonUninstallAll',
       'MasonLog',
     },
   },
@@ -41,8 +43,11 @@ return {
     end,
     dependencies = { 'williamboman/mason-lspconfig.nvim' },
     cmd = { 'LspInfo' },
+    init = function()
+      vim.diagnostic.config { virtual_text = false, update_in_insert = true }
+    end,
   },
-  -- https://github.com/mason-org/mason-registry/
+  -- https://mason-registry.dev/registry/list
   {
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     opts = {
@@ -52,7 +57,6 @@ return {
         'shfmt',
         'golines',
         'fourmolu',
-        'luacheck',
         'shellcheck',
         'yamllint',
       },
@@ -106,13 +110,11 @@ return {
   {
     'mfussenegger/nvim-lint',
     ft = {
-      'lua',
       'sh',
       'yaml',
     },
     opts = {
       linters_by_ft = {
-        lua = { 'luacheck' },
         sh = { 'shellcheck' },
         yaml = { 'yamllint' },
       },
@@ -151,6 +153,8 @@ return {
       lint.try_lint(nil, { ignore_errors = true })
     end,
   },
+  'nanotee/luv-vimdocs',
+  'milisims/nvim-luaref',
   {
     'folke/neodev.nvim',
     ft = 'lua',
@@ -165,7 +169,7 @@ return {
         settings = {
           Lua = {
             hint = {
-              enable = true,
+              enabled = true,
             },
             diagnostics = {
               globals = {
@@ -199,7 +203,7 @@ return {
               checkThirdParty = false,
             },
             telemetry = {
-              enable = false,
+              enabled = false,
             },
           },
         },
@@ -215,21 +219,23 @@ return {
     config = function()
       require('lspconfig').jsonls.setup {
         capabilities = require('my.utils.lsp').get_cmp_capabilities(),
+        flags = require('my.utils.lsp').flags,
         settings = {
           json = {
             schemas = require('schemastore').json.schemas(),
-            validate = { enable = true },
+            validate = { enabled = true },
           },
         },
       }
       require('lspconfig').yamlls.setup {
         capabilities = require('my.utils.lsp').get_cmp_capabilities_no_fold(),
+        flags = require('my.utils.lsp').flags,
         settings = {
           yaml = {
             schemaStore = {
               -- You must disable built-in schemaStore support if you want to use
               -- this plugin and its advanced options like `ignore`.
-              enable = false,
+              enabled = false,
               -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
               url = '',
             },
@@ -262,6 +268,7 @@ return {
       'TSToolsAddMissingImports',
       'TSToolsFixAll',
       'TSToolsGoToSourceDefinition',
+      'TSToolsRenameFile'
     },
     opts = {},
   },
@@ -409,6 +416,10 @@ return {
   },
   {
     'RRethy/vim-illuminate',
+    opts = {
+      under_cursor = false,
+      filetypes_denylist = { 'NeogitStatus' },
+    },
     config = function(_, opts)
       require('illuminate').configure(opts)
     end,
@@ -420,6 +431,89 @@ return {
     name = 'project_nvim',
     opts = {
       detection_method = { 'lsp', 'pattern' },
+    },
+    enabled = false,
+  },
+  {
+    'barreiroleo/ltex_extra.nvim',
+    ft = { 'markdown', 'tex' },
+    dependencies = { 'neovim/nvim-lspconfig' },
+    config = function()
+      require('ltex_extra').setup {
+        server_opts = {
+          load_langs = { 'en-US', 'fr' },
+          capabilities = require('my.utils.lsp').get_cmp_capabilities(),
+          flags = {
+            debounce_text_changes = 10000,
+            allow_incremental_sync = true,
+          },
+          -- on_attach = function(client, bufnr) end,
+          settings = {
+            ltex = {
+              enabled = { 'markdown' },
+              language = 'auto',
+              additionalRules = {
+                enablePickyRules = true,
+                motherTongue = 'fr',
+              },
+              disabledRules = {
+                fr = { 'APOS_TYP', 'FRENCH_WHITESPACE' },
+              },
+            },
+          },
+        },
+      }
+    end,
+  },
+  {
+    'vigoux/ltex-ls.nvim',
+    -- also requires java runtime to be installed
+    dependencies = { 'neovim/nvim-lspconfig' },
+    ft = { 'markdown', 'gitcommit', 'text' },
+    opts = {
+      filetypes = { 'markdown', 'gitcommit', 'text' },
+      settings = {
+        ltex = {
+          enabled = { 'markdown' },
+          language = 'auto',
+          additionalRules = {
+            enablePickyRules = true,
+            motherTongue = 'fr',
+          },
+          disabledRules = {
+            fr = { 'APOS_TYP', 'FRENCH_WHITESPACE' },
+          },
+          dictionary = (function()
+            -- For dictionary, search for files in the runtime to have
+            -- and include them as externals the format for them is
+            -- dict/{LANG}.txt
+            --
+            -- Also add dict/default.txt to all of them
+            local files = {}
+            for _, file in ipairs(vim.api.nvim_get_runtime_file('dict/*', true)) do
+              local lang = vim.fn.fnamemodify(file, ':t:r')
+              local fullpath = vim.fs.normalize(file)
+              files[lang] = { ':' .. fullpath }
+            end
+
+            if files.default then
+              for lang, _ in pairs(files) do
+                if lang ~= 'default' then
+                  vim.list_extend(files[lang], files.default)
+                end
+              end
+              files.default = nil
+            end
+            return files
+          end)(),
+        },
+      },
+    },
+    cmd = {
+      'LtexCheckDocument',
+      'LtexClearCache',
+      'LtexDisableHere',
+      'LtexServerStatus',
     },
     enabled = false,
   },

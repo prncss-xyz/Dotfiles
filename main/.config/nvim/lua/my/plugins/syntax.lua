@@ -27,18 +27,18 @@ return {
         'vim', -- noice.nvim needs it
       },
       highlight = {
-        enable = true,
+        enabled = true,
         use_languagetree = true,
         additional_vim_regex_highlighting = { 'markdown' },
       },
       indent = {
-        enable = true,
+        enabled = true,
       },
       autotag = {
-        enable = true,
+        enabled = true,
       },
       context_commentstring = {
-        enable = true,
+        enabled = true,
         enable_autocommand = false,
       },
     },
@@ -131,6 +131,7 @@ return {
     'nvim-treesitter/playground',
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
     cmd = { 'TSPlaygroundToggle', 'TSHighlightCapturesUnderCursor' },
+    enabled = true,
   },
   -- Use tressitter to autoclose and autorename HTML tag
   {

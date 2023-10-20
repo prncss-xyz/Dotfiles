@@ -31,7 +31,6 @@ return {
     dir = require('my.utils').local_repo 'flies.nvim',
     enabled = true,
     config = function()
-      print 'aheiafeshilahesfk;'
       require('flies').setup {
         hlslens = true,
         op = {
@@ -48,22 +47,20 @@ return {
           e = require 'flies.flies.buffer',
           f = 'right',
           g = 'left',
-          h = 'hint',
+          s = 'hint',
           i = require('flies.flies._ts'):new { names = 'conditional' },
           j = require('flies.flies._ts'):new { names = 'block' },
           k = require('flies.flies._ts'):new { names = 'call' },
           l = require('flies.flies._ts'):new { names = 'loop' },
           m = 'first',
           n = 'forward',
-          O = require('flies.flies._ts'):new {
+          O = require('flies.flies._ts_'):new {
             names = 'argument',
-            nested = false,
-            many = false,
+            many = true,
           },
-          o = require('flies.flies._ts_'):new {
+          o = require('flies.flies._ts'):new {
             names = 'argument',
-            nested = false,
-            many = false,
+            ctx_pre = false,
           },
           p = 'backward',
           q = require 'flies.flies.quote',
@@ -73,7 +70,7 @@ return {
             nested = true,
           },
           -- r =
-          s = require('flies.flies._ts'):new {
+          h = require('flies.flies._ts'):new {
             names = { 'function', 'section' },
             op = {
               wrap = { snip = true },
@@ -100,6 +97,5 @@ return {
         },
       }
     end,
-    keys = { '<plug>(flies-select)' },
   },
 }

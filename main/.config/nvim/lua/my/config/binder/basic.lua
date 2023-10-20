@@ -12,8 +12,8 @@ function M.extend()
     b = b {
       desc = 'move extremity',
       'req',
-      'flies.operations.move',
-      'exec',
+      'flies.actions.move',
+      'move',
       'n',
       {
         domain = 'outer',
@@ -55,36 +55,36 @@ function M.extend()
     f = modes {
       n = b {
         'req',
-        'flies.operations.move',
-        'exec',
+        'flies.actions.move',
+        'move',
         'n',
         { axis = 'forward', move = 'left', domain = 'outer' },
       },
       o = b {
         'req',
-        'flies.operations.move',
-        'exec',
+        'flies.actions.move',
+        'move',
         'o',
         { axis = 'forward', domain = 'outer' },
       },
       x = b {
         'req',
-        'flies.operations.move',
-        'exec',
+        'flies.actions.move',
+        'move',
         'x',
         { axis = 'forward', domain = 'outer' },
       },
     },
     i = b { 'i' },
     n = modes {
-      nx = b { lazy_req('flies.operations.move_again', 'next') },
+      nx = b { lazy_req('flies.actions.move_again', 'next') },
     },
     O = b { require('my.utils.windows').info },
     -- O = b { '<nop>', modes = 'nx' },
     -- o = b { '<nop>', modes = 'nx' },
     p = modes {
       nx = b {
-        lazy_req('flies.operations.move_again', 'prev'),
+        lazy_req('flies.actions.move_again', 'prev'),
       },
     },
     rr = b { '"+', modes = 'nx' },
@@ -92,70 +92,39 @@ function M.extend()
     s = modes {
       n = b {
         'req',
-        'flies.operations.move',
-        'exec',
+        'flies.actions.move',
+        'move',
         'n',
         { axis = 'hint', domain = 'outer' },
       },
       x = b {
         'req',
-        'flies.operations.move',
-        'exec',
+        'flies.actions.move',
+        'move',
         'x',
         { axis = 'hint', domain = 'outer' },
-      },
-      -- s = b {
-      --   function()
-      --     require('flies.operations.move').exec({
-      --       domain = 'outer',
-      --       axis = 'hint',
-      --     }, {
-      --       c = require('my.config.binder.actions').hop12,
-      --     })
-      --   end,
-      -- },
-      -- s = b {
-      --   function()
-      --     require('flies.operations.move').exec({
-      --       domain = 'outer',
-      --       axis = 'hint',
-      --     }, {
-      --       c = require('my.config.binder.actions').hop12,
-      --     })
-      --   end,
-      -- },
-    },
-
-    S = modes {
-      nx = b { require('my.config.binder.actions').hop12 },
-      o = b {
-        function()
-          require('hop').hint_char2 {
-            char2_fallback_key = '<cr>',
-          }
-        end,
       },
     },
     ou = b { 'U' },
     t = modes {
       n = b {
         'req',
-        'flies.operations.move',
-        'exec',
+        'flies.actions.move',
+        'operations',
         'n',
         { axis = 'backward', domain = 'outer' },
       },
       o = b {
         'req',
-        'flies.operations.move',
-        'exec',
+        'flies.actions.move',
+        'move',
         'o',
         { axis = 'backward', domain = 'outer' },
       },
       x = b {
         'req',
-        'flies.operations.move',
-        'exec',
+        'flies.actions.move',
+        'move',
         'x',
         { axis = 'backward', domain = 'outer' },
       },
@@ -166,16 +135,24 @@ function M.extend()
       x = b { 'V' },
       n = b {
         'req',
-        'flies.operations.select',
-        'exec',
+        'flies.actions.select',
+        'select',
+        {
+          domain = 'outer',
+          around = 'always',
+        },
       },
     },
     w = b { 'b', 'previous word ', modes = 'nxo' },
-    yy = b { 'yy', modes = 'n' },
+    yy = b { '<nop>' },
     y = modes {
       n = b {
         function()
-          require('flies.operations.act').exec({ around = 'always' }, nil, 'y')
+          require('flies.operations.act').exec(
+            { domain = 'outer', around = 'never' },
+            nil,
+            'y'
+          )
         end,
       },
       x = b { 'y' },
@@ -210,13 +187,15 @@ function M.extend()
     --   true,
     --   modes = 'nxo',
     -- },
-    [d.search] = b {
-      'req',
-      'my.utils.fuzzy_slash',
-      'fz',
-      -- ':Fz ',
-      modes = 'nx',
-    },
+    -- [d.search] = b {
+    --   'req',
+    --   'my.utils.fuzzy_slash',
+    --   'fz',
+    --   -- ':Fz ',
+    --   modes = 'nx',
+    -- },
+    ['<c-p>'] = b { 'keys', '<Plug>(YankyCycleForward)' },
+    ['<c-n>'] = b { 'keys', '<Plug>(YankyCycleBackward)' },
     ['<c-q>'] = b { 'cmd', 'quitall!', desc = 'quit', modes = 'nxo' },
     ['<c-v>'] = b { 'keys', '"+P', modes = 'nv' },
     -- also: require("luasnip.extras.select_choice")
@@ -243,10 +222,8 @@ function M.extend()
     ['<m-q>'] = b {
       desc = 'close buffer',
       'req',
-      'bufdelete',
-      'bufdelete',
-      0,
-      true,
+      'my.utils.buffers',
+      'delete',
       modes = 'nxti',
     },
 
@@ -264,7 +241,14 @@ function M.extend()
       'toggle_unkeyed',
       modes = 'nxti',
     },
-    ['<m-l>'] = b {
+    ['<m-e>'] = b {
+      desc = 'toggle unkeyed',
+      'req',
+      'my.utils.ui_toggle',
+      'keep_unkeyed',
+      modes = 'nxti',
+    },
+    ['<m-s>'] = b {
       desc = 'pick window',
       modes = 'nxti',
       'req',
@@ -272,11 +256,11 @@ function M.extend()
       'winpick',
     },
     ['<m-u>'] = b {
-      desc = 'pick window',
+      desc = 'toggle floating term',
       modes = 'nxti',
       'req',
       'my.utils.terminal',
-      'toggle',
+      'toggle_float',
     },
     --[[
     [alt(d.left)] = b {

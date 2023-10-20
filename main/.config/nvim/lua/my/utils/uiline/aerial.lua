@@ -35,8 +35,8 @@ local function output_symbols_structure(depth, separator, icons_enabled)
 end
 
 return function()
-  if not package.loaded['aerial'] then
-    return ''
-  end
+  -- if not package.loaded['aerial'] then
+  --   return ''
+  -- end
   return output_symbols_structure(nil, ' ', true)
 end

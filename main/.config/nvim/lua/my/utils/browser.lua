@@ -55,19 +55,19 @@ function M.visit(base, query)
     :start()
 end
 
-function M.open()
+function M.browse_link()
   require('flies.ioperations._patterns')
     .from_rules({
       {
-        '[%w.-]+/[%w.-]+',
-        function(repo)
-          M.visit('https://github.com/' .. repo)
+        'https?://[%w%d%%-+/.:@?&_]+',
+        function(url)
+          M.visit(url)
         end,
       },
       {
-        'https?://[%w%d%%-+/.:@?&]+',
-        function(url)
-          M.visit(url)
+        '[%w.%-_]+/[%w.%-_]+',
+        function(repo)
+          M.visit('https://github.com/' .. repo)
         end,
       },
     })
@@ -113,6 +113,8 @@ local file_patterns = {
   '^app/(.+)/page%.tsx$',
 }
 
+local default_port = '3000'
+
 local function find_match(path)
   for _, pattern in ipairs(file_patterns) do
     local res = path:match(pattern)
@@ -127,8 +129,13 @@ local function get_file_url(path, port)
   return 'http://localhost:' .. port .. '/' .. res
 end
 
+function M.browse_server()
+  local port = vim.env.PORT or default_port
+  return 'http://localhost:' .. port .. '/'
+end
+
 function M.browse_file(url)
-  url = url or get_file_url(vim.fn.expand '%:.', vim.env.PORT or '8080')
+  url = url or get_file_url(vim.fn.expand '%:.', vim.env.PORT or default_port)
   local slug = url:match(slug_pattern)
   if slug then
     vim.ui.input({

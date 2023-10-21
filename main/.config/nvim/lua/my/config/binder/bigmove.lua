@@ -8,9 +8,9 @@ function M.extend()
   local lazy_req = util.lazy_req
   return keys {
     e = b { desc = 'buf 1', 'req', 'buffstory', 'open', 1 },
-    r = b { desc = 'buf 2', 'req', 'buffstory', 'open', 1 },
-    t = b { desc = 'buf 3', 'req', 'buffstory', 'open', 1 },
-    y = b { desc = 'buf 4', 'req', 'buffstory', 'open', 1 },
+    r = b { desc = 'buf 2', 'req', 'buffstory', 'open', 2 },
+    t = b { desc = 'buf 3', 'req', 'buffstory', 'open', 3 },
+    y = b { desc = 'buf 4', 'req', 'buffstory', 'open', 4 },
     k = b { desc = 'terminal zk', 'req', 'my.utils.terminal', 'terminal', 'zk' },
     l = b { desc = 'terminal zl', 'req', 'my.utils.terminal', 'terminal', 'zl' },
     -- update "main/.config/nvim/lua/plugins/neo-tree.lua"

@@ -5,7 +5,7 @@ return {
   },
   {
     'Olical/conjure',
-    ft = { 'lua' }, -- etc
+    --[[ ft = { 'lua' }, -- etc ]]
     dependencies = {
       {
         'PaterJason/cmp-conjure',

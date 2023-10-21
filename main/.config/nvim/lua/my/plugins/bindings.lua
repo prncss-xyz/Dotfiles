@@ -15,6 +15,7 @@ return {
   },
   {
     'linty-org/key-menu.nvim',
+    enabled = false,
   },
   {
     dir = require('my.utils').local_repo 'binder.nvim',

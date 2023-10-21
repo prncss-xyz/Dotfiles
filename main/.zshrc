@@ -9,7 +9,6 @@ then
   export PATH=$HOME/bin:/usr/local/bin:$PATH
   export DOTFILES=$HOME/Dotfiles
   export PROJECTS=$HOME/Projects
-  export PORT=3000
 
   # micromamba
   # export MAMBA_EXE=/usr/bin/micromamba
@@ -54,8 +53,8 @@ then
   export XPLR_BOOKMARK_FILE=$HOME/Personal/xplr-bookmarks
 fi
 
-export OPENAI_API_KEY=$(pass show openai.com/princesse@princesse.xyz|tail -1)
-export GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1)
+# export OPENAI_API_KEY=$(pass show openai.com/princesse@princesse.xyz|tail -1)
+# export GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1)
 
 [[ ! -o interactive ]] && return
 
@@ -78,7 +77,7 @@ antigen bundle man
 antigen bundle node
 antigen bundle pass
 antigen bundle ripgrep
-antigen bundle sudo
+# antigen bundle sudo
 antigen bundle web-search
 antigen bundle zoxide
 
@@ -95,8 +94,9 @@ eval "$(starship init zsh)"
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
 alias c='bat --style=changes,header,rule,snip'
-alias d=zi
 # alias e='exec $VISUAL'
+#
+alias gh 'GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1) gh'
 alias e=nvr_do
 alias f=fsearch-ext
 alias gca='git add --all; git commit --allow-empty-message -m ""'
@@ -143,7 +143,4 @@ __my-zi() {
 zle -N __my-zi
 bindkey '\ez' __my-zi
 
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export MCFLY_FUZZY=2
-eval "$(mcfly init zsh)"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

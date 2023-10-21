@@ -18,7 +18,6 @@ return {
     },
     dependencies = { 'williamboman/mason.nvim' },
   },
-  -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
   {
     'neovim/nvim-lspconfig',
     name = 'lspconfig',

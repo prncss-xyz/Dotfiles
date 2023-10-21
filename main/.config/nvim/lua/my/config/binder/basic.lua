@@ -105,7 +105,6 @@ function M.extend()
         { axis = 'hint', domain = 'outer' },
       },
     },
-    ou = b { 'U' },
     t = modes {
       n = b {
         'req',
@@ -262,27 +261,11 @@ function M.extend()
       'my.utils.terminal',
       'toggle_float',
     },
-    --[[
-    [alt(d.left)] = b {
-      desc = 'window right',
-      'req',
-      'my.utils.wrap_win',
-      'left',
-    },
-    [alt(d.down)] = b {
-      'req',
-      'my.utils.wrap_win',
-      'down',
-      desc = 'window down',
-    },
-    [alt(d.up)] = b { 'req', 'my.utils.wrap_win', 'up', desc = 'up' },
-    [alt(d.right)] = b {
-      desc = 'window right',
-      'req',
-      'my.utils.wrap_win',
-      'right',
-    },
-    ]]
+    [':'] = b{
+      desc = "command enter",
+      modes = "nx",
+      "<cmd>update<cr>:"
+    }
   }
 end
 

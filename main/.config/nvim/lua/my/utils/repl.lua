@@ -2,6 +2,7 @@ local M = {}
 
 M.conf = {
   repl = {
+    -- TODO: install tsx https://github.com/esbuild-kit/tsx
     sh = 'zsh',
     javascript = 'node',
     javascriptreact = 'node',

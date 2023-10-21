@@ -6,11 +6,28 @@ function M.extend()
   local modes = binder.modes
   local b = binder.b
   local utils = require 'my.config.binder.utils'
+  local cmd = require('binder.helpers').cmd
   local np = utils.np
   local np_ = utils.np_
   local lazy_req = utils.lazy_req
 
   local d = require('my.config.binder.parameters').d
+
+  local function portal_builtin(name, opts)
+    return keys {
+      desc = name,
+      prev = b {
+        function()
+          require('portal.builtin')[name].tunnel_forward(opts)
+        end,
+      },
+      next = b {
+        function()
+          require('portal.builtin')[name].tunnel_backward(opts)
+        end,
+      },
+    }
+  end
 
   return keys {
     redup = keys {
@@ -28,7 +45,7 @@ function M.extend()
         'jumplist',
       },
       l = b {
-        desc = 'marks',
+        desc = 'trail marks',
         'req',
         'telescope.builtin',
         'marks',
@@ -37,7 +54,7 @@ function M.extend()
         desc = 'register',
         'req',
         'telescope.builtin',
-        'register',
+        'registers',
       },
       s = b {
         desc = 'aerial symbols',
@@ -65,6 +82,8 @@ function M.extend()
           end
         end,
       },
+      w = portal_builtin 'jumplist',
+      [';'] = portal_builtin 'changelist',
     },
     b = modes {
       nx = np {
@@ -168,7 +187,25 @@ function M.extend()
         require('gitsigns').next_hunk()
       end,
     },
-    l = b { '`', desc = 'mark <char>' },
+    --[[ l = b { '`', desc = 'mark <char>' }, ]]
+    k = np {
+      desc = 'trail move geo',
+      prev = function()
+        vim.cmd 'TrailBlazerMoveToNearest 0 fpath_up'
+      end,
+      next = function()
+        vim.cmd 'TrailBlazerMoveToNearest 0 fpath_down'
+      end,
+    },
+    l = np {
+      desc = 'trail move chrono',
+      prev = function()
+        vim.cmd 'TrailBlazerPeekMovePreviousUp'
+      end,
+      next = function()
+        vim.cmd 'TrailBlazerPeekMoveNextDown'
+      end,
+    },
     m = keys {
       desc = 'fold',
       prev = b { '[z', desc = 'start current' },
@@ -183,7 +220,6 @@ function M.extend()
       prev = b { '`[', desc = 'start of last mod', modes = 'nxo' },
       next = b { '`]', desc = 'begin of last mod', modes = 'nxo' },
     },
-    o = b { '`.', desc = 'last change' },
     s = b {
       desc = 'definition',
       lazy_req('telescope.builtin', 'lsp_definitions'),
@@ -233,26 +269,14 @@ function M.extend()
       prev = b { '`<', modes = 'nxo', desc = 'selection start' },
       next = b { '`>', modes = 'nxo', desc = 'selection end' },
     },
-    w = keys {
-      desc = 'jump',
-      prev = b {
-        function()
-          require('my.utils.jump').prev()
-        end,
-      },
-      next = b {
-        function()
-          require('my.utils.jump').next()
-        end,
-      },
-    },
+    w = b { desc = 'last jump', '``' },
     [';'] = np {
       prev = 'g,',
       next = 'g;',
       desc = 'change',
     },
-    [d.up] = b { 'gk', desc = 'prev visual line' },
-    [d.down] = b { 'gj', desc = 'next visual line' },
+    --[[ [d.up] = b { 'gk', desc = 'prev visual line' }, ]]
+    --[[ [d.down] = b { 'gj', desc = 'next visual line' }, ]]
     [d.search] = keys {
       desc = 'search',
       prev = b {

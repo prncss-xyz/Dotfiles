@@ -73,11 +73,13 @@ function M.config()
   binder.extend_with 'extra'
   binder.extend_with 'mark'
 
-  require('key-menu').set('n', 'g')
-  require('key-menu').set('n', 'h')
-  require('key-menu').set('n', 'm')
-  require('key-menu').set('n', 'o')
-  require('key-menu').set('n', 'z')
+  if false then
+    require('key-menu').set('n', 'g')
+    require('key-menu').set('n', 'h')
+    require('key-menu').set('n', 'm')
+    require('key-menu').set('n', 'o')
+    require('key-menu').set('n', 'z')
+  end
 end
 
 return M

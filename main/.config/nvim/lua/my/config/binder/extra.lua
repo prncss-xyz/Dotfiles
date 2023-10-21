@@ -1,6 +1,8 @@
 local M = {}
 
 function M.extend()
+  local cmd = require('binder.helpers').cmd
+  local cmd_partial = require('binder.helpers').cmd_partial
   local d = require('my.config.binder.parameters').d
   local utils = require 'my.config.binder.utils'
   local binder = require 'binder'
@@ -235,6 +237,10 @@ function M.extend()
         function()
           require('khutulun').rename()
         end,
+      },
+      s = b {
+        desc = 'source',
+        cmd 'update!|source %',
       },
       v = b {
         desc = 'move file',
@@ -479,38 +485,18 @@ function M.extend()
       },
     },
     k = keys {
-      c = b {
-        desc = 'PackerCompile',
-        '<cmd>PackerCompile<cr>',
-      },
-      i = b {
-        desc = 'PackerInstall',
-        '<cmd>PackerInstall<cr>',
-      },
-      m = b {
-        desc = 'StartupTime',
-        '<cmd>StartupTime<cr>',
-      },
-      p = b {
-        desc = 'PackerProfile',
-        '<cmd>PackerProfile<cr>',
-      },
-      r = b {
-        desc = 'Reload',
-        require('my.utils.buffers').reload,
-      },
-      s = b {
-        desc = 'PackerSync',
-        '<cmd>PackerSync<cr>',
-      },
-      t = b {
-        desc = 'PackerStatus',
-        '<cmd>PackerStatus<cr>',
-      },
-      u = b {
-        desc = 'PackerUpdate',
-        '<cmd>PackerUpdate<cr>',
-      },
+      desc = 'lazy',
+      redup = b { desc = 'home', cmd 'Lazy home' },
+      c = b { desc = 'check health', cmd 'Lazy health' },
+      d = b { desc = 'debug', cmd 'Lazy debug' },
+      h = b { desc = 'help', cmd 'Lazy help' },
+      i = b { desc = 'install', cmd 'Lazy install' },
+      l = b { desc = 'log', cmd 'Lazy log' },
+      p = b { desc = 'profile', cmd 'Lazy profile' },
+      r = b { desc = 'reload', cmd_partial 'Lazy reload ' },
+      s = b { desc = 'sync', cmd 'Lazy sync' },
+      u = b { desc = 'update', cmd 'Lazy update' },
+      x = b { desc = 'clean', cmd 'Lazy clean' },
     },
     l = keys {
       desc = 'neoclip',
@@ -546,10 +532,6 @@ function M.extend()
       c = b {
         desc = 'cursor conceal',
         require('my.utils.vim').toggle_conceal_cursor,
-      },
-      f = b {
-        desc = 'fold (markdown)',
-        '<cmd>FoldToggle<cr>',
       },
       m = b {
         desc = 'foldsigns',
@@ -723,15 +705,14 @@ function M.extend()
       },
     },
     s = keys {
-      desc = 'seek-replace',
-      redup = b {
-        desc = 'ssr',
-        'req',
-        'ssr',
-        'open',
-        modes = 'nx',
-      },
-      r = modes {
+      desc = 'replace',
+      redup = b { desc = 'muren open', cmd 'MurenOpen' },
+      x = b { desc = 'muren close', cmd 'MurenClose' },
+      t = b { desc = 'muren toggle', cmd 'MurenToggle' },
+      f = b { desc = 'muren fresh', cmd 'MurenFresh' },
+      u = b { desc = 'muren unique', cmd 'MurenUnique' },
+      r = b { desc = 'ssr', 'req', 'ssr', 'open', modes = 'nx' },
+      --[[ r = modes {
         n = keys {
           next = b {
             desc = 'spectre open',
@@ -758,7 +739,7 @@ function M.extend()
             lazy_req('spectre', 'open_visual', { select_word = true }),
           },
         },
-      },
+      }, ]]
     },
     t = keys {
       desc = 'neotest',
@@ -877,51 +858,6 @@ function M.extend()
       -- ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
       -- ["<C-cr>"] = require("telescope-undo.actions").restore,
     },
-    -- x = keys {
-    --   desc = 'tester',
-    --   n = b {
-    --     function ()
-    --       require "flies.actions.move_again".next()
-    --     end
-    --   },
-    --   p = b {
-    --     function ()
-    --       require "flies.actions.move_again".prev()
-    --     end
-    --   },
-    --   x = b {
-    --     function()
-    --       require('flies.actions.move').exec()
-    --     end,
-    --   },
-    -- },
-    -- x = modes {
-    --   desc = 'tester',
-    --   n = b {
-    --     function()
-    --       require('flies.operations.wrap').exec 'n'
-    --     end,
-    --   },
-    --   x = b {
-    --     function()
-    --       require('flies.operations.wrap').exec 'x'
-    --     end,
-    --   },
-    -- },
-    -- x = keys {
-    --   redup = b {
-    --     desc = 'tester',
-    --     function()
-    --       require('flies.actions.select').exec()
-    --     end,
-    --   },
-    --   r = b {
-    --     desc = 'refactoring telescope',
-    --     function()
-    --       require('telescope').extensions.refactoring.refactors()
-    --     end,
-    --   },
-    -- },
     y = keys {
       desc = 'browse',
       redup = b {
@@ -932,17 +868,23 @@ function M.extend()
         modes = 'nx',
       },
       u = b {
-        desc = 'open',
+        desc = 'link',
         'req',
         'my.utils.browser',
-        'open',
+        'browse_link',
       },
       f = b {
         desc = 'file',
         'req',
         'my.utils.browser',
         'browse_file',
-      }
+      },
+      d = b {
+        desc = 'server',
+        'req',
+        'my.utils.browser',
+        'browse_server',
+      },
     },
     -- f = b { desc = 'xplr', require('utils').xplr_launch },
     z = keys {

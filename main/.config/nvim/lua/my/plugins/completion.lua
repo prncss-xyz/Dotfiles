@@ -48,7 +48,6 @@ return {
           },
         },
         sources = {
-          { name = 'codeium' },
           { name = 'luasnip' },
           { name = 'nvim_lsp_signature_help' },
           { name = 'cmp_overseer' },
@@ -57,6 +56,7 @@ return {
           { name = 'nvim_lua' },
           { name = 'nvim_lsp' },
           { name = 'path' },
+          { name = 'codeium' },
           { name = 'buffer' },
           -- {
           --   name = 'spell',
@@ -127,9 +127,7 @@ return {
       'nvim-lua/plenary.nvim',
       'hrsh7th/nvim-cmp',
     },
-    -- config = function()
-    --   require('codeium').setup {}
-    -- end,
+    opts = {},
     cmd = { 'Codeium' },
   },
   {

@@ -32,7 +32,7 @@ function M.extend()
         'flies.operations.act',
         'exec',
         {
-          around = 'always',
+          around = 'never',
         },
         {},
         'c',
@@ -45,6 +45,7 @@ function M.extend()
         'flies.operations.act',
         'exec',
         {
+          domain = 'outer',
           around = 'always',
         },
         {},

@@ -1,5 +1,8 @@
 return {
-  { 'linty-org/readline.nvim' },
+  {
+    -- user has disappeared
+    dir = os.getenv 'PROJECTS' .. '/github.com/linty-org/readline.nvim',
+  },
   {
     'Wansmer/treesj',
     opts = {
@@ -43,6 +46,7 @@ return {
     opts = true,
     -- lazy-loading with `cmd =` does not work well with incremental preview
     event = 'CmdlineEnter',
+    enabled = false,
   },
   {
     'IndianBoy42/fuzzy_slash.nvim',
@@ -62,6 +66,7 @@ return {
     },
     cmd = { 'Fz', 'FzNext', 'FzPrev', 'FzPattern', 'FzClear' },
     event = 'CmdlineEnter',
+    enabled = false,
   },
   {
     'nvim-pack/nvim-spectre',
@@ -74,6 +79,18 @@ return {
         },
       },
       name = 'spectre',
+    },
+    enabled = false,
+  },
+  {
+    'AckslD/muren.nvim',
+    config = {},
+    cmd = {
+      'MurenToggle',
+      'MurenOpen',
+      'MurenClose',
+      'MurenFresh',
+      'MurenUnique',
     },
   },
   {
@@ -111,6 +128,7 @@ return {
         callback = require('marks').refresh,
       })
     end,
+    enabled = false,
   },
   {
     'phaazon/hop.nvim',
@@ -124,7 +142,10 @@ return {
   {
     'jackMort/ChatGPT.nvim',
     opts = {
+      api_key_cmd = 'pass show openai.com/keys/princesse@princesse.xyz',
       openai_params = {},
+      predefined_chat_gpt_prompts = 'https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv',
+      actions_paths = { vim.env.HOME .. '/Personal/chatGPT.nvim/actions.json' },
     },
     dependencies = {
       'MunifTanjim/nui.nvim',
@@ -134,9 +155,9 @@ return {
     cmd = {
       'ChatGPT',
       'ChatGPTActAs',
+      'ChatGPTCompleteCode',
       'ChatGPTEditWithInstructions',
       'ChatGPTRun',
-      'ChatGPTRunCustomCodeAction',
     },
   },
   {
@@ -152,6 +173,9 @@ return {
   {
     'gbprod/yanky.nvim',
     opts = {
+      preserve_cursor_position = {
+        enabled = true,
+      },
       ring = {
         storage = 'sqlite',
       },
@@ -164,5 +188,60 @@ return {
       dependencies = { 'kkharji/sqlite.lua' },
     },
     event = 'BufReadPost',
+  },
+  {
+    'cbochs/portal.nvim',
+    opts = {
+      labels = {
+        'a',
+        's',
+        'd',
+        'f', --[[ 'j', 'k', 'l', ';'  ]]
+      },
+    },
+    cmd = 'Portal',
+  },
+  {
+    'LeonHeidelbach/trailblazer.nvim',
+    opts = {
+      auto_save_trailblazer_state_on_exit = true,
+      auto_load_trailblazer_state_on_enter = true,
+      force_mappings = {},
+      force_quickfix_mappings = {},
+    },
+    config = function(_, opts)
+      require('trailblazer').setup(opts)
+      vim.api.nvim_create_autocmd('VimLeave', {
+        desc = 'save trailblazer session on leave',
+        pattern = '*',
+        command = 'TrailBlazerSaveSession',
+      })
+    end,
+    event = 'BufReadPost',
+    cmd = {
+      'TrailBlazerNewTrailMark',
+      'TrailBlazerTrackBack',
+      'TrailBlazerPeekMovePreviousUp',
+      'TrailBlazerPeekMoveNextDown',
+      'TrailBlazerMoveToNearest',
+      'TrailBlazerMoveToTrailMarkCursor',
+      'TrailBlazerDeleteAllTrailMarks',
+      'TrailBlazerPasteAtLastTrailMark',
+      'TrailBlazerPasteAtAllTrailMarks',
+      'TrailBlazerTrailMarkSelectMode',
+      'TrailBlazerToggleTrailMarkList',
+      'TrailBlazerOpenTrailMarkList',
+      'TrailBlazerCloseTrailMarkList',
+      'TrailBlazerSwitchTrailMarkStack',
+      'TrailBlazerAddTrailMarkStack',
+      'TrailBlazerDeleteTrailMarkStacks',
+      'TrailBlazerDeleteAllTrailMarkStacks',
+      'TrailBlazerSwitchNextTrailMarkStack',
+      'TrailBlazerSwitchPreviousTrailMarkStack',
+      'TrailBlazerSetTrailMarkStackSortMode',
+      'TrailBlazerSaveSession',
+      'TrailBlazerLoadSession',
+      'TrailBlazerDeleteSession',
+    },
   },
 }

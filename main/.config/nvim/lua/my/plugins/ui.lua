@@ -73,6 +73,9 @@ return {
   {
     'nvim-lualine/lualine.nvim',
     event = 'VeryLazy',
+    init = function()
+      vim.o.showtabline = 0
+    end,
     opts = {
       options = {
         component_separators = { left = '', right = '' },
@@ -81,12 +84,39 @@ return {
         globalstatus = true,
       },
       sections = {
+        lualine_a = {
+          {
+            'tabs',
+            max_length = math.max(20, vim.o.columns - 20),
+            mode = 1,
+            path = 3,
+          },
+        },
+        lualine_b = {},
+        lualine_c = {},
+        lualine_x = {},
+        lualine_y = { 'branch' },
+        -- lualine_z = { 'overseer' },
+        lualine_z = { require 'my.utils.uiline.overseer' },
+      },
+      winbar = {
         lualine_a = { require 'my.utils.uiline.file' },
         lualine_b = {},
         lualine_c = { require 'my.utils.uiline.aerial' },
-        lualine_x = { require 'my.utils.uiline.overseer' },
-        -- lualine_x = { 'overseer' },
+        lualine_x = {},
         lualine_y = { require 'my.utils.uiline.coordinates' },
+        lualine_z = {},
+      },
+      inactive_winbar = {
+        lualine_a = { require 'my.utils.uiline.file' },
+        lualine_b = {
+          function()
+            return ' '
+          end,
+        },
+        lualine_c = {},
+        lualine_x = {},
+        lualine_y = {},
         lualine_z = {},
       },
     },
@@ -149,14 +179,6 @@ return {
     },
   },
   {
-    'kevinhwang91/nvim-hlslens',
-    name = 'hlslens',
-    opts = {
-      calm_down = true,
-    },
-    event = 'VeryLazy',
-  },
-  {
     'TimUntersberger/neogit',
     cmd = 'Neogit',
     opts = {
@@ -195,7 +217,7 @@ return {
   },
   {
     dir = require('my.utils').local_repo 'buffstory.nvim',
-    event = 'VeryLazy',
+    event = 'BufEnter',
     opts = {},
   },
   {
@@ -203,6 +225,7 @@ return {
     -- requires vim.o.showtabline = 2 -- always show tabline
     opts = { render = render },
     event = 'VeryLazy',
+    enabled = false,
   },
   {
     'stevearc/dressing.nvim',
@@ -229,6 +252,7 @@ return {
         jump_close = 'o',
         toggle_fold = 'z',
         close_folds = {},
+        switch_severity = {},
         hover = 'h',
         open_folds = {},
         toggle_mode = 'm', -- toggle between "workspace" and "document" diagnostics mode
@@ -245,6 +269,7 @@ return {
     event = 'VeryLazy',
     opts = {
       keywords = {
+        WAIT = { icon = '', color = 'warning' },
         TODO = {
           icon = ' ',
           color = 'info',
@@ -305,11 +330,34 @@ return {
     end,
   },
   {
+    'rcarriga/nvim-notify',
+    opts = {
+      level = 1,
+      stages = 'static',
+      render = 'wrapped-compact',
+      timeout = 3000,
+    },
+    config = function(_, opts)
+      require('notify').setup(opts)
+      vim.notify = require 'notify'
+    end,
+    event = 'VimEnter',
+  },
+  {
     'folke/noice.nvim',
     event = 'VimEnter',
     cmd = 'Noice',
     opts = {
+      commands = {
+        history = {
+          view = 'popup',
+        },
+      },
       lsp = {
+        progress = {
+          -- ltex_ls gets really annoying otherwise
+          throttle = 1000,
+        },
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
           ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
@@ -333,13 +381,9 @@ return {
       mappings = {},
     },
   },
-  {
-    'folke/edgy.nvim',
-    event = 'VeryLazy',
-    opts = {},
-    enabled = false,
-  },
-  -- Folding
+  { 'tzachar/highlight-undo.nvim', opts = {}, keys = { 'u', '<c-r>' } },
+
+  -- folds
   {
     'kevinhwang91/nvim-ufo',
     opts = {
@@ -359,5 +403,13 @@ return {
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
     end,
+  },
+  {
+    'jghauser/fold-cycle.nvim',
+    opts = {
+      open_if_max_closed = true, -- closing a fully closed fold will open it
+      close_if_max_opened = true, -- opening a fully open fold will close it
+      softwrap_movement_fix = false, -- see below
+    },
   },
 }

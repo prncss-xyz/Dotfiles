@@ -5,7 +5,8 @@ function M.info()
 end
 
 function M.close()
-  vim.api.nvim_win_close(0, true)
+  -- prevent sending a 'cannot close last window' error
+  pcall(vim.api.nvim_win_close, 0, true)
 end
 
 function M.split_float()

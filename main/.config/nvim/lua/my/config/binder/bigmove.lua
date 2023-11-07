@@ -1,5 +1,23 @@
 local M = {}
 
+local function portal_builtin(name, opts)
+  local keys = require('binder').keys
+  local b = require('binder').b
+  return keys {
+    desc = name,
+    prev = b {
+      function()
+        require('portal.builtin')[name].tunnel_forward(opts)
+      end,
+    },
+    next = b {
+      function()
+        require('portal.builtin')[name].tunnel_backward(opts)
+      end,
+    },
+  }
+end
+
 function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
@@ -7,55 +25,8 @@ function M.extend()
   local util = require 'my.config.binder.utils'
   local lazy_req = util.lazy_req
   return keys {
-    e = b { desc = 'buf 1', 'req', 'buffstory', 'open', 1 },
-    r = b { desc = 'buf 2', 'req', 'buffstory', 'open', 2 },
-    t = b { desc = 'buf 3', 'req', 'buffstory', 'open', 3 },
-    y = b { desc = 'buf 4', 'req', 'buffstory', 'open', 4 },
-    k = b { desc = 'terminal zk', 'req', 'my.utils.terminal', 'terminal', 'zk' },
-    l = b { desc = 'terminal zl', 'req', 'my.utils.terminal', 'terminal', 'zl' },
-    -- update "main/.config/nvim/lua/plugins/neo-tree.lua"
-    u = b { desc = 'harpoon file 1', 'req', 'harpoon.ui', 'nav_file', 1 },
-    i = b { desc = 'harpoon file 2', 'req', 'harpoon.ui', 'nav_file', 2 },
-    o = b { desc = 'harpoon file 3', 'req', 'harpoon.ui', 'nav_file', 3 },
-    p = b { desc = 'harpoon file 4', 'req', 'harpoon.ui', 'nav_file', 4 },
-    a = b {
-      desc = 'test file',
-      'req',
-      'my.utils.relative_files',
-      'alternative',
-      'test',
-    },
-    b = keys {
-      desc = 'bookmark',
-      a = keys {
-        desc = '0',
-        prev = b { 'req', 'marks', 'prev_bookmark0' },
-        next = b { 'req', 'marks', 'next_bookmark0' },
-      },
-      s = keys {
-        desc = '1',
-        prev = b { 'req', 'marks', 'prev_bookmark1' },
-        next = b { 'req', 'marks', 'next_bookmark1' },
-      },
-      d = keys {
-        desc = '2',
-        prev = b { 'req', 'marks', 'prev_bookmark2' },
-        next = b { 'req', 'marks', 'next_bookmark2' },
-      },
-      f = keys {
-        desc = '3',
-        prev = b { 'req', 'marks', 'prev_bookmark3' },
-        next = b { 'req', 'marks', 'next_bookmark3' },
-      },
-    },
-    c = b { desc = 'snippets', 'req', 'my.utils.snippets', 'edit' },
-    d = keys {
-      desc = 'unimpaired directory',
-      prev = b { '<Plug>(unimpaired-directory-previous)' },
-      next = b { '<Plug>(unimpaired-directory-next)' },
-    },
     redup = keys {
-      desc = 'quickfix/trouble/tree',
+      desc = 'side locations',
       redup = b {
         desc = 'raise',
         'req',
@@ -70,13 +41,13 @@ function M.extend()
         'neo_tree',
         'Neotree buffers',
       },
-      d = b {
-        desc = 'diagnostics',
+      e = b {
+        desc = 'neo-tree',
         'req',
         'my.utils.ui_toggle',
         'activate',
-        'trouble',
-        'Trouble workspace_diagnostics',
+        'neo_tree',
+        'Neotree',
       },
       f = b {
         desc = 'neo-tree',
@@ -85,6 +56,14 @@ function M.extend()
         'activate',
         'neo_tree',
         'Neotree',
+      },
+      g = b {
+        desc = 'hunks',
+        'req',
+        'my.utils.ui_toggle',
+        'activate',
+        'trouble',
+        'Gitsigns setqflist',
       },
       h = b {
         desc = 'neo-tree git',
@@ -117,6 +96,13 @@ function M.extend()
         'trouble',
         'Trouble lsp_references',
       },
+      s = b {
+        desc = 'aerial symbols',
+        'req',
+        'my.utils.ui_toggle',
+        'activate',
+        'aerial',
+      },
       w = b {
         desc = 'todo',
         'req',
@@ -131,8 +117,32 @@ function M.extend()
         'my.utils.ui_toggle',
         'close',
       },
+      z = b {
+        desc = 'diagnostics',
+        'req',
+        'my.utils.ui_toggle',
+        'activate',
+        'trouble',
+        'Trouble workspace_diagnostics',
+      },
+    },
+    a = b {
+      desc = 'test file',
+      'req',
+      'my.utils.relative_files',
+      'alternative',
+      'test',
+    },
+    e = portal_builtin 'buffstory',
+    c = b { desc = 'snippets', 'req', 'my.utils.snippets', 'edit' },
+    d = keys {
+      desc = 'unimpaired directory',
+      prev = b { '<Plug>(unimpaired-directory-previous)' },
+      next = b { '<Plug>(unimpaired-directory-next)' },
     },
     g = b { desc = 'last buffer', 'req', 'buffstory', 'last' },
+    k = b { desc = 'terminal zk', 'req', 'my.utils.terminal', 'terminal', 'zk' },
+    l = b { desc = 'terminal zl', 'req', 'my.utils.terminal', 'terminal', 'zl' },
     n = b { desc = 'follow filename', 'gf' },
     s = b {
       desc = 'snapshot file',

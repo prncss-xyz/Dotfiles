@@ -1,31 +1,3 @@
-local function browse(url_)
-  local Job = require 'plenary.job'
-  Job:new({
-    command = 'open',
-    args = { url_ },
-  }):sync()
-end
-
-local function url()
-  url = require('flies.operations.one_shot_subline'):new {
-    {
-      '([^%s/]+/[^%s/]+)',
-      function(match)
-        browse('https://www.github.com/' .. match.capture)
-      end,
-    },
-    {
-      -- url part of markdown link
-      '%[[^%]]*%]%(([^%)]*)%)',
-      function(match)
-        browse(match.capture)
-      end,
-      ft = 'markdown',
-    },
-  }
-  url:exec()
-end
-
 return {
   {
     dir = require('my.utils').local_repo 'flies.nvim',
@@ -47,19 +19,16 @@ return {
           e = require 'flies.flies.buffer',
           f = 'right',
           g = 'left',
-          s = 'hint',
+          h = require 'flies.flies.hunk',
           i = require('flies.flies._ts'):new { names = 'conditional' },
           j = require('flies.flies._ts'):new { names = 'block' },
           k = require('flies.flies._ts'):new { names = 'call' },
           l = require('flies.flies._ts'):new { names = 'loop' },
           m = 'first',
           n = 'forward',
-          O = require('flies.flies._ts_'):new {
-            names = 'argument',
-            many = true,
-          },
           o = require('flies.flies._ts'):new {
             names = 'argument',
+            use_context = true,
             ctx_pre = false,
           },
           p = 'backward',
@@ -69,20 +38,20 @@ return {
             no_tree = require 'flies.flies.quote',
             nested = true,
           },
-          -- r =
-          h = require('flies.flies._ts'):new {
-            names = { 'function', 'section' },
-            op = {
-              wrap = { snip = true },
-            },
-          },
+          r = require 'flies.flies.number',
+          s = 'hint',
           t = require('flies.flies._ts'):new { names = 'tag' },
           -- u ...........................................
           v = require 'flies.flies.variable_segment',
           w = require 'flies.flies.word',
           x = require 'flies.flies.dot_segment',
-          -- y =
-          -- z =
+          y = require('flies.flies._ts'):new {
+            names = { 'function', 'section' },
+            op = {
+              wrap = { snip = true },
+            },
+          },
+          z = require 'flies.flies.diagnostic',
           ['<'] = require('flies.flies.brackets'):new {
             left_patterns = { '<' },
             right_patterns = { '>' },
@@ -92,8 +61,11 @@ return {
           ['*'] = require('flies.flies._ts'):new {
             names = 'comment',
             nested = false,
+            lonely_wiseness_inner = 'v',
+            lonely_wiseness_outer = 'V',
           },
           ['é'] = require 'flies.flies.search',
+          -- ['<tab>']
         },
       }
     end,

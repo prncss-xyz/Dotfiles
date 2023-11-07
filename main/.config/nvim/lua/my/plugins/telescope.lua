@@ -48,12 +48,8 @@ local function current_dir_action()
     return
   end
 
-  local raw = entry[1] -- entry.value.path
-  local dir = vim.fn.fnamemodify(raw, ':h:p')
-  if dir == '.' then
-    dir = ''
-  end
-  dir = dir .. '/'
+  local raw = entry.path
+  local dir = vim.fn.fnamemodify(raw, ':.:h') .. '/'
   require('my.config.binder.utils').keys('<c-u>' .. dir)
 end
 
@@ -75,17 +71,29 @@ local function ensure_dir(target)
   return create_dir(new_dir)
 end
 
--- TODO: intercept telescope relative path
 local function edit()
   local action_state = require 'telescope.actions.state'
   local filepath = action_state.get_current_line()
   local bufnr = vim.api.nvim_win_get_buf(0)
+  local picker = action_state.get_current_picker(bufnr)
   require('telescope.actions').close(bufnr)
   if not filepath then
     return
   end
+  local cwd = picker.cwd
+  filepath = cwd .. '/' .. filepath
   if ensure_dir(filepath) then
-    vim.cmd.edit(filepath)
+    if vim.endswith(filepath, '/') then
+      -- TODO:
+      if false then
+        require('oil').open_float(filepath)
+      else
+        -- working with vim.cmd {object}
+        vim.cmd(string.format('Neotree position=float dir=%s', filepath))
+      end
+    else
+      vim.cmd.edit(filepath)
+    end
   end
 end
 
@@ -114,7 +122,7 @@ return {
             ['<m-b>'] = lazy_req('readline', 'backward_word'),
             ['<m-d>'] = lazy_req('readline', 'kill_word'),
             ['<m-q>'] = false,
-            ['<c-t>'] = function(...)
+            ['<c-l>'] = function(...)
               require('trouble.providers.telescope').open_with_trouble(...)
               require('my.utils.ui_toggle').activate('trouble', 'Trouble')
             end,
@@ -149,31 +157,34 @@ return {
         color_devicons = true,
       },
       extensions = {
+        --[[
         fzf = {
           fuzzy = true,
           override_generic_sorter = true,
           override_file_sorter = true,
           case_mode = 'smart_case',
         },
+        --]]
+        --
+        fzy_native = {
+          override_generic_sorter = true,
+          override_file_sorter = true,
+        },
         repo = {
           list = {
             project_files = require('my.utils.open_project').open_project,
-            fd_opts = {
-              '--no-ignore-vcs',
-              '--exclude',
-              'node_modules',
-              '--exclude',
-              '0 archivés',
-              '--max-depth',
-              '4',
-            },
+            fd_opts = { '--no-ignore', '--max-depth=5' },
             search_dirs = {
-              vim.fn.getenv 'DOTFILES',
-              vim.fn.getenv 'PROJECTS',
-              vim.fn.getenv 'ZK_NOTEBOOK_DIR',
-              -- '~/.local/share/nvim/site/pack',
-              -- node modules
+              '~/Projects/',
+              '~/.local/share/nvim/lazy',
+              '~/Personal/zk',
+              '~/Dotfiles',
             },
+            pattern = [[^\.git$|^node_modules$]],
+          },
+          -- TODO: try it
+          cached_list = {
+            pattern = [[^\.git$|^node_modules$]],
           },
         },
         headings = {
@@ -181,15 +192,16 @@ return {
         },
         smart_open = {
           show_scores = false,
-          ignore_patterns = { '*.git/*', '*/tmp/*' },
-          match_algorithm = 'fzf',
+          ignore_patterns = { '*.git/*', '*/tmp/*' }, -- is it redondant with `.ignore`
+          match_algorithm = 'fzy',
           disable_devicons = false,
         },
       },
     },
     config = function(_, opts)
       require('telescope').setup(opts)
-      require 'telescope._extensions.fzf'
+      --[[ require 'telescope._extensions.fzf' ]]
+      require 'telescope._extensions.fzy_native'
       require('telescope').load_extension 'yank_history'
       -- leave insertmode on exit
       vim.api.nvim_create_autocmd({ 'BufLeave', 'BufWinLeave' }, {
@@ -203,6 +215,11 @@ return {
     dependencies = {
       'nvim-lua/plenary.nvim',
     },
+  },
+  {
+    'nvim-telescope/telescope-fzy-native.nvim',
+    build = 'make',
+    config = load_extension 'fzy_native',
   },
   {
     'nvim-telescope/telescope-fzf-native.nvim',
@@ -220,6 +237,7 @@ return {
   },
   {
     dir = require('my.utils').local_repo 'telescope-repo.nvim',
+    --[[ 'cljoly/telescope-repo.nvim', ]]
     config = load_extension 'repo',
   },
   {
@@ -247,5 +265,9 @@ return {
     },
     config = load_extension 'hoogle',
     enabled = false,
+  },
+  {
+    'LukasPietzschmann/telescope-tabs',
+    config = {},
   },
 }

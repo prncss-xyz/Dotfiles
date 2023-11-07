@@ -4,6 +4,7 @@ vim.filetype.add {
     ['.stylelintrc'] = 'json',
     ['.htmlhintrc'] = 'json',
     ['.busted'] = 'lua',
+    ['.luacov'] = 'lua',
     ['.envrc'] = 'bash',
   },
   pattern = {

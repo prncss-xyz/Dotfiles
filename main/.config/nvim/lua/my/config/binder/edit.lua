@@ -53,17 +53,6 @@ function M.extend()
       },
       x = b { 'd' },
     },
-    --[[
-    o = function()
-      require('Comment.api').locked.insert_linewise_below()
-    end,
-    po = function()
-      require('Comment.api').locked.insert_linewise_above()
-    end,
-    pp = function()
-      require('Comment.api').locked.insert_linewise_eol()
-    end,
-    ]]
     e = b {
       desc = 'swap',
       function()
@@ -98,6 +87,7 @@ function M.extend()
     i = b {
       'i<space><left>',
     },
+    -- j
     k = keys {
       prev = modes {
         n = b {
@@ -117,7 +107,16 @@ function M.extend()
           function()
             require('flies.operations.act').exec(
               { domain = 'inner', around = 'never' },
-              nil,
+              {
+                gg = function()
+                  local config = require('Comment.config'):get()
+                  require('Comment.api').insert.linewise.above(config)
+                end,
+                ff = function()
+                  local config = require('Comment.config'):get()
+                  require('Comment.api').insert.linewise.eol(config)
+                end,
+              },
               '<plug>(comment_toggle_blockwise)'
             )
           end,
@@ -163,14 +162,7 @@ function M.extend()
       prev = b { 'O' },
       next = b { 'o' },
     },
-    -- q = modes {
-    --   desc = 'refactoring',
-    --   x = b {
-    --     function()
-    --       require('telescope').extensions.refactoring.refactors()
-    --     end,
-    --   },
-    -- },
+    -- p,
     q = b {
       desc = 'refactoring',
       function()
@@ -182,13 +174,6 @@ function M.extend()
       prev = b { 'R' },
       next = b { 'r' },
     },
-    -- s = b {
-    --   desc = 'lsp rename',
-    --   function()
-    --     return ':IncRename ' .. vim.fn.expand '<cword>'
-    --   end,
-    --   expr = true
-    -- },
     s = b { vim.lsp.buf.rename, 'rename' },
     t = b {
       desc = 'reindent',

@@ -26,6 +26,7 @@ then
 
   # nvim
   export EXTENSION_TAGS=EXTENSION_TAGS # markdown tree-sitter compile flag // https://github.com/MDeiml/tree-sitter-markdown
+  export EXTENSION_WIKI_LINK=EXTENSION_WIKI_LINK
   export EDITOR=nvim
 
   # fzf

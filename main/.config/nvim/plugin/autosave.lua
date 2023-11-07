@@ -23,7 +23,7 @@ vim.api.nvim_create_autocmd(
         return
       end
       if require('my.utils.std').file_exists(fname) then
-        vim.cmd 'update'
+        vim.cmd 'silent update'
       else
         vim.cmd 'silent :w!'
       end

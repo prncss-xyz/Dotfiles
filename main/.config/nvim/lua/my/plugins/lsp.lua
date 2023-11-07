@@ -152,8 +152,6 @@ return {
       lint.try_lint(nil, { ignore_errors = true })
     end,
   },
-  'nanotee/luv-vimdocs',
-  'milisims/nvim-luaref',
   {
     'folke/neodev.nvim',
     ft = 'lua',
@@ -172,6 +170,7 @@ return {
             },
             diagnostics = {
               globals = {
+                'dump',
                 -- nvim
                 'vim',
                 -- packer.nvim
@@ -267,7 +266,7 @@ return {
       'TSToolsAddMissingImports',
       'TSToolsFixAll',
       'TSToolsGoToSourceDefinition',
-      'TSToolsRenameFile'
+      'TSToolsRenameFile',
     },
     opts = {},
   },
@@ -392,128 +391,39 @@ return {
     ft = { 'haskell', 'lhaskell', 'cabal', 'cabalproject' },
   },
   {
-    'stevearc/aerial.nvim',
-    opts = {
-      layout = {
-        default_direction = 'left',
-        min_width = require('my.parameters').pane_width,
-      },
-      backends = {
-        'treesitter',
-        'lsp',
-        'markdown',
-      },
-      filter_kind = false,
-    },
-    cmd = {
-      'AerialOpen',
-      'AerialClose',
-      'AerialInfo',
-      'AerialNext',
-      'AerialPrev',
-    },
-  },
-  {
-    'RRethy/vim-illuminate',
-    opts = {
-      under_cursor = false,
-      filetypes_denylist = { 'NeogitStatus' },
-    },
-    config = function(_, opts)
-      require('illuminate').configure(opts)
-    end,
-    event = 'VeryLazy',
-  },
-  {
-    'ahmedkhalf/project.nvim',
-    event = 'VimEnter',
-    name = 'project_nvim',
-    opts = {
-      detection_method = { 'lsp', 'pattern' },
-    },
-    enabled = false,
-  },
-  {
     'barreiroleo/ltex_extra.nvim',
-    ft = { 'markdown', 'tex' },
+    ft ={ 'markdown', 'tex', 'gitcommit', 'text' },
     dependencies = { 'neovim/nvim-lspconfig' },
-    config = function()
-      require('ltex_extra').setup {
-        server_opts = {
-          load_langs = { 'en-US', 'fr' },
-          capabilities = require('my.utils.lsp').get_cmp_capabilities(),
-          flags = {
-            debounce_text_changes = 10000,
-            allow_incremental_sync = true,
-          },
-          -- on_attach = function(client, bufnr) end,
-          settings = {
-            ltex = {
-              enabled = { 'markdown' },
-              language = 'auto',
-              additionalRules = {
-                enablePickyRules = true,
-                motherTongue = 'fr',
+    opts = {
+      server_opts = {
+        load_langs = { 'en-US', 'fr' },
+        capabilities = require('my.utils.lsp').get_cmp_capabilities(),
+        flags = {
+          debounce_text_changes = 10000,
+          allow_incremental_sync = true,
+        },
+        settings = {
+          ltex = {
+            enabled = { 'markdown' },
+            language = 'auto',
+            additionalRules = {
+              enablePickyRules = true,
+            },
+            disabledRules = {
+              en = {
+                'UPPERCASE_SENTENCE_START',
+                'PUNCTUATION_PARAGRAPH_END',
               },
-              disabledRules = {
-                fr = { 'APOS_TYP', 'FRENCH_WHITESPACE' },
+              fr = {
+                'APOS_TYP',
+                'FRENCH_WHITESPACE',
+                'UPPERCASE_SENTENCE_START',
+                'PUNCTUATION_PARAGRAPH_END',
               },
             },
           },
         },
-      }
-    end,
-  },
-  {
-    'vigoux/ltex-ls.nvim',
-    -- also requires java runtime to be installed
-    dependencies = { 'neovim/nvim-lspconfig' },
-    ft = { 'markdown', 'gitcommit', 'text' },
-    opts = {
-      filetypes = { 'markdown', 'gitcommit', 'text' },
-      settings = {
-        ltex = {
-          enabled = { 'markdown' },
-          language = 'auto',
-          additionalRules = {
-            enablePickyRules = true,
-            motherTongue = 'fr',
-          },
-          disabledRules = {
-            fr = { 'APOS_TYP', 'FRENCH_WHITESPACE' },
-          },
-          dictionary = (function()
-            -- For dictionary, search for files in the runtime to have
-            -- and include them as externals the format for them is
-            -- dict/{LANG}.txt
-            --
-            -- Also add dict/default.txt to all of them
-            local files = {}
-            for _, file in ipairs(vim.api.nvim_get_runtime_file('dict/*', true)) do
-              local lang = vim.fn.fnamemodify(file, ':t:r')
-              local fullpath = vim.fs.normalize(file)
-              files[lang] = { ':' .. fullpath }
-            end
-
-            if files.default then
-              for lang, _ in pairs(files) do
-                if lang ~= 'default' then
-                  vim.list_extend(files[lang], files.default)
-                end
-              end
-              files.default = nil
-            end
-            return files
-          end)(),
-        },
       },
     },
-    cmd = {
-      'LtexCheckDocument',
-      'LtexClearCache',
-      'LtexDisableHere',
-      'LtexServerStatus',
-    },
-    enabled = false,
   },
 }

@@ -6,11 +6,11 @@ local user_icons = {}
 
 -- TODO: find icons for relevant buffer types
 local buf_icon = {
-  help = ' ',
-  Trouble = ' ',
-  Outline = ' ',
-  DiffviewFiles = ' ',
-  NvimTree = ' ',
+  help = '  ',
+  Trouble = '  ',
+  Outline = '  ',
+  DiffviewFiles = '  ',
+  ['neo-tree'] = '  ',
 }
 
 local function get_file_icon()
@@ -37,7 +37,7 @@ local function get_file_icon()
       icon = unknown_icon
     end
   end
-  return icon .. ' '
+  return icon .. '  '
 end
 
 local function get_buffer_type_icon()
@@ -131,12 +131,9 @@ local function get_status_icons()
 end
 
 return function()
-  if vim.fn.expand '%' == '' then
-    return ''
-  end
-  local str = ' '
-  -- str = str .. get_name_iconified()
-  str = str .. get_displayed_name()
+  local str = ''
+  str = str .. get_name_iconified() .. ' '
+  --[[ str = str .. get_displayed_name() ]]
   str = str .. get_status_icons() .. '  '
   return str
 end

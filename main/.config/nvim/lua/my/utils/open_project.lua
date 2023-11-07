@@ -1,5 +1,13 @@
 local M = {}
 
+function M.open_project_(opts)
+  vim.cmd.lcd(opts.cwd)
+  require('telescope').extensions.smart_open.smart_open {
+    cwd_only = true,
+    filename_first = false,
+  }
+end
+
 function M.open_project(opts)
   local dirpath = opts.cwd
   if not vim.endswith(dirpath, '/') then
@@ -11,16 +19,20 @@ function M.open_project(opts)
       return
     end
   end
-  require('telescope.builtin').find_files {
-    cwd = dirpath,
-    find_command = {
-      'rg',
-      '--files',
-      '--hidden',
-      '-g',
-      '!.git',
-    },
-  }
+  if dirpath == vim.fn.getenv 'HOME' then
+    require('telescope').extensions.repo.list {}
+  else
+    require('telescope.builtin').find_files {
+      cwd = dirpath,
+      find_command = {
+        'rg',
+        '--files',
+        '--hidden',
+        '-g',
+        '!.git',
+      },
+    }
+  end
 end
 
 return M

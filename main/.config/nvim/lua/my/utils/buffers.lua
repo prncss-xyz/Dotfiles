@@ -9,49 +9,42 @@ function M.delete()
   require('bufdelete').bufdelete(0, true)
 end
 
--- --FIX: not working
 function M.edit_most_recent_file()
-  local res
-  local Job = require('plenary').job
-  Job:new({
-    command = 'sh',
-    args = { '-c', 'sh -c "fd --maxdepth 1 --type file|sort -r|tail -1"' },
-    cwd = os.getenv 'HOME',
-    on_exit = function(j, _)
-      res = j:result()
-    end,
-  }):sync()
-  dump(res)
+  require('plenary').job
+    :new({
+      command = 'sh',
+      args = {
+        '-c',
+        [[fd . -t f -x stat -f "%m %N" | sort -rn | head -1 | cut -f2- -d" "]],
+      },
+      on_exit = function(j, _)
+        local filename = j:result()[1]
+        if filename then
+          vim.defer_fn(function()
+            vim.cmd.edit(filename)
+          end, 0)
+        end
+      end,
+    })
+    :start()
 end
 
-function M.reload()
-  vim.cmd 'update'
-  vim.cmd 'source %'
-end
-
-function M.edit_playground_file()
-  local ft = vim.bo.filetype
-  if ft == '' then
-    return
+function M.toggle()
+  local current_bufnr = vim.api.nvim_get_current_buf()
+  local jumplist = unpack(vim.fn.getjumplist())
+  local rank = 1
+  while true do
+    rank = rank + 1
+    local jump = jumplist[rank]
+    if not jump then
+      return
+    end
+    local bufnr = jumplist[rank].bufnr
+    if bufnr ~= current_bufnr and vim.api.nvim_buf_is_valid(bufnr) then
+      vim.api.nvim_set_current_buf(bufnr)
+      return
+    end
   end
-  if ft == 'javascript' then
-    ft = 'js'
-  end
-  if ft == 'typescript' then
-    ft = 'ts'
-  end
-  if ft == 'javascriptreact' then
-    ft = 'jsx'
-  end
-  if ft == 'typescriptreact' then
-    ft = 'tsx'
-  end
-  local path = '_my_'
-  if vim.fn.isdirectory(path) == 0 then
-    vim.fn.mkdir(path, 'p')
-  end
-  local filename = path .. '/playground.' .. ft
-  vim.cmd { cmd = 'edit', args = { filename } }
 end
 
 function M.project_files()

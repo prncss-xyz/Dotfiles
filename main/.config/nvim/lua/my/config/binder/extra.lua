@@ -111,10 +111,43 @@ function M.extend()
         end,
       },
     },
-    c = b {
+    c = keys {
+      desc = 'tabs',
+      redup = b {
+        desc = 'open',
+        'gt',
+      },
+      n = b {
+        desc = 'new',
+        cmd 'tabnew %',
+      },
+      d = keys {
+        desc = 'tabmove ends',
+        prev = b {
+          cmd 'tabmove 0',
+        },
+        next = b {
+          cmd 'tabmove $',
+        },
+      },
+      v = keys {
+        desc = 'tabmove',
+        prev = b {
+          cmd 'tabmove -',
+        },
+        next = b {
+          cmd 'tabmove +',
+        },
+      },
+      x = b {
+        desc = 'close',
+        cmd 'tabclose',
+      },
+    },
+    --[[ c = b {
       desc = 'select adjacent command lines',
       require 'my.utils.select_comment',
-    },
+    }, ]]
     d = keys {
       --   desc = 'show line',
       --   lazy('vim.diagnostic.open_float', nil, { source = 'always' }),
@@ -157,7 +190,7 @@ function M.extend()
         -- tab | horizontal | vertical
         function()
           require('telescope.builtin').help_tags {
-            -- FIXME: not working
+            -- FIX: not working (seems like a bug in telescope)
             cmd = 'vertical',
           }
         end,
@@ -198,8 +231,9 @@ function M.extend()
       },
     },
     f = keys {
+      desc = 'file',
       d = b {
-        desc = 'duplicate file',
+        desc = 'duplicate',
         function()
           require('khutulun').duplicate()
         end,
@@ -218,6 +252,39 @@ function M.extend()
           end,
         },
       },
+      h = keys {
+        'git',
+        s = b {
+          desc = 'stage buffer',
+          lazy_req('gitsigns', 'stage_buffer'),
+          -- '<cmd>Gitsigns stage_buffer<cr>',
+        },
+        d = b {
+          desc = 'diffview file history',
+          lazy_req(
+            'my.utils.ui_toggle',
+            'activate',
+            'diffview',
+            'DiffviewFileHistory'
+          ),
+        },
+        x = b {
+          desc = 'reset buffer',
+          function()
+            require('my.utils.confirm').confirm(
+              'Reset buffer (y/n)?',
+              function()
+                require('gitsigns').reset_buffer()
+              end,
+              true
+            )
+          end,
+        },
+      },
+      w = b {
+        desc = 'word count',
+        cmd '!wc %',
+      },
       y = keys {
         l = b {
           desc = 'yank filename',
@@ -225,15 +292,33 @@ function M.extend()
             require('khutulun').yank_filename()
           end,
         },
-        y = b {
-          desc = 'yank filepath',
+        r = b {
+          desc = 'yank relative filepath',
           function()
-            require('khutulun').yank_filepath()
+            require('khutulun').yank_relative_filepath()
+          end,
+        },
+        y = b {
+          desc = 'yank absolute filepath',
+          function()
+            require('khutulun').yank_absolute_filepath()
           end,
         },
       },
+      b = b {
+        desc = 'browse',
+        'req',
+        'my.utils.browser',
+        'browse_file',
+      },
+      c = b {
+        desc = 'most recent',
+        'req',
+        'my.utils.buffers',
+        'edit_most_recent_file',
+      },
       r = b {
-        desc = 'rename file',
+        desc = 'rename',
         function()
           require('khutulun').rename()
         end,
@@ -337,6 +422,21 @@ function M.extend()
         'my.utils.repl',
         'interrupt',
       },
+      p = keys {
+        desc = 'scratch',
+        prev = b {
+          desc = 'select',
+          'req',
+          'my.utils.scratch',
+          'select',
+        },
+        next = b {
+          desc = 'open',
+          'req',
+          'my.utils.scratch',
+          'open',
+        },
+      },
       ['<cr>'] = b {
         desc = 'cr',
         'req',
@@ -370,7 +470,6 @@ function M.extend()
           desc = 'select',
           cmd = "':<C-U>Gitsigns select_hunk<CR>'",
         },
-
         x = b {
           desc = 'reset',
           lazy_req('gitsigns', 'reset_hunk'),
@@ -412,15 +511,6 @@ function M.extend()
             'DiffviewOpen'
           ),
         },
-        next = b {
-          desc = 'diffview file history',
-          lazy_req(
-            'my.utils.ui_toggle',
-            'activate',
-            'diffview',
-            'DiffviewFileHistory'
-          ),
-        },
       },
       k = b {
         desc = 'help',
@@ -444,19 +534,6 @@ function M.extend()
         desc = 'rebase',
         lazy_req('neogit', 'open', { 'rebase' }), -- split, vsplit
       },
-      s = b {
-        desc = 'stage buffer',
-        lazy_req('gitsigns', 'stage_buffer'),
-        -- '<cmd>Gitsigns stage_buffer<cr>',
-      },
-      x = b {
-        desc = 'reset buffer',
-        function()
-          require('my.utils.confirm').confirm('Reset buffer (y/n)?', function()
-            require('gitsigns').reset_buffer()
-          end, true)
-        end,
-      },
       z = b {
         desc = 'stash',
         lazy_req('neogit', 'open', { 'stash' }), -- split, vsplit
@@ -466,9 +543,16 @@ function M.extend()
         lazy_req('gitsigns', 'toggle_current_line_blame', { full = true }),
       },
     },
-    i = b {
+    i = keys {
       desc = 'messages (noice)',
-      lazy_req('my.utils.ui_toggle', 'activate', 'noice', 'Noice'),
+      prev = b {
+        desc = 'history',
+        lazy_req('my.utils.ui_toggle', 'activate', 'noice', 'Noice history'),
+      },
+      next = b {
+        desc = 'last',
+        lazy_req('my.utils.ui_toggle', 'activate', 'noice', 'Noice last'),
+      },
     },
     I = b {
       function()
@@ -477,6 +561,12 @@ function M.extend()
     },
     j = keys {
       desc = 'lsp',
+      redup = b {
+        desc = 'start',
+        'req',
+        'my.utils.lsp',
+        'start',
+      },
       z = b {
         desc = 'haskell eval all',
         'req',
@@ -516,8 +606,7 @@ function M.extend()
       b = b {
         desc = 'background color',
         function()
-          -- FIXME:
-          local theme = vim.api.nvim_exec('colorscheme', true)
+          local theme = vim.cmd 'colorscheme'
           if theme == 'material' then
             require('material.functions').find_style()
             return
@@ -810,6 +899,16 @@ function M.extend()
     w = keys {
       desc = 'windows',
       prev = b { lazy_req('split', 'close'), desc = 'close' },
+      d = b {
+        desc = 'toggle tabs',
+        'req',
+        'telescope-tabs',
+        'go_to_previous',
+      },
+      e = b {
+        desc = 'focus',
+        '<c-w>w',
+      },
       f = b {
         desc = 'split float',
         lazy_req('my.utils.windows', 'split_float'),
@@ -873,12 +972,6 @@ function M.extend()
         'my.utils.browser',
         'browse_link',
       },
-      f = b {
-        desc = 'file',
-        'req',
-        'my.utils.browser',
-        'browse_file',
-      },
       d = b {
         desc = 'server',
         'req',
@@ -887,20 +980,6 @@ function M.extend()
       },
     },
     -- f = b { desc = 'xplr', require('utils').xplr_launch },
-    z = keys {
-      desc = 'harpoon',
-      redup = keys {
-        redup = b {
-          desc = 'harpoon ui',
-          lazy_req('harpoon.ui', 'toggle_quick_menu'),
-        },
-      },
-      y = b { desc = 'harpoon add', lazy_req('harpoon.mark', 'add_file') },
-      [' '] = b {
-        desc = 'harpoon command menu',
-        lazy_req('harpoon.cmd-ui', 'toggle_quick_menu'),
-      },
-    },
     ['<tab>'] = keys {
       f = b {
         desc = 'Femaco',

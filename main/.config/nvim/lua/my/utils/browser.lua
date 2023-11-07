@@ -59,7 +59,7 @@ function M.browse_link()
   require('flies.ioperations._patterns')
     .from_rules({
       {
-        'https?://[%w%d%%-+/.:@?&_]+',
+        "https?://[%w%d%%-+/.#=:@'?&_]+",
         function(url)
           M.visit(url)
         end,

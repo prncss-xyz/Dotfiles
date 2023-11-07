@@ -50,65 +50,16 @@ table.insert(
   )
 )
 
-table.insert(
-  M,
-  s('i', {
-    t 'if (',
-    i(1, 'false'),
-    t { ') {', '\t ' },
-    i(2, '// TODO:'),
-    t { '', '}' },
-  })
-)
-
-table.insert(
-  M,
-  s('k', {
-    i(1, 'name'),
-    t '(',
-    i(2),
-    t ')',
-  })
-)
-
-table.insert(
-  M,
-  s(
-    'h',
-    fmt(
-      [[
-      function []([]) {
-        []
-      }
-    ]],
-      { i(1, 'name'), i(2, '_params'), i(3, '// TODO:') },
-      { delimiters = '[]' }
-    )
-  )
-)
-
-table.insert(M, s('r', { t 'return ' }))
-
-table.insert(
-  M,
-  s('w', {
-    t 'while (',
-    i(1, 'true'),
-    t { ') {', '\t' },
-    i(2, '// TODO:'),
-    t { '', '}' },
-  })
-)
 
 -- FIXME: indentation
 table.insert(
   M,
-  s('e', {
+  s('else', {
     c(1, {
-      sn(1, { t { '} else {', '\t' }, i(1, '// TODO:') }),
+      sn(1, { t { '} else {', '\t' }, i(1, '') }),
       sn(
         1,
-        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '// TODO:') }
+        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '') }
       ),
     }),
   })
@@ -120,9 +71,9 @@ table.insert(
     c(1, {
       sn(
         1,
-        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '// TODO:') }
+        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '') }
       ),
-      sn(1, { t { '} else {', '\t' }, i(1, '// TODO:') }),
+      sn(1, { t { '} else {', '\t' }, i(1, '') }),
     }),
   })
 )
@@ -140,7 +91,7 @@ table.insert(
       {
         i(1, 'name'),
         i(2, ''),
-        i(3, '// TODO:'),
+        i(3, ''),
       },
       { delimiters = '[]' }
     )
@@ -241,7 +192,7 @@ table.insert(
           if (error.code !== "[]") throw error;[]
         }
       ]],
-      { i(1, '// TODO:'), i(2, 'ENOENT'), i(3, '') },
+      { i(1, ''), i(2, 'ENOENT'), i(3, '') },
       {
         delimiters = '[]',
       }
@@ -261,7 +212,7 @@ table.insert(
           []
         })
       ]],
-      { i(1, 'description'), i(2, '// TODO:') },
+      { i(1, 'description'), i(2, '') },
       { delimiters = '[]' }
     )
   )
@@ -277,7 +228,7 @@ table.insert(
           []
         })
       ]],
-      { i(1, 'description'), i(2, '// TODO:') },
+      { i(1, 'description'), i(2, '') },
       { delimiters = '[]' }
     )
   )
@@ -293,7 +244,7 @@ table.insert(
           []
         })
       ]],
-      { i(1, 'description'), i(2, '// TODO:') },
+      { i(1, 'description'), i(2, '') },
       { delimiters = '[]' }
     )
   )
@@ -324,7 +275,7 @@ table.insert(
           []
         });
       ]],
-      { i(1, 'className'), i(2, '// TODO:')},
+      { i(1, 'className'), i(2, '')},
       { delimiters = '[]' }
     )
   )

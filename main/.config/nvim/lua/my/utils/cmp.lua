@@ -18,7 +18,21 @@ end
 --   vim.fn.feedkeys(require('utils').t '<up>', '')
 -- end
 
+function M.confirm_c()
+  local cmp = require 'cmp'
+  if cmp.visible() then
+    cmp.confirm {
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    }
+    return true
+  end
+end
+
 function M.confirm()
+  if require('flies.actions.quickexpend').exec() then
+    return
+  end
   local cmp = require 'cmp'
   if cmp.visible() then
     cmp.confirm {

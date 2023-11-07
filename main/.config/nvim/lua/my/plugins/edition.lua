@@ -192,6 +192,15 @@ return {
   {
     'cbochs/portal.nvim',
     opts = {
+      window_options = {
+        relative = 'cursor',
+        width = 80,
+        height = 3,
+        col = 2,
+        focusable = false,
+        border = 'single',
+        noautocmd = true,
+      },
       labels = {
         'a',
         's',

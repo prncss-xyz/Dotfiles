@@ -139,6 +139,7 @@ for _, k in ipairs {
   'WARN',
   'PERF',
   'NOTE',
+  'WAIT',
 } do
   todo_comment(k)
 end

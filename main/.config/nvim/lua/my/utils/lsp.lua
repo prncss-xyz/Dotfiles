@@ -2,7 +2,7 @@ local M = {}
 
 function M.format(bufnr)
   -- https://github.com/L3MON4D3/LuaSnip/issues/129
-  vim.cmd 'LuaSnipUnlinkCurrent'
+  --[[ vim.cmd '!silent LuaSnipUnlinkCurrent' ]]
 
   if false then
     vim.lsp.buf.format {
@@ -53,17 +53,19 @@ M.flags = {
   -- allow_incremental_sync = true,
 }
 
+function M.start()
+  local ft = vim.api.nvim_buf_get_option(0, 'filetype')
+  if vim.tbl_contains({ 'markdown', 'tex', 'gitcommit', 'text' }, ft) then
+    require 'ltex_extra'
+  elseif vim.tbl_contains({ 'lua' }, ft) then
+    require 'neodev'
+    
+  end
+  vim.cmd 'LspStart'
+end
+
 function M.start_client(name)
-  local capabilities = require('cmp_nvim_lsp').default_capabilities()
-  capabilities.textDocument.completion.completionItem.snippetSupport = true
-  capabilities.textDocument.foldingRange = {
-    dynamicRegistration = false,
-    lineFoldingOnly = true,
-  }
-  require('lspconfig')[name].setup {
-    capabilities = capabilities,
-    filetypes = { 'html', 'css', 'typescriptreact', 'javascriptreact' },
-  }
+  error 'TODO'
 end
 
 function M.get_client(name)

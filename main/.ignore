@@ -1,4 +1,5 @@
 .cache/
+gql/
 Trash/
 *-lock.json
 *.lock

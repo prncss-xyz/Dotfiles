@@ -112,72 +112,14 @@ local function try_prospect(current, prospect)
   end
 end
 
-function M.toggle_unkeyed()
-  local target
-  local current = vim.api.nvim_get_current_win()
-  target = try_prospect(current, last_unkeyed_win)
-    or try_prospect(current, last_last_unkeyed_win)
-    or try_prospect(current, other(current, false))
-  if target then
-    vim.api.nvim_set_current_win(target)
-  end
-end
-
-function M.keep_unkeyed()
-  local current_win = vim.api.nvim_get_current_win()
-  local key = M.key_from_win(current_win)
-  if key then
-    M.close(false)
-  else
-    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-      local key_ = M.key_from_win(win)
-      if not key_ and (win ~= current_win) then
-        vim.api.nvim_win_close(win, false)
-      end
-    end
-  end
-end
-
-function M.focus_keyed()
-  local target
-  local current_win = vim.api.nvim_get_current_win()
-  target = try_prospect(current_win, last_keyed_win)
-  if target then
-    vim.api.nvim_set_current_win(target)
-  else
-    M.raise()
-    -- M.close(true)
-  end
-end
-
-local function on_win_leave()
-  local current_win = vim.api.nvim_get_current_win()
-  local current_key = M.key_from_win(current_win)
-  if current_key then
-    last_keyed_win = current_win
-  elseif vim.api.nvim_buf_get_option(0, 'buftype') == '' then
-    last_last_unkeyed_win, last_unkeyed_win = last_unkeyed_win, current_win
-  end
-end
-
 function M.setup(opts)
   M.conf = vim.tbl_extend('keep', opts, M.conf)
-  --[[ local group = vim.api.nvim_create_augroup('UiToggle', { clear = true })
-  vim.api.nvim_create_autocmd({ 'WinLeave' }, {
-    pattern = '*',
-    group = group,
-    callback = on_win_leave,
-  }) ]]
 end
 
 M.setup {
   default = 'Neotree',
   skip_buf = { 'terminal' },
   keys = {
-    noice = {
-      ft = 'noice',
-      raise = 'Noice',
-    },
     neo_tree = {
       ft = 'neo-tree',
       raise = 'Neotree source=last',

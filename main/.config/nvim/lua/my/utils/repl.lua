@@ -15,7 +15,7 @@ M.conf = {
 
 local function get_current_ft()
   local cursor = require('flies.utils.windows').get_cursor()
-  return require('flies.utils.ts').get_vim_lang(0, { cursor, cursor })
+  return require('flies.utils.editor').get_vim_lang(0, { cursor, cursor })
 end
 
 local function get_key_by_ft(ft)

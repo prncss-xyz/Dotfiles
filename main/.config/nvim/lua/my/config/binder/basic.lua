@@ -6,20 +6,11 @@ function M.extend()
   local keys = binder.keys
   local modes = binder.modes
   local b = binder.b
+  local cmd = require('binder.helpers').cmd
   local lazy_req = require('my.config.binder.utils').lazy_req
   return keys {
     a = b { desc = 'append', 'a' },
-    b = b {
-      desc = 'move extremity',
-      'req',
-      'flies.actions.move',
-      'move',
-      'n',
-      {
-        domain = 'outer',
-        external = true,
-      },
-    },
+    b = b { '<nop>', modes = 'nx' },
     C = b { '<nop>', modes = 'nx' },
     -- c = b { '"_c', modes = 'nx' },
     c = modes {
@@ -48,9 +39,17 @@ function M.extend()
       },
       x = b { '"_d' },
     },
-    e = modes {
-      n = b { 'w' },
-      xo = b { 'e' },
+    e = b {
+      desc = 'move up right inner',
+      'req',
+      'flies.actions.move',
+      'move',
+      'n',
+      {
+        domain = 'inner',
+        move = 'right',
+      },
+      modes = 'nx',
     },
     f = modes {
       n = b {
@@ -105,30 +104,7 @@ function M.extend()
         { axis = 'hint', domain = 'outer' },
       },
     },
-    t = modes {
-      n = b {
-        'req',
-        'flies.actions.move',
-        'operations',
-        'n',
-        { axis = 'backward', domain = 'outer' },
-      },
-      o = b {
-        'req',
-        'flies.actions.move',
-        'move',
-        'o',
-        { axis = 'backward', domain = 'outer' },
-      },
-      x = b {
-        'req',
-        'flies.actions.move',
-        'move',
-        'x',
-        { axis = 'backward', domain = 'outer' },
-      },
-    },
-    u = b { 'u' },
+    u = b { cmd 'silent undo' },
     V = b { '<c-v>', modes = 'nxo' },
     v = modes {
       x = b { 'V' },
@@ -142,7 +118,18 @@ function M.extend()
         },
       },
     },
-    w = b { 'b', 'previous word ', modes = 'nxo' },
+    w = b {
+      desc = 'move up left outer',
+      'req',
+      'flies.actions.move',
+      'move',
+      'n',
+      {
+        domain = 'outer',
+        move = 'left',
+      },
+      modes = 'nx',
+    },
     yy = b { '<nop>' },
     y = modes {
       n = b {
@@ -177,39 +164,28 @@ function M.extend()
     },
     [d.right] = b { 'keys', 'l', desc = 'right', modes = 'nxo' },
     [d.left] = b { 'keys', 'h', desc = 'left', modes = 'nxo' },
-    [d.up] = b { 'keys', 'k', desc = 'up', modes = 'nxo' },
-    [d.down] = b { 'keys', 'j', desc = 'down', modes = 'nxo' },
-    -- [d.search] = b {
-    --   'req',
-    --   'flies.flies.search',
-    --   'search',
-    --   true,
-    --   modes = 'nxo',
-    -- },
-    -- [d.search] = b {
-    --   'req',
-    --   'my.utils.fuzzy_slash',
-    --   'fz',
-    --   -- ':Fz ',
-    --   modes = 'nx',
-    -- },
+    [d.up] = b { 'keys', 'gk', desc = 'up', modes = 'nxo' },
+    [d.down] = b { 'keys', 'gj', desc = 'down', modes = 'nxo' },
+    ['<c-r>'] = b { desc = 'redo', cmd 'silent redo' },
     ['<c-p>'] = b { 'keys', '<Plug>(YankyCycleForward)' },
     ['<c-n>'] = b { 'keys', '<Plug>(YankyCycleBackward)' },
     ['<c-q>'] = b { 'cmd', 'quitall!', desc = 'quit', modes = 'nxo' },
     ['<c-v>'] = b { 'keys', '"+P', modes = 'nv' },
-    -- also: require("luasnip.extras.select_choice")
-    -- ['<m-a>'] = b { desc = 'buf 1', lazy_req('buffstory', 'open', 1) },
-    -- ['<m-s>'] = b { desc = 'buf 2', lazy_req('buffstory', 'open', 2) },
-    -- ['<m-d>'] = b { desc = 'buf 3', lazy_req('buffstory', 'open', 3) },
-    -- ['<m-f>'] = b { desc = 'buf 4', lazy_req('buffstory', 'open', 4) },
+    -- also: require("luasnip.extras.select_choice"),
     ['<m-t>'] = b {
+      desc = 'last buffer',
+      'req',
+      'buffstory',
+      'buf_toggle',
+      modes = 'nxti',
+    },
+    --[[ ['<m-t>'] = b {
       desc = 'last buffer',
       'req',
       'buffstory',
       'last',
       modes = 'nxti',
-    },
-    -- FIXME:
+    }, ]]
     ['<m-w>'] = b {
       desc = 'close window',
       'req',
@@ -217,7 +193,6 @@ function M.extend()
       'close',
       modes = 'nxti',
     },
-    -- ['<m-k>'] = b { desc = 'hover', vim.lsp.buf.hover },
     ['<m-q>'] = b {
       desc = 'close buffer',
       'req',
@@ -225,27 +200,44 @@ function M.extend()
       'delete',
       modes = 'nxti',
     },
-
-    ['<m-j>'] = b {
-      desc = 'focus keyed',
+    ['<m-p>'] = b {
+      esc = 'prev win',
       'req',
-      'my.utils.ui_toggle',
-      'focus_keyed',
+      'buffstory',
+      'buf_nav',
+      false,
+      modes = 'nxti',
+    },
+    ['<m-n>'] = b {
+      desc = 'next win',
+      'req',
+      'buffstory',
+      'buf_nav',
+      true,
+      modes = 'nxti',
+    },
+    ['<m-j>'] = b {
+      desc = 'prev win',
+      'req',
+      'buffstory',
+      'win_nav',
+      false,
       modes = 'nxti',
     },
     ['<m-k>'] = b {
-      desc = 'toggle unkeyed',
+      desc = 'next win',
       'req',
-      'my.utils.ui_toggle',
-      'toggle_unkeyed',
+      'buffstory',
+      'win_nav',
+      true,
       modes = 'nxti',
     },
     ['<m-e>'] = b {
-      desc = 'toggle unkeyed',
+      desc = 'keep current window',
       'req',
-      'my.utils.ui_toggle',
-      'keep_unkeyed',
-      modes = 'nxti',
+      'buffstory',
+      'keep_win',
+      modes = 'nxi',
     },
     ['<m-s>'] = b {
       desc = 'pick window',
@@ -261,11 +253,11 @@ function M.extend()
       'my.utils.terminal',
       'toggle_float',
     },
-    [':'] = b{
-      desc = "command enter",
-      modes = "nx",
-      "<cmd>update<cr>:"
-    }
+    [':'] = b {
+      desc = 'command enter',
+      modes = 'nx',
+      '<cmd>update<cr>:',
+    },
   }
 end
 

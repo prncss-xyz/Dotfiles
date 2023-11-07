@@ -11,7 +11,7 @@ return {
     event = { 'InsertEnter', 'CmdlineEnter' },
     dependencies = {
       'Exafunction/codeium.nvim',
-      'L3MON4D3/LuaSnip',
+      { 'L3MON4D3/LuaSnip', run = 'make install_jsregexp' },
       'saadparwaiz1/cmp_luasnip',
       'hrsh7th/cmp-calc',
       'hrsh7th/cmp-buffer',
@@ -20,7 +20,7 @@ return {
       'hrsh7th/cmp-cmdline',
       'dmitmel/cmp-cmdline-history',
       'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-nvim-lsp-signature-help',
+      -- 'hrsh7th/cmp-nvim-lsp-signature-help',
       'f3fora/cmp-spell',
       -- 'petertriho/cmp-git',
     },
@@ -29,6 +29,10 @@ return {
       local symbolic = require('my.utils.symbols').symbolic
       ---@diagnostic disable-next-line: redundant-parameter
       cmp.setup {
+        PreselectMode = 'None', --'None'|'Item'
+        completion = {
+          keyword_length = 2,
+        },
         snippet = {
           expand = function(args)
             require('luasnip').lsp_expand(args.body)
@@ -49,12 +53,12 @@ return {
         },
         sources = {
           { name = 'luasnip' },
-          { name = 'nvim_lsp_signature_help' },
+          --[[ { name = 'nvim_lsp_signature_help' }, ]]
+          { name = 'nvim_lsp' },
+          { name = 'nvim_lua' },
           { name = 'cmp_overseer' },
           { name = 'calc' },
           -- { name = 'npm', keyword_length = 4 },
-          { name = 'nvim_lua' },
-          { name = 'nvim_lsp' },
           { name = 'path' },
           { name = 'codeium' },
           { name = 'buffer' },
@@ -111,7 +115,7 @@ return {
       disable_in_macro = true,
       -- check_ts = true,
       fast_wrap = {
-        map = '<m-e>',
+        map = '<m-p>',
         chars = { '{', '[', '(', '"', "'" },
         pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], '%s+', ''),
         end_key = ';',

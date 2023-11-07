@@ -4,13 +4,14 @@ function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
+  local cmd = require('binder.helpers').cmd
   return keys {
     a = b {
-      desc = 'oldfiles',
+      desc = 'current buffer fuzzy find',
       'req',
       'telescope.builtin',
-      'oldfiles',
-      { only_cwd = true },
+      'current_buffer_fuzzy_find',
+      { bufnr = 0 },
     },
     b = b {
       desc = 'buffers',
@@ -18,17 +19,19 @@ function M.extend()
       'telescope.builtin',
       'buffers',
     },
-    c = b {
-      desc = 'repo',
-      'req',
-      'telescope',
-      'extensions.repo.list',
-    },
-    d = b {
-      desc = 'diagnostics',
-      'req',
-      'telescope.builtin',
-      'diagnostics',
+    c = keys {
+      prev = b {
+        desc = 'repo',
+        'req',
+        'telescope',
+        'extensions.repo.list',
+      },
+      next = b {
+        desc = 'tabs',
+        'req',
+        'telescope-tabs',
+        'list_tabs',
+      },
     },
     e = b {
       desc = 'files (smart-open)',
@@ -36,42 +39,26 @@ function M.extend()
       'telescope',
       'extensions.smart_open.smart_open',
       {
-        cwd_only = true,
+        cwd_only = false,
         filename_first = false,
-      },
-    },
-    E = b {
-      desc = 'files (workspace)',
-      'req',
-      'telescope.builtin',
-      'find_files',
-      {
-        prompt_title = 'files (workspace)',
-        find_command = {
-          'fd',
-          '--hidden',
-          '--type',
-          'f',
-          '--strip-cwd-prefix',
-        },
       },
     },
     f = b {
       desc = 'files (local)',
-      'req',
-      'telescope.builtin',
-      'find_files',
-      {
-        prompt_title = 'files (local)',
-        cwd = vim.fn.expand '%:p:h',
-        find_command = {
-          'fd',
-          '--hidden',
-          '--type',
-          'f',
-          '--strip-cwd-prefix',
-        },
-      },
+      function()
+        require('telescope.builtin').find_files {
+          prompt_title = 'files (local)',
+          -- cannot serialize this:
+          cwd = vim.fn.expand '%:p:h',
+          find_command = {
+            'fd',
+            '--hidden',
+            '--type',
+            'f',
+            '--strip-cwd-prefix',
+          },
+        }
+      end,
     },
     g = b {
       desc = 'recent buffer',
@@ -85,6 +72,10 @@ function M.extend()
       'telescope.builtin',
       'git_status',
     },
+    i = b {
+      desc = 'noice (messages)',
+      cmd 'Noice telescope',
+    },
     k = b {
       desc = 'terminal',
       '<cmd>TermSelect<cr>',
@@ -95,14 +86,12 @@ function M.extend()
     -- },
     m = b {
       desc = 'plugins',
-      'req',
-      'telescope',
-      'extensions.repo.list',
-      {
-        prompt_title = 'nvim plugins',
-        cwd = '/prncss/home/.local/share/nvim/',
-        search_dirs = { '~/.local/share/nvim/site/pack' },
-      },
+      function()
+        require('telescope').extensions.repo.list {
+          prompt_title = 'nvim plugins',
+          search_dirs = { vim.env.HOME .. '/.local/share/nvim/lazy' },
+        }
+      end,
     },
     n = b {
       desc = 'notes',
@@ -110,17 +99,51 @@ function M.extend()
       'telescope',
       'extensions.my.zk_notes',
     },
+    o = b {
+      desc = 'oldfiles',
+      'req',
+      'telescope.builtin',
+      'oldfiles',
+    },
     r = b {
       desc = 'references',
       'req',
       'telescope.builtin',
       'lsp_references',
     },
-    s = b {
-      desc = 'workspace symbols',
-      'req',
-      'telescope.builtin',
-      'lsp_workspace_symbols',
+    s = keys {
+      prev = b {
+        desc = 'workspace symbols',
+        'req',
+        'telescope.builtin',
+        'lsp_workspace_symbols',
+      },
+      next = b {
+        desc = 'aerial symbols',
+        function()
+          if
+            vim.tbl_contains({
+              -- OrgMode
+              -- AsciiDoc
+              -- Beancount
+              'help',
+              'norg',
+              'rst',
+              'latex',
+              'tex',
+              'markdown',
+              'vimwiki',
+              'pandoc',
+              'markdown.pandoc',
+              'markdown.gtm',
+            }, vim.bo.filetype)
+          then
+            require('telescope').extensions.heading.heading()
+          else
+            require('telescope').extensions.aerial.aerial()
+          end
+        end,
+      },
     },
     v = b {
       desc = 'yank history',
@@ -135,27 +158,59 @@ function M.extend()
       'extensions.todo-comments.todo',
     },
     z = b {
+      desc = 'diagnostics',
+      'req',
+      'telescope.builtin',
+      'diagnostics',
+    },
+    Z = b {
       desc = 'spell',
       'req',
       'telescope.builtin',
       'spell_suggest',
     },
+    ['.'] = b {
+      desc = 'dotfiles',
+      function()
+        require('telescope.builtin').find_files {
+          prompt_title = 'files (local)',
+          -- cannot serialize this:
+          cwd = '~/Dotfiles',
+          find_command = {
+            'fd',
+            '--hidden',
+            '--type',
+            'f',
+            '--strip-cwd-prefix',
+          },
+        }
+      end,
+    },
     ['é'] = keys {
       prev = b {
         desc = 'live grep (workspace)',
-        'req',
-        'telescope.builtin',
-        'live_grep',
-        {
-          prompt_title = 'live grep (workspace)',
-        },
+        function()
+          local conf = require('telescope.config').values
+          require('telescope.builtin').live_grep {
+            prompt_title = 'live grep (workspace)',
+            vimgrep_arguments = table.insert(
+              conf.vimgrep_arguments,
+              '--fixed-strings'
+            ),
+          }
+        end,
       },
       next = b {
         desc = 'live grep (local)',
         function()
+          local conf = require('telescope.config').values
           require('telescope.builtin').live_grep {
             prompt_title = 'live grep (local)',
             search_dirs = { vim.fn.expand '%:h' },
+            vimgrep_arguments = table.insert(
+              conf.vimgrep_arguments,
+              '--fixed-strings'
+            ),
           }
         end,
       },

@@ -39,7 +39,7 @@ local snippets = {
     fmta("func main() {\n\t<>\n}", ls.i(0)),
     not_in_fn
   ),
-  ls.s("ret", {
+  ls.s("return", {
   	ls.t( "return "), ls.i(1), ls.t{""},
   	ls.d(2,  snips.make_default_return_nodes, {1})
   },
@@ -187,7 +187,7 @@ for  {} := 0; {} < {}; {}++ {{
 			rep(1),
 			ls.c(2, { ls.i(1, "num"), ls.sn(1, { ls.t("len("), ls.i(1, "arr"), ls.t(")") }) }),
 			rep(1),
-			ls.i(3, "// TODO:"),
+			ls.i(3, ""),
 			ls.i(4),
 		}
 	), in_fn

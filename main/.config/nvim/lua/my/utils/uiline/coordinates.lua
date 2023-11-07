@@ -1,26 +1,6 @@
-local no_num_list = {
-  'NvimTree',
-  'Outline',
-  'Trouble',
-  'DiffviewFiles',
-  'Outline',
-  'Trouble',
-  'LuaTree',
-  'dbui',
-  'help',
-  'dapui_scopes',
-  'dapui_breakpoints',
-  'dapui_stacks',
-  'dapui_watches',
-  'dap-repl',
-  'dap-scopes',
-}
-
 local function coordinates()
-  if vim.tbl_contains(no_num_list, vim.bo.filetype) then
-    return ''
-  end
-  if vim.fn.expand '%' == '' then
+  local bt = vim.api.nvim_buf_get_option(0, 'buftype')
+  if bt ~= '' then
     return ''
   end
   local line = vim.fn.line '.'

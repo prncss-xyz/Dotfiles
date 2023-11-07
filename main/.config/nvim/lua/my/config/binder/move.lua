@@ -13,78 +13,8 @@ function M.extend()
 
   local d = require('my.config.binder.parameters').d
 
-  local function portal_builtin(name, opts)
-    return keys {
-      desc = name,
-      prev = b {
-        function()
-          require('portal.builtin')[name].tunnel_forward(opts)
-        end,
-      },
-      next = b {
-        function()
-          require('portal.builtin')[name].tunnel_backward(opts)
-        end,
-      },
-    }
-  end
-
   return keys {
-    redup = keys {
-      a = b {
-        desc = 'current buffer fuzzy find',
-        'req',
-        'telescope.builtin',
-        'current_buffer_fuzzy_find',
-        { bufnr = 0 },
-      },
-      j = b {
-        desc = 'jumplist',
-        'req',
-        'telescope.builtin',
-        'jumplist',
-      },
-      l = b {
-        desc = 'trail marks',
-        'req',
-        'telescope.builtin',
-        'marks',
-      },
-      r = b {
-        desc = 'register',
-        'req',
-        'telescope.builtin',
-        'registers',
-      },
-      s = b {
-        desc = 'aerial symbols',
-        function()
-          if
-            vim.tbl_contains({
-              -- OrgMode
-              -- AsciiDoc
-              -- Beancount
-              'help',
-              'norg',
-              'rst',
-              'latex',
-              'tex',
-              'markdown',
-              'vimwiki',
-              'pandoc',
-              'markdown.pandoc',
-              'markdown.gtm',
-            }, vim.bo.filetype)
-          then
-            require('telescope').extensions.heading.heading()
-          else
-            require('telescope').extensions.aerial.aerial()
-          end
-        end,
-      },
-      w = portal_builtin 'jumplist',
-      [';'] = portal_builtin 'changelist',
-    },
+    redup = keys {},
     b = modes {
       nx = np {
         desc = 'aerial symbol',
@@ -111,23 +41,8 @@ function M.extend()
         end,
       },
     },
-    d = np_ {
-      desc = 'diagnostic',
-      prev = {
-        'vim',
-        'diagnostic.goto_prev',
-      },
-      next = {
-        'vim',
-        'diagnostic.goto_next',
-      },
-    },
     e = keys {
       desc = 'peek',
-      redup = b {
-        desc = 'focus',
-        '<c-w>w',
-      },
       h = b {
         desc = 'git',
         'req',
@@ -136,7 +51,6 @@ function M.extend()
         { full = true },
       },
       k = b { desc = 'hover', 'vim', 'lsp.buf.hover' },
-      l = b { '<Plug>(Marks-preview)' },
       r = b {
         desc = 'reference',
         'req',
@@ -152,42 +66,6 @@ function M.extend()
       t = b { 'UltestOutput', cmd = true },
       x = b { desc = 'signature help', 'vim', 'lsp.buf.signature_help' },
     },
-    f = keys {
-      desc = 'loclist/trouble',
-      d = b {
-        desc = 'diagnostics',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'trouble',
-        'Trouble document_diagnostics',
-      },
-      s = b {
-        desc = 'aerial symbols',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'aerial',
-      },
-      h = b {
-        desc = 'hunks',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'trouble',
-        'Gitsigns setqflist',
-      },
-    },
-    h = np {
-      desc = 'hunk',
-      prev = function()
-        require('gitsigns').prev_hunk()
-      end,
-      next = function()
-        require('gitsigns').next_hunk()
-      end,
-    },
-    --[[ l = b { '`', desc = 'mark <char>' }, ]]
     k = np {
       desc = 'trail move geo',
       prev = function()
@@ -205,20 +83,6 @@ function M.extend()
       next = function()
         vim.cmd 'TrailBlazerPeekMoveNextDown'
       end,
-    },
-    m = keys {
-      desc = 'fold',
-      prev = b { '[z', desc = 'start current' },
-      next = b { ']z', desc = 'end current' },
-    },
-    n = keys {
-      desc = 'fold',
-      prev = b { 'zk', desc = 'start current' },
-      next = b { 'zj', desc = 'end current' },
-    },
-    q = keys {
-      prev = b { '`[', desc = 'start of last mod', modes = 'nxo' },
-      next = b { '`]', desc = 'begin of last mod', modes = 'nxo' },
     },
     s = b {
       desc = 'definition',
@@ -290,7 +154,6 @@ function M.extend()
         end,
       },
     },
-    ['<cr>'] = b { 'G', desc = 'line' },
   }
 end
 

@@ -120,6 +120,7 @@ return {
     },
   },
   pattern = {
+    -- bin
     {
       '/%.local/bin/.+%..+',
       {},
@@ -136,6 +137,22 @@ return {
         end, {}),
       },
     },
+
+    -- lua
+    {
+      'my/plugins/.+%.lua$',
+      {
+        t { 'return {', '\t' },
+        t { "{ '" },
+        i(0),
+        t { "' }", '' },
+        t { '}' },
+      },
+    },
+    {
+      'scratch/.+%.lua$',
+      {},
+    },
     {
       '_spec%.lua$',
       {
@@ -145,6 +162,7 @@ return {
         i(1, '-- TODO:'),
       },
     },
+    -- ts
     {
       '%.test%.ts$',
       {

@@ -109,13 +109,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
   callback = function()
     vim.schedule(function()
       fetch_git_branch_plenary()
-      if not vim.fn.expand then
-      elseif vim.fn.getcwd() == os.getenv 'HOME' then
-        -- FIX: needs to fix dir change for this to be useful
-        --[[ require('telescope').extensions.repo.list {} ]]
-      else
-        require('my.utils.open_project').open_project { cwd = vim.fn.getcwd() }
-      end
+      require('my.utils.open_project').open_project { cwd = vim.fn.getcwd() }
     end)
   end,
 })

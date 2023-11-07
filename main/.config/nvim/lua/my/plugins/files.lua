@@ -55,7 +55,8 @@ return {
           follow_current_file = {
             enabled = true,
           },
-          hijack_netrw_behavior = 'open_default',
+          -- 'open_default', 'disabled'
+          hijack_netrw_behavior = 'open_current',
           use_libuv_file_watcher = true,
           filtered_items = {
             hide_dotfiles = true,
@@ -63,6 +64,7 @@ return {
           window = {
             mappings = {
               a = false,
+              s = false,
               e = 'create',
               gh = 'set_root',
               gp = 'prev_git_modified',
@@ -88,7 +90,6 @@ return {
             file = {
               { 'icon' },
               { 'name', use_git_status_colors = true },
-              { 'harpoon_index' }, --> This is what actually adds the component in where you want it
               { 'diagnostics' },
               { 'git_status', highlight = 'NeoTreeDimText' },
             },
@@ -98,7 +99,8 @@ return {
             duplicate = file_cmd(khutulun.duplicate),
             create = file_cmd(khutulun.create),
             rename = file_cmd(khutulun.rename),
-            yank_filepath = file_cmd(khutulun.yank_filepath),
+            yank_absolute = file_cmd(khutulun.yank_absolute_filepath),
+            yank_filepath = file_cmd(khutulun.yank_relavite_filepath),
             yank_filename = file_cmd(khutulun.yank_filename),
             system_open = file_cmd(function(path)
               vim.api.nvim_command('silent !xdg-open ' .. path)
@@ -113,25 +115,6 @@ return {
               else
                 state.commands['open'](state)
                 vim.cmd 'Neotree reveal'
-              end
-            end,
-          },
-          components = {
-            harpoon_index = function(config, node, _)
-              local Marked = require 'harpoon.mark'
-              local path = node:get_id()
-              local succuss, index = pcall(Marked.get_index_of, path)
-              if succuss and index and index > 0 then
-                -- TODO: sync with bindings
-                local index_name = { 'zu', 'zi', 'zo', 'zp' }
-                local text = index_name[index] or (string.format('%d', index))
-                text = string.format(' ⥤ %s ', text)
-                return {
-                  text = text, -- <-- Add your favorite harpoon like arrow here
-                  highlight = config.highlight or 'NeoTreeDirectoryIcon',
-                }
-              else
-                return {}
               end
             end,
           },
@@ -191,24 +174,6 @@ return {
     enabled = false,
   },
   {
-    'ThePrimeagen/harpoon',
-    opts = {
-      global_settings = {
-        save_on_toggle = true,
-        enter_on_sendcmd = true,
-      },
-      projects = {
-        ['$DOTFILES'] = {
-          term = {
-            cmds = {
-              'ls',
-            },
-          },
-        },
-      },
-    },
-  },
-  {
     'famiu/bufdelete.nvim',
   },
   {
@@ -227,6 +192,15 @@ return {
     },
   },
   {
+    'notjedi/nvim-rooter.lua',
+    opts = {
+      rooter_patterns = { '.git', '.hg', '.svn', 'node_modules' },
+    },
+    name = 'nvim-rooter',
+    event = 'VimEnter',
+    cmd = { 'Rooter', 'RooterToggle' },
+  },
+  {
     'echasnovski/mini.misc',
     opts = {
       make_global = { 'put', 'put_text' },
@@ -237,5 +211,6 @@ return {
       -- MiniMisc.setup_restore_cursor()
     end,
     lazy = false,
+    enabled = false,
   },
 }

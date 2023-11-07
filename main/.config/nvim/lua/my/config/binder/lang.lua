@@ -15,6 +15,7 @@ function M.setup()
       ['<m-e>'] = b { '<c-f>' },
       ['<tab>'] = b { 'req', 'my.utils.cmp', 'menu_next_c' },
       ['<s-tab>'] = b { 'req', 'my.utils.cmp', 'menu_previous_c' },
+      ['<c-g>'] = b { 'req', 'my.utils.cmp', 'confirm_c' },
     },
     is = keys {
       ['<c-space>'] = b { '<space><left>' },
@@ -34,6 +35,9 @@ function M.setup()
       ['<c-v>'] = b { '<c-r><c-o>+' },
       --FIX: not working in s mode
       ['<c-r>'] = b { '<c-r><c-o>"' },
+      ['<c-n>'] = b { 'req', 'my.utils.cmp', 'menu_next_c' },
+      ['<c-p>'] = b { 'req', 'my.utils.cmp', 'menu_previous_c' },
+      ['<c-g>'] = b { 'req', 'my.utils.cmp', 'confirm' },
     },
     isc = keys {
       ['<c-a>'] = b { 'req', 'readline', 'beginning_of_line' },
@@ -43,7 +47,6 @@ function M.setup()
           require('my.utils.moves').fwd(true)
         end,
       },
-      ['<c-g>'] = b { 'req', 'my.utils.cmp', 'confirm' },
       ['<c-e>'] = b { 'req', 'readline', 'end_of_line' },
       ['<m-f>'] = b { 'req', 'readline', 'forward_word' },
       ['<c-k>'] = b { 'req', 'readline', 'kill_line' },

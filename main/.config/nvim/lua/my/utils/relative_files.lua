@@ -42,7 +42,7 @@ function M.test_file(file)
   end
 end
 
-function M.test_current_file()
+function M.test_current_file(file)
   M.test_file(file)
 end
 

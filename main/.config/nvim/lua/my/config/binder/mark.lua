@@ -1,117 +1,58 @@
 local M = {}
 
-local function t(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
 function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
   local cmd = require('binder.helpers').cmd
   return keys {
-    b = keys {
-      next = b {
-        b = {
-          '<cmd>rshada<cr><Plug>(Marks-delete-bookmark)<cmd>wshada!<cr>',
-        },
+    redup = keys {
+      prev = b {
+        function()
+          require('fold-cycle').close()
+        end,
+        desc = 'open current fold',
       },
-      a = b { '<Plug>(Marks-set-bookmark0)' },
-      s = b { '<Plug>(Marks-set-bookmark1)' },
-      d = b { '<Plug>(Marks-set-bookmark2)' },
-      f = b { '<Plug>(Marks-set-bookmark3)' },
+      next = b {
+        function()
+          require('fold-cycle').open()
+        end,
+        desc = 'open current fold',
+      },
     },
-    o = keys {
-      prev = b { 'zO', desc = 'open current fold recursive' },
-      next = b { 'zo', desc = 'open current fold' },
-    },
-    c = keys {
-      prev = b { 'zC', desc = 'close current fold recursive' },
-      next = b { 'zc', desc = 'close current fold' },
+    f = keys {
+      next = b {
+        desc = 'toggle recursively',
+        function()
+          require('fold-cycle').toggle_all()
+        end,
+      },
     },
     a = keys {
-      prev = b { 'zA', desc = 'toggle current fold recursive' },
-      next = b { 'za', desc = 'toggle current fold' },
-    },
-    m = keys {
       prev = b { 'zM', desc = 'close all folds' },
-      next = b { 'zm', desc = 'more fold' },
+      next = b { 'zR', desc = 'open all folds' },
     },
-    r = keys {
-      prev = b { 'zR', desc = 'open all folds' },
-      next = b { 'zr', desc = 'less folds' },
-    },
-    l = b {
-      desc = 'new trail mark',
-      cmd 'TrailBlazerNewTrailMark',
+    l = keys {
+      prev = b {
+        desc = 'trail backtrack',
+        cmd 'TrailBlazerTrackBack',
+      },
+      next = b {
+        desc = 'trail new mark',
+        cmd 'TrailBlazerNewTrailMark',
+      },
     },
     x = keys {
-      prev = b {
+      next = b {
         desc = 'trail clear',
         cmd 'TrailBlazerDeleteAllTrailMarks',
       },
-      next = b {
-        desc = 'trail back',
-        cmd 'TrailBlazerTrackBack',
-      },
+    },
+    z = b {
+      desc = 'add spell',
+      'zg',
     },
   }
-end
-
-if false then
-  function M.extend()
-    local binder = require 'binder'
-    local keys = binder.keys
-    local b = binder.b
-    return keys {
-      b = keys {
-        next = b {
-          b = {
-            '<cmd>rshada<cr><Plug>(Marks-delete-bookmark)<cmd>wshada!<cr>',
-          },
-        },
-        a = b { '<Plug>(Marks-set-bookmark0)' },
-        s = b { '<Plug>(Marks-set-bookmark1)' },
-        d = b { '<Plug>(Marks-set-bookmark2)' },
-        f = b { '<Plug>(Marks-set-bookmark3)' },
-      },
-      o = keys {
-        prev = b { 'zO', desc = 'open current fold recursive' },
-        next = b { 'zo', desc = 'open current fold' },
-      },
-      c = keys {
-        prev = b { 'zC', desc = 'close current fold recursive' },
-        next = b { 'zc', desc = 'close current fold' },
-      },
-      a = keys {
-        prev = b { 'zA', desc = 'toggle current fold recursive' },
-        next = b { 'za', desc = 'toggle current fold' },
-      },
-      m = keys {
-        prev = b { 'zM', desc = 'close all folds' },
-        next = b { 'zm', desc = 'more fold' },
-      },
-      r = keys {
-        prev = b { 'zR', desc = 'open all folds' },
-        next = b { 'zr', desc = 'less folds' },
-      },
-      t = b {
-        desc = 'FoldToggle (markdown)',
-        ':FoldToggle<cr>',
-      },
-      l = b {
-        function()
-          if not vim.g.secret then
-            vim.fn.feedkeys(
-              t '<cmd>rshada<cr><Plug>(Marks-toggle)<cmd>wshada!<cr>',
-              'm'
-            )
-          end
-        end,
-        desc = 'toggle next available mark at cursor',
-      },
-    }
-  end
 end
 
 return M

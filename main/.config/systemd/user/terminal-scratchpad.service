@@ -1,7 +1,7 @@
 [Unit]
-Description=Flash of tranparency on focus
+Description=Terminal to be used as scratchpad
 PartOf=graphical-session.target
-After=terminal.service
+After=foot-server.service
 
 [Service]
 ExecStart=footclient --title=scratchpad

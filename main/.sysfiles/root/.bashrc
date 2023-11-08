@@ -9,5 +9,5 @@ fi
 PS1='[\u@\h \W]\$ '
 
 if [[ $(ps --no-header --pid=$PPID --format=cmd) != "fish" ]]; then
-	exec fish
+	exec zsh
 fi

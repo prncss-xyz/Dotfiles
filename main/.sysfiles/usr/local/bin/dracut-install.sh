@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-args=('--force' '/efi/EFI/BOOT/BOOTX64.EFI ')
+args=('--force' '/boot/efi/EFI/BOOT/BOOTX64.EFI ')
 
 while read -r line; do
 	if [[ "$line" == 'usr/lib/modules/'+([^/])'/pkgbase' ]]; then

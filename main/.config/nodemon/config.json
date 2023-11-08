@@ -1,5 +1,0 @@
-{
-  "events": {
-    "crash": "notify-send \"$NODEMON_NAME crashed\""
-  }
-}

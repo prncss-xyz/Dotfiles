@@ -1,11 +1,10 @@
 [Unit]
-Description=Flash of tranparency on focus
+Description=Day/night gamma adjustments
 PartOf=graphical-session.target
 After=graphical-session.target
 
 [Service]
-Type=forking
-ExecStart=/usr/bin/foot --server
+ExecStart=/usr/bin/gammastep
 Restart=on-failure
 
 [Install]

@@ -1,11 +1,9 @@
 #!/bin/sh
-# TODO: light, 
 # TODO:
-# brightnessctl|light
 # light
 # gammastep
-# waylock
 # semicolon
+# systemd services
 
 # This is the example configuration file for river.
 #

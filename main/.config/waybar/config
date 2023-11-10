@@ -1,14 +1,20 @@
 {
     "layer": "top",
     "position": "bottom",
-    "modules-left": ["clock", "sway/mode"],
-    "modules-center": [ "sway/window"],
+    "modules-left": ["clock", "sway/mode", "river/mode"],
+    "modules-center": [ "sway/window", "river/window"],
     "modules-right": ["cpu", "memory", "battery", "temperature"],
     "sway/workspaces": {
       "current-only": true,
       "tooltip": false
     },
+    "river/tags": {
+    },
     "sway/window": {
+      "max-length": 90,
+      "tooltip": false
+    },
+    "river/window": {
       "max-length": 90,
       "tooltip": false
     },

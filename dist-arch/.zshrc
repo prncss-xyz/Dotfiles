@@ -1,5 +1,6 @@
 export DOTFILES=$HOME/Dotfiles
 export PROJECTS=$HOME/Projects
+export GPG_TTY=$(tty)
 
 # micromamba
 # export MAMBA_EXE=/usr/bin/micromamba

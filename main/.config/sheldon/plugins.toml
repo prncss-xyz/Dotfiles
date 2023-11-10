@@ -21,7 +21,8 @@ github = 'ohmyzsh/ohmyzsh'
 github = 'hlissner/zsh-autopair'
 
 [plugins.abbr]
-github = 'olets/zsh-abbr@main'
+github = 'olets/zsh-abbr'
+branch = 'next'
 
 [plugins.zsh-autosuggestions]
 github = 'zsh-users/zsh-autosuggestions'

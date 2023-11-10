@@ -46,7 +46,7 @@ export XPLR_BOOKMARK_FILE=$HOME/Personal/xplr-bookmarks
 # ~/.zshrc
 
 export ZSH="$HOME/.local/share/sheldon/repos/github.com/ohmyzsh/ohmyzsh"
-plugins=(dotenv)
+plugins=(dotenv zoxide fzf)
 
 # Oh My Zsh settings here
 
@@ -82,6 +82,7 @@ alias clock-in='echo i $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'
 alias clock-out='echo o $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'
 alias wasted='ledger -f ${TIMELOG} bal -b $(date -dlast-monday +%m/%d) --depth 2'
 alias clock-status='[[ $(tail -1 ${TIMELOG} | cut -c 1) == "i" ]] && { echo "Clocked IN to $(tail -1 ${TIMELOG} | cut -d " " -f 4)"; } || { echo "Clocked OUT"; }' 
+
 function _clock_in ()
 {
     local cur prev
@@ -109,5 +110,3 @@ __my-zi() {
 }
 zle -N __my-zi
 bindkey '\ez' __my-zi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

@@ -19,7 +19,3 @@ fi
 [[ $- != *i* ]] && return
 
 PS1='[\u@\h \W]\$ '
-
-if [[ $(ps --no-header --pid=$PPID --format=cmd) != "$SHELL" ]]; then
-	exec "$SHELL"
-fi

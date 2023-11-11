@@ -1,5 +1,10 @@
 export DOTFILES=$HOME/Dotfiles
 export PROJECTS=$HOME/Projects
+
+# gpg-connect-agent --quiet /bye >/dev/null 2>/dev/null
+gpg-agent --daemon --quiet --enable-ssh-support >/dev/null 2>&1
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
 export GPG_TTY=$(tty)
 
 # micromamba

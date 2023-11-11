@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-args=('--force' '/boot/efi/EFI/BOOT/BOOTX64.EFI ')
+args=('--force' '/boot/efi/EFI/systemd/loader.efi')
 
 while read -r line; do
 	if [[ "$line" == 'usr/lib/modules/'+([^/])'/pkgbase' ]]; then
@@ -12,4 +12,3 @@ while read -r line; do
 		dracut "${args[@]}" --kver "$kver"
 	fi
 done
-

@@ -106,6 +106,7 @@ return {
     'nvim-telescope/telescope.nvim',
     opts = {
       defaults = {
+        winblend = vim.o.winblend,
         buffer_previewer_maker = buffer_preview_maker,
         mappings = {
           i = {

@@ -106,6 +106,12 @@ function M.extend()
       ),
       next = lazy_req('trouble', 'next', { skip_groups = true, jump = true }),
     },
+    u = keys {
+      desc = 'page',
+      prev = b { '<c-u>' },
+      next = b { '<c-d>' },
+    },
+    --[[
     u = modes {
       n = np {
         desc = 'page',
@@ -116,19 +122,17 @@ function M.extend()
           require('neoscroll').scroll(0.9, true, 250)
         end,
       },
-      x = keys {
-        prev = b {
-          function()
-            require('neoscroll').scroll(-0.9, true, 250)
-          end,
-        },
-        next = b {
-          function()
-            require('neoscroll').scroll(0.9, true, 250)
-          end,
-        },
+      x = np {
+        desc = 'page',
+        prev = function()
+          require('neoscroll').scroll(-0.9, true, 250)
+        end,
+        next = function()
+          require('neoscroll').scroll(0.9, true, 250)
+        end,
       },
     },
+    --]]
     v = keys {
       prev = b { '`<', modes = 'nxo', desc = 'selection start' },
       next = b { '`>', modes = 'nxo', desc = 'selection end' },

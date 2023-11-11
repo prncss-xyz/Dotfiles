@@ -31,7 +31,7 @@ return {
         'eslint',
         'julials',
         'prismals',
-        'golangci_lint_ls',
+        -- 'golangci_lint_ls', -- FIXME:
         -- 'emmet_language_server',
       } do
         require('lspconfig')[lsp].setup {
@@ -392,7 +392,7 @@ return {
   },
   {
     'barreiroleo/ltex_extra.nvim',
-    ft ={ 'markdown', 'tex', 'gitcommit', 'text' },
+    ft = { 'markdown', 'tex', 'gitcommit', 'text' },
     dependencies = { 'neovim/nvim-lspconfig' },
     opts = {
       server_opts = {

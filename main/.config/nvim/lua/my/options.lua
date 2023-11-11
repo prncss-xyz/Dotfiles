@@ -9,6 +9,8 @@ deep_merge(vim, {
     tabstop = indent,
   },
   o = {
+    winblend = 10,
+    pumblend = 10,
     -- background = 'dark',
     compatible = false,
     autoindent = true,
@@ -19,6 +21,8 @@ deep_merge(vim, {
     completeopt = 'menuone,noselect',
     cursorline = true,
     expandtab = true,
+    --[[ guifont = 'Fira Code:h8', ]]
+    guifont = 'Victor Mono:h9',
     hidden = true,
     ignorecase = true,
     incsearch = true,
@@ -45,7 +49,6 @@ deep_merge(vim, {
     -- timeoutlen = 300,
     wildignorecase = true,
     wildoptions = 'pum',
-    pumblend = 20,
     wrap = true,
     grepprg = [[rg --glob "!.git" --no-heading --vimgrep --follow $*]],
     -- bufhidden = "wipe", -- this option seams to crash auto_session
@@ -71,6 +74,10 @@ deep_merge(vim, {
     spelloptions = 'camel',
     titlestring = '%{v:lua.my_title()}', -- defined in `globals.lua`
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
+  },
+  g = {
+    neovide_transparency = 0.0,
+    transparency = 0.8,
   },
   env = {},
 })

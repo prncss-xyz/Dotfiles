@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 # TODO: hoist theme
+DOTFILES=$HOME/Dotfiles
 
 if [ -z "$DOTFILES" ]; then
 	echo DOTFILES env variable expected to be set

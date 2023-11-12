@@ -3,9 +3,11 @@
 # systemd services
 
 UP=J
-DOWN=k
-LEFT=l
+DOWN=K
+LEFT=L
 RIGHT=semicolon
+NEXT=N
+PREVIOUS=P
 
 O_UP=U
 O_DOWN=I
@@ -14,21 +16,17 @@ O_RIGHT=P
 
 riverctl keyboard-layout -options "caps:escape" ca
 
-riverctl map normal Super D spawn fuzzel
-# nvim --headless --listen .nvim.sock & --FIXME:
-riverctl map normal Super E spawn "neovide"
-riverctl map normal Super T spawn footclient
-riverctl map normal Super Y spawn .local/bin/browser
-riverctl map normal Super N spawn "makoctl dismiss"
-riverctl map normal Super+Shift N spawn "makoctl dismiss --all"
-
-riverctl map normal Shift W close
-riverctl map normal Super+Shift X spawn waylock
-riverctl map normal Super+Shift E exit
+riverctl map normal Super W close
+riverctl map normal Super+Control X spawn waylock
+riverctl map normal Super+Control R spawn .config/river/init
 riverctl map normal Super F toggle-fullscreen
 
-riverctl map normal Super $UP focus-view next
-riverctl map normal Super $DOWN focus-view previous
+# riverctl map normal Super $UP focus-view up
+# riverctl map normal Super $DOWN focus-view down
+# riverctl map normal Super $LEFT focus-view left
+# riverctl map normal Super $RIGHT focus-view right
+# riverctl map normal Super $NEXT focus-view next
+# riverctl map normal Super $PREVIOUS focus-view previous
 riverctl map normal Super+Shift $UP swap next
 riverctl map normal Super+Shift $DOWN swap previous
 riverctl map normal Super Return zoom
@@ -75,28 +73,6 @@ riverctl map-pointer normal Super BTN_LEFT move-view
 riverctl map-pointer normal Super BTN_RIGHT resize-view
 riverctl map-pointer normal Super BTN_MIDDLE toggle-float
 
-for i in $(seq 1 9); do
-	tags=$((1 << ("$i" - 1)))
-
-	# Super+[1-9] to focus tag [0-8]
-	riverctl map normal Super "$i" set-focused-tags $tags
-
-	# Super+Shift+[1-9] to tag focused view with tag [0-8]
-	riverctl map normal Super+Shift "$i" set-view-tags $tags
-
-	# Super+Control+[1-9] to toggle focus of tag [0-8]
-	riverctl map normal Super+Control "$i" toggle-focused-tags $tags
-
-	# Super+Shift+Control+[1-9] to toggle tag [0-8] of focused view
-	riverctl map normal Super+Shift+Control "$i" toggle-view-tags $tags
-done
-
-# Super+0 to focus all tags
-# Super+Shift+0 to tag focused view with all tags
-all_tags=$(((1 << 32) - 1))
-riverctl map normal Super 0 set-focused-tags $all_tags
-riverctl map normal Super+Shift 0 set-view-tags $all_tags
-
 # Declare a passthrough mode. This mode has only a single mapping to return to
 # normal mode. This makes it useful for testing a nested wayland compositor
 riverctl declare-mode passthrough
@@ -120,9 +96,10 @@ for mode in normal locked; do
 	riverctl map $mode None XF86MonBrightnessUp spawn 'brightnessctl set 2%+'
 	riverctl map $mode None XF86MonBrightnessDown spawn 'brightnessctl set 2%-'
 
-	riverclt map $mode Ctrl+Alt delete spawn reboot
-	riverclt map $mode Ctrl+Alt backspace spawn reboot
-	riverclt map $mode Ctrl+Alt P spawn poweroff
+  riverctl map $mode Alt+Control delete spawn reboot
+  riverctl map $mode Alt+Control backspace spawn reboot
+  riverctl map $mode Super+Control P spawn poweroff
+  riverctl map $mode Super+Control E exit
 done
 
 riverctl declare-mode audio
@@ -150,33 +127,75 @@ riverctl hide-cursor when-typing enabled
 
 riverctl set-repeat 50 300
 
-# Make all views with an app-id that starts with "float" and title "foo" start floating.
-riverctl rule-add -app-id 'float*' -title 'foo' float
+for i in $(seq 1 9); do
+	tags=$((1 << ("$i" - 1)))
+	riverctl map normal Super "$i" set-focused-tags $tags
+	# riverctl map normal Super "$i" toggle-focused-tags $tags
+	riverctl map normal Super+Shift "$i" set-view-tags $tags
+	# riverctl map normal Super+Shift "$i" toggle-view-tags $tags
+done
 
-# Make all views with app-id "bar" and any title use client-side decorations
-riverctl rule-add -app-id "bar" csd
+riverctl map normal Super A focus-previous-tags
+riverctl map normal Super+Shift A send-to-previous-tags
 
-# Set the default layout generator to be rivertile and start it.
-# River will send the process group of the init executable SIGTERM on exit.
+# Super+0 to focus all tags
+# Super+Shift+0 to tag focused view with all tags
+all_tags=$(((1 << 32) - 1))
+riverctl map normal Super 0 set-focused-tags $all_tags
+riverctl map normal Super+Shift 0 set-view-tags $all_tags
+
+## rule-add wont work until v.0.3
+## lswt to list clients
+riverctl rule-add -app-id 'foot' tags $((1 << (1 - 1)))
+riverctl rule-add -app-id 'footclient' tags $((1 << (1 - 1)))
+riverctl rule-add -app-id 'neovide' tags $((1 << (2 - 1)))
+riverctl rule-add -app-id 'firefox' tags $((1 << (3 - 1)))
+riverctl rule-add -app-id 'chromium' tags $((1 << (3 - 1)))
+riverctl rule-add -app-id 'org.kde.kdeconnect.*' tags $((1 << (9 - 1)))
+riverctl rule-add float -app-id popup
+riverctl rule-add ssd   -app-id imv
+riverctl rule-add ssd   -app-id firefox
+riverctl rule-add float -title Picture-in-Picture
+riverctl rule-add float -app-id pavucontrol
+riverctl rule-add float -app-id wlroots
+riverctl rule-add float -app-id org.freedesktop.Xwayland
+riverctl rule-add ssd   -app-id org.freedesktop.Xwayland
+
 riverctl default-layout rivertile
-rivertile -view-padding 0 -outer-padding 0 &
 
-waybar &
-/usr/bin/way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1 &
-/usr/bin/foot --server &
-# /usr/bin/kdeconnect-app &
-# /usr/bin/kdeconnect-sms &
-/usr/bin/mako &
-/usr/bin/syncthing serve --no-browser --no-restart --logflags=0 &
-/usr/bin/udiskie &
-# TODO: waybar
-#
-swayidle -w \
+# https://git.sr.ht/~leon_plickat/river-config/tree/master/item/river/init
+# Helper fuction to only spawn a program when no instance of it is running
+# already, so init can be re-run without all widgets being duplicated.
+spawn_once() {
+	pgrep -f "${1}" >/dev/null || riverctl spawn "${*}"
+}
+
+riverctl map normal Super D spawn fuzzel
+# nvim --headless --listen .nvim.sock & --FIXME:
+riverctl map normal Super E spawn neovide
+riverctl map normal Super T spawn footclient
+riverctl map normal Super Y spawn .local/bin/browser
+riverctl map normal Super M spawn "makoctl dismiss"
+riverctl map normal Super+Shift M spawn "makoctl dismiss --all"
+
+spawn_once rivertile -view-padding 0 -outer-padding 0
+spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
+spawn_once wlsunset -l 45.5 -L -73.6 # gammastep not working on this particular device
+spawn_once darkman run
+spawn_once swayidle -w \
 	timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
 	timeout 330 'waylock' \
-	before-sleep 'waylock' &
-footclient &
-wlsunset -l 45.5 -L -73.6 & # gammastep not working on this particular device
-darkman run &
+	before-sleep 'waylock'
 
+spawn_once waybar
+spawn_once river-tag-overlay
+spawn_once mako
+
+spawn_once foot --server
+spawn_once syncthing serve --no-browser --no-restart --logflags=0
+spawn_once udiskie
+spawn_once /usr/lib/kdeconnectd
+
+spawn_once neovide
+spawn_once firefox
 # systemctl --user start gpg-agent.socket gpg-agent-browser.socket gpg-agent-ssh.socket

@@ -107,6 +107,10 @@ vim.api.nvim_create_autocmd('VimEnter', {
   pattern = '*',
   group = group,
   callback = function()
+    local args = vim.fn.argv()
+    if #args > 0 then
+      return
+    end
     vim.schedule(function()
       fetch_git_branch_plenary()
       require('my.utils.open_project').open_project { cwd = vim.fn.getcwd() }

@@ -6,7 +6,7 @@ local conf = require('telescope.config').values
 
 local function get_dir()
   local cwd = vim.fn.getcwd()
-  if cwd == vim.fn.getenv 'DOTFILES' then
+  if cwd == require 'my.parameters'.dotfiles then
     return vim.fn.getenv 'HOME' .. '/.local/share/nvim/site/pack/packer'
   end
   if vim.fn.isdirectory(cwd .. '/node_modules') then

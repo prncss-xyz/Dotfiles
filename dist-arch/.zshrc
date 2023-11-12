@@ -1,55 +1,8 @@
-export DOTFILES=$HOME/Dotfiles
-export PROJECTS=$HOME/Projects
-
-# gpg-connect-agent --quiet /bye >/dev/null 2>/dev/null
-gpg-agent --daemon --quiet --enable-ssh-support >/dev/null 2>&1
-export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
-export GPG_TTY=$(tty)
-
-# micromamba
-# export MAMBA_EXE=/usr/bin/micromamba
-export MAMBA_ROOT_PREFIX=$HOME/micromamba
-
-# uniduck
-export UNIDUCK_DIR=$HOME/Media/uniduck
-
-# nvim
-export EXTENSION_TAGS=EXTENSION_TAGS # markdown tree-sitter compile flag // https://github.com/MDeiml/tree-sitter-markdown
-export EXTENSION_WIKI_LINK=EXTENSION_WIKI_LINK
-export EDITOR=nvim
-export REACT_EDITOR=nvim # https://react-dev-inspector.zthxxx.me
-
-# fzf
-export FZF_CTRL_T_COMMAND='sfd --type file --follow --hidden --exclude .git $dir'
-export FZF_DEFAULT_COMMAND="fd --type file --follow --hidden --exclude .git"
-export FZF_DEFAULT_OPTS="--bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)'"
-
-# pass
-export PASSWORD_STORE_CHARACTER_SET="a-zA-Z0-9~!\@#\$%^&*()-_=+[]{};:,.<>?"
-export PASSWORD_STORE_DIR=$HOME/Personal/pass
-export PASSWORD_STORE_ENABLE_EXTENSIONS=true
-export PASSWORD_STORE_GENERATED_LENGTH=20
-
-# ledger
-export LEDGER_FILE=$HOME/Personal/zk/p/current.journal
-export TIMELOG="$ZK_NOTEBOOK_DIR/time.ledger"
-
-# rg
-export RIPGREP_CONFIG_PATH=$HOME/.config/rg/config
-
-# zk
-export ZK_NOTEBOOK_DIR=$HOME/Personal/zk
-
-# xplr
-export PATHMARKS_FILE=$HOME/Personal/xplr_bookmarks
-export XPLR_BOOKMARK_FILE=$HOME/Personal/xplr-bookmarks
-
 # export OPENAI_API_KEY=$(pass show openai.com/princesse@princesse.xyz|tail -1)
 # export GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1)
+source "$HOME/.profile"
 
 [[ ! -o interactive ]] && return
-# ~/.zshrc
 
 export ZSH="$HOME/.local/share/sheldon/repos/github.com/ohmyzsh/ohmyzsh"
 plugins=(dotenv zoxide fzf)
@@ -99,6 +52,18 @@ function _clock_in ()
     __ltrim_colon_completions "${cur}"
 }
 complete -F _clock_in clock-in
+
+ cmd_to_clip () { wl-copy <<< $BUFFER }
+ zle -N cmd_to_clip
+ bindkey '^Y' cmd_to_clip
+
+w-paste() {
+    PASTE=$(wl-paste)
+    LBUFFER="$LBUFFER${RBUFFER:0:1}"
+    RBUFFER="$PASTE${RBUFFER:1:${#RBUFFER}}"
+}
+zle -N w-paste
+bindkey '^V' w-paste
 
 __my-exa() {
   echo

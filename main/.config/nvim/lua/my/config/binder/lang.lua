@@ -10,6 +10,11 @@ function M.setup()
       ['<s-esc>'] = b {
         '<C-\\><C-n>',
       },
+      --FIX: paste in term mode, useful with graphical client
+      --neovide does not seem to recognise <c-s-v> key
+      ['<c-s-v>'] = b {
+        '<c-\\><c-n>"+pi',
+      },
     },
     c = keys {
       ['<m-e>'] = b { '<c-f>' },

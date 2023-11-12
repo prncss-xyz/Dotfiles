@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-git clone --depth=1 "file://$PROJECTS/github.com/prncss-xyz/create-$1" "$2"
+git clone --depth=1 "file://$HOME/Projects/github.com/prncss-xyz/create-$1" "$2"
 cd "$2" || exit 1
 if [ -e "package.json" ]; then
 	echo "$(jq '.name="$2"' package.json)" >package.json

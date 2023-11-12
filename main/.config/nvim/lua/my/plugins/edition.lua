@@ -1,7 +1,7 @@
 return {
   {
     -- user has disappeared
-    dir = os.getenv 'PROJECTS' .. '/github.com/linty-org/readline.nvim',
+    dir = os.getenv 'HOME' .. '/Projects/github.com/linty-org/readline.nvim',
   },
   {
     'Wansmer/treesj',

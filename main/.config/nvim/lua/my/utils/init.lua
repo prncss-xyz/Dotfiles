@@ -12,7 +12,7 @@ function M.blank()
 end
 
 function M.local_repo(name)
-  return os.getenv 'PROJECTS' .. '/github.com/prncss-xyz/' .. name
+  return os.getenv 'HOME' .. '/Projects/github.com/prncss-xyz/' .. name
 end
 
 -- https://github.com/nanozuki/tabby.nvim/blob/main/lua/tabby/util.lua

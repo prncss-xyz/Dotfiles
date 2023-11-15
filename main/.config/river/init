@@ -182,6 +182,7 @@ riverctl map normal Super M spawn "makoctl dismiss"
 riverctl map normal Super P spawn tessen
 riverctl map normal Super+Shift M spawn "makoctl dismiss --all"
 
+gpg-connect-agent updatestartuptty /bye >/dev/null
 spawn_once rivertile -view-padding 0 -outer-padding 0
 spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
 spawn_once swaybg --mode fill --image Pictures/Backgrounds/nympheas.jpg

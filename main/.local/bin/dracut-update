@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+sudo dracut /boot/efi/EFI/systemd/loader.efi --kver $(ls /usr/lib/modules/) --force

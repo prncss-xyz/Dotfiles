@@ -41,3 +41,5 @@
 	prompt = false
 [ghq]
   root = ~/Projects
+[push]
+	autoSetupRemote = true

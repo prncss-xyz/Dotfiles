@@ -1,5 +1,6 @@
 # export OPENAI_API_KEY=$(pass show openai.com/princesse@princesse.xyz|tail -1)
 # export GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1)
+
 source "$HOME/.profile"
 
 [[ ! -o interactive ]] && return
@@ -20,7 +21,6 @@ eval "$(starship init zsh)"
 alias c='bat --style=changes,header,rule,snip'
 # alias e='exec $VISUAL'
 #
-alias gh 'GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1) gh'
 alias e=nvr_do
 alias f=fsearch-ext
 alias gca='git add --all; git commit --allow-empty-message -m ""'

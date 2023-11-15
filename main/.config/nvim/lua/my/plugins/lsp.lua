@@ -31,7 +31,7 @@ return {
         'eslint',
         'julials',
         'prismals',
-        -- 'golangci_lint_ls', -- FIXME:
+        'golangci_lint_ls', -- FIXME:
         -- 'emmet_language_server',
       } do
         require('lspconfig')[lsp].setup {

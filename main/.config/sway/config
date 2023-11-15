@@ -16,8 +16,8 @@ workspace 0
 # exec xsettingsd
 
 # set $terminal
-include ~/.config/sway/env 
-include ~/.config/sway/config.d/*
+# include ~/.config/sway/env 
+include ~/.config/sway/config.d/bindings
 
 ## Remove titlebar
 font pango:monospace 0
@@ -120,5 +120,5 @@ for_window [app_id="^launcher$"] floating enable, sticky enable, resize set widt
 
 ### Styling
 
-include /etc/sway/config.d/*
+# include /etc/sway/config.d/*
 exec systemctl --user start sway-session.target

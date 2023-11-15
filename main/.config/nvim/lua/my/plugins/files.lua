@@ -14,7 +14,7 @@ return {
         nest_if_no_args = false,
       },
     },
-    enabled = false,
+    priority = 1001,
   },
   {
     'nvim-neo-tree/neo-tree.nvim',

@@ -473,7 +473,7 @@ deep_merge(xplr, {
                 help = 'shell',
                 messages = {
                   'PopMode',
-                  { Call = { command = 'fish', args = { '-i' } } },
+                  { Call = { command = 'zsh', args = { '-i' } } },
                   'ExplorePwdAsync',
                 },
               },
@@ -593,7 +593,7 @@ deep_merge(xplr, {
                     BashExec = [[
                       res="$(fd --type file --follow --hidden --exclude .git | fzf --preview 'echo {} >/tmp/xplr.fifo' --preview-window 0)" -- FIXME
                       if [ -n "$res" ]; then
-                        xdg-open "$res"
+                        ~/.local/bin/xdg-open/"$res"
                       fi
                     ]],
                   },
@@ -659,7 +659,7 @@ deep_merge(xplr, {
                       if [ -d "$XPLR_FOCUS_PATH" ]; then
                         echo "ChangeDirectory: $XPLR_FOCUS_PATH" >> $XPLR_PIPE_MSG_IN
                       else
-                        xdg-open "$XPLR_FOCUS_PATH"
+                        ~/.local/bin/xdg-open "$XPLR_FOCUS_PATH"
                       fi
                     ]],
                   },
@@ -834,7 +834,7 @@ deep_merge(xplr, {
                     BashExec = [[
                       PTH=$(fzf <"$XPLR_PIPE_SELECTION_OUT")
                       if [ -n "$PTH" ]; then
-                        xdg-open "$PTH"
+                        ~/.local/bin/xdg-open "$PTH"
                       fi
                     ]],
                   },

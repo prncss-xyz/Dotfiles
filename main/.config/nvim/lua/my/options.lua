@@ -76,7 +76,7 @@ deep_merge(vim, {
     virtualedit = 'block', -- allow cursor to move where there is no text in visual block mode,
   },
   g = {
-    neovide_transparency = 0.0,
+    neovide_transparency = 0.8,
     transparency = 0.8,
   },
   env = {},

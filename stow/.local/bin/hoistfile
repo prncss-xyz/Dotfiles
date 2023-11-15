@@ -67,12 +67,12 @@ case "$REL" in
 	;;
 esac
 
-mkdir -p "$DOTFILES/$PAC/.config/stow/sysfiles/$DIR"
+mkdir -p "$DOTFILES/$PAC/.sysfiles/$DIR"
 if [ -f "$ABS" ]; then
-	cp "$ABS" "$DOTFILES/$PAC/.config/stow/sysfiles/$DIR"
+	cp "$ABS" "$DOTFILES/$PAC/.sysfiles/$DIR"
 fi
 stow "$PAC"
 if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
 	stow "$PAC" # only if active
 fi
-echo "copied to $DOTFILES/$PAC/.config/stow/sysfiles/$DIR"
+echo "copied to $DOTFILES/$PAC/.sysfiles/$DIR"

@@ -1,6 +1,3 @@
-# export OPENAI_API_KEY=$(pass show openai.com/princesse@princesse.xyz|tail -1)
-# export GITHUB_TOKEN=$(pass github.com/prncss-xyz|tail -1)
-
 source "$HOME/.profile"
 
 [[ ! -o interactive ]] && return

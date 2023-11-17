@@ -1,0 +1,43 @@
+#!/usr/bin/env sh
+# this script generates a passlist file matching pass entries in a format that can be imported 
+# by CookieAutoDelete browser extension
+
+dest="$HOME/Personal/exports/list.json"
+
+cat >"$dest" <<EOF
+{
+  "default": [
+EOF
+
+first=1
+
+for entry in ~/Personal/pass/*; do
+	if [ -d "$entry" ]; then
+		case "$entry" in
+		*.onion)
+			continue
+			;;
+		*.[0-9])
+			continue
+			;;
+		*.*)
+			domain=$(basename "$entry")
+			if [ $first = 1 ]; then
+				first=0
+				echo "  {" >>"$dest"
+			else
+				echo "  , {" >>"$dest"
+			fi
+			echo "    " \"expression\": \""*.$domain"\", >>"$dest"
+			echo "    " \"listType\": \"WHITE\", >>"$dest"
+			echo "    " \"storeId\": \"default\" >>"$dest"
+			echo "  " "}" >>"$dest"
+			;;
+		esac
+	fi
+done
+
+cat >>"$dest" <<EOF
+  ]
+}
+EOF

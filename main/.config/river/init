@@ -182,11 +182,12 @@ riverctl map normal Super M spawn "makoctl dismiss"
 riverctl map normal Super P spawn tessen
 riverctl map normal Super+Shift M spawn "makoctl dismiss --all"
 
-gpg-connect-agent updatestartuptty /bye >/dev/null
-spawn_once rivertile -view-padding 0 -outer-padding 0
+dbus-update-activation-environment --systemd --all
+gpg-agent --daemon --quiet --enable-ssh-support >/dev/null 2>&1
+
 spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
+spawn_once rivertile -view-padding 0 -outer-padding 0
 spawn_once swaybg --mode fill --image Pictures/Backgrounds/nympheas.jpg
-dbus-update-activation-environment DISPLAY XAUTHORITY WAYLAND_DISPLAY
 spawn_once wlsunset -l 45.5 -L -73.6 # gammastep not working on this particular device
 spawn_once darkman run
 spawn_once swayidle -w \
@@ -206,4 +207,3 @@ spawn_once /usr/lib/kdeconnectd
 # spawn_once easyeffects
 # spawn_once neovide
 spawn_once firefox
-# systemctl --user start gpg-agent.socket gpg-agent-browser.socket gpg-agent-ssh.socket

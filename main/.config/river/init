@@ -184,4 +184,5 @@ spawn_once .local/bin/browser
 
 dbus-update-activation-environment --systemd --all
 gpg-connect-agent /bye
+/usr/lib/kdeconnectd & # not working properly as systemd unit
 systemctl --user start river-session.target

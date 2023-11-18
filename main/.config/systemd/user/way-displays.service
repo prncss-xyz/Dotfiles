@@ -1,0 +1,11 @@
+[Unit]
+Description=Display managment
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
+Restart=on-failure
+
+[Install]
+WantedBy=river-session.target

@@ -1,10 +1,10 @@
 [Unit]
-Description=Flash of tranparency on focus
+Description=Day/night gamma adjustments
 PartOf=graphical-session.target
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/flashfocus
+ExecStart=wlsunset -l 45.5 -L -73.6 # gammastep not working on this particular device
 Restart=on-failure
 
 [Install]

@@ -15,8 +15,8 @@ M.domains = {
 }
 
 M.d = invert {
-  j = 'up',
-  k = 'down',
+  j = 'down',
+  k = 'up',
   l = 'left',
   ['é'] = 'search',
   [';'] = 'right',

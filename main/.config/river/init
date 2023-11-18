@@ -1,16 +1,14 @@
 #!/bin/sh
-# TODO:
-# systemd services
 
-UP=J
-DOWN=K
+UP=K
+DOWN=J
 LEFT=L
 RIGHT=semicolon
 NEXT=N
 PREVIOUS=P
 
-O_UP=U
-O_DOWN=I
+O_UP=I
+O_DOWN=U
 O_LEFT=O
 O_RIGHT=P
 
@@ -174,36 +172,16 @@ spawn_once() {
 }
 
 riverctl map normal Super D spawn fuzzel
-# nvim --headless --listen .nvim.sock & --FIXME:
 riverctl map normal Super E spawn neovide
 riverctl map normal Super T spawn footclient
 riverctl map normal Super Y spawn .local/bin/browser
-riverctl map normal Super M spawn "makoctl dismiss"
 riverctl map normal Super P spawn tessen
+riverctl map normal Super M spawn "makoctl dismiss"
 riverctl map normal Super+Shift M spawn "makoctl dismiss --all"
 
-dbus-update-activation-environment --systemd --all
-gpg-agent --daemon --quiet --enable-ssh-support >/dev/null 2>&1
-
-spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
 spawn_once rivertile -view-padding 0 -outer-padding 0
-spawn_once swaybg --mode fill --image Pictures/Backgrounds/nympheas.jpg
-spawn_once wlsunset -l 45.5 -L -73.6 # gammastep not working on this particular device
-spawn_once darkman run
-spawn_once swayidle -w \
-	timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-	timeout 330 'waylock' \
-	before-sleep 'waylock'
+spawn_once .local/bin/browser
 
-spawn_once waybar
-spawn_once river-tag-overlay
-spawn_once mako
-
-spawn_once foot --server
-spawn_once syncthing serve --no-browser --no-restart --logflags=0
-spawn_once udiskie
-spawn_once /usr/lib/kdeconnectd
-
-# spawn_once easyeffects
-# spawn_once neovide
-spawn_once firefox
+dbus-update-activation-environment --systemd --all
+gpg-connect-agent /bye
+systemctl --user start river-session.target

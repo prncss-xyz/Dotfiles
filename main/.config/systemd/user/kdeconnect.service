@@ -1,11 +1,11 @@
 [Unit]
-Description=Day/night gamma adjustments
+Description=KDEConnect Daemon
 PartOf=graphical-session.target
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/gammastep
+ExecStart=/usr/lib/kdeconnectd
 Restart=on-failure
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=default.target

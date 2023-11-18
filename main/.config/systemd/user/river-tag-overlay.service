@@ -1,11 +1,11 @@
 [Unit]
-Description=Notification daemon
+Description=Tag widget on trasitions
 PartOf=graphical-session.target
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/kdeconnect-app
+ExecStart=river-tag-overlay
 Restart=on-failure
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=river-session.target

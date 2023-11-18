@@ -8,4 +8,4 @@ ExecStart=footclient --title=scratchpad
 Restart=on-failure
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=sway-session.target

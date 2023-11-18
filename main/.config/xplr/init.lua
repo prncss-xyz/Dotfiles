@@ -31,8 +31,8 @@ os.execute(
 )
 
 local d = {
-  up = 'j',
-  down = 'k',
+  up = 'k',
+  down = 'j',
   left = 'l',
   right = ';',
 }

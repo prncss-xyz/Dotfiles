@@ -1,5 +1,5 @@
 [Unit]
-Description=Notification daemon
+Description=Hotkeys
 PartOf=graphical-session.target
 After=graphical-session.target
 
@@ -8,4 +8,4 @@ ExecStart=node Projects/github.com/prncss-xyz/sway-mega-hotkeys/cli.js
 Restart=on-failure
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=sway-session.target

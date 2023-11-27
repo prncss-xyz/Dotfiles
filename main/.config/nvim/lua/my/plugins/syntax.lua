@@ -27,18 +27,17 @@ return {
         'vim', -- noice.nvim needs it
       },
       highlight = {
-        enabled = true,
+        enable = true,
         use_languagetree = true,
         additional_vim_regex_highlighting = { 'markdown' },
       },
       indent = {
-        enabled = true,
+        enable = true,
       },
       autotag = {
-        enabled = true,
+        enable = true,
       },
       context_commentstring = {
-        enabled = true,
         enable_autocommand = false,
       },
     },

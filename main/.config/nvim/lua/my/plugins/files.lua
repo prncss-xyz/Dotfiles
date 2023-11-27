@@ -190,6 +190,7 @@ return {
       'UsageTrackerRemoveEntry',
       'UsageTrackerClenup',
     },
+    enabled = false,
   },
   {
     'notjedi/nvim-rooter.lua',

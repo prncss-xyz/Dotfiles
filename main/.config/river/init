@@ -182,7 +182,9 @@ riverctl map normal Super+Shift M spawn "makoctl dismiss --all"
 spawn_once rivertile -view-padding 0 -outer-padding 0
 spawn_once .local/bin/browser
 
+
 dbus-update-activation-environment --systemd --all
 gpg-connect-agent /bye
-/usr/lib/kdeconnectd & # not working properly as systemd unit
+swawn_once /usr/lib/kdeconnectd
+# /usr/lib/kdeconnectd & # not working properly as systemd unit
 systemctl --user start river-session.target

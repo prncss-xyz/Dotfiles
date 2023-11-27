@@ -211,6 +211,11 @@ for _, key in ipairs { 'c', 'e', 's', '!' } do
   xplr.config.modes.builtin.action.key_bindings.on_key[key] = nil
 end
 
+local to_left_pane =
+  xplr.config.modes.builtin.switch_layout.key_bindings.on_key['left']
+local to_right_pane =
+  xplr.config.modes.builtin.switch_layout.key_bindings.on_key['right']
+
 xplr.config.modes.builtin.delete.key_bindings.on_key = {
   ['D'] = {
     help = 'force delete',
@@ -259,7 +264,6 @@ xplr.config.modes.builtin.delete.key_bindings.on_key = {
     },
   },
 }
-
 
 -- TODO: bash to lua
 deep_merge(xplr, {
@@ -673,6 +677,8 @@ deep_merge(xplr, {
                   { SetInputBuffer = '' },
                 },
               },
+              ['ctrl-j'] = to_left_pane,
+              ['ctrl-k'] = to_right_pane,
             },
           },
         },

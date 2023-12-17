@@ -2,7 +2,7 @@
 
 if [ "$1" = "--last" ]; then
 	if [ ! -f /tmp/ttt-last ]; then
-    echo "no last file" > /dev/stderr
+		echo "no last file" >/dev/stderr
 		exit 1
 	fi
 	inp="$(cat /tmp/ttt-last)"
@@ -11,8 +11,8 @@ else
 fi
 source=$(realpath "$inp")
 if [ ! -e "$source" ]; then
-  echo "'$1' doest not exists"  > /dev/stderr
-  exit 1
+	echo "'$1' doest not exists" >/dev/stderr
+	exit 1
 fi
 
 FPATH="$inp"
@@ -24,30 +24,15 @@ fi
 
 case "${ext}" in
 md | markdown)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
-	history=text
-	;;
-
-htm | html)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
-	history=text
+	history=documents
 	;;
 
 ## text
-pdf | doc | docx | epub)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
-	history=text
-	;;
-
-
-## Ebook
-azw3)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
+htm | html | pdf | doc | docx | epub | azw3)
 	history=text
 	;;
 
 jpg | jpeg)
-	cd "$(xdg-user-dir PICTURES)" || exit 1
 	history=pictures
 	;;
 esac
@@ -60,51 +45,30 @@ inode/x-empty)
 
 ## DjVu
 image/vnd.djvu)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
 	history=text
 	;;
 
 ## Image
 image/*)
-	cd "$(xdg-user-dir PICTURES)" || exit 1
 	history=pictures
 	;;
 
 ## Text/html
-text/html)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
-	history=text
-	;;
-
-## PDF
-application/pdf)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
-	history=text
-	;;
-
-## Ebook
-application/vnd.openxmlformats-officedocument.wordprocessingml.document | \
+text/html | application/pdf | \
+	application/vnd.openxmlformats-officedocument.wordprocessingml.document | \
 	application/x-mobipocket-ebook | \
-	application/epub+zip)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
-	history=text
-	;;
-
-## Text
-text/*)
-	cd "$(xdg-user-dir DOCUMENTS)" || exit 1
+	application/epub+zip | \
+	text/*)
 	history=text
 	;;
 
 ## Audio
 audio/*)
-	cd "$(xdg-user-dir MUSIC)" || exit 1
 	history=audio
 	;;
 
 ## Video
 video/*)
-	cd "$(xdg-user-dir VIDEOS)" || exit 1
 	history=videos
 	;;
 esac
@@ -112,13 +76,37 @@ if [ -z "$history" ]; then
 	exit 4
 fi
 
+case "${history}" in
+text)
+	cd "$HOME/Books/" || exit 1
+	;;
+documents)
+	# TODO
+	cd "$HOME/Personal/" || exit 1
+	;;
+pictures)
+	cd "$HOME/Media/Pictures" || exit 1
+	;;
+audio)
+	# TODO
+	exit 5
+	;;
+video)
+	# TODO
+	exit 5
+	;;
+*)
+	exit 5
+	;;
+esac
+
 mkdir -p "$HOME"/.histories/
-if [ ! -f "$HOME"/.histories/$history ]; then
-	touch "$HOME"/.histories/$history
+if [ ! -f "$HOME/.histories/$history" ]; then
+	touch "$HOME/.histories/$history"
 fi
-result="$(fd -t d -x echo '{}' | fzf --history="$HOME"/.histories/$history --print-query | tail -1)"
+result="$(fd -t d -x echo '{}' | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
 if [ -n "$result" ]; then
 	mkdir -p "$result"
-	tag-mv "$source" "$result"
+	mv "$source" "$result"
 	echo "$PWD/$result/$FNAME" >/tmp/ttt-last
 fi

@@ -1,0 +1,14 @@
+[Unit]
+Description=Lock after idle time
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=swayidle -w \
+	timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+	timeout 330 'waylock' \
+	before-sleep 'waylock'
+Restart=on-failure
+
+[Install]
+WantedBy=sway-session.target

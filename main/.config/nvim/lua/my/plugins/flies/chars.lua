@@ -148,7 +148,7 @@ M.t = {
         capture 'contents',
         f(function(args)
           local text = args[1][1] or ''
-          return text:match '%w+'
+          return text:match '(%w%.)+'
         end, 1),
       }, { delimiters = '[]' })
     ),

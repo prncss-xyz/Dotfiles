@@ -22,6 +22,16 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+if false then
+  vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'InsertLeave' }, {
+    pattern = '*',
+    group = group,
+    callback = function()
+      pcall(vim.lsp.codelens.refresh)
+    end,
+  })
+end
+
 local pass_prefix = '/dev/shm/pass.'
 if vim.fn.expand('%:h'):sub(1, pass_prefix:len()) == pass_prefix then
   vim.g.secret = true

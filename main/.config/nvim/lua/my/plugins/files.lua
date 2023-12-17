@@ -17,6 +17,16 @@ return {
     priority = 1001,
   },
   {
+    'antosha417/nvim-lsp-file-operations',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-neo-tree/neo-tree.nvim',
+    },
+    config = function()
+      require('lsp-file-operations').setup()
+    end,
+  },
+  {
     'nvim-neo-tree/neo-tree.nvim',
     opts = function()
       local khutulun = require 'khutulun'
@@ -98,7 +108,7 @@ return {
             move = file_cmd(khutulun.move),
             duplicate = file_cmd(khutulun.duplicate),
             create = file_cmd(khutulun.create),
-            rename = file_cmd(khutulun.rename),
+            --[[ rename = file_cmd(khutulun.rename), ]]
             yank_absolute = file_cmd(khutulun.yank_absolute_filepath),
             yank_filepath = file_cmd(khutulun.yank_relavite_filepath),
             yank_filename = file_cmd(khutulun.yank_filename),

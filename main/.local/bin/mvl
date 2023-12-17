@@ -1,0 +1,76 @@
+#!/usr/bin/env sh
+
+base="$HOME/Media/Pictures/lists"
+history=lists-img
+if [ "$1" = add ]; then
+	if [ "$2" = "--last" ]; then
+		if [ ! -f /tmp/ttt-last ]; then
+			echo "no last file" >/dev/stderr
+			exit 1
+		fi
+		inp="$(cat /tmp/ttt-last)"
+	else
+		inp=$(realpath "$2")
+	fi
+	source=$(realpath "$inp")
+	if [ ! -e "$source" ]; then
+		echo "file '$2' doest not exists" >&2
+		exit 1
+	fi
+
+	mkdir -p "$base"
+	cd "$base" || exit
+	mkdir -p "$HOME"/.histories/
+	if [ ! -f "$HOME/.histories/$history" ]; then
+		touch "$HOME/.histories/$history"
+	fi
+	result="$(fd -t f -x echo '{}' | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
+	if [ -n "$result" ]; then
+		entry=$(realpath --relative-to="$base" "$inp")
+		dest="$base/$result"
+		mkdir -p "$base"
+		touch "$dest"
+		grep -qxF "$entry" "$dest" || echo "$entry" >>"$dest"
+	fi
+elif [ "$1" = rm ]; then
+	if [ "$2" = "--last" ]; then
+		if [ ! -f /tmp/ttt-last ]; then
+			echo "no last file" >/dev/stderr
+			exit 1
+		fi
+		inp="$(cat /tmp/ttt-last)"
+	else
+		inp=$(realpath "$2")
+	fi
+	source=$(realpath "$inp")
+	if [ ! -e "$source" ]; then
+		echo "file '$2' doest not exists" >&2
+		exit 1
+	fi
+
+	mkdir -p "$base"
+	cd "$base" || exit
+	mkdir -p "$HOME"/.histories/
+	if [ ! -f "$HOME/.histories/$history" ]; then
+		touch "$HOME/.histories/$history"
+	fi
+	result="$(fd -t f -x echo '{}' | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
+	if [ -n "$result" ]; then
+		entry=$(realpath --relative-to="$base" "$inp")
+		dest="$base/$result"
+		mkdir -p "$base"
+		touch "$dest"
+		grep -vxF "$entry" "$dest" >/tmp/mvl-grep
+		cp /tmp/mvl-grep "$dest"
+	fi
+elif [ "$1" = imv ]; then
+	cd "$base" || exit 1
+	if [ ! -f "$2" ]; then
+		echo "list '$2' doest not exists" >&2
+		exit 1
+	fi
+	shuf "$2" | imv &
+else
+	echo "unknown subcommand" >&2
+	exit 1
+fi

@@ -1,3 +1,6 @@
 [binds]
 n = next 1
 p = prev 1
+b = exec mvf-term
+l = exec mvl-add
+L = exec mvl-rm

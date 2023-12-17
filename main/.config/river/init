@@ -157,6 +157,7 @@ riverctl rule-add -app-id popup float
 riverctl rule-add -app-id imv ssd
 riverctl rule-add -app-id firefox ssd
 riverctl rule-add -title Picture-in-Picture float
+riverctl rule-add -title term-prompt float
 riverctl rule-add -app-id pavucontrol float
 riverctl rule-add -app-id wlroot ssd
 riverctl rule-add -app-id org.freedesktop.Xwayland float
@@ -181,10 +182,12 @@ riverctl map normal Super+Shift M spawn "makoctl dismiss --all"
 
 spawn_once rivertile -view-padding 0 -outer-padding 0
 spawn_once .local/bin/browser
+spawn_once .local/bin/mvf-term read
+spawn_once .local/bin/mvl-add read
+spawn_once .local/bin/mvl-rm read
 
-
+# /usr/lib/kdeconnectd &
 dbus-update-activation-environment --systemd --all
 gpg-connect-agent /bye
-swawn_once /usr/lib/kdeconnectd
-# /usr/lib/kdeconnectd & # not working properly as systemd unit
+
 systemctl --user start river-session.target

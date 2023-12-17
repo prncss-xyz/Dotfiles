@@ -162,18 +162,6 @@ return {
         i(1, '-- TODO:'),
       },
     },
-    -- ts
-    {
-      '%.test%.ts$',
-      {
-        t 'import ',
-        i(1, 'M'),
-        t " from './",
-        p(module, '(.+).test.ts$'),
-        t { "';", '', '' },
-        i(2, '// tests'),
-      },
-    },
     -- {
     --   '%.test%.tsx$',
     --   {

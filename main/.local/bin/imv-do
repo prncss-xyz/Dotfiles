@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # comm=$(printf "kitty --class=launcher -e $1 %q" "$2")
-comm=$(printf "footclient --app-id=launcher -e $1 %q" "$2")
+comm=$(printf "footclient -e mvf %q" "$1")
 echo "$comm" >> ~/imv-do.log
-swaymsg exec "$comm"
+# swaymsg exec "$comm"
+# riverctl spawn "$comm"

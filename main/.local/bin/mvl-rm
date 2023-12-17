@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+fifo="/tmp/mvl-rm"
+if [ "$1" = read ]; then
+	rm -f "$fifo"
+	mkfifo "$fifo"
+	echo reading "$fifo"
+	while true; do
+		if read -r line; then
+			echo "$line"
+			sleep 0.3
+			footclient --title=term-prompt -e mvl rm "$line"
+		fi
+	done <"$fifo"
+else
+	echo "$imv_current_file" >"$fifo"
+fi

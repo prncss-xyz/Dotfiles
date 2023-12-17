@@ -1,9 +1,0 @@
-node_modules
-__pycache__
-qmk_firmware
-*.log
-.cache
-dist
-lib
-es
-converage

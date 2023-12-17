@@ -50,6 +50,37 @@ table.insert(
   )
 )
 
+table.insert(
+  M,
+  s(
+    'for of',
+    fmt(
+      [[
+      for (const [] of []) {
+        []
+      }
+    ]],
+      { i(1, 'name'), i(2, 'iterator'), i(3, '') },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'for c',
+    fmt(
+      [[
+      for ([]; []; []) {
+        []
+      }
+    ]],
+      { i(1, 'let i = 0'), i(2, 'i < 10'), i(3, 'i++'), i(4, '') },
+      { delimiters = '[]' }
+    )
+  )
+)
 
 -- FIXME: indentation
 table.insert(
@@ -57,10 +88,7 @@ table.insert(
   s('else', {
     c(1, {
       sn(1, { t { '} else {', '\t' }, i(1, '') }),
-      sn(
-        1,
-        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '') }
-      ),
+      sn(1, { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '') }),
     }),
   })
 )
@@ -69,10 +97,7 @@ table.insert(
   M,
   s('else if', {
     c(1, {
-      sn(
-        1,
-        { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '') }
-      ),
+      sn(1, { t '} else if (', i(1, 'true'), t { ') {', '\t' }, i(2, '') }),
       sn(1, { t { '} else {', '\t' }, i(1, '') }),
     }),
   })
@@ -183,6 +208,83 @@ table.insert(
 table.insert(
   M,
   s(
+    'switch',
+    fmt(
+      [[
+        switch ([]) {
+          case []: 
+            []
+            break;
+          default: 
+            []
+        }
+      ]],
+      { i(1, 'expr'), i(2, 'value'), i(3, ''), i(4, '') },
+      {
+        delimiters = '[]',
+      }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'case',
+    fmt(
+      [[
+        case []: 
+          []
+          break;
+      ]],
+      { i(1, 'value'), i(2, '') },
+      {
+        delimiters = '[]',
+      }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'default',
+    fmt(
+      [[
+        default: 
+          []
+      ]],
+      { i(1, '') },
+      {
+        delimiters = '[]',
+      }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'try',
+    fmt(
+      [[
+        try {
+          []
+        } catch (err) {
+          []
+        }
+      ]],
+      { i(1, ''), i(2, '') },
+      {
+        delimiters = '[]',
+      }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
     'rethrow',
     fmt(
       [[
@@ -210,7 +312,7 @@ table.insert(
       [[
         describe("[]", () => {
           []
-        })
+        });
       ]],
       { i(1, 'description'), i(2, '') },
       { delimiters = '[]' }
@@ -218,37 +320,38 @@ table.insert(
   )
 )
 
-table.insert(
-  M,
-  s(
-    'it',
-    fmt(
-      [[
-        it("[]", () => {
+for _, name in ipairs { 'it', 'test' } do
+  table.insert(
+    M,
+    s(
+      name,
+      fmt(
+        [[
+        []("[]", () => {
           []
-        })
+        });
       ]],
-      { i(1, 'description'), i(2, '') },
-      { delimiters = '[]' }
+        { t(name), i(1, 'description'), i(2, '') },
+        { delimiters = '[]' }
+      )
     )
   )
-)
-
-table.insert(
-  M,
-  s(
-    'it async',
-    fmt(
-      [[
-        it("[]", async () => {
+  table.insert(
+    M,
+    s(
+      name .. ' async',
+      fmt(
+        [[
+        []("[]", async () => {
           []
-        })
+        });
       ]],
-      { i(1, 'description'), i(2, '') },
-      { delimiters = '[]' }
+        { t(name), i(1, 'description'), i(2, '') },
+        { delimiters = '[]' }
+      )
     )
   )
-)
+end
 
 table.insert(
   M,
@@ -267,6 +370,35 @@ table.insert(
 table.insert(
   M,
   s(
+    'expect toThrowError',
+    fmt(
+      [[
+        expect(() => { [] }).toThrowError[]([]);
+      ]],
+      { i(1, ''), i(2, ''), i(3, '') },
+      { delimiters = '[]' }
+    )
+  )
+)
+
+-- assertions
+for _, name in ipairs { 'toEqual', 'toBe', 'toContain', 'toMatch' } do
+  table.insert(
+    M,
+    s(
+      name,
+      fmt(
+        'expect([]).[]([])',
+        { i(1, 'passed'), t(name), i(2, 'expected') },
+        { delimiters = '[]' }
+      )
+    )
+  )
+end
+
+table.insert(
+  M,
+  s(
     'const style',
     fmt(
       [[
@@ -275,7 +407,7 @@ table.insert(
           []
         });
       ]],
-      { i(1, 'className'), i(2, '')},
+      { i(1, 'className'), i(2, '') },
       { delimiters = '[]' }
     )
   )

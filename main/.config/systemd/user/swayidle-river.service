@@ -5,10 +5,10 @@ After=graphical-session.target
 
 [Service]
 ExecStart=swayidle -w \
-	timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+	timeout 300 'sh -c "brightnessctl --save; brightnessctl set 0"' resume 'brightnessctl --restore' \
 	timeout 330 'waylock' \
 	before-sleep 'waylock'
 Restart=on-failure
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=river-session.target

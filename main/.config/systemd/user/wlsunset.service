@@ -4,7 +4,7 @@ PartOf=graphical-session.target
 After=graphical-session.target
 
 [Service]
-ExecStart=wlsunset -l 45.5 -L -73.6 # gammastep not working on this particular device
+ExecStart=wlsunset -l 45.5 -L -73.6
 Restart=on-failure
 
 [Install]

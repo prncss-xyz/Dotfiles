@@ -14,7 +14,17 @@ return {
   {
     'williamboman/mason-lspconfig.nvim',
     opts = {
-      automatic_installation = true,
+      ensure_installed = {
+        'bashls',
+        'graphql',
+        'jsonls',
+        'yamlls',
+        --[[ 'gopls', ]]
+        'ltex',
+        'eslint',
+        'golangci_lint_ls',
+      },
+      automatic_installation = false,
     },
     dependencies = { 'williamboman/mason.nvim' },
   },
@@ -25,12 +35,12 @@ return {
     config = function()
       for _, lsp in ipairs {
         'bashls',
-        'cssls',
-        'html',
+        --[[ 'cssls', ]]
+        --[[ 'html', ]]
         'graphql',
         'eslint',
-        'julials',
-        'prismals',
+        --[[ 'julials', ]]
+        --[[ 'prismals', ]]
         'golangci_lint_ls', -- FIXME:
         -- 'emmet_language_server',
       } do
@@ -348,6 +358,7 @@ return {
     config = function(_, opts)
       require('lspconfig').sqls.setup(opts)
     end,
+    enabled = false,
   },
   {
     'mickael-menu/zk-nvim',

@@ -7,3 +7,5 @@ require 'my.theme'
 
 if vim.g.neovide then
 end
+
+--[[ $ nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync' ]]

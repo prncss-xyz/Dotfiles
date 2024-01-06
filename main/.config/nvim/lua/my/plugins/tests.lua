@@ -1,5 +1,21 @@
 return {
   {
+    'andythigpen/nvim-coverage',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    name = 'coverage',
+    opts = {},
+    cmd = {
+      'Coverage',
+      'CoverageLoad',
+      'CoverageLoadLcov',
+      'CoverageShow',
+      'CoverageHide',
+      'CoverageToggle',
+      'CoverageClear',
+      'CoverageSummary',
+    },
+  },
+  {
     'nvim-neotest/neotest',
     dependencies = {
       'marilari88/neotest-vitest',

@@ -185,6 +185,8 @@ spawn_once .local/bin/browser
 spawn_once .local/bin/mvf-term read
 spawn_once .local/bin/mvl-add read
 spawn_once .local/bin/mvl-rm read
+# not working as a service
+spawn_once wlsunset -l 45.5 -L -73.6
 
 # /usr/lib/kdeconnectd &
 dbus-update-activation-environment --systemd --all

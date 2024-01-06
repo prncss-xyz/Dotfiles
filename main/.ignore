@@ -8,4 +8,4 @@ __generated__/
 .git/
 dist-newstyle/
 .stack-work
-# /.*
+dist/

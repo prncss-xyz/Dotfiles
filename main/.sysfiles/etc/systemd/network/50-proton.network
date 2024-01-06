@@ -1,0 +1,23 @@
+[Match]
+Name=proton
+
+[Network]
+Address = 10.2.0.2/32
+DNS = 10.2.0.1
+DNSDefaultRoute=true
+Domains=~.
+
+[RoutingPolicyRule]
+FirewallMark=0x8888
+InvertRule=true
+Table=1000
+Priority=10
+
+[Route]
+Gateway=10.0.0.1
+GatewayOnLink=true
+Table=1000
+
+[RoutingPolicyRule]
+To=192.168.0.0/24
+Priority=9

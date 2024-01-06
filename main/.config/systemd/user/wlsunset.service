@@ -4,7 +4,7 @@ PartOf=graphical-session.target
 After=graphical-session.target
 
 [Service]
-ExecStart=wlsunset -l 45.5 -L -73.6
+ExecStart=wlsunset -S 06:30 -s 17:00
 Restart=on-failure
 
 [Install]

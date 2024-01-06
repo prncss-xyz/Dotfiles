@@ -78,6 +78,7 @@ return {
       'TSContextToggle',
     },
     event = 'VeryLazy',
+    enabled = false,
   },
   {
     'code-biscuits/nvim-biscuits',

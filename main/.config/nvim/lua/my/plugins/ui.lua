@@ -73,9 +73,6 @@ return {
   {
     'nvim-lualine/lualine.nvim',
     event = 'VeryLazy',
-    init = function()
-      vim.o.showtabline = 0
-    end,
     opts = {
       options = {
         component_separators = { left = '', right = '' },
@@ -83,7 +80,7 @@ return {
         always_divide_middle = false,
         globalstatus = true,
       },
-      sections = {
+      tabline = {
         lualine_a = {
           {
             'tabs',
@@ -95,27 +92,22 @@ return {
         lualine_b = {},
         lualine_c = {},
         lualine_x = {},
-        lualine_y = { 'branch' },
         -- lualine_z = { 'overseer' },
-        lualine_z = { require 'my.utils.uiline.overseer' },
+        lualine_y = { require 'my.utils.uiline.overseer' },
+        -- FIXME:
+        lualine_z = { 'branch' },
       },
       winbar = {
         lualine_a = { require 'my.utils.uiline.file' },
-        lualine_b = {},
-        lualine_c = { require 'my.utils.uiline.aerial' },
-        lualine_x = {},
-        lualine_y = { require 'my.utils.uiline.coordinates' },
-        lualine_z = {},
       },
       inactive_winbar = {
         lualine_a = { require 'my.utils.uiline.file' },
-        lualine_b = {
-          function()
-            return ' '
-          end,
-        },
+      },
+      sections = {
+        lualine_a = { require 'my.utils.uiline.aerial' },
+        lualine_b = {},
         lualine_c = {},
-        lualine_x = {},
+        lualine_x = { require 'my.utils.uiline.coordinates' },
         lualine_y = {},
         lualine_z = {},
       },

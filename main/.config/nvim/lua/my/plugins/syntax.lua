@@ -43,6 +43,7 @@ return {
     },
     config = function(_, opts)
       require('nvim-treesitter.configs').setup(opts)
+      vim.treesitter.language.register('markdown', 'mdx')
 
       -- installs relevant grammar on file opening
       local group = vim.api.nvim_create_augroup('MyTS', {})

@@ -23,6 +23,7 @@ return {
       -- 'hrsh7th/cmp-nvim-lsp-signature-help',
       'f3fora/cmp-spell',
       -- 'petertriho/cmp-git',
+      -- 'Gelio/cmp-natdat/'
     },
     config = function()
       local cmp = require 'cmp'

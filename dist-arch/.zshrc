@@ -1,4 +1,5 @@
 source "$HOME/.profile"
+eval "$(luarocks path --bin)"
 
 [[ ! -o interactive ]] && return
 

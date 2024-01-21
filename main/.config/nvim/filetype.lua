@@ -7,6 +7,9 @@ vim.filetype.add {
     ['.luacov'] = 'lua',
     ['.envrc'] = 'bash',
   },
+  extension = {
+    mdx = 'mdx',
+  },
   pattern = {
     ['.*/%.config/waybar/config'] = 'json',
     ['.*/%.config/systemd/user/.*%.service'] = 'toml',

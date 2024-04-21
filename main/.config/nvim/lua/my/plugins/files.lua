@@ -105,8 +105,8 @@ return {
             },
           },
           commands = {
-            move = file_cmd(khutulun.move),
-            duplicate = file_cmd(khutulun.duplicate),
+            --[[ move = file_cmd(khutulun.move), ]]
+            --[[ duplicate = file_cmd(khutulun.duplicate), ]]
             create = file_cmd(khutulun.create),
             --[[ rename = file_cmd(khutulun.rename), ]]
             yank_absolute = file_cmd(khutulun.yank_absolute_filepath),

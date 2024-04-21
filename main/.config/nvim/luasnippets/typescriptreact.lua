@@ -28,7 +28,7 @@ table.insert(
     'component',
     fmt(
       [[
-        function []({[]}: {[]}) {
+        function []({[] children}: {[] children: ReactNode}) {
           return []
         }
       ]],
@@ -36,7 +36,7 @@ table.insert(
         i(1, 'Name'),
         i(3, ''),
         i(2, ''),
-        i(4, 'null'),
+        i(4, ''),
       },
       {
         delimiters = '[]',
@@ -51,7 +51,7 @@ table.insert(
     'export component',
     fmt(
       [[
-        export function []({[]}: {[]}) {
+        export function []({[] children}: {[] children: ReactNode}) {
           return []
         }
       ]],
@@ -59,7 +59,7 @@ table.insert(
         i(1, 'Name'),
         i(3, ''),
         i(2, ''),
-        i(4, 'null'),
+        i(4, ''),
       },
       {
         delimiters = '[]',

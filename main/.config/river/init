@@ -181,12 +181,29 @@ riverctl map normal Super M spawn "makoctl dismiss"
 riverctl map normal Super+Shift M spawn "makoctl dismiss --all"
 
 spawn_once rivertile -view-padding 0 -outer-padding 0
+spawn_once foot --server
 spawn_once .local/bin/browser
 spawn_once .local/bin/mvf-term read
 spawn_once .local/bin/mvl-add read
 spawn_once .local/bin/mvl-rm read
+spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
+spawn_once /usr/lib/kdeconnectd
+spawn_once mako
+spawn_once river-tag-overlay
+spawn_once swaybg --mode fill --image Pictures/Backgrounds/nympheas.jpg
+spawn_once swayidle -w \
+	timeout 300 'sh -c "brightnessctl --save; brightnessctl set 0"' resume 'brightnessctl --restore' \
+	timeout 330 'waylock' \
+	before-sleep 'waylock'
+spawn_once syncthing serve --no-browser --no-restart --logflags=0
+# spawn_once footclient --title=scratchpad
+spawn_once udiskie
+spawn_once waybar
+
+
 # not working as a service
-spawn_once wlsunset -l 45.5 -L -73.6
+# spawn_once wlsunset -l 45.5 -L -73.6
+wlsunset -S 07:00 -s 16:00
 
 # /usr/lib/kdeconnectd &
 dbus-update-activation-environment --systemd --all

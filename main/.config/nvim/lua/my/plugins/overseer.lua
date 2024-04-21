@@ -4,7 +4,7 @@ return {
     opts = {
       strategy = {
         'toggleterm',
-        open_on_start = false,
+        open_on_start = true,
       },
     },
     config = function(_, opts)

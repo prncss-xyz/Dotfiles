@@ -2,7 +2,89 @@
 
 local M = {}
 
+table.insert(
+  M,
+  s(
+    'useCallback',
+    fmt(
+      [[
+        useCallback(({}) => {}, [])
+      ]],
+      {
+        i(1, ''),
+        i(2, ''),
+      },
+      {
+        delimiters = '{}',
+      }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'useMemo',
+    fmt(
+      [[
+        useMemo(() => {}, [])
+      ]],
+      {
+        i(1, ''),
+      },
+      {
+        delimiters = '{}',
+      }
+    )
+  )
+)
+
+local function to_set(args) 
+  return "set" .. args[1][1]:gsub("^%l", string.upper)
+end
+
+table.insert(
+  M,
+  s(
+    'useState',
+    fmt(
+      [[
+        const [{}, {}] = useState({});
+      ]],
+      {
+        i(1, ''),
+        f(to_set, {1}),
+        i(2, ''),
+      },
+      {
+        delimiters = '{}',
+      }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'useAtom',
+    fmt(
+      [[
+        const [{}, {}] = useAtom({});
+      ]],
+      {
+        i(1, ''),
+        f(to_set, {1}),
+        i(2, ''),
+      },
+      {
+        delimiters = '{}',
+      }
+    )
+  )
+)
+
 local preferred_quote = require('my.parameters').preferred_quote
+
 
 local function quote(str)
   return quote_char .. str .. quote_char

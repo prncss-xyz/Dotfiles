@@ -61,7 +61,7 @@ return {
           { name = 'calc' },
           -- { name = 'npm', keyword_length = 4 },
           { name = 'path' },
-          { name = 'codeium' },
+          --[[ { name = 'codeium' }, ]]
           { name = 'buffer' },
           -- {
           --   name = 'spell',

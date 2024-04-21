@@ -1,7 +1,9 @@
 [user]
-	email = princesse@princesse.xyz
+	email = juliette.lamarche.xyz@gmail.com
 	name = Juliette Lamarche
-	signingkey = DB6F754B59A68BC3AE6CF695004A3B1CB2774189
+	signingkey = caca
+  # signingkey = 03385F0C896240A240C49F8CF1D6B54A3C0D429B
+	# signingkey = DB6F754B59A68BC3AE6CF695004A3B1CB2774189
 [commit]
   gpgsign = true
 [tag]

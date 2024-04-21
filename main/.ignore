@@ -9,3 +9,4 @@ __generated__/
 dist-newstyle/
 .stack-work
 dist/
+node_modules

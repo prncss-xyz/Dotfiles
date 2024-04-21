@@ -2,6 +2,7 @@
 /_template
 /_template-old
 /_template-new
+tmp/
 usage_data.json
 neovide_backtraces.log
 package-lock.json

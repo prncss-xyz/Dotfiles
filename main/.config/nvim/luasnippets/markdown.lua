@@ -2,6 +2,27 @@
 
 local M = {}
 
+for _, lang in ipairs({ 'lua', 'haskell', 'go', 'bash', 'c', 'cpp' , 'javascript', 'typescript', }) do
+  table.insert(
+    M,
+    s(
+      lang,
+      fmt(
+        [[
+        ```[]
+        []
+        ```
+      ]],
+        {
+          t (lang),
+          i(1, ''),
+        },
+        { delimiters = '[]' }
+      )
+    )
+  )
+end
+
 --WAIT: (waiting for)
 -- https://github.com/saadparwaiz1/cmp_luasnip/issues/58
 -- https://github.com/saadparwaiz1/cmp_luasnip/issues/6

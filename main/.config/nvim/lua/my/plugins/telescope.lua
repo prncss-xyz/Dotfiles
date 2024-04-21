@@ -24,7 +24,16 @@ local buffer_preview_maker = function(filepath, bufnr, opts)
     args = { '--mime-type', '-b', filepath },
     on_exit = function(j)
       local mime_type = vim.split(j:result()[1], '/')[1]
-      if mime_type == 'text' or vim.endswith(filepath, 'json') then
+      if
+        mime_type == 'text'
+        or vim.endswith(filepath, 'json')
+        or vim.endswith(filepath, 'html')
+        or vim.endswith(filepath, 'js')
+        or vim.endswith(filepath, 'jsx')
+        or vim.endswith(filepath, 'ts')
+        or vim.endswith(filepath, 'tsx')
+        or vim.endswith(filepath, 'mdx')
+      then
         require('telescope.previewers').buffer_previewer_maker(
           filepath,
           bufnr,

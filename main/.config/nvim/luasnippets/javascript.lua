@@ -303,7 +303,6 @@ table.insert(
 )
 
 -- Testing
-
 table.insert(
   M,
   s(
@@ -386,28 +385,31 @@ for _, name in ipairs { 'toEqual', 'toBe', 'toContain', 'toMatch' } do
   table.insert(
     M,
     s(
-      name,
+      'expect' .. name,
       fmt(
         'expect([]).[]([])',
-        { i(1, 'passed'), t(name), i(2, 'expected') },
+        { i(1, 'actual'), t(name), i(2, 'expected') },
         { delimiters = '[]' }
       )
     )
   )
 end
 
+-- property testing
+
 table.insert(
   M,
   s(
-    'const style',
+    'fcassert',
     fmt(
       [[
-
-        export const [] = style({
-          []
-        });
+        fc.assert(fc.property([], ([]) => {[]}));
       ]],
-      { i(1, 'className'), i(2, '') },
+      {
+        i(1, ''),
+        i(2, ''),
+        i(3, ''),
+      },
       { delimiters = '[]' }
     )
   )

@@ -74,6 +74,22 @@ return {
     cmd = { 'MasonToolsInstall', 'MasonToolsUpdate' },
   },
   {
+    "antosha417/nvim-lsp-file-operations",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-neo-tree/neo-tree.nvim",
+    },
+    config = function()
+      require("lsp-file-operations").setup()
+    end,
+  },
+  {
+    "zeioth/garbage-day.nvim",
+    dependencies = "neovim/nvim-lspconfig",
+    event = "VeryLazy",
+    opts = { }
+  },
+  {
     'stevearc/conform.nvim',
     opts = {
       formatters_by_ft = {
@@ -92,7 +108,6 @@ return {
         json = { 'prettierd' },
         jsonc = { 'prettierd' },
         yaml = { 'prettierd' },
-        mdx = { 'prettierd' },
         graphql = { 'prettierd' },
         handlebars = { 'prettierd' },
         toml = { 'prettierd' },
@@ -255,12 +270,22 @@ return {
     ft = { 'json', 'yaml' },
   },
   {
+    'dmmulroy/ts-error-translator.nvim' ,
+    opts ={},
+  },
+  {
     'yioneko/nvim-vtsls',
     ft = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
-    opts = {},
-    config = function(_, opts)
+    config = function()
       require('lspconfig.configs').vtsls = require('vtsls').lspconfig -- set default server config, optional but recommended
-      require('lspconfig').vtsls.setup(opts)
+      require('lspconfig.configs').vtsls.on_attach = function(client, bufnr)
+        print 'attached'
+        require('workspace-diagnostics').populate_workspace_diagnostics(
+          client,
+          bufnr
+        )
+      end
+      require('lspconfig').config.setup {}
     end,
     cmd = { 'VtsExec', 'VtsRename' },
     enabled = false,
@@ -361,7 +386,7 @@ return {
     enabled = false,
   },
   {
-    'mickael-menu/zk-nvim',
+    'zk-org/zk-nvim',
     ft = 'markdown',
     name = 'zk',
     opts = {
@@ -436,5 +461,8 @@ return {
         },
       },
     },
+  },
+  {
+    'artemave/workspace-diagnostics.nvim',
   },
 }

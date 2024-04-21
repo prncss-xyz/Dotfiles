@@ -464,11 +464,11 @@ deep_merge(xplr, {
                 },
               },
               z = {
-                help = 'zk-bib eat --yes',
+                help = 'zkb create',
                 messages = {
                   {
                     BashExecSilently = [[
-                      zk-bib eat --yes "$XPLR_FOCUS_PATH"
+                      zkb create "$XPLR_FOCUS_PATH"
                     ]],
                   },
                 },
@@ -642,12 +642,12 @@ deep_merge(xplr, {
                 },
               },
               z = {
-                help = 'zk-bib eat --yes',
+                help = 'zkb create',
                 messages = {
                   {
                     BashExecSilently = [[
                       if [ -f "$XPLR_FOCUS_PATH" ]; then
-                        zk-bib eat --yes "$XPLR_FOCUS_PATH"
+                        zkb create "$XPLR_FOCUS_PATH"
                       else
                         echo "Sory, this is not a file."
                       fi

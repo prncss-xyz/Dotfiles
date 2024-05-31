@@ -37,14 +37,14 @@ return {
           'qf',
           'edgy',
         },
-        -- sources = {
-        --   'filesystem',
-        --   'buffers',
-        --   'git_status',
-        --   -- 'neo-tree-zk',
-        --   -- 'zk',
-        --   -- 'document_symbols',
-        -- },
+        sources = {
+          'filesystem',
+          'buffers',
+          'git_status',
+          -- 'neo-tree-zk',
+          -- 'zk',
+           'document_symbols',
+        },
         default_component_configs = {
           indent = {
             indent_marker = ' ',
@@ -178,12 +178,6 @@ return {
     enabled = true,
   },
   {
-    -- FIXME:
-    'notjedi/nvim-rooter.lua',
-    event = 'BufReadPost',
-    enabled = false,
-  },
-  {
     'famiu/bufdelete.nvim',
   },
   {
@@ -205,11 +199,12 @@ return {
   {
     'notjedi/nvim-rooter.lua',
     opts = {
-      rooter_patterns = { '.git', '.hg', '.svn', 'node_modules' },
+      rooter_patterns = { '.git', '.hg', '.svn' },
     },
     name = 'nvim-rooter',
     event = 'VimEnter',
     cmd = { 'Rooter', 'RooterToggle' },
+    enabled = true,
   },
   {
     'echasnovski/mini.misc',

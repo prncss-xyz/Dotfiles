@@ -19,7 +19,7 @@ return {
         'graphql',
         'jsonls',
         'yamlls',
-        --[[ 'gopls', ]]
+        'gopls',
         'ltex',
         'eslint',
         'golangci_lint_ls',
@@ -41,8 +41,9 @@ return {
         'eslint',
         --[[ 'julials', ]]
         --[[ 'prismals', ]]
-        'golangci_lint_ls', -- FIXME:
+        --[[ 'golangci_lint_ls', -- FIXME: ]]
         -- 'emmet_language_server',
+        'gopls',
       } do
         require('lspconfig')[lsp].setup {
           capabilities = require('my.utils.lsp').get_cmp_capabilities(),
@@ -74,20 +75,21 @@ return {
     cmd = { 'MasonToolsInstall', 'MasonToolsUpdate' },
   },
   {
-    "antosha417/nvim-lsp-file-operations",
+    'antosha417/nvim-lsp-file-operations',
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-neo-tree/neo-tree.nvim",
+      'nvim-lua/plenary.nvim',
+      'nvim-neo-tree/neo-tree.nvim',
     },
     config = function()
-      require("lsp-file-operations").setup()
+      require('lsp-file-operations').setup()
     end,
   },
   {
-    "zeioth/garbage-day.nvim",
-    dependencies = "neovim/nvim-lspconfig",
-    event = "VeryLazy",
-    opts = { }
+    'zeioth/garbage-day.nvim',
+    dependencies = 'neovim/nvim-lspconfig',
+    event = 'VeryLazy',
+    opts = {},
+    enabled = false,
   },
   {
     'stevearc/conform.nvim',
@@ -112,7 +114,7 @@ return {
         handlebars = { 'prettierd' },
         toml = { 'prettierd' },
         haskell = { 'fourmolu' },
-        -- markdown = { 'prettierd' }, -- bug thats kills last lines
+        markdown = { 'prettierd' }, -- bug thats kills last lines
       },
       formatters = {
         fourmolu = {
@@ -270,8 +272,8 @@ return {
     ft = { 'json', 'yaml' },
   },
   {
-    'dmmulroy/ts-error-translator.nvim' ,
-    opts ={},
+    'dmmulroy/ts-error-translator.nvim',
+    opts = {},
   },
   {
     'yioneko/nvim-vtsls',
@@ -307,6 +309,7 @@ return {
   },
   {
     'ray-x/go.nvim',
+    enabled = false,
     -- needed for GoDebug but I'm using 'leoluz/nvim-dap-go' instead
     -- dependencies = { 'ray-x/guihua.lua' },
     ft = { 'go', 'gomod' },
@@ -414,6 +417,52 @@ return {
       'ZkMatch',
       'ZkTags',
     },
+  },
+  {
+    'danarth/sonarlint.nvim',
+    opts = {
+      server = {
+        cmd = {
+          'sonarlint-language-server',
+          '-stdio',
+          '-analyzers',
+          vim.fn.expand '$MASON/share/sonarlint-analyzers/sonargo.jar',
+          vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarjs.jar',
+        },
+        settings = {
+          rules = {
+            ['typescript:S101'] = {
+              level = 'on',
+              parameters = { format = '^[A-Z][a-zA-Z0-9]*$' },
+            },
+            ['typescript:S103'] = {
+              level = 'on',
+              parameters = { maximumLineLength = 180 },
+            },
+            ['typescript:S106'] = { level = 'on' },
+            ['typescript:S107'] = {
+              level = 'on',
+              parameters = { maximumFunctionParameters = 7 },
+            },
+          },
+        },
+      },
+      filetypes = {
+        'javascript',
+        'typescript',
+        'javascriptreact',
+        'typescriptreact',
+        'go',
+      },
+    },
+    ft = {
+      'javascript',
+      'typescript',
+      'javascriptreact',
+      'typescriptreact',
+      'go',
+    },
+    enabled = false,
   },
   {
     'mrcjkb/haskell-tools.nvim',

@@ -23,6 +23,7 @@ function M.setup()
       ['<c-g>'] = b { 'req', 'my.utils.cmp', 'confirm_c' },
     },
     is = keys {
+      ['<c-j>'] = b { '<cr>' },
       ['<c-space>'] = b { '<space><left>' },
       ['<c-e>'] = b { 'req', 'my.utils.cmp', 'toggle' },
       ['<s-tab>'] = b {

@@ -2,7 +2,7 @@
 
 local M = {}
 
-for _, lang in ipairs({ 'lua', 'haskell', 'go', 'bash', 'c', 'cpp' , 'javascript', 'typescript', }) do
+for _, lang in ipairs({ 'lua', 'haskell', 'go', 'bash', 'c', 'cpp' , 'javascript', 'typescript', 'jsx', 'tsx', 'json', 'svg' }) do
   table.insert(
     M,
     s(

@@ -8,11 +8,30 @@ table.insert(
     'useCallback',
     fmt(
       [[
-        useCallback(({}) => {}, [])
+        const {} = useCallback(({}) => {}, [])
       ]],
       {
         i(1, ''),
         i(2, ''),
+        i(2, ''),
+      },
+      {
+        delimiters = '{}',
+      }
+    )
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'useEffect',
+    fmt(
+      [[
+        useEffect(() => {}, [])
+      ]],
+      {
+        i(1, ''),
       },
       {
         delimiters = '{}',
@@ -27,10 +46,11 @@ table.insert(
     'useMemo',
     fmt(
       [[
-        useMemo(() => {}, [])
+        const {} = useMemo(() => {}, [])
       ]],
       {
         i(1, ''),
+        i(2, ''),
       },
       {
         delimiters = '{}',
@@ -39,9 +59,41 @@ table.insert(
   )
 )
 
-local function to_set(args) 
-  return "set" .. args[1][1]:gsub("^%l", string.upper)
+local function to_set(args)
+  return 'set' .. args[1][1]:gsub('^%l', string.upper)
 end
+
+local function to_atom(args)
+  return args[1][1] .. 'Atom'
+end
+
+table.insert(
+  M,
+  s(
+    'set args',
+    fmt([[<>={<>} <>={<>} ]], {
+      i(1, ''),
+      i(2, ''),
+      f(to_set, { 1 }),
+      f(to_set, { 2 }),
+    }, {
+      delimiters = '<>',
+    })
+  )
+)
+
+table.insert(
+  M,
+  s(
+    'set props',
+    fmt([[{}, {}, ]], {
+      i(1, ''),
+      f(to_set, { 1 }),
+    }, {
+      delimiters = '{}',
+    })
+  )
+)
 
 table.insert(
   M,
@@ -53,7 +105,7 @@ table.insert(
       ]],
       {
         i(1, ''),
-        f(to_set, {1}),
+        f(to_set, { 1 }),
         i(2, ''),
       },
       {
@@ -73,8 +125,8 @@ table.insert(
       ]],
       {
         i(1, ''),
-        f(to_set, {1}),
-        i(2, ''),
+        f(to_set, { 1 }),
+        f(to_atom, { 1 }),
       },
       {
         delimiters = '{}',
@@ -84,7 +136,6 @@ table.insert(
 )
 
 local preferred_quote = require('my.parameters').preferred_quote
-
 
 local function quote(str)
   return quote_char .. str .. quote_char
@@ -140,14 +191,6 @@ table.insert(
   s(
     'attribute',
     fmt('[]={[]} ', { i(1, 'name'), i(2, 'value') }, { delimiters = '[]' })
-  )
-)
-
-table.insert(
-  M,
-  s(
-    'className',
-    fmt('className={[]} ', { i(1, 'className') }, { delimiters = '[]' })
   )
 )
 

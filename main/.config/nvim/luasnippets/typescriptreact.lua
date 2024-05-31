@@ -2,23 +2,30 @@
 
 local M = {}
 
-table.insert(
-  M,
-  s(
-    'flex column',
-    fmt([[display="flex" flexDirection="column" ]], {}, {
-      delimiters = '[]',
-    })
-  )
-)
+local function to_same(args)
+  return args[1][1]
+end
+
+local function to_upper(args)
+  return args[1][1]:gsub("^%l", string.upper)
+end
 
 table.insert(
   M,
   s(
-    'flex row',
-    fmt([[display="flex" flexDirection="row" ]], {}, {
-      delimiters = '[]',
-    })
+    'set Props Type',
+    fmt(
+      [[{}: {}; set{}: Disaptch<SetStateAction<{}>>; ]],
+      {
+        i(1, ''),
+        i(2, ''),
+        f(to_upper, {1}),
+        f(to_same, {2}),
+      },
+      {
+        delimiters = '{}',
+      }
+    )
   )
 )
 
@@ -67,9 +74,5 @@ table.insert(
     )
   )
 )
-
-local function params(s)
-  return s:gsub('(%s*%:%s*%w+%s*)', '')
-end
 
 return M

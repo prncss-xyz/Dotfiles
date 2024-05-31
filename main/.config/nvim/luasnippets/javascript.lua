@@ -13,6 +13,10 @@ local function concat(t1, t2)
   return t1
 end
 
+local function to_same(args)
+  return args[1][1]
+end
+
 --  TODO: case, try, class, default, else, extends, import, with
 
 for _, keyword in ipairs {
@@ -33,6 +37,33 @@ for _, keyword in ipairs {
 } do
   table.insert(M, s(keyword, { t(keyword) }))
 end
+
+
+table.insert(
+  M,
+  s(
+    '.map',
+    fmt('.map(([]) => [])', { i(1, 'x'), f(to_same, {1}) }, { delimiters = '[]' })
+  )
+)
+table.insert(
+  M,
+  s(
+    'filter',
+    fmt('.filter(([]) => [])', { i(1, 'x'), f(to_same, {1}) }, { delimiters = '[]' })
+  )
+)
+table.insert(
+  M,
+  s(
+    'object map',
+    fmt([[
+      const <> = Object.fromEntries(
+        Object.entries(<>).map(([<>, <>]) =<> { <>return [<>, <>]; }),
+      );
+    ]], { i(1, 'target'), i(2, 'source'), i(3, 'key'), i(4, 'value'),t '>', i(5), f(to_same, {3}), f(to_same, {4}) }, {delimiters = '<>'})
+  )
+)
 
 table.insert(
   M,

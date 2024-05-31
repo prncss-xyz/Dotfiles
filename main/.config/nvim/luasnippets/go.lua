@@ -1,54 +1,52 @@
--- the snip leverage lots of setup/snip from https://github.com/arsham/shark/blob/master/lua/settings/luasnip/go.lua
--- LuaSnip by L3MON4D3
--- Also thanks TJ and ziontee113 for the great luasnip tutorial
-
+-- https://github.com/arsham/shark/blob/master/lua/plugins/luasnip/go.lua
+-- Requires {{{
 local ls = require 'luasnip'
 local fmt = require('luasnip.extras.fmt').fmt
 local fmta = require('luasnip.extras.fmt').fmta
 local rep = require('luasnip.extras').rep
+local util = require 'my.utils.luasnip'
 local ai = require 'luasnip.nodes.absolute_indexer'
 local partial = require('luasnip.extras').partial
-local snips = require 'go.snips'
-local log = require('go.utils').log
-local events = require 'luasnip.util.events'
-local in_test_fn = {
-  show_condition = snips.in_test_function,
-  condition = snips.in_test_function,
+--}}}
+
+-- Conditions {{{
+local function not_in_function()
+  return not util.is_in_function()
+end
+
+local in_test_func = {
+  show_condition = util.is_in_test_function,
+  condition = util.is_in_test_function,
 }
 
 local in_test_file = {
-  show_condition = snips.in_test_file_fn,
-  condition = snips.in_test_file_fn,
+  show_condition = util.is_in_test_file,
+  condition = util.is_in_test_file,
 }
 
-local in_fn = {
-  show_condition = snips.in_function,
-  condition = snips.in_function,
+local in_func = {
+  show_condition = util.is_in_function,
+  condition = util.is_in_function,
 }
 
-local not_in_fn = {
-  show_condition = snips.in_func,
-  condition = snips.in_func,
+local not_in_func = {
+  show_condition = not_in_function,
+  condition = not_in_function,
 }
+--}}}
 
 -- stylua: ignore start
-local snippets = {
-  -- Main
+return {
+  -- Main {{{
   ls.s(
     { trig = "main", name = "Main", dscr = "Create a main function" },
     fmta("func main() {\n\t<>\n}", ls.i(0)),
-    not_in_fn
-  ),
-  ls.s("return", {
-  	ls.t( "return "), ls.i(1), ls.t{""},
-  	ls.d(2,  snips.make_default_return_nodes, {1})
-  },
-  snips.in_fn
-  ),
+    not_in_func
+  ), --}}}
 
-  -- If call error
+  -- If call error {{{
   ls.s(
-    { trig = "ifc", name = "if call", dscr = "Call a function and check the error" },
+    { trig = "ifcall", name = "IF CALL", dscr = "Call a function and check the error" },
     fmt(
       [[
         {val}, {err1} := {func}({args})
@@ -59,36 +57,16 @@ local snippets = {
       ]], {
         val     = ls.i(1, { "val" }),
         err1    = ls.i(2, { "err" }),
-        func    = ls.i(3, { "func" }),
+        func    = ls.i(3, { "Func" }),
         args    = ls.i(4),
         err2    = rep(2),
-        err3    = ls.d(5, snips.make_return_nodes, { 2 }),
+        err3    = ls.d(5, util.make_return_nodes, { 2 }),
         finally = ls.i(0),
     }),
-    snips.in_fn
-  ),
+    in_func
+  ), --}}}
 
-  -- if err:=call(); err != nil { return err }
-  ls.s(
-    { trig = "ifce", name = "if call err inline", dscr = "Call a function and check the error inline" },
-    fmt(
-      [[
-        if {err1} := {func}({args}); {err2} != nil {{
-          return {err3}
-        }}
-        {finally}
-      ]], {
-        err1    = ls.i(1, { "err" }),
-        func    = ls.i(2, { "func" }),
-        args    = ls.i(3, { "args" }),
-        err2    = rep(1),
-        err3    = ls.d(4, snips.make_return_nodes, { 1 }),
-        finally = ls.i(0),
-    }),
-    snips.in_fn
-  ),
-
-  -- Function
+  -- Function {{{
   ls.s(
     { trig = "fn", name = "Function", dscr = "Create a function or a method" },
     fmt(
@@ -118,143 +96,80 @@ local snippets = {
         }),
         finally = ls.i(0),
     }),
-    not_in_fn
-  ),
+    not_in_func
+  ), --}}}
 
-  -- If error
+  -- If error {{{
   ls.s(
-    { trig = "ife", name = "If error, choose me!", dscr = "If error, return wrapped with dynamic node" },
+    { trig = "ife", name = "If error", dscr = "If error, return wrapped" },
     fmt("if {} != nil {{\n\treturn {}\n}}\n{}", {
       ls.i(1, "err"),
-      ls.d(2, snips.make_return_nodes, { 1 }, { user_args = { { "a1", "a2" } } }),
+      ls.d(2, util.make_return_nodes, { 1 }, { user_args = { { "a1", "a2" } } }),
       ls.i(0),
     }),
-    in_fn
-  ),
+    in_func
+  ), --}}}
 
-  -- errors.Wrap
+  -- Defer Recover {{{
   ls.s(
-    { trig = "erw", dscr = "errors.Wrap" },
-    fmt([[errors.Wrap({}, "{}")]], {
-      ls.i(1, "err"),
-      ls.i(2, "failed to"),
-    })
-  ),
-
-  -- errors.Wrapf
-  ls.s(
-    { trig = "erwf", dscr = "errors.Wrapf" },
-    fmt([[errors.Wrapf({}, "{}", {})]], {
-      ls.i(1, "err"),
-      ls.i(2, "failed %v"),
-      ls.i(3, "args"),
-    })
-  ),
-
-  -- for select
-  ls.s(
-    { trig = "fsel", dscr = "for select" },
-    fmt([[
-for {{
-	  select {{
-        case {} <- {}:
-			      {}
-        default:
-            {}
-	  }}
-}}
-]], {
-      ls.c(1, {ls.i(1, "ch"), ls.i(2, "ch := ")}),
-      ls.i(2, "ch"),
-      ls.i(3, "break"),
-      ls.i(0, ""),
-    })
-  ),
-
-  ls.s(
-    { trig = "for([%w_]+)", regTrig = true, hidden = true },
-	fmt(
-		[[
-for  {} := 0; {} < {}; {}++ {{
-  {}
-}}
-{}
-    ]],
-		{
-			ls.d(1, function(_, snip)
-				return ls.sn(1, ls.i(1, snip.captures[1]))
-			end),
-			rep(1),
-			ls.c(2, { ls.i(1, "num"), ls.sn(1, { ls.t("len("), ls.i(1, "arr"), ls.t(")") }) }),
-			rep(1),
-			ls.i(3, ""),
-			ls.i(4),
-		}
-	), in_fn
-),
-  -- type switch
-  ls.s(
-    { trig = "tysw", dscr = "type switch" },
-    fmt([[
-switch {} := {}.(type) {{
-    case {}:
-        {}
-    default:
-        {}
-}}
-]], {
-      ls.i(1, "v"),
-      ls.i(2, "i"),
-      ls.i(3, "int"),
-      ls.i(4, 'fmt.Println("int")'),
-      ls.i(0, ""),
-    })
-  ),
-  -- fmt.Sprintf
-  ls.s(
-    { trig = "spn", dscr = "fmt.Sprintf" },
-    fmt([[fmt.Sprintf("{}%{}", {})]], {
-      ls.i(1, "msg "),
-      ls.i(2, "+v"),
-      ls.i(2, "arg"),
-    })
-  ),
-
-  -- build tags
-  ls.s(
-    { trig = "//tag", dscr = "// +build tags" },
-    fmt([[// +build:{}{}]], {
-      ls.i(1, "integration"),
-      ls.i(2, ",unit"),
-    })
-  ),
-
-  -- Nolint
-  ls.s(
-    { trig = "nolt", dscr = "ignore linter" },
-    fmt([[// nolint:{}{}]], {
-      ls.i(1, "funlen"),
-      ls.i(2, ",cyclop"),
-    })
-  ),
-
-  -- defer recover
-  ls.s(
-    { trig = "dfr", dscr = "defer recover" },
-    fmt(
+    { trig = "refrec", name = "Defer Recover", dscr = "Defer Recover" },
+    fmta(
       [[
         defer func() {{
-            if err := recover(); err != nil {{
-       	        {}
-            }}
-        }}()]], {
-      ls.i(1, ""),
-    })
-  ),
+          if e := recover(); e != nil {{
+            fmt.Printf("Panic: %v\n%v\n", e, string(debug.Stack()))
+          }}
+        }}()
+      ]]
+    , {}),
+    in_func
+  ), --}}}
 
-  -- Allocate Slices and Maps
+  -- gRPC Error{{{
   ls.s(
-    { trig = "mk", name = "Make", dscr = "Allocate map or slice" },
+    { trig = "gerr", dscr = "Return an instrumented gRPC error" },
+    fmt('internal.GrpcError({},\n\tcodes.{}, "{}", "{}", {})', {
+      ls.i(1, "err"),
+      ls.i(2, "Internal"),
+      ls.i(3, "Description"),
+      ls.i(4, "Field"),
+      ls.i(5, "fields"),
+    }),
+    in_func
+  ), --}}}
+
+  -- Mockery {{{
+  ls.s(
+    { trig = "mockery", name = "Mockery", dscr = "Create an interface for making mocks" },
+    fmt(
+      [[
+        // {} mocks {} interface for testing purposes.
+        //go:generate mockery --name {} --filename {}_mock.go
+        type {} interface {{
+          {}
+        }}
+      ]], {
+        rep(1),
+        rep(2),
+        rep(1),
+        ls.f(function(args) return util.snake_case(args[1][1]) end, { 1 }),
+        ls.i(1, "Client"),
+        ls.i(2, "pkg.Interface"),
+    })
+  ), --}}}
+
+  -- Nolint {{{
+  ls.s(
+    { trig = "nolint", dscr = "ignore linter" },
+    fmt([[// nolint:{} // {}]], {
+      ls.i(1, "names"),
+      ls.i(2, "explaination"),
+    })
+  ), --}}}
+
+  -- Allocate Slices and Maps {{{
+  ls.s(
+    { trig = "make", name = "Make", dscr = "Allocate map or slice" },
     fmt("{} {}= make({})\n{}", {
       ls.i(1, "name"),
       ls.i(2),
@@ -269,10 +184,10 @@ switch {} := {}.(type) {{
       }),
       ls.i(0),
     }),
-    in_fn
-  ),
+    in_func
+  ), --}}}
 
-  -- Test Cases
+  -- Test Cases {{{
   ls.s(
     { trig = "tcs", dscr = "create test cases for testing" },
     fmta(
@@ -291,86 +206,10 @@ switch {} := {}.(type) {{
       ]],
       { ls.i(1), ls.i(2) }
     ),
-    in_test_fn
-  ),
+    in_test_func
+  ), --}}}
 
-  -- gRPC Error
-  ls.s(
-    { trig = "gerr", dscr = "Return an instrumented gRPC error" },
-    fmt('internal.GrpcError({},\n\tcodes.{}, "{}", "{}", {})', {
-      ls.i(1, "err"),
-      ls.i(2, "Internal"),
-      ls.i(3, "Description"),
-      ls.i(4, "Field"),
-      ls.i(5, "fields"),
-    }),
-    in_fn
-  ),
-
-  ls.s(
-    { trig = "hf", name = "http.HandlerFunc", dscr = "http handler" },
-    fmt( [[
-    func {}(w http.ResponseWriter, r *http.Request) {{
-        {}
-    }}
-]], {
-      ls.i(1, "handler"),
-      ls.i(2, [[fmt.Fprintf(w, "hello world")"]]),
-    })
-  ),
-
-  -- deep equal
-  ls.s(
-    { trig = "deq", name = "reflect Deep equal", dscr = "Compare with deep equal and print error" },
-    fmt([[
-if !reflect.DeepEqual({}, {}) {{
-	_, file, line, _ := runtime.Caller(0)
-    fmt.Printf("%s:%d:\n\n\texp: %#v\n\n\tgot: %#v\n\n", filepath.Base(file), line, {}, {})
-    t.FailNow()
-}}]] , {
-      ls.i(1, "expected"),
-      ls.i(2, "got"),
-      rep(1),
-      rep(2),
-    }),
-    in_test_fn
-  ),
-  -- Create Mocks
-  ls.s(
-    { trig = "mock", name = "Mocks create", dscr = "Create a mock with NewFactory" },
-    fmt("{} := &mocks.{}({})", {
-      ls.i(1, "m"),
-      ls.i(2, "NewFactory"),
-      ls.i(3, "t"),
-    }),
-    in_test_fn
-  ),
-
-  -- Http request with defer close
-  ls.s(
-       { trig = 'hreq', name = "http request with defer close", dscr = "create a http request with defer body close" },
-    fmt([[
-  {}, {} := http.{}("http://{}:" + {} + "/{}")
-	if {} != nil {{
-		log.Fatalln({})
-	}}
-	_ = {}.Body.Close()
-    ]], {
-        ls.i(1, "resp"),
-        ls.i(2, "err"),
-        ls.c(3, {ls.i(1, "Get"), ls.i(2, "Post"), ls.i(3, "Patch")}),
-        ls.i(4, "localhost"),
-        ls.i(5, [["8080"]]),
-        ls.i(6, "path"),
-        rep(2),
-        rep(2),
-        rep(1),
-      }
-    ),
-    in_test_fn
-  ),
-
-  -- Go CMP
+  -- Go CMP {{{
   ls.s(
     { trig = "gocmp", dscr = "Create an if block comparing with cmp.Diff" },
     fmt(
@@ -382,10 +221,22 @@ if !reflect.DeepEqual({}, {}) {{
         ls.i(1, "want"),
         ls.i(2, "got"),
     }),
-    in_test_fn
-  ),
+    in_test_func
+  ), --}}}
 
-  -- Require NoError
+  -- Create Mocks {{{
+  ls.s(
+    { trig = "mock", name = "Mocks", dscr = "Create a mock with defering assertion" },
+    fmt("{} := &mocks.{}{{}}\ndefer {}.AssertExpectations(t)\n{}", {
+      ls.i(1, "m"),
+      ls.i(2, "Mocked"),
+      rep(1),
+      ls.i(0),
+    }),
+    in_test_func
+  ), --}}}
+
+  -- Require NoError {{{
   ls.s(
     { trig = "noerr", name = "Require No Error", dscr = "Add a require.NoError call" },
     ls.c(1, {
@@ -393,61 +244,109 @@ if !reflect.DeepEqual({}, {}) {{
       ls.sn(nil, fmt('require.NoError(t, {}, "{}")', { ls.i(1, "err"), ls.i(2) })),
       ls.sn(nil, fmt('require.NoErrorf(t, {}, "{}", {})', { ls.i(1, "err"), ls.i(2), ls.i(3) })),
     }),
-    in_test_fn
-  ),
+    in_test_func
+  ), --}}}
 
-  -- Assert equal
+  -- Subtests {{{
   ls.s(
-    { trig = "aeq", name = "Assert Equal", dscr = "Add assert.Equal" },
-    ls.c(1, {
-      ls.sn(nil, fmt('assert.Equal(t, {}, {})', { ls.i(1, "got"), ls.i(2, "want") })),
-      ls.sn(nil, fmt('assert.Equalf(t, {}, {}, "{}", {})', { ls.i(1, "got"), ls.i(2, "want"), ls.i(3, "got %v not equal to want"), ls.i(4, "got") })),
-    }),
-    in_test_fn
-  ),
-
-  -- Subtests
-  ls.s(
-    { trig = "test", name = "Test & Subtest", dscr = "Create subtests and their function stubs" },
+    { trig = "Test", name = "Test/Subtest", dscr = "Create subtests and their function stubs" },
     fmta("func <>(t *testing.T) {\n<>\n}\n\n <>", {
       ls.i(1),
-      ls.d(2, snips.create_t_run, ai({ 1 })),
-      ls.d(3, snips.mirror_t_run_funcs, ai({ 2 })),
+      ls.d(2, util.create_t_run, ai({ 1 })),
+      ls.d(3, util.mirror_t_run_funcs, ai({ 2 })),
     }),
     in_test_file
-  ),
+  ), --}}}
 
-  -- bench test
-  ls.s(
-    { trig = "bench", name = "bench test cases ", dscr = "Create benchmark test" },
-    fmt([[
-	    func Benchmark{}(b *testing.B) {{
-	        for i := 0; i < b.N; i++ {{
-	     	    {}({})
-	        }}
-	    }}]]
-    , {
-      ls.i(1, "MethodName"),
-      rep(1),
-      ls.i(2, "args")
-    }),
-    in_test_file
-  ),
-
-
-  -- Stringer
+  -- Stringer {{{
   ls.s(
     { trig = "strigner", name = "Stringer", dscr = "Create a stringer go:generate" },
     fmt("//go:generate stringer -type={} -output={}_string.go", {
       ls.i(1, "Type"),
       partial(vim.fn.expand, "%:t:r"),
     })
+  ), --}}}
+
+  -- Query Database {{{
+  ls.s(
+    { trig = "queryrows", name = "Query Rows", dscr = "Query rows from database" },
+    fmta(
+      [[
+      const <query1> = `<query2>`
+      <ret1> := make([]<type1>, 0, <cap>)
+
+      <err1> := <retrier>.Do(func() error {
+      	<rows1>, <err2> := <db>.Query(<ctx>, <query3>, <args>)
+      	if errors.Is(<err3>, pgx.ErrNoRows) {
+      		return &retry.StopError{Err: <err4>}
+      	}
+      	if <err5> != nil {
+      		return <err6>
+      	}
+      	defer <rows2>.Close()
+
+      	<ret2> = <ret3>[:0]
+      	for <rows3>.Next() {
+      		var <doc1> <type2>
+      		<err7> := <rows4>.Scan(&<vals>)
+      		if <err8> != nil {
+      			return <err9>
+      		}
+
+      		<last>
+      		<ret4> = append(<ret5>, <doc2>)
+      	}
+
+        if <err10> != nil {
+          return <err11>
+        }
+        return nil
+      })
+
+      if <err12> != nil {
+        return nil, <err13>
+      }
+      return <ret6>, nil
+      ]], {
+        query1  = ls.i(1, "query"),
+        query2  = ls.i(2, "SELECT 1"),
+        ret1    = ls.i(3, "ret"),
+        type1   = ls.i(4, "Type"),
+        cap     = ls.i(5, "cap"),
+        err1    = ls.i(6, "err"),
+        retrier = ls.i(7, "retrier"),
+        rows1   = ls.i(8, "rows"),
+        err2    = ls.i(9, "err"),
+        db      = ls.i(10, "db"),
+        ctx     = ls.i(11, "ctx"),
+        query3  = rep(1),
+        args    = ls.i(12, "args"),
+        err3    = rep(9),
+        err4    = rep(9),
+        err5    = rep(9),
+        err6    = ls.d(13, util.go_err_snippet, { 9 }, { user_args = { { "making query" } } }),
+        rows2   = rep(8),
+        ret2    = rep(3),
+        ret3    = rep(3),
+        rows3   = rep(8),
+        doc1    = ls.i(14, "doc"),
+        type2   = rep(4),
+        err7    = ls.i(15, "err"),
+        rows4   = rep(8),
+        vals    = ls.d(16, function(args) return ls.sn(nil, ls.i(1, args[1][1])) end, { 14 }),
+        err8    = rep(15),
+        err9    = ls.d(17, util.go_err_snippet, { 15 }, { user_args = { { "scanning row" } } }),
+        last    = ls.i(0),
+        ret4    = rep(3),
+        ret5    = rep(3),
+        doc2    = rep(14),
+        err10   = rep(15),
+        err11   = ls.d(18, util.go_err_snippet, { 8 }, { user_args = { { "iterating rows", ".Err()" } } }),
+        err12   = rep(15),
+        ret6    = rep(3),
+        err13   = ls.d(19, util.go_err_snippet, { 6 }, { user_args = { { "error in row iteration" } } }),
+      }
+    )
   ),
+  -- }}}
 }
-
-log('creating snippet')
-
-table.insert(snippets, ls.s("smart error", require "my.utils.luasnippets.go-error"))
-
-ls.add_snippets("go", snippets)
--- stylua: ignore end

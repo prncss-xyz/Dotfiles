@@ -47,6 +47,9 @@ return {
 
       -- installs relevant grammar on file opening
       local group = vim.api.nvim_create_augroup('MyTS', {})
+      local ft_to_parser =
+        require('nvim-treesitter.parsers').filetype_to_parsername
+      ft_to_parser.mdx = 'markdown'
       local ts_parsers = require 'nvim-treesitter.parsers'
       vim.api.nvim_create_autocmd('BufEnter', {
         pattern = { '*' },

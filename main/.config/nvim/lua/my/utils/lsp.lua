@@ -9,7 +9,7 @@ function M.format(bufnr)
       async = false,
       filter = function(client)
         if --[[ client.name == 'null-ls' or ]]
-          client.name == 'prismals'
+          client.name == 'lua_ls'
         then
           return true
         end
@@ -59,7 +59,6 @@ function M.start()
     require 'ltex_extra'
   elseif vim.tbl_contains({ 'lua' }, ft) then
     require 'neodev'
-    
   end
   vim.cmd 'LspStart'
 end

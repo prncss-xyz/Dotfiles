@@ -6,11 +6,11 @@ return {
         'toggleterm',
         open_on_start = true,
       },
+      templates = {
+        'builtin',
+        --[[ 'my.dev', ]]
+      },
     },
-    config = function(_, opts)
-      local overseer = require 'overseer'
-      overseer.setup(opts)
-    end,
     cmd = {
       'OverseerOpen',
       'OverseerClose',

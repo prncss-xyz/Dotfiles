@@ -96,12 +96,20 @@ function M.extend()
         'trouble',
         'Trouble lsp_references',
       },
-      s = b {
+      --[[ s = b {
         desc = 'aerial symbols',
         'req',
         'my.utils.ui_toggle',
         'activate',
         'aerial',
+      }, ]]
+      s = b {
+        desc = 'neotree symbols',
+        'req',
+        'my.utils.ui_toggle',
+        'activate',
+        'neo_tree',
+        'Neotree document_symbols',
       },
       w = b {
         desc = 'todo',

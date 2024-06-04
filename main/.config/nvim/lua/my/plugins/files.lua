@@ -58,9 +58,6 @@ return {
           },
         },
         close_if_last_window = true,
-        window = {
-          width = require('my.parameters').pane_width,
-        },
         filesystem = {
           follow_current_file = {
             enabled = true,

@@ -22,63 +22,47 @@ function M.extend()
   local binder = require 'binder'
   local keys = binder.keys
   local b = binder.b
+  local d = require('my.config.binder.parameters').d
   local util = require 'my.config.binder.utils'
   local lazy_req = util.lazy_req
   return keys {
     redup = keys {
       desc = 'side locations',
-      redup = b {
-        desc = 'raise',
+      a = b {
+        desc = 'select',
         'req',
-        'my.utils.ui_toggle',
-        'raise',
+        'edgy',
+        'select',
       },
       b = b {
         desc = 'buffers',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'neo_tree',
+        'vim',
+        'cmd',
         'Neotree buffers',
-      },
-      e = b {
-        desc = 'neo-tree',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'neo_tree',
-        'Neotree',
       },
       f = b {
         desc = 'neo-tree',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'neo_tree',
+        'vim',
+        'cmd',
         'Neotree',
       },
       g = b {
-        desc = 'hunks',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'trouble',
-        'Gitsigns setqflist',
+        desk = 'hunks',
+        lazy_req('my.utils.ui_toggle', 'activate', 'trouble', function()
+          vim.cmd 'Gitsigns setqflist'
+          vim.cmd 'Trouble quickfix'
+        end),
       },
       h = b {
         desc = 'neo-tree git',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'neo_tree',
+        'vim',
+        'cmd',
         'Neotree git_status',
       },
       n = b {
         desc = 'zk',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'neo_tree',
+        'vim',
+        'cmd',
         'Neotree source=neo-tree-zk',
       },
       l = b {
@@ -90,48 +74,39 @@ function M.extend()
       },
       r = b {
         desc = 'references',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'trouble',
+        'vim',
+        'cmd',
         'Trouble lsp_references',
       },
-      --[[ s = b {
-        desc = 'aerial symbols',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'aerial',
-      }, ]]
       s = b {
         desc = 'neotree symbols',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'neo_tree',
+        'vim',
+        'cmd',
         'Neotree document_symbols',
       },
       w = b {
         desc = 'todo',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'trouble',
-        'TodoTrouble',
+        'vim',
+        'cmd',
+        'Trouble todo',
       },
       x = b {
         desc = 'ui close',
         'req',
-        'my.utils.ui_toggle',
+        'edgy',
         'close',
       },
       z = b {
         desc = 'diagnostics',
-        'req',
-        'my.utils.ui_toggle',
-        'activate',
-        'trouble',
-        'Trouble workspace_diagnostics',
+        'vim',
+        'cmd',
+        'Trouble diagnostics',
+      },
+      [d.search] = b {
+        desc = 'search',
+        'vim',
+        'cmd',
+        'GrugFar',
       },
     },
     a = b {

@@ -368,6 +368,70 @@ return {
     },
   },
   {
+    'folke/edgy.nvim',
+    event = 'VeryLazy',
+    init = function()
+      vim.opt.laststatus = 3
+      vim.opt.splitkeep = 'screen'
+    end,
+    opts = {
+      options = {
+        left = { size = 55 },
+        right = { size = 80 },
+      },
+      left = {
+        {
+          title = 'Trouble',
+          ft = 'trouble',
+        },
+        {
+          title = 'Neo-Tree',
+          ft = 'neo-tree',
+        },
+        {
+          ft = 'Outline',
+          open = 'SymbolsOutlineOpen',
+        },
+        -- any other neo-tree windows
+        'neo-tree',
+        {
+          ft = 'codecompanion',
+          title = 'Code Companion Chat',
+        },
+      },
+      right = {
+        {
+          ft = 'grug-far',
+          title = 'Grug Far',
+        },
+        {
+          ft = 'mchat',
+          title = 'Mchat',
+        },
+      },
+    },
+  },
+  {
+    'anuvyklack/windows.nvim',
+    event = 'VeryLazy',
+    dependencies = { 'anuvyklack/middleclass' },
+    init = function()
+      vim.o.winwidth = 100
+      vim.o.winminwidth = 80
+      --[[ vim.o.equalalways = false ]]
+    end,
+    opts = {},
+    cmd = {
+      'WindowsMaximize',
+      'WindowsMaximizeVertically',
+      'WindowsMaximizeHorizontally',
+      'WindowsEqualize',
+      'WindowsEnableAutowidth',
+      'WindowsDisableAutowidth',
+      'WindowsToggleAutowidth',
+    },
+  },
+  {
     'karb94/neoscroll.nvim',
     opts = {
       mappings = {},

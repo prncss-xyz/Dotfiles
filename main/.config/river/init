@@ -187,7 +187,7 @@ spawn_once .local/bin/mvf-term read
 spawn_once .local/bin/mvl-add read
 spawn_once .local/bin/mvl-rm read
 spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
-spawn_once /usr/lib/kdeconnectd
+spawn_once /usr/bin/kdeconnectd
 spawn_once mako
 spawn_once river-tag-overlay
 spawn_once swaybg --mode fill --image Pictures/Backgrounds/nympheas.jpg
@@ -199,7 +199,6 @@ spawn_once syncthing serve --no-browser --no-restart --logflags=0
 # spawn_once footclient --title=scratchpad
 spawn_once udiskie
 spawn_once waybar
-
 
 # not working as a service
 # spawn_once wlsunset -l 45.5 -L -73.6

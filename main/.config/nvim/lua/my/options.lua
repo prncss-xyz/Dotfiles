@@ -49,7 +49,7 @@ deep_merge(vim, {
     -- timeoutlen = 300,
     wildignorecase = true,
     wildoptions = 'pum',
-    wrap = true,
+    wrap = false,
     grepprg = [[rg --glob "!.git" --no-heading --vimgrep --follow $*]],
     -- bufhidden = "wipe", -- this option seams to crash auto_session
     title = true,
@@ -78,6 +78,7 @@ deep_merge(vim, {
   g = {
     neovide_transparency = 0.8,
     transparency = 0.8,
+    localleader = ',',
   },
   env = {},
 })
@@ -89,6 +90,9 @@ vim.api.nvim_create_autocmd('FileType', {
     deep_merge(vim.opt_local, {
       breakindent = true,
       breakindentopt = 'shift:2',
+    })
+    deep_merge(vim.o, {
+      wrap = true,
     })
   end,
 })

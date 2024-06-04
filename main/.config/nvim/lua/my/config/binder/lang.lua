@@ -23,7 +23,7 @@ function M.setup()
       ['<c-g>'] = b { 'req', 'my.utils.cmp', 'confirm_c' },
     },
     is = keys {
-      ['<c-j>'] = b { '<cr>' },
+      --[[ ['<c-j>'] = b { '<cr>' }, ]]
       ['<c-space>'] = b { '<space><left>' },
       ['<c-e>'] = b { 'req', 'my.utils.cmp', 'toggle' },
       ['<s-tab>'] = b {
@@ -53,6 +53,7 @@ function M.setup()
           require('my.utils.moves').fwd(true)
         end,
       },
+      -- <c-h> backspace
       ['<c-e>'] = b { 'req', 'readline', 'end_of_line' },
       ['<m-f>'] = b { 'req', 'readline', 'forward_word' },
       ['<c-k>'] = b { 'req', 'readline', 'kill_line' },

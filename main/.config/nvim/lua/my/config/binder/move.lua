@@ -27,7 +27,7 @@ function M.extend()
       },
     },
     c = modes {
-      desc = 'asterisk',
+      desc = 'search current word',
       n = b {
         function()
           require('flies.flies.search').set_search(true)
@@ -66,6 +66,7 @@ function M.extend()
       t = b { 'UltestOutput', cmd = true },
       x = b { desc = 'signature help', 'vim', 'lsp.buf.signature_help' },
     },
+    h = b { 'gi', 'last insert point' },
     k = np {
       desc = 'trail move geo',
       prev = function()

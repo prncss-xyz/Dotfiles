@@ -384,6 +384,7 @@ function M.extend()
     --     lazy_req('dash', 'toggle_breakpoint'),
     --   },
     -- },
+    --[[
     g = keys {
       desc = 'runners',
       redup = b {
@@ -442,6 +443,18 @@ function M.extend()
         'req',
         'my.utils.repl',
         'cr',
+      },
+    },
+    ]]
+    g = modes {
+      desc = 'model',
+      n = b {
+        desc = 'model',
+        lazy_req('my.utils.model', 'all', false),
+      },
+      x = b {
+        desc = 'model',
+        lazy_req('my.utils.model', 'all', true),
       },
     },
     h = keys {
@@ -792,43 +805,6 @@ function M.extend()
         'restart',
         modes = 'n',
       },
-    },
-    s = keys {
-      desc = 'replace',
-      redup = b { desc = 'muren open', cmd 'MurenOpen' },
-      x = b { desc = 'muren close', cmd 'MurenClose' },
-      t = b { desc = 'muren toggle', cmd 'MurenToggle' },
-      f = b { desc = 'muren fresh', cmd 'MurenFresh' },
-      u = b { desc = 'muren unique', cmd 'MurenUnique' },
-      r = b { desc = 'ssr', 'req', 'ssr', 'open', modes = 'nx' },
-      --[[ r = modes {
-        n = keys {
-          next = b {
-            desc = 'spectre open',
-            lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
-              require('spectre').open()
-            end),
-          },
-          prev = b {
-            desc = 'spectre open file seach',
-            lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
-              require('spectre').open_file_search()
-            end),
-          },
-        },
-        x = keys {
-          next = b {
-            desc = 'spectre open visual',
-            lazy_req('my.utils.ui_toggle', 'activate', 'spectre', function()
-              require('spectre').open_visual()
-            end),
-          },
-          prev = b {
-            desc = 'spectre open visual select word',
-            lazy_req('spectre', 'open_visual', { select_word = true }),
-          },
-        },
-      }, ]]
     },
     t = keys {
       desc = 'neotest',

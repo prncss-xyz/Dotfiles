@@ -4,9 +4,9 @@ function M.blank()
   local text = ''
   for i = 1, vim.v.count1 do
     text = text .. '\n'
-    local buffers = require'longnose.my.utils.buffers'
+    local buffers = require 'longnose.my.utils.buffers'
     local cursor = buffers.get_cursor(0)
-    -- TODO: 
+    -- TODO:
     -- buffers.text_replace(0, {, , text})
   end
 end

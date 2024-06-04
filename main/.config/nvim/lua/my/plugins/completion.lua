@@ -55,6 +55,7 @@ return {
         sources = {
           { name = 'luasnip' },
           --[[ { name = 'nvim_lsp_signature_help' }, ]]
+          { name = 'lazydev', group_index = 0 },
           { name = 'nvim_lsp' },
           { name = 'nvim_lua' },
           { name = 'cmp_overseer' },
@@ -135,6 +136,7 @@ return {
     opts = {},
     cmd = { 'Codeium' },
   },
+  -- neocodeium
   {
     'Exafunction/codeium.vim',
     config = function()
@@ -155,6 +157,20 @@ return {
     event = 'BufEnter',
     cmd = { 'Codeium' },
     enabled = false,
+  },
+  {
+    'supermaven-inc/supermaven-nvim',
+    config = function()
+      require('supermaven-nvim').setup {
+        keymaps = {
+          accept_suggestion = '<c-l>',
+          clear_suggestion = '<c-c>',
+          accept_word = '<c-j>',
+        },
+      }
+    end,
+    cmd = { 'SupermavenUseFree', 'SupermavenLogout' },
+    event = 'BufEnter',
   },
   {
     'codota/tabnine-nvim',

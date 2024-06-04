@@ -38,7 +38,7 @@ return {
         --[[ 'cssls', ]]
         --[[ 'html', ]]
         'graphql',
-        'eslint',
+        --[[ 'eslint', ]]
         --[[ 'julials', ]]
         --[[ 'prismals', ]]
         --[[ 'golangci_lint_ls', -- FIXME: ]]
@@ -136,6 +136,7 @@ return {
   {
     'mfussenegger/nvim-lint',
     ft = {
+      'eslint_d',
       'sh',
       'yaml',
     },
@@ -179,9 +180,41 @@ return {
       lint.try_lint(nil, { ignore_errors = true })
     end,
   },
+  { 'Bilal2453/luvit-meta' },
+  {
+    'folke/lazydev.nvim',
+    ft = 'lua',
+    enabled = false,
+    opts = {
+      library = {
+        'luvit-meta/library',
+      },
+      globals = {
+        'dump',
+        -- xplr
+        'xplr',
+        'version',
+        -- busted
+        'it',
+        'describe',
+        'assert',
+        'pending',
+        'setup',
+        'teardown',
+        'lazy_setup',
+        'lazy_teardown',
+        'strict_setup',
+        'strict_teardown',
+        'before_each',
+        'after_each',
+        'finally',
+      },
+    },
+  },
   {
     'folke/neodev.nvim',
     ft = 'lua',
+    enabled = true,
     opts = {
       neodev = {
         library = { plugins = { 'neotest' }, types = true },

@@ -70,7 +70,7 @@ function M.extend()
       next = modes {
         n = b {
           function()
-            require('refactoring').debug.print_var { normal = true }
+            require('refactoring').debug.print_var { normal = false }
           end,
         },
         x = b {

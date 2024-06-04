@@ -92,6 +92,7 @@ return {
       'MurenFresh',
       'MurenUnique',
     },
+    enabled = false,
   },
   {
     'AckslD/nvim-FeMaco.lua',
@@ -99,6 +100,11 @@ return {
     name = 'femaco',
     opts = {},
     enabled = false,
+  },
+  {
+    'MagicDuck/grug-far.nvim',
+    opts = {},
+    cmd = { 'GrugFar' },
   },
   {
     'ThePrimeagen/refactoring.nvim',
@@ -159,6 +165,126 @@ return {
       'ChatGPTEditWithInstructions',
       'ChatGPTRun',
     },
+    enabled = false,
+  },
+  {
+    'gsuuon/model.nvim',
+    init = function()
+      vim.filetype.add {
+        extension = {
+          mchat = 'mchat',
+        },
+      }
+    end,
+    config = function()
+      local util = require 'model.util'
+      local function pass(path)
+        return function()
+          local str = vim.fn.system { 'pass', 'show', path }
+          str = str:gsub('\n', '')
+          return str
+        end
+      end
+      require('model').setup {
+        secrets = {
+          ANTHROPIC_API_KEY = pass 'anthropic.com/juliette.lamarche.xyz@gmail.com/keys/nvim',
+          GOOGLE_API_KEY = pass 'google.com/juliette.lamarche.xyz@gmail.com/keys/nvim',
+          PALM_API_KEY = pass 'google.com/juliette.lamarche.xyz@gmail.com/keys/nvim',
+          GROQ_API_KEY = pass 'groq.com/juliette.lamarche.xyz@gmail.com/keys/nvim',
+          OPENAI_API_KEY = pass 'openai.com/juliette.lamarche.xyz@gmail.com/keys/nvim',
+          HUGGINGFACE_API_KEY = pass 'huggingface.co/juliette.lamarche.xyz@gmail.com/nvim',
+        },
+        prompts = util.module.autoload 'my.prompt_library',
+        chats = util.module.autoload 'my.chat_library',
+      }
+    end,
+    keys = {
+      { '<c-m>x', ':Mdelete<cr>', mode = 'n' },
+      { '<c-m>v', ':Mselect<cr>', mode = 'n' },
+      { '<c-m><space>', ':Mchat<cr>', mode = 'n' },
+      { '<c-cr>', '<cmd>Mchat<cr>', mode = 'i' },
+      { ':', ':', mode = 'n' },
+    },
+    ft = 'mchat',
+    cmd = {
+      'M',
+      'Model',
+      'Mchat',
+      'Mdelete',
+      'MCancel','MShow','MCadd', 'MCremove', 'MCclear','MCPaste',
+
+    },
+    enabled = true,
+  },
+  {
+    'robitx/gp.nvim',
+    opts = {
+      openai_api_key = {
+        'pass',
+        'show',
+        'openai.com/keys/juliette.lamarche.xyz@gmail.com',
+      },
+    },
+    cmd = {
+      'GpChatNew',
+      'GpChatPaste',
+      'GpChatToggle',
+      'GpChatFinder',
+      'GpChatRespond',
+      'GpChatDelete',
+      'GpRewrite',
+      'GpAppend',
+      'GpPrepend',
+      'GpEnew',
+      'GpNew',
+      'GpVnew',
+      'GpTabnew',
+      'GpPopup',
+      'GpImplement',
+      'GpContext',
+      'GpNextAgent',
+      'GpAgent',
+      'GpStop',
+      'GpInspectPlugin',
+      --TODO: GpWisper, GpImage
+    },
+  },
+  {
+    'olimorris/codecompanion.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-telescope/telescope.nvim',
+      'stevearc/dressing.nvim',
+      'folke/edgy.nvim',
+    },
+    config = function()
+      require('codecompanion').setup {
+        adapters = {
+          anthropic = require('codecompanion.adapters').use('anthropic', {
+            env = {
+              api_key = 'cmd:pass show anthropic/juliette.lamarche.xyz@gmail.com',
+            },
+          }),
+        },
+        strategies = {
+          chat = 'anthropic',
+          inline = 'anthropic',
+          tool = 'anthropic',
+        },
+        log_level = 'TRACE',
+      }
+      -- Expand `cc` into CodeCompanion in the command line
+      vim.cmd [[cab cc CodeCompanion]]
+    end,
+    cmd = {
+      'CodeCompanion',
+      'CodeCompanionChat',
+      'CodeCompanionAdd',
+      'CodeCompanionToggle',
+      'CodeCompanionActions',
+    },
+    enabled = false,
   },
   {
     'cshuaimin/ssr.nvim',

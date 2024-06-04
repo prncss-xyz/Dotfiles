@@ -61,10 +61,10 @@ function M.extend()
       end,
     },
     g = b {
-      desc = 'recent buffer',
+      desc = 'mchat',
       'req',
-      'buffstory',
-      'select',
+      'telescope',
+      'extensions.model.mchat',
     },
     h = b {
       desc = 'git status',
@@ -75,6 +75,12 @@ function M.extend()
     i = b {
       desc = 'noice (messages)',
       cmd 'Noice telescope',
+    },
+    o = b {
+      desc = 'recent buffer',
+      'req',
+      'buffstory',
+      'select',
     },
     k = b {
       desc = 'terminal',

@@ -46,7 +46,8 @@ function M.extend()
       'move',
       'n',
       {
-        domain = 'inner',
+        domain = 'outer',
+        around = 'never',
         move = 'right',
       },
       modes = 'nx',
@@ -126,6 +127,7 @@ function M.extend()
       'n',
       {
         domain = 'outer',
+        around = 'never',
         move = 'left',
       },
       modes = 'nx',

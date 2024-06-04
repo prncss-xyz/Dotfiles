@@ -28,12 +28,13 @@ M.i = {
       fmt(
         [[
           if ([]) {
-            []
+            [][]
           }
         ]],
         {
           i(1, 'true'),
           capture 'contents',
+          i(2, ''),
         },
         { delimiters = '[]' }
       )
@@ -43,12 +44,13 @@ M.i = {
       fmt(
         [[
           if [] then
-            []
+            [][]
           end
         ]],
         {
           i(1, 'true'),
           capture 'contents',
+          i(2, ''),
         },
         { delimiters = '[]' }
       )
@@ -58,7 +60,14 @@ M.i = {
 
 M.k = {
   snip = {
-    default = s('', { i(1, 'name'), t '(', capture 'contents', t ')' }),
+    default = s(
+      '',
+      fmt([[<>(<><>)]], {
+        i(1, 'name'),
+        capture 'contents',
+        i(2, ''),
+      }, { delimiters = '<>' })
+    ),
   },
 }
 
@@ -69,12 +78,13 @@ M.l = {
       fmt(
         [[
           while ([]) {
-            []
+            [][]
           }
         ]],
         {
           i(1, 'true'),
           capture 'contents',
+          i(2, ''),
         },
         { delimiters = '[]' }
       )
@@ -84,12 +94,13 @@ M.l = {
       fmt(
         [[
           while [] do
-            []
+            [][]
           end
         ]],
         {
           i(1, 'true'),
           capture 'contents',
+          i(2, ''),
         },
         { delimiters = '[]' }
       )
@@ -109,13 +120,14 @@ M.h = {
       fmt(
         [[
           function []([]) {
-            []
+            [][]
           }
         ]],
         {
           i(1, 'name'),
           i(2, ''),
           capture 'contents',
+          i(3, ''),
         },
         { delimiters = '[]' }
       )
@@ -125,13 +137,14 @@ M.h = {
       fmt(
         [[
           function []([])
-            []
+            [][]
           end
         ]],
         {
           i(1, 'name'),
           i(2, ''),
           capture 'contents',
+          i(3, ''),
         },
         { delimiters = '[]' }
       )
@@ -139,18 +152,28 @@ M.h = {
   },
 }
 
+local function to_tag(args)
+  return args[1][1]:match '(%w+)' or ''
+end
+
 M.t = {
   snip = {
     default = s(
       '',
-      fmt('<[]>[]</[]>', {
-        i(1, 'tag'),
-        capture 'contents',
-        f(function(args)
-          local text = args[1][1] or ''
-          return text:match '(%w%.)+'
-        end, 1),
-      }, { delimiters = '[]' })
+      fmt(
+        [[
+          <[]>
+            [][]
+          </[]>
+        ]],
+        {
+          i(1, ''),
+          capture 'contents',
+          i(2, ''),
+          f(to_tag, { 1 }),
+        },
+        { delimiters = '[]' }
+      )
     ),
   },
 }

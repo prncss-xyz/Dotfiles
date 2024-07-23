@@ -43,25 +43,8 @@ return {
     },
     config = function(_, opts)
       require('nvim-treesitter.configs').setup(opts)
-      -- installs relevant grammar on file opening
-      local group = vim.api.nvim_create_augroup('MyTS', {})
+      -- FIX:
       vim.treesitter.language.add('markdown', { 'mdx' })
-      local ts_parsers = require 'nvim-treesitter.parsers'
-      vim.api.nvim_create_autocmd('BufEnter', {
-        pattern = { '*' },
-        group = group,
-        callback = function()
-          local ft = vim.bo.filetype
-          local parser = ts_parsers.filetype_to_parsername[ft]
-          if not parser then
-            return
-          end
-          local is_installed = ts_parsers.has_parser(ts_parsers.ft_to_lang(ft))
-          if not is_installed then
-            vim.cmd { cmd = 'TSInstall', args = { parser } }
-          end
-        end,
-      })
     end,
     dependencies = {
       'HiPhish/rainbow-delimiters.nvim',

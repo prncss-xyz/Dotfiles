@@ -153,7 +153,7 @@ M.h = {
 }
 
 local function to_tag(args)
-  return args[1][1]:match '(%w+)' or ''
+  return args[1][1]:match '([%w%.]+)' or ''
 end
 
 M.t = {

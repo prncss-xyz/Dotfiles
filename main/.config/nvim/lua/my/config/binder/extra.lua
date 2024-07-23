@@ -894,6 +894,7 @@ function M.extend()
         ':sp<cr>',
       },
       i = b {
+        desc = 'info',
         require('my.utils.windows').info,
       },
       j = modes {

@@ -1,12 +1,7 @@
 return {
   {
     'mfussenegger/nvim-dap',
-    name = 'dap',
-    config = function(_, _)
-      require 'dapui'
-    end,
     dependencies = {
-      'rcarriga/nvim-dap-ui',
       'theHamsta/nvim-dap-virtual-text',
       {
         'jay-babu/mason-nvim-dap.nvim',
@@ -18,12 +13,16 @@ return {
         },
       },
     },
+    enabled = true,
   },
   {
     'rcarriga/nvim-dap-ui',
-    dependencies = { 'mfussenegger/nvim-dap' },
     name = 'dapui',
     opts = {},
+    dependencies = {
+      --[[ 'mfussenegger/nvim-dap', ]]
+      'nvim-neotest/nvim-nio',
+    },
     config = function()
       require('dapui').setup()
       local dap = require 'dap'
@@ -45,6 +44,7 @@ return {
       dap.listeners.before.event_terminated['dapui_config'] = dapui_close
       dap.listeners.before.event_exited['dapui_config'] = dapui_close
     end,
+    enabled = true,
   },
   {
     'jbyuki/one-small-step-for-vimkind',
@@ -75,7 +75,7 @@ return {
     'leoluz/nvim-dap-go',
     ft = 'go',
     opts = {},
-    enabled = false,
+    enabled = true,
   },
   {
     'mxsdev/nvim-dap-vscode-js',

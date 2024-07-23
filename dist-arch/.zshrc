@@ -33,6 +33,7 @@ alias t='exa --icons --git --tree'
 alias y='yt-dlp -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 alias x='cd "$(xplr --print-pwd-as-result)"'
 alias yx='yt-dlp -x'
+alias ya='yt-dlp -x --output "%(autonumber)02d %(title)s.%(ext)s"'
 alias ze='zk-bib eat --yes'
 
 alias clock-in='echo i $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'

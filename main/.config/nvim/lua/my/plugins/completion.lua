@@ -160,15 +160,14 @@ return {
   },
   {
     'supermaven-inc/supermaven-nvim',
-    config = function()
-      require('supermaven-nvim').setup {
-        keymaps = {
-          accept_suggestion = '<c-l>',
-          clear_suggestion = '<c-c>',
-          accept_word = '<c-j>',
-        },
-      }
-    end,
+    opts = {
+      keymaps = {
+        accept_suggestion = '<c-l>',
+        clear_suggestion = '<c-c>',
+        accept_word = '<c-j>',
+      },
+      ignore_filetypes = { markdown = true },
+    },
     cmd = { 'SupermavenUseFree', 'SupermavenLogout' },
     event = 'BufEnter',
   },

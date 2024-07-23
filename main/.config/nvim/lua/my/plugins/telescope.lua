@@ -33,6 +33,7 @@ local buffer_preview_maker = function(filepath, bufnr, opts)
         or vim.endswith(filepath, 'ts')
         or vim.endswith(filepath, 'tsx')
         or vim.endswith(filepath, 'mdx')
+        or vim.endswith(filepath, 'md')
       then
         require('telescope.previewers').buffer_previewer_maker(
           filepath,

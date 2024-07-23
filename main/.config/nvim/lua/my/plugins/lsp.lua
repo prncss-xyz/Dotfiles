@@ -30,7 +30,6 @@ return {
   },
   {
     'neovim/nvim-lspconfig',
-    name = 'lspconfig',
     event = 'BufReadPost',
     config = function()
       for _, lsp in ipairs {
@@ -38,7 +37,7 @@ return {
         --[[ 'cssls', ]]
         --[[ 'html', ]]
         'graphql',
-        --[[ 'eslint', ]]
+        'eslint',
         --[[ 'julials', ]]
         --[[ 'prismals', ]]
         --[[ 'golangci_lint_ls', -- FIXME: ]]
@@ -136,7 +135,6 @@ return {
   {
     'mfussenegger/nvim-lint',
     ft = {
-      'eslint_d',
       'sh',
       'yaml',
     },
@@ -312,18 +310,10 @@ return {
     'yioneko/nvim-vtsls',
     ft = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
     config = function()
-      require('lspconfig.configs').vtsls = require('vtsls').lspconfig -- set default server config, optional but recommended
-      require('lspconfig.configs').vtsls.on_attach = function(client, bufnr)
-        print 'attached'
-        require('workspace-diagnostics').populate_workspace_diagnostics(
-          client,
-          bufnr
-        )
-      end
-      require('lspconfig').config.setup {}
+      require('lspconfig.configs').vtsls = require('vtsls').lspconfig
+      require('lspconfig').vtsls.setup {}
     end,
     cmd = { 'VtsExec', 'VtsRename' },
-    enabled = false,
   },
   {
     'pmizio/typescript-tools.nvim',
@@ -339,6 +329,7 @@ return {
       'TSToolsRenameFile',
     },
     opts = {},
+    enabled = false,
   },
   {
     'ray-x/go.nvim',

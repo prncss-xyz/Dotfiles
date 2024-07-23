@@ -162,45 +162,36 @@ return {
         i(1, '-- TODO:'),
       },
     },
-    -- {
-    --   '%.test%.tsx$',
-    --   {
-    --     fmt(
-    --       [[
-    --     import { describe, expect, it, vi } from "vitest";
-    --     import { render, screen } from "@testing-library/react";
-    --     import userEvent from "@testing-library/user-event";
-    --     import { [] } from [];
-    --
-    --     describe("[]", async () => {
-    --       const { container } = render(
-    --         <[] />
-    --       );
-    --       it("should match snapshot", () => {
-    --         expect(container).toMatchSnapshot();
-    --       });
-    --     });
-    --       ]],
-    --       {
-    --         -- i(1, "Element"),
-    --         p(raw_filename),
-    --         -- i(2, "filepath"),
-    --         p(quoted_filename),
-    --         p(raw_filename),
-    --         p(raw_filename),
-    --         -- f(function(args)
-    --         -- 	return args[1][1]
-    --         -- end, { 1 }),
-    --         -- f(function(args)
-    --         -- 	return args[1][1]
-    --         -- end, { 1 }),
-    --       },
-    --       {
-    --         delimiters = '[]',
-    --       }
-    --     ),
-    --   },
-    -- },
+    {
+      'src/routes/%-.+%.tsx$',
+      {},
+    },
+    {
+      'src/routes/.*/%-.+%.tsx$',
+      {},
+    },
+    {
+      'src/routes/.+%.tsx$',
+      fmt(
+        [[
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/[]")({
+  component: Component,
+});
+
+function Component() {
+  return null;
+}
+      ]],
+        {
+          title(function(x)
+            return x .. x
+          end),
+        },
+        { delimiters = '[]' }
+      ),
+    },
     -- {
     --   '%.test%.jsx$',
     --   {

@@ -144,7 +144,7 @@ return {
       },
       sign_priority = 5,
       status_formatter = nil, -- Use default
-      signs = {
+      --[[ signs = {
         add = { hl = 'DiffAdd', text = '▌', numhl = 'GitSignsAddNr' },
         change = { hl = 'DiffChange', text = '▌', numhl = 'GitSignsChangeNr' },
         delete = { hl = 'DiffDelete', text = '▌', numhl = 'GitSignsDeleteNr' },
@@ -158,7 +158,7 @@ return {
           text = '~',
           numhl = 'GitSignsChangeNr',
         },
-      },
+      }, ]]
       numhl = false,
       current_line_blame = true,
       current_line_blame_opts = {
@@ -380,6 +380,10 @@ return {
         right = { size = 80 },
       },
       left = {
+        {
+          title = 'Aerial',
+          ft = 'aerial',
+        },
         {
           title = 'Trouble',
           ft = 'trouble',

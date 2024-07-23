@@ -21,14 +21,15 @@ return {
       'marilari88/neotest-vitest',
       'nvim-neotest/neotest-jest',
       'nvim-neotest/neotest-go',
-      'mrcjkb/neotest-haskell',
+      --[[ 'mrcjkb/neotest-haskell', ]]
       'nvim-neotest/neotest-plenary',
 
       'nvim-lua/plenary.nvim',
+      'nvim-neotest/nvim-nio',
       'nvim-treesitter/nvim-treesitter',
       {
         'antoinemadec/FixCursorHold.nvim',
-        init = function()
+        setup = function()
           vim.g.cursorhold_updatetime = 100 -- https://github.com/antoinemadec/FixCursorHold.nvim
         end,
       },

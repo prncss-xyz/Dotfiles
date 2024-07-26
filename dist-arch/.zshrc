@@ -3,6 +3,8 @@ eval "$(luarocks path --bin)"
 
 [[ ! -o interactive ]] && return
 
+export GPG_TTY=$(tty)
+
 export ZSH="$HOME/.local/share/sheldon/repos/github.com/ohmyzsh/ohmyzsh"
 plugins=(dotenv zoxide fzf)
 

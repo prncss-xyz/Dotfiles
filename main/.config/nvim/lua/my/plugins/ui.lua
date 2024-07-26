@@ -376,8 +376,8 @@ return {
     end,
     opts = {
       options = {
-        left = { size = 55 },
-        right = { size = 80 },
+        left = { size = 40 },
+        right = { size = 60 },
       },
       left = {
         {
@@ -421,7 +421,7 @@ return {
     dependencies = { 'anuvyklack/middleclass' },
     init = function()
       vim.o.winwidth = 100
-      vim.o.winminwidth = 80
+      vim.o.winminwidth = 65
       --[[ vim.o.equalalways = false ]]
     end,
     opts = {},

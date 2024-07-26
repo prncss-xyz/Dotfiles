@@ -4,21 +4,29 @@ function M.format(bufnr)
   -- https://github.com/L3MON4D3/LuaSnip/issues/129
   --[[ vim.cmd '!silent LuaSnipUnlinkCurrent' ]]
 
-  if false then
+  local ft = vim.api.nvim_buf_get_option(bufnr or 0, 'ft')
+  if
+    false
+    and vim.tbl_contains(
+      { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+      ft
+    )
+  then
+    -- __AUTO_GENERATED_PRINT_VAR_START__
+    print([==[M.format ft:]==], vim.inspect(ft)) -- __AUTO_GENERATED_PRINT_VAR_END__
     vim.lsp.buf.format {
       async = false,
       filter = function(client)
-        if --[[ client.name == 'null-ls' or ]]
-          client.name == 'lua_ls'
-        then
+        -- __AUTO_GENERATED_PRINT_VAR_START__
+        print([==[M.format#if#function client:]==], vim.inspect(client.name)) -- __AUTO_GENERATED_PRINT_VAR_END__
+        if vim.tbl_contains({ 'eslint' }, client.name) then
           return true
         end
         return false
       end,
       bufnr = bufnr,
     }
-  end
-  if true then
+  else
     require('conform').format {
       async = false,
       buf = bufnr,
@@ -26,25 +34,18 @@ function M.format(bufnr)
   end
 end
 
-function M.get_cmp_capabilities()
+function M.get_cmp_capabilities(flags)
   -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+  flags = flags or {}
   local res = require('cmp_nvim_lsp').default_capabilities()
   res.textDocument.completion.completionItem.snippetSupport = true
   res.textDocument.foldingRange = {
     dynamicRegistration = false,
     lineFoldingOnly = true,
   }
-  return res
-end
-
-function M.get_cmp_capabilities_no_fold()
-  -- local capabilities = vim.lsp.protocol.make_client_capabilities()
-  local res = require('cmp_nvim_lsp').default_capabilities()
-  res.textDocument.completion.completionItem.snippetSupport = true
-  res.textDocument.foldingRange = {
-    dynamicRegistration = false,
-    lineFoldingOnly = true,
-  }
+  if vim.tbl_contains(flags, 'format') then
+    res.documentFormattingProvider = true
+  end
   return res
 end
 

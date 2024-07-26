@@ -44,8 +44,12 @@ return {
         -- 'emmet_language_server',
         'gopls',
       } do
+        local flags = {}
+        if lsp == 'eslint' then
+          flags = { 'format' }
+        end
         require('lspconfig')[lsp].setup {
-          capabilities = require('my.utils.lsp').get_cmp_capabilities(),
+          capabilities = require('my.utils.lsp').get_cmp_capabilities(flags),
           flags = require('my.utils.lsp').flags,
         }
       end
@@ -284,7 +288,7 @@ return {
         },
       }
       require('lspconfig').yamlls.setup {
-        capabilities = require('my.utils.lsp').get_cmp_capabilities_no_fold(),
+        capabilities = require('my.utils.lsp').get_cmp_capabilities(),
         flags = require('my.utils.lsp').flags,
         settings = {
           yaml = {

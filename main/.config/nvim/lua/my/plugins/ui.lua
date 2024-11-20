@@ -192,7 +192,7 @@ return {
         highlight = ibl_highlight,
       },
       exclude = {
-        filetypes = { 'help', 'packer' },
+        filetypes = { 'help', 'packer', 'markdown' },
         buftypes = { 'terminal', 'help', 'nofile' },
       },
     },
@@ -202,6 +202,16 @@ return {
     opts = {},
     ft = { 'markdown', 'orgmode', 'neorg' },
     enabled = false,
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    opts = {},
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-tree/nvim-web-devicons',
+    },
+    ft = { 'markdown', 'Avante' },
+    cmd = { 'RenderMarkdown' },
   },
   {
     'folke/twilight.nvim',
@@ -381,6 +391,10 @@ return {
       },
       left = {
         {
+          title = 'Overseer',
+          ft = 'OverseerList',
+        },
+        {
           title = 'Aerial',
           ft = 'aerial',
         },
@@ -420,8 +434,8 @@ return {
     event = 'VeryLazy',
     dependencies = { 'anuvyklack/middleclass' },
     init = function()
-      vim.o.winwidth = 100
-      vim.o.winminwidth = 65
+      --[[ vim.o.winwidth = 100 ]]
+      --[[ vim.o.winminwidth = 65 ]]
       --[[ vim.o.equalalways = false ]]
     end,
     opts = {},
@@ -434,6 +448,7 @@ return {
       'WindowsDisableAutowidth',
       'WindowsToggleAutowidth',
     },
+    enabled = false,
   },
   {
     'karb94/neoscroll.nvim',

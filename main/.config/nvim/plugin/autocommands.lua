@@ -129,12 +129,19 @@ vim.api.nvim_create_autocmd('VimEnter', {
   group = group,
   callback = function()
     local args = vim.fn.argv()
+    local cwd
     if #args > 0 then
-      return
+      if vim.fn.isdirectory(args[1]) == 1 then
+        cwd = vim.fn.fnamemodify(args[1], ':p')
+      else
+        return
+      end
+    else
+      cwd = vim.fn.getcwd()
     end
     vim.schedule(function()
       fetch_git_branch_plenary()
-      require('my.utils.open_project').open_project { cwd = vim.fn.getcwd() }
+      require('my.utils.open_project').open_project { cwd = cwd }
     end)
   end,
 })

@@ -106,6 +106,8 @@ riverctl map normal Super O enter-mode audio
 riverctl map audio None Escape enter-mode normal
 riverctl map audio None $UP spawn 'pamixer -i 5'
 riverctl map audio None $DOWN spawn 'pamixer -d 5'
+riverctl map audio Shif $UP spawn 'pamixer -i 15'
+riverctl map audio Shif $DOWN spawn 'pamixer -d 15'
 riverctl map audio None M spawn 'pamixer --toggle-mute'
 riverctl map audio None space spawn 'playerctl play-pause'
 riverctl map audio None $LEFT spawn 'playerctl previous'
@@ -116,6 +118,8 @@ riverctl map normal Super I enter-mode lumino
 riverctl map lumino None Escape enter-mode normal
 riverctl map lumino None $UP spawn 'brightnessctl set 2%+'
 riverctl map lumino None $DOWN spawn 'brightnessctl set 2%-'
+riverctl map lumino Shift $UP spawn 'brightnessctl set 100%'
+riverctl map lumino Shift $DOWN spawn 'brightnessctl set 0%'
 
 riverctl background-color 0x002b36
 riverctl border-color-focused 0x93a1a1

@@ -15,6 +15,7 @@ return {
     'williamboman/mason-lspconfig.nvim',
     opts = {
       ensure_installed = {
+        'astro',
         'bashls',
         'graphql',
         'jsonls',
@@ -33,6 +34,7 @@ return {
     event = 'BufReadPost',
     config = function()
       for _, lsp in ipairs {
+        'astro',
         'bashls',
         --[[ 'cssls', ]]
         --[[ 'html', ]]
@@ -70,7 +72,7 @@ return {
         'shfmt',
         'golines',
         'fourmolu',
-        'shellcheck',
+        --[[ 'shellcheck', ]]
         'yamllint',
       },
       auto_update = true,
@@ -135,6 +137,7 @@ return {
         },
       },
     },
+    enabled = false,
   },
   {
     'mfussenegger/nvim-lint',
@@ -181,6 +184,29 @@ return {
       )
       lint.try_lint(nil, { ignore_errors = true })
     end,
+    enabled = false,
+  },
+  {
+    'nvimtools/none-ls.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim',
+      { 'L3MON4D3/LuaSnip', run = 'make install_jsregexp' },
+    },
+    opts = function(_, opts)
+      local null_ls = require 'null-ls'
+      opts.sources = {
+        null_ls.builtins.code_actions.gitsigns,
+        null_ls.builtins.code_actions.refactoring,
+        null_ls.builtins.diagnostics.yamllint,
+        null_ls.builtins.diagnostics.zsh,
+        null_ls.builtins.formatting.shfmt,
+        null_ls.builtins.formatting.stylua,
+        null_ls.builtins.formatting.prettierd,
+        null_ls.builtins.formatting.golines,
+        -- TODO: fourmolu
+      }
+    end,
+    event = 'VeryLazy',
   },
   { 'Bilal2453/luvit-meta' },
   {
@@ -541,5 +567,12 @@ return {
   },
   {
     'artemave/workspace-diagnostics.nvim',
+  },
+  {
+    'AckslD/nvim-FeMaco.lua',
+    cmd = 'FeMaco',
+    name = 'femaco',
+    opts = {},
+    enabled = false,
   },
 }

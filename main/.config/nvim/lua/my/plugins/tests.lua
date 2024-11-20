@@ -19,7 +19,7 @@ return {
     'nvim-neotest/neotest',
     dependencies = {
       'marilari88/neotest-vitest',
-      'nvim-neotest/neotest-jest',
+      --[[ 'nvim-neotest/neotest-jest', ]]
       'nvim-neotest/neotest-go',
       --[[ 'mrcjkb/neotest-haskell', ]]
       'nvim-neotest/neotest-plenary',
@@ -41,7 +41,7 @@ return {
         },
         adapters = {
           require 'neotest-plenary',
-          -- require 'neotest-vitest',
+          require 'neotest-vitest',
           -- require 'neotest-jest',
           -- require 'neotest-go',
           -- require 'neotest-haskell',

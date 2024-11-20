@@ -446,15 +446,31 @@ function M.extend()
       },
     },
     ]]
-    g = modes {
-      desc = 'model',
-      n = b {
-        desc = 'model',
-        lazy_req('my.utils.model', 'all', false),
+    g = keys {
+      desc = 'ai',
+      a = b {
+        desc = 'avante ask',
+        lazy_req('avante.api', 'ask'),
+        modes = 'nx',
       },
-      x = b {
+      e = b {
+        desc = 'avante edit',
+        lazy_req('avante.api', 'edit'),
+        modes = 'nx',
+      },
+      r = b {
+        desc = 'avante refresh',
+        lazy_req('avante.api', 'refresh'),
+        modes = 'nx',
+      },
+      g = modes {
         desc = 'model',
-        lazy_req('my.utils.model', 'all', true),
+        n = b {
+          lazy_req('my.utils.model', 'all', false),
+        },
+        x = b {
+          lazy_req('my.utils.model', 'all', true),
+        },
       },
     },
     h = keys {

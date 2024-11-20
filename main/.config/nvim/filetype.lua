@@ -8,6 +8,7 @@ vim.filetype.add {
     ['.envrc'] = 'bash',
   },
   extension = {
+    astro = 'astro',
     mdx = 'mdx',
   },
   pattern = {

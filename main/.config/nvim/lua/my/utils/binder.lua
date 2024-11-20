@@ -1,5 +1,9 @@
 local M = {}
 
+function M.lua(str)
+  return '<cmd>lua ' .. str .. '<cr>'
+end
+
 function M.cmd(str)
   return '<cmd>' .. str .. '<cr>'
 end

@@ -25,7 +25,7 @@ function M.setup()
     is = keys {
       --[[ ['<c-j>'] = b { '<cr>' }, ]]
       ['<c-space>'] = b { '<space><left>' },
-      ['<c-e>'] = b { 'req', 'my.utils.cmp', 'toggle' },
+      --[[ ['<c-e>'] = b { 'req', 'my.utils.cmp', 'toggle' }, ]]
       ['<s-tab>'] = b {
         function()
           require('luasnip').jump(-1)

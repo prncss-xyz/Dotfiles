@@ -3,6 +3,8 @@ eval "$(luarocks path --bin)"
 
 [[ ! -o interactive ]] && return
 
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
+
 export GPG_TTY=$(tty)
 
 export ZSH="$HOME/.local/share/sheldon/repos/github.com/ohmyzsh/ohmyzsh"
@@ -32,11 +34,12 @@ alias l='exa --icons --git'
 # alias plopg 'plop --plopfile="$HOME/Projects/plopg/plopfile.js" --dest=.'
 # alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvim /tmp/sway-tree.json'
 alias t='exa --icons --git --tree'
-alias y='yt-dlp -x -o "~/Media/Music/ytdl/%(artist)s %(title)s.%(ext)s"'
 alias x='cd "$(xplr --print-pwd-as-result)"'
 alias yx='yt-dlp -x'
 alias ya='yt-dlp -x --output "%(autonumber)02d %(title)s.%(ext)s"'
 alias ze='zk-bib eat --yes'
+
+alias yayy='yay --noconfirm '
 
 alias clock-in='echo i $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'
 alias clock-out='echo o $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'

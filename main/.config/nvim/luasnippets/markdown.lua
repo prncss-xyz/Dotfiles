@@ -2,7 +2,21 @@
 
 local M = {}
 
-for _, lang in ipairs({ 'lua', 'haskell', 'go', 'bash', 'c', 'cpp' , 'javascript', 'typescript', 'jsx', 'tsx', 'json', 'svg' }) do
+for _, lang in ipairs {
+  'lua',
+  'haskell',
+  'go',
+  'bash',
+  'c',
+  'cpp',
+  'javascript',
+  'typescript',
+  'jsx',
+  'tsx',
+  'json',
+  'svg',
+  'mermaid',
+} do
   table.insert(
     M,
     s(
@@ -14,7 +28,7 @@ for _, lang in ipairs({ 'lua', 'haskell', 'go', 'bash', 'c', 'cpp' , 'javascript
         ```
       ]],
         {
-          t (lang),
+          t(lang),
           i(1, ''),
         },
         { delimiters = '[]' }

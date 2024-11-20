@@ -5,7 +5,7 @@ Operation = Upgrade
 Target = usr/lib/modules/*/pkgbase
 
 [Action]
-Description = Updating linux initcpios (with dracut!)...
+Description = Updating dracut
 When = PostTransaction
 Exec = /usr/local/bin/dracut-install.sh
 Depends = dracut

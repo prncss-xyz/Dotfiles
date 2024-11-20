@@ -43,8 +43,7 @@ return {
     },
     config = function(_, opts)
       require('nvim-treesitter.configs').setup(opts)
-      -- FIX:
-      vim.treesitter.language.add('markdown', { 'mdx' })
+      vim.treesitter.language.register('markdown', 'mdx')
     end,
     dependencies = {
       'HiPhish/rainbow-delimiters.nvim',
@@ -61,14 +60,16 @@ return {
       'TSContextToggle',
     },
     event = 'VeryLazy',
-    enabled = false,
+    enabled = true,
   },
   {
     'code-biscuits/nvim-biscuits',
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    opts = {},
+    opts = {
+      cursor_line_only = true,
+    },
     event = 'VeryLazy',
-    enabled = false,
+    enabled = true,
   },
   {
     'HiPhish/rainbow-delimiters.nvim',
@@ -103,23 +104,14 @@ return {
   {
     'JoosepAlviste/nvim-ts-context-commentstring',
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    opts = {},
     event = 'VeryLazy',
-  },
-  {
-    'mfussenegger/nvim-ts-hint-textobject',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    enabled = false,
-  },
-  {
-    'nvim-treesitter/playground',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    cmd = { 'TSPlaygroundToggle', 'TSHighlightCapturesUnderCursor' },
-    enabled = true,
   },
   -- Use tressitter to autoclose and autorename HTML tag
   {
     'windwp/nvim-ts-autotag',
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    opts = {},
     event = 'InsertEnter',
   },
   {

@@ -1,12 +1,6 @@
 return {
   -- completion
   {
-    'David-Kunz/cmp-npm',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    ft = 'json',
-    opts = {},
-  },
-  {
     'hrsh7th/nvim-cmp',
     event = { 'InsertEnter', 'CmdlineEnter' },
     dependencies = {
@@ -16,7 +10,7 @@ return {
       'hrsh7th/cmp-calc',
       'hrsh7th/cmp-buffer',
       'hrsh7th/cmp-path',
-      'hrsh7th/cmp-nvim-lua',
+      --[[ 'hrsh7th/cmp-nvim-lua', ]]
       'hrsh7th/cmp-cmdline',
       'dmitmel/cmp-cmdline-history',
       'hrsh7th/cmp-nvim-lsp',
@@ -135,6 +129,7 @@ return {
     },
     opts = {},
     cmd = { 'Codeium' },
+    enabled = false,
   },
   -- neocodeium
   {
@@ -169,32 +164,6 @@ return {
       ignore_filetypes = { markdown = true },
     },
     cmd = { 'SupermavenUseFree', 'SupermavenLogout' },
-    event = 'BufEnter',
-  },
-  {
-    'codota/tabnine-nvim',
-    build = './dl_binaries.sh',
-    opts = {
-      disable_auto_comment = false,
-      -- accept_keymap = '<plug>(nop)',
-      accept_keymap = '<c-y>',
-      dismiss_keymap = '<plug>(nop)',
-      -- dismiss_keymap = '<c-e>',
-      debounce_ms = 800,
-      suggestion_color = { gui = '#808080', cterm = 244 },
-      exclude_filetypes = { 'TelescopePrompt', 'markdown' },
-    },
-    name = 'tabnine',
-    config = true,
-    cmd = {
-      'TabnineHub',
-      'TabnineHubUrl',
-      'TabnineStatus',
-      'TabnineDisable',
-      'TabnineEnable',
-      'TabnineToggle',
-    },
     event = 'InsertEnter',
-    enabled = false,
   },
 }

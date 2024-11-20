@@ -8,7 +8,8 @@ return {
       },
       templates = {
         'builtin',
-        --[[ 'my.dev', ]]
+        'my.zsh',
+        'my.zsh-current',
       },
     },
     cmd = {

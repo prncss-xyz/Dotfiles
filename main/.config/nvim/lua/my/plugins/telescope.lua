@@ -24,27 +24,17 @@ local buffer_preview_maker = function(filepath, bufnr, opts)
     args = { '--mime-type', '-b', filepath },
     on_exit = function(j)
       local mime_type = vim.split(j:result()[1], '/')[1]
-      if
-        mime_type == 'text'
-        or vim.endswith(filepath, 'json')
-        or vim.endswith(filepath, 'html')
-        or vim.endswith(filepath, 'js')
-        or vim.endswith(filepath, 'jsx')
-        or vim.endswith(filepath, 'ts')
-        or vim.endswith(filepath, 'tsx')
-        or vim.endswith(filepath, 'mdx')
-        or vim.endswith(filepath, 'md')
-      then
+      if mime_type == 'image' then
+        -- maybe we want to write something to the buffer here
+        vim.schedule(function()
+          vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { 'BINARY' })
+        end)
+      else
         require('telescope.previewers').buffer_previewer_maker(
           filepath,
           bufnr,
           opts
         )
-      else
-        -- maybe we want to write something to the buffer here
-        vim.schedule(function()
-          vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { 'BINARY' })
-        end)
       end
     end,
   }):sync()
@@ -245,6 +235,7 @@ return {
   {
     'AckslD/nvim-neoclip.lua',
     config = load_extension { 'neoclip', 'macroscope' },
+    enabled = false,
   },
   {
     dir = require('my.utils').local_repo 'telescope-repo.nvim',

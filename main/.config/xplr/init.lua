@@ -589,20 +589,6 @@ deep_merge(xplr, {
                   'PopMode',
                 },
               },
-              o = {
-                help = 'fzf open',
-                messages = {
-                  {
-                    --  --preview 'echo {} >/tmp/xplr.fifo' --preview-window 0
-                    BashExec = [[
-                      res="$(fd --type file --follow --hidden --exclude .git | fzf --preview 'echo {} >/tmp/xplr.fifo' --preview-window 0)" -- FIXME
-                      if [ -n "$res" ]; then
-                        ~/.local/bin/xdg-open/"$res"
-                      fi
-                    ]],
-                  },
-                },
-              },
               e = {
                 help = 'open editor',
                 messages = {

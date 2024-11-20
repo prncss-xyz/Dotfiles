@@ -82,8 +82,8 @@ function M.extend()
         desc = 'neotree symbols',
         'vim',
         'cmd',
-        'AerialOpen',
-        --[[ 'Neotree document_symbols', ]]
+        --[[ 'AerialOpen', ]]
+        'Neotree document_symbols',
       },
       w = b {
         desc = 'todo',

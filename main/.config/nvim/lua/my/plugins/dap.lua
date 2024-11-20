@@ -73,12 +73,45 @@ return {
   },
   {
     'leoluz/nvim-dap-go',
+    dependencies = { 'mfussenegger/nvim-dap' },
     ft = 'go',
     opts = {},
     enabled = true,
   },
   {
     'mxsdev/nvim-dap-vscode-js',
-    enabled = false,
+    dependencies = { 'mfussenegger/nvim-dap' },
+    opts = {
+      adapters = {
+        'pwa-node',
+        'pwa-chrome',
+        'pwa-msedge',
+        'node-terminal',
+        'pwa-extensionHost',
+      }, -- which adapters to register in nvim-dap
+    },
+    config = function(_, opts)
+      require('dap-vscode-js').setup(opts)
+
+      for _, language in ipairs { 'typescript', 'javascript' } do
+        require('dap').configurations[language] = {
+          {
+            type = 'pwa-node',
+            request = 'launch',
+            name = 'Launch file',
+            program = '${file}',
+            cwd = '${workspaceFolder}',
+          },
+          {
+            type = 'pwa-node',
+            request = 'attach',
+            name = 'Attach',
+            processId = require('dap.utils').pick_process,
+            cwd = '${workspaceFolder}',
+          },
+        }
+      end
+    end,
+    ft = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
   },
 }

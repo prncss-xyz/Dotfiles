@@ -238,7 +238,6 @@ function Component() {
     ['.busted'] = from_file_raw '.busted',
     ['stylua.toml'] = from_file_fmt 'stylua.toml',
     ['selene.toml'] = from_file_fmt 'selene.toml',
-    ['.eslintrc.js'] = from_file_raw '.eslintrc.js',
     ['.prettierrc.yaml'] = from_file_fmt '.prettierrc.yaml',
     ['LICENSE'] = from_file_fmt('LICENSE', {
       name = i(2, git_name()),

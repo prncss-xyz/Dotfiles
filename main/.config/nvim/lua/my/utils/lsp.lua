@@ -1,6 +1,21 @@
 local M = {}
 
+local block_list = { 'lua_ls', 'vtsls' }
+
 function M.format(bufnr)
+  vim.lsp.buf.format {
+    async = false,
+    filter = function(client)
+      if vim.tbl_contains(block_list, client.name) then
+        return false
+      end
+      return true
+    end,
+    bufnr = bufnr,
+  }
+end
+
+function M.format_(bufnr)
   -- https://github.com/L3MON4D3/LuaSnip/issues/129
   --[[ vim.cmd '!silent LuaSnipUnlinkCurrent' ]]
 

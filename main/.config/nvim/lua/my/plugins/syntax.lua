@@ -34,9 +34,6 @@ return {
       indent = {
         enable = true,
       },
-      autotag = {
-        enable = true,
-      },
       context_commentstring = {
         enable_autocommand = false,
       },
@@ -53,7 +50,11 @@ return {
   {
     'nvim-treesitter/nvim-treesitter-context',
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    opts = {},
+    opts = {
+      min_window_height = 30,
+      --[[ multiline_threshold = 3,
+      trim_scope = 'outer', ]]
+    },
     cmd = {
       'TSContextEnable',
       'TSContextDisable',
@@ -106,22 +107,6 @@ return {
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
     opts = {},
     event = 'VeryLazy',
-  },
-  -- Use tressitter to autoclose and autorename HTML tag
-  {
-    'windwp/nvim-ts-autotag',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    opts = {},
-    event = 'InsertEnter',
-  },
-  {
-    -- annotation toolkit
-    'danymat/neogen',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    opts = {
-      enabled = true,
-      snippet_engine = 'luasnip',
-    },
   },
 
   -- syntax

@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# hoistfile PACKAGE SOURCE
+
 # TODO: hoist theme
 DOTFILES=$HOME/Dotfiles
 
@@ -7,14 +9,14 @@ if [ -z "$DOTFILES" ]; then
 	echo DOTFILES env variable expected to be set
 	exit 1
 fi
-PAC="$1"
-if [ -z "$PAC" ]; then
+PACKAGE="$1"
+if [ -z "$PACKAGE" ]; then
 	echo "package name expected"
 	exit 1
 fi
 
-if [ ! -d "$DOTFILES/$PAC" ]; then
-	echo "package $PAC do not exists."
+if [ ! -d "$DOTFILES/$PACKAGE" ]; then
+	echo "package $PACKAGE do not exists."
 	exit 1
 fi
 
@@ -41,13 +43,13 @@ case "$REL" in
 *)
 	echo $REL
 	tail="${REL#*/}" # removed package name
-	mkdir -p "$DOTFILES/$PAC/$tail"
-	mv "$ABS" "$DOTFILES/$PAC/$tail"
-	if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
-		stow "$PAC" # only if active
+	mkdir -p "$DOTFILES/$PACKAGE/$tail"
+	mv "$ABS" "$DOTFILES/$PACKAGE/$tail"
+	if [ -f "$HOME"/.config/stow/active/"$PACKAGE" ]; then
+		stow "$PACKAGE" # only if active
     # stow will rewrite link
 	fi
-	echo "moved to $DOTFILES/$PAC/$tail"
+	echo "moved to $DOTFILES/$PACKAGE/$tail"
 	exit 0
 	;;
 esac
@@ -56,23 +58,23 @@ REL=$(realpath --relative-base="$HOME" "$DIR")
 case "$REL" in
 /*) ;;
 *)
-	mkdir -p "$DOTFILES/$PAC/$REL"
-	mv "$ABS" "$DOTFILES/$PAC/$REL"
+	mkdir -p "$DOTFILES/$PACKAGE/$REL"
+	mv "$ABS" "$DOTFILES/$PACKAGE/$REL"
 	rm "$HOME""$REL"
-	if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
-		stow "$PAC" # only if active
+	if [ -f "$HOME"/.config/stow/active/"$PACKAGE" ]; then
+		stow "$PACKAGE" # only if active
 	fi
-	echo "moved to $DOTFILES/$PAC/$REL"
+	echo "moved to $DOTFILES/$PACKAGE/$REL"
 	exit 0
 	;;
 esac
 
-mkdir -p "$DOTFILES/$PAC/.sysfiles/$DIR"
+mkdir -p "$DOTFILES/$PACKAGE/.sysfiles/$DIR"
 if [ -f "$ABS" ]; then
-	cp "$ABS" "$DOTFILES/$PAC/.sysfiles/$DIR"
+	cp "$ABS" "$DOTFILES/$PACKAGE/.sysfiles/$DIR"
 fi
-stow "$PAC"
-if [ -f "$HOME"/.config/stow/active/"$PAC" ]; then
-	stow "$PAC" # only if active
+stow "$PACKAGE"
+if [ -f "$HOME"/.config/stow/active/"$PACKAGE" ]; then
+	stow "$PACKAGE" # only if active
 fi
-echo "copied to $DOTFILES/$PAC/.sysfiles/$DIR"
+echo "copied to $DOTFILES/$PACKAGE/.sysfiles/$DIR"

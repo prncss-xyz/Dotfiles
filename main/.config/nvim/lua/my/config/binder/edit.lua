@@ -6,6 +6,8 @@ function M.extend()
   local modes = binder.modes
   local b = binder.b
   local lazy_req = require('my.config.binder.utils').lazy_req
+  local cmd = require('binder.helpers').cmd
+  local lua = require('binder.helpers').lua
 
   return keys {
     a = keys {
@@ -87,7 +89,11 @@ function M.extend()
     i = b {
       'i<space><left>',
     },
-    -- j
+    j = b {
+      desc = 'ssr',
+      lua [[require('ssr').open()]],
+      modes = 'nx',
+    },
     k = keys {
       prev = modes {
         n = b {

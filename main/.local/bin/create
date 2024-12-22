@@ -1,8 +1,22 @@
 #!/usr/bin/env sh
 
-git clone --depth=1 "file://$HOME/Projects/github.com/prncss-xyz/create-$1" "$2"
-cd "$2" || exit 1
-if [ -e "package.json" ]; then
-	echo "$(jq '.name="$2"' package.json)" >package.json
+if [ -z "$1" ]; then
+	echo "template name expected"
+	exit 1
 fi
-echo "$2"
+
+TEMPLATE="$TEMPLATES/$1"
+if [ ! -d "$TEMPLATE" ]; then
+	echo "template $TEMPLATE does not exist."
+	exit 1
+fi
+
+if [ -f "$TEMPLATE"/init ]; then
+  "$TEMPLATE"/init
+fi
+
+if [ -d "$TEMPLATE"/template ]; then
+  for ENTRY in "$TEMPLATE"/template/*; do 
+    cp -r "$ENTRY" .
+  done
+fi

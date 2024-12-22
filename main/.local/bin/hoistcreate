@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+# hoistcreate TEMPLATE SOURCES
+
+if [ -z "$1" ]; then
+	echo "template name expected"
+	exit 1
+fi
+
+PROJET_ROOT=$(project_root)
+TEMPLATE="$TEMPLATES/$1"
+
+if [ ! -d "$TEMPLATE" ]; then
+	echo "template "$TEMPLATE" do not exists."
+	exit 1
+fi
+
+for ENTRY in "${@:2}"
+do
+    if [ -z "$ENTRY" ]; then
+    echo "source name expected"
+    exit 0
+  fi
+
+  if [ ! -e "$ENTRY" ]; then
+    echo "file "$ENTRY" does not exist"
+    exit 1
+  fi
+
+  SOURCE=$(realpath "$ENTRY")
+  REL=$(realpath --relative-to="$PROJET_ROOT" "$SOURCE")
+  TARGET="$TEMPLATE"/template/"$REL"
+  mkdir -p $(dirname "$TARGET")
+  cp -r "$SOURCE" "$TARGET"
+done

@@ -3,6 +3,8 @@ eval "$(luarocks path --bin)"
 
 [[ ! -o interactive ]] && return
 
+export TEMPLATES="$HOME/Projects/github.com/prncss-xyz/templates"
+
 export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
 
 export GPG_TTY=$(tty)

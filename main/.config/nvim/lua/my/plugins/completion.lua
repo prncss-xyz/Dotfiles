@@ -166,4 +166,20 @@ return {
     cmd = { 'SupermavenUseFree', 'SupermavenLogout' },
     event = 'InsertEnter',
   },
+  -- Use tressitter to autoclose and autorename HTML tag
+  {
+    'windwp/nvim-ts-autotag',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    opts = {},
+    event = 'InsertEnter',
+  },
+  {
+    -- annotation toolkit
+    'danymat/neogen',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    opts = {
+      enabled = true,
+      snippet_engine = 'luasnip',
+    },
+  },
 }

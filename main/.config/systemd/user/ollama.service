@@ -1,0 +1,20 @@
+[Unit]
+Description=Ollama Service
+
+[Service]
+ExecStart=/usr/bin/ollama serve
+#WorkingDirectory=/var/lib/ollama
+#Environment="HOME=/var/lib/ollama"
+Environment="GIN_MODE=release"
+#User=ollama
+#Group=ollama
+Restart=on-failure
+RestartSec=3
+Type=simple
+PrivateTmp=yes
+ProtectSystem=full
+#ProtectHome=yes
+Environment="HSA_OVERRIDE_GFX_VERSION=11.0.2"
+
+[Install]
+WantedBy=multi-user.target

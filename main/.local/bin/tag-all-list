@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+for file in *
+do
+  if [ -f "$file" ]; then
+    node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js tag-add-list p::"$file" "$file"
+  fi
+done

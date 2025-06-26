@@ -3,6 +3,8 @@ eval "$(luarocks path --bin)"
 
 [[ ! -o interactive ]] && return
 
+alias nvc='NVIM_APPNAME=nvim-code nvim'
+
 alias tt="node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js"
 alias ttt="TEST=TEST node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js"
 
@@ -25,7 +27,6 @@ eval "$(starship init zsh)"
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
-alias sg=ast-grep
 alias c='bat --style=changes,header,rule,snip'
 # alias e='exec $VISUAL'
 #
@@ -36,18 +37,33 @@ alias mkdir='mkdir -p'
 alias mh='man -H'
 # workaround for avante
 alias n='TALIVY_API_KEY=$(pass show tavily.com/juliette.lamarche.xyz@gmail.com/keys/nvim) nvim'
-alias n2='NVIM_APPNAME=nvim2 nvim'
-alias nvc='NVIM_APPNAME=nvim-code nvim'
 alias o=xdg-open
-alias l='eza --icons --git'
+alias l='exa --icons --git'
 # alias plopg 'plop --plopfile="$HOME/Projects/plopg/plopfile.js" --dest=.'
 # alias sway-tree 'swaymsg -t get_tree > /tmp/sway-tree.json; nvim /tmp/sway-tree.json'
-alias t='eza --icons --git --tree'
+alias t='exa --icons --git --tree'
+alias x='cd "$(xplr --print-pwd-as-result)"'
 alias yx='yt-dlp -x'
 alias ya='yt-dlp -x --output "%(autonumber)02d %(title)s.%(ext)s"'
 alias ze='zk-bib eat --yes'
 
 alias yayy='yay --noconfirm '
+
+alias clock-in='echo i $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'
+alias clock-out='echo o $(date +"%Y/%m/%d %H:%M:%S") >> ${TIMELOG}'
+alias wasted='ledger -f ${TIMELOG} bal -b $(date -dlast-monday +%m/%d) --depth 2'
+alias clock-status='[[ $(tail -1 ${TIMELOG} | cut -c 1) == "i" ]] && { echo "Clocked IN to $(tail -1 ${TIMELOG} | cut -d " " -f 4)"; } || { echo "Clocked OUT"; }' 
+
+function _clock_in ()
+{
+    local cur prev
+    _get_comp_words_by_ref -n : cur
+
+    local words="$(cut -d ' ' -s -f 4 ${TIMELOG} | sed '/^$/d' | sort | uniq)"
+    COMPREPLY=($(compgen -W "${words}" -- ${cur}))
+    __ltrim_colon_completions "${cur}"
+}
+complete -F _clock_in clock-in
 
  cmd_to_clip () { wl-copy <<< $BUFFER }
  zle -N cmd_to_clip
@@ -61,29 +77,28 @@ w-paste() {
 zle -N w-paste
 bindkey '^V' w-paste
 
-__my-eza() {
+__my-exa() {
   echo
-  eza --icons --git
+  exa --icons --git
   echo
   echo
   zle reset-prompt
 }
-zle -N __my-eza
-bindkey '\el' __my-eza
+zle -N __my-exa
+bindkey '\el' __my-exa
 
 __my-zi() {
   result="$(\command zoxide query -i -- "$@")" && __zoxide_cd "${result}"
   zle reset-prompt
 }
 zle -N __my-zi
-bindkey '\eo' __my-zi
+bindkey '\ez' __my-zi
 
-# Yazi
-function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd"
-	fi
-	rm -f -- "$tmp"
-}
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/prncss/google-cloud-sdk/path.zsh.inc' ]; then . '/home/prncss/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/prncss/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/prncss/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/prncss/.lmstudio/bin"

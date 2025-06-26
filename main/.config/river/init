@@ -1,5 +1,18 @@
 #!/bin/sh
 
+# this will enable screen share
+systemctl --user import-environment WAYLAND_DISPLAY
+
+# https://git.sr.ht/~leon_plickat/river-config/tree/master/item/river/init
+# Helper fuction to only spawn a program when no instance of it is running
+# already, so init can be re-run without all widgets being duplicated.
+spawn_once() {
+	pgrep -f "${1}" >/dev/null || riverctl spawn "${*}"
+}
+
+spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
+# spawn_once darkman run
+
 UP=K
 DOWN=J
 LEFT=L
@@ -169,16 +182,10 @@ riverctl rule-add -app-id org.freedesktop.Xwayland ssd
 
 riverctl default-layout rivertile
 
-# https://git.sr.ht/~leon_plickat/river-config/tree/master/item/river/init
-# Helper fuction to only spawn a program when no instance of it is running
-# already, so init can be re-run without all widgets being duplicated.
-spawn_once() {
-	pgrep -f "${1}" >/dev/null || riverctl spawn "${*}"
-}
-
 riverctl map normal Super D spawn fuzzel
 riverctl map normal Super E spawn neovide
 riverctl map normal Super T spawn footclient
+riverctl map normal Super U spawn footclient -e yazi
 riverctl map normal Super Y spawn .local/bin/browser
 riverctl map normal Super P spawn tessen
 riverctl map normal Super M spawn "makoctl dismiss"
@@ -186,11 +193,11 @@ riverctl map normal Super+Shift M spawn "makoctl dismiss --all"
 
 spawn_once rivertile -view-padding 0 -outer-padding 0
 spawn_once foot --server
+spawn_once set
 spawn_once .local/bin/browser
 spawn_once .local/bin/mvf-term read
 spawn_once .local/bin/mvl-add read
 spawn_once .local/bin/mvl-rm read
-spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
 spawn_once /usr/bin/kdeconnectd
 spawn_once mako
 spawn_once river-tag-overlay
@@ -200,16 +207,14 @@ spawn_once swayidle -w \
 	timeout 330 'waylock' \
 	before-sleep 'waylock'
 spawn_once syncthing serve --no-browser --no-restart --logflags=0
-# spawn_once footclient --title=scratchpad
 spawn_once udiskie
 spawn_once waybar
 
-# not working as a service
-# spawn_once wlsunset -l 45.5 -L -73.6
-wlsunset -S 07:00 -s 16:00
-
-# /usr/lib/kdeconnectd &
 dbus-update-activation-environment --systemd --all
 gpg-connect-agent /bye
+
+# not working as a service
+# spawn_once wlsunset -l 45.5 -L -73.
+wlsunset -S 07:00 -s 16:00
 
 systemctl --user start river-session.target

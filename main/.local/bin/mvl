@@ -1,75 +1,44 @@
 #!/usr/bin/env sh
 
-base="$HOME/Media/Pictures/lists"
-history=lists-img
+tt="node /home/prncss/Projects/github.com/prncss-xyz/tags/dist/index.js"
+history=tags
 if [ "$1" = add ]; then
-	if [ "$2" = "--last" ]; then
-		if [ ! -f /tmp/ttt-last ]; then
-			echo "no last file" >/dev/stderr
-			exit 1
-		fi
-		inp="$(cat /tmp/ttt-last)"
-	else
-		inp=$(realpath "$2")
-	fi
-	source=$(realpath "$inp")
-	if [ ! -e "$source" ]; then
-		echo "file '$2' doest not exists" >&2
+  inp="$2"
+	if [ ! -e "$inp" ]; then
+		echo "file '$inp' doest not exists" >&2
 		exit 1
 	fi
-
-	mkdir -p "$base"
-	cd "$base" || exit
 	mkdir -p "$HOME"/.histories/
 	if [ ! -f "$HOME/.histories/$history" ]; then
 		touch "$HOME/.histories/$history"
 	fi
-	result="$(fd -t f -x echo '{}' | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
+	result="$($tt tag-all | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
 	if [ -n "$result" ]; then
-		entry=$(realpath --relative-to="$base" "$inp")
-		dest="$base/$result"
-		mkdir -p "$base"
-		touch "$dest"
-		grep -qxF "$entry" "$dest" || echo "$entry" >>"$dest"
+    $tt tag-add "$result" "$inp"
 	fi
 elif [ "$1" = rm ]; then
-	if [ "$2" = "--last" ]; then
-		if [ ! -f /tmp/ttt-last ]; then
-			echo "no last file" >/dev/stderr
-			exit 1
-		fi
-		inp="$(cat /tmp/ttt-last)"
-	else
-		inp=$(realpath "$2")
-	fi
-	source=$(realpath "$inp")
-	if [ ! -e "$source" ]; then
-		echo "file '$2' doest not exists" >&2
+  inp="$2"
+	if [ ! -e "$inp" ]; then
+		echo "file '$inp' doest not exists" >&2
 		exit 1
 	fi
-
-	mkdir -p "$base"
-	cd "$base" || exit
 	mkdir -p "$HOME"/.histories/
 	if [ ! -f "$HOME/.histories/$history" ]; then
 		touch "$HOME/.histories/$history"
 	fi
-	result="$(fd -t f -x echo '{}' | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
+	result="$($tt tag-get "$inp" | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
 	if [ -n "$result" ]; then
-		entry=$(realpath --relative-to="$base" "$inp")
-		dest="$base/$result"
-		mkdir -p "$base"
-		touch "$dest"
-		grep -vxF "$entry" "$dest" >/tmp/mvl-grep
-		cp /tmp/mvl-grep "$dest"
+    $tt tag-rm "$result" "$inp"
 	fi
 elif [ "$1" = imv ]; then
-	cd "$base" || exit 1
-	if [ ! -f "$2" ]; then
-		echo "list '$2' doest not exists" >&2
-		exit 1
+	mkdir -p "$HOME"/.histories/
+	if [ ! -f "$HOME/.histories/$history" ]; then
+		touch "$HOME/.histories/$history"
 	fi
-	shuf "$2" | imv &
+	result="$($tt tag-all | fzf --history="$HOME/.histories/$history" --print-query | tail -1)"
+	if [ -n "$result" ]; then
+    $tt tag-ls -s "$result" -n "t:remove" | imv
+	fi
 else
 	echo "unknown subcommand" >&2
 	exit 1

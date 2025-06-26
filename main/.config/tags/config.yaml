@@ -1,0 +1,7 @@
+modelDir: .models
+dirs:
+  downloads: Downloads
+  img: Personal/img
+  media: Media/Pictures
+export: Personal/tags
+feed: Personal/tags/feed

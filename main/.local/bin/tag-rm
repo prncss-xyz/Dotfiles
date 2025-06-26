@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-src="$1"
-tag-get "$src" | while read -r tag ; do
-  tag-del "$src" "$tag"
-done

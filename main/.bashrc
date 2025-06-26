@@ -4,3 +4,6 @@
 [[ $- != *i* ]] && return
 
 PS1='[\u@\h \W]\$ '
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/prncss/.lmstudio/bin"

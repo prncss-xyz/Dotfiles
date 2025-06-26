@@ -1,0 +1,4 @@
+[opener]
+open = [
+	{ run = '~/.local/bin/xdg-open "$@"', desc = "Open" },
+]

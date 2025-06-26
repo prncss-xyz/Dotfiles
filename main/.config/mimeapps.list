@@ -7,3 +7,4 @@ image/webp=firefox.desktop
 x-scheme-handler/https=firefox.desktop
 x-scheme-handler/ftp=firefox.desktop
 x-scheme-handler/mailto=chromium.desktop
+x-scheme-handler/wox=wox-url-handler.desktop

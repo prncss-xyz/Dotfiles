@@ -1,4 +1,4 @@
-version = '0.21.0'
+version = '1.0.0'
 
 -- override builtin modes to get rid of deep_merge
 -- fzm: project root or current dir, unless in downloads (by mimetype then)

@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+THEME=$(cat ~/.theme_name)
+DIR=~/Media/Pictures/Wallpapers/"$THEME"
+if [ ! -d "$DIR" ]; then
+	DIR=~/Media/Pictures/Wallpapers/
+fi
+FILE=$(fd -e jpg -e png . "$DIR" | shuf -n1)
+swaybg --mode fill --image "$FILE"

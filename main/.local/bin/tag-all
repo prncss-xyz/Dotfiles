@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+for dir in *
+do
+  if [ -d "$dir" ]; then
+    dir=${dir%*/}      # remove the trailing "/"
+     node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js tag-add p:"${dir##*/}" "$dir"    # print everything after the final "/"
+  fi
+done

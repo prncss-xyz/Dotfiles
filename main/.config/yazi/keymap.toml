@@ -1,0 +1,23 @@
+[manager]
+prepend_keymap = [
+	{ on = ";", run = "leave", desc = "Back to the parent directory" },
+	{ on = "l", run = "enter", desc = "Enter the child directory" },
+	{ on = "L", run = "back", desc = "Back to previous directory" },
+	{ on = ":", run = "forward", desc = "Forward to next directory" },
+	{ on = "é", run = "find --smart",            desc = "Find next file" },
+	{ on = "É", run = "find --previous --smart", desc = "Find previous file" },
+  # { on = "/", run = "shell --interactive", desc = "Run a shell command" },
+	# { on = "$", run = "shell --block --interactive", desc = "Run a shell command (block until finishes)" },
+]
+
+[spot]
+prepend_keymap = [
+	{ on = "l", run = "swipe prev", desc = "Swipe to previous file" },
+	{ on = ";", run = "swipe next", desc = "Swipe to next file" },
+]
+
+[input]
+prepend_keymap = [
+  { on = "l", run = "move -1", desc = "Move back a character" },
+	{ on = ";", run = "move 1",  desc = "Move forward a character" },
+]

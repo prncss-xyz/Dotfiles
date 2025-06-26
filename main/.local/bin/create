@@ -11,12 +11,10 @@ if [ ! -d "$TEMPLATE" ]; then
 	exit 1
 fi
 
-if [ -f "$TEMPLATE"/init ]; then
-  "$TEMPLATE"/init
+if [ -d "$TEMPLATE"/template ]; then
+  cp -r "$TEMPLATE"/template/. .
 fi
 
-if [ -d "$TEMPLATE"/template ]; then
-  for ENTRY in "$TEMPLATE"/template/*; do 
-    cp -r "$ENTRY" .
-  done
+if [ -f "$TEMPLATE"/init ]; then
+  "$TEMPLATE"/init
 fi

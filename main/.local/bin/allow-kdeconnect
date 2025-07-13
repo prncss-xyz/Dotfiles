@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+sudo ufw allow 1764 :1764 /tcp
+sudo ufw allow 1764 :1764 /udp
+sudo ufw allow 1714 :1714 /tcp
+sudo ufw allow 1714 :1714 /udp 

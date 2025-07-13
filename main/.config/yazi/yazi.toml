@@ -2,3 +2,8 @@
 open = [
 	{ run = '~/.local/bin/xdg-open "$@"', desc = "Open" },
 ]
+
+[open]
+prepend_rules = [
+  { name = "*.html", use = "open" },
+]

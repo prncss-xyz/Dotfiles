@@ -1,32 +1,24 @@
-# `sheldon` configuration file
-# ----------------------------
-#
-# You can modify this file directly or you can use one of the following
-# `sheldon` commands which are provided to assist in editing the config file:
-#
-# - `sheldon add` to add a new plugin to the config file
-# - `sheldon edit` to open up the config file in the default editor
-# - `sheldon remove` to remove a plugin from the config file
-#
-# See the documentation for more https://github.com/rossmacarthur/sheldon#readme
-
 shell = "zsh"
+
+[templates]
+defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}"
 
 [plugins]
 
-[plugins.oh-my-zsh]
-github = 'ohmyzsh/ohmyzsh'
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+rev = "53a26e287fbbe2dcebb3aa1801546c6de32416fa"
 
 [plugins.autopairs]
 github = 'hlissner/zsh-autopair'
+apply = ["defer"]
+rev = "449a7c3d095bc8f3d78cf37b9549f8bb4c383f3d"
 
-[plugins.abbr]
-github = 'olets/zsh-abbr'
-branch = 'next'
-
-[plugins.zsh-autosuggestions]
-github = 'zsh-users/zsh-autosuggestions'
-use = ['{{ name }}.zsh']
+[plugins.zsh-autocomplete]
+github = 'marlonrichert/zsh-autocomplete'
+apply = ["defer"]
 
 [plugins.zsh-syntax-highlighting]
-github = 'zsh-users/zsh-syntax-highlighting'
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+rev = "5eb677bb0fa9a3e60f0eff031dc13926e093df92"

@@ -13,10 +13,13 @@ eval "$(sheldon source)"
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
+bindkey -e
 alias tt="node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js"
 alias ttt="TEST=TEST node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js"
 alias sg=ast-grep
 alias c='bat --style=changes,header,rule,snip'
+# alias e='exec $VISUAL'
+#
 alias e=nvr_do
 alias f=fsearch-ext
 alias gca='git add --all; git commit --allow-empty-message -m ""'

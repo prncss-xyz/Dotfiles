@@ -1,34 +1,22 @@
-source "$HOME/.profile"
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
+export GPG_TTY=$(tty)
 eval "$(luarocks path --bin)"
+eval "$(direnv hook zsh)"
 
 [[ ! -o interactive ]] && return
 
-alias tt="node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js"
-alias ttt="TEST=TEST node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js"
-
-export TEMPLATES="$HOME/Projects/github.com/prncss-xyz/templates"
-
-export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
-
-export GPG_TTY=$(tty)
-
-export ZSH="$HOME/.local/share/sheldon/repos/github.com/ohmyzsh/ohmyzsh"
-plugins=(dotenv zoxide fzf)
-
-# Oh My Zsh settings here
-
-eval "$(sheldon source)"
-
+. "$HOME/.atuin/bin/env"
+eval "$(atuin init zsh)"
 eval "$(starship init zsh)"
-
+eval "$(sheldon source)"
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
+alias tt="node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js"
+alias ttt="TEST=TEST node $HOME/Projects/github.com/prncss-xyz/tags/dist/index.js"
 alias sg=ast-grep
 alias c='bat --style=changes,header,rule,snip'
-# alias e='exec $VISUAL'
-#
 alias e=nvr_do
 alias f=fsearch-ext
 alias gca='git add --all; git commit --allow-empty-message -m ""'
@@ -46,7 +34,6 @@ alias t='eza --icons --git --tree'
 alias ytx='yt-dlp -x'
 alias yta='yt-dlp -x --output "%(autonumber)02d %(title)s.%(ext)s"'
 alias ze='zk-bib eat --yes'
-
 alias yayy='yay --noconfirm '
 
  cmd_to_clip () { wl-copy <<< $BUFFER }
@@ -55,8 +42,7 @@ alias yayy='yay --noconfirm '
 
 w-paste() {
     PASTE=$(wl-paste)
-    LBUFFER="$LBUFFER${RBUFFER:0:1}"
-    RBUFFER="$PASTE${RBUFFER:1:${#RBUFFER}}"
+    LBUFFER="$LBUFFER${RBUFFER:0:1}" RBUFFER="$PASTE${RBUFFER:1:${#RBUFFER}}"
 }
 zle -N w-paste
 bindkey '^V' w-paste
@@ -87,3 +73,4 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
